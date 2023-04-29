@@ -1,0 +1,729 @@
+<div class="card card-style m-0 rounded-0" style="height:96vh; background-image:url('https://cdn8.dissolve.com/p/D145_14_912/D145_14_912_1200.jpg')">
+  <div class="card-bottom p-3 pb-5 pt-5" style="z-index:3;">
+    <h1 class="color-white font-35 text-center line-height-xl mb-2">
+      The One Stop Shop For Amazon Affiliates
+    </h1>
+    <p class="color-white px-4 text-center mb-5 font-14 opacity-70">
+      Available To Amazon Affiliates In All Countries
+    </p>
+    <div class="content mx-0">
+      <div class="search-box bg-theme color-theme rounded-m shadow-l">
+        <i class="fa fa-search ms-0"></i>
+        <%= form_for :newSearch, url: search_path do |f| %>
+        <% end %>
+        <input type="text" class="border-0" placeholder="Discover Amazon products to buy &amp; promote!" data-search="">
+        <a href="#" class="clear-search disabled mt-0"><i class="fa fa-times color-red-dark me-4"></i></a>
+      </div>
+    </div>
+  </div>
+  <div class="card-overlay bg-black opacity-70 rounded-0"></div>
+</div>
+
+<div class="d-flex px-3 mb-n3 mt-4">
+  <div class="align-self-center">
+    <h4 class="mb-0"><%= @categories[0][:category] %></h4>
+  </div>
+  <!--   <div class="align-self-center ms-auto">
+      <a href="#" class="btn btn-full btn-m font-900 text-uppercase rounded-sm shadow-l bg-green-dark">View All</a>
+    </div> -->
+</div>
+
+<div class="splide single-slider slider-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="double-slider-1a" style="visibility: visible;">
+  <div class="splide__track col-3" id="double-slider-1a-track">
+    <div class="splide__list" id="double-slider-1a-list" style="transform: translateX(-3630px);">
+      <% @categories[0][:data].each do |prod| %>
+
+        <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 726px;">
+          <a href="/products/<%= prod['asin'] %>" class="mx-1">
+            <div class="card card-style me-0 mb-0" style="background-image: url(<%= prod['image'] %>); height: 250px;" data-card-height="250">
+              <div class="card-top p-2">
+              </div>
+              <div class="card-bottom p-2 px-3">
+                <h3 class="color-white line-height-s"><%= truncate(prod['title'], length: 30) %></h3>
+                <div class="rounded-xl text-center pb-3">
+                  <% ratingRounded = prod['rating'].to_f.round %>
+                  <% outOfFive = 5 %>
+                  <% ratingRounded.times do %>
+                    <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <% end %>
+                  <% (outOfFive - ratingRounded).times do %>
+                    <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+                  <% end %>
+                </div>
+              </div>
+              <div class="card-overlay bg-gradient"></div>
+            </div>
+          </a>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <ul class="splide__pagination"><li><button class="splide__pagination__page" type="button" aria-controls="double-slider-1a-slide01 double-slider-1a-slide02" aria-label="Go to page 1"></button></li><li><button class="splide__pagination__page is-active" type="button" aria-controls="double-slider-1a-slide02 double-slider-1a-slide03" aria-label="Go to page 2" aria-current="true"></button></li></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="d-flex px-3 mb-2">
+  <div class="align-self-center">
+    <h4 class="mb-0">Product Highlight</h4>
+  </div>
+</div>
+<div class="card card-style" style="background-image: url(<%= @products[0][:data][rand(0..(@products[0][:data].count - 1))]['image'] %>); height: 260px;" data-card-height="260">
+  <div class="card-top p-3">
+    <a href="/products/<%= @products[0][:data][rand(0..(@products[0][:data].count - 1))]['asin'] %>" class="btn btn-s bg-white color-black rounded-s scale-box font-700 text-uppercase float-end">View</a>
+  </div>
+  <div class="card-bottom m-2">
+    <div class="d-block px-2 py-2 rounded-m">
+      <div class="pe-3">
+        <h1 class="color-white font-23 font-800 mb-0"><%= truncate(@products[0][:data][rand(0..(@products[0][:data].count - 1))]['title'], length: 30) %></h1>
+        <p class="color-white font-12 mb-0 line-height-s opacity-70"><%= @products[0][:category] %></p>
+      </div>
+    </div>
+  </div>
+  <div class="card-overlay bg-gradient opacity-80"></div>
+</div>
+
+<div class="d-flex px-3 mb-n3 mt-4">
+  <div class="align-self-center">
+    <h4 class="mb-0">Phone Protection</h4>
+  </div>
+  <div class="align-self-center ms-auto">
+    <a href="#" class="btn btn-full btn-m font-900 text-uppercase rounded-sm shadow-l bg-green-dark">View All</a>
+  </div>
+</div>
+
+
+<div class="splide double-slider slider-no-dots visible-slider splide--loop splide--ltr splide--draggable is-active" id="double-slider-134" style="visibility: visible;">
+  <div class="splide__track" id="double-slider-1a-track">
+    <div class="splide__list" id="double-slider-1a-list" style="transform: translateX(-3630px);">
+      <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 726px;">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/3m.jpg&quot;); height: 250px;" data-card-height="250">
+            <div class="card-top p-2">
+            </div>
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Forward Lunges</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div><div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 726px;">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/5m.jpg&quot;); height: 250px;" data-card-height="250">
+            <div class="card-top p-2">
+            </div>
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Sprint Training</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div><div class="splide__slide splide__slide--clone" style="width: 726px;">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/8m.jpg&quot;); height: 250px;" data-card-height="250">
+            <div class="card-top p-2">
+            </div>
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Resistance Band Squats</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div><div class="splide__slide splide__slide--clone" style="width: 726px;">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/3m.jpg&quot;); height: 250px;" data-card-height="250">
+            <div class="card-top p-2">
+            </div>
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Forward Lunges</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div><div class="splide__slide" id="double-slider-1a-slide01" aria-hidden="true" tabindex="-1" style="width: 726px;">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/5m.jpg&quot;); height: 250px;" data-card-height="250">
+            <div class="card-top p-2">
+            </div>
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Sprint Training</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div>
+      <div class="splide__slide is-visible is-active" id="double-slider-1a-slide02" aria-hidden="false" tabindex="0" style="width: 726px;">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/8m.jpg&quot;); height: 250px;" data-card-height="250">
+            <div class="card-top p-2">
+            </div>
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Resistance Band Squats</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div>
+      <div class="splide__slide is-visible" id="double-slider-1a-slide03" style="width: 726px;" aria-hidden="false" tabindex="0">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/3m.jpg&quot;); height: 250px;" data-card-height="250">
+            <div class="card-top p-2">
+            </div>
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Forward Lunges</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div>
+    <div class="splide__slide splide__slide--clone" style="width: 726px;">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/5m.jpg&quot;); height: 250px;" data-card-height="250">
+            <div class="card-top p-2">
+            </div>
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Sprint Training</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div><div class="splide__slide splide__slide--clone" style="width: 726px;">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/8m.jpg&quot;); height: 250px;" data-card-height="250">
+            <div class="card-top p-2">
+            </div>
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Resistance Band Squats</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div><div class="splide__slide splide__slide--clone" style="width: 726px;">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/3m.jpg&quot;); height: 250px;" data-card-height="250">
+            <div class="card-top p-2">
+            </div>
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Forward Lunges</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div>
+      <div class="splide__slide splide__slide--clone">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url('https://m.media-amazon.com/images/I/81M864YqZbL._AC_UL400_.jpg'); height: 250px;" data-card-height="250">
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Sprint Training</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+  <ul class="splide__pagination"><li><button class="splide__pagination__page" type="button" aria-controls="double-slider-1a-slide01 double-slider-1a-slide02" aria-label="Go to page 1"></button></li><li><button class="splide__pagination__page is-active" type="button" aria-controls="double-slider-1a-slide02 double-slider-1a-slide03" aria-label="Go to page 2" aria-current="true"></button></li></ul>
+</div>
+
+
+<div class="d-flex px-3 mb-n3 mt-4">
+  <div class="align-self-center">
+    <h4 class="mb-0">Phone Protection</h4>
+  </div>
+  <div class="align-self-center ms-auto">
+    <a href="#" class="btn btn-full btn-m font-900 text-uppercase rounded-sm shadow-l bg-green-dark">View All</a>
+  </div>
+</div>
+
+
+<div class="splide double-slider slider-no-dots visible-slider splide--loop splide--ltr splide--draggable is-active" id="double-slider-1we34" style="visibility: visible;">
+  <div class="splide__track" id="double-slider-1a-track">
+    <div class="splide__list" id="double-slider-1a-list" style="transform: translateX(-3630px);">
+      <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 726px;">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/3m.jpg&quot;); height: 250px;" data-card-height="250">
+            <div class="card-top p-2">
+            </div>
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Forward Lunges</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div><div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 726px;">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/5m.jpg&quot;); height: 250px;" data-card-height="250">
+            <div class="card-top p-2">
+            </div>
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Sprint Training</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div><div class="splide__slide splide__slide--clone" style="width: 726px;">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/8m.jpg&quot;); height: 250px;" data-card-height="250">
+            <div class="card-top p-2">
+            </div>
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Resistance Band Squats</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div><div class="splide__slide splide__slide--clone" style="width: 726px;">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/3m.jpg&quot;); height: 250px;" data-card-height="250">
+            <div class="card-top p-2">
+            </div>
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Forward Lunges</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div><div class="splide__slide" id="double-slider-1a-slide01" aria-hidden="true" tabindex="-1" style="width: 726px;">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/5m.jpg&quot;); height: 250px;" data-card-height="250">
+            <div class="card-top p-2">
+            </div>
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Sprint Training</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div>
+      <div class="splide__slide is-visible is-active" id="double-slider-1a-slide02" aria-hidden="false" tabindex="0" style="width: 726px;">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/8m.jpg&quot;); height: 250px;" data-card-height="250">
+            <div class="card-top p-2">
+            </div>
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Resistance Band Squats</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div>
+      <div class="splide__slide is-visible" id="double-slider-1a-slide03" style="width: 726px;" aria-hidden="false" tabindex="0">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/3m.jpg&quot;); height: 250px;" data-card-height="250">
+            <div class="card-top p-2">
+            </div>
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Forward Lunges</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div>
+    <div class="splide__slide splide__slide--clone" style="width: 726px;">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/5m.jpg&quot;); height: 250px;" data-card-height="250">
+            <div class="card-top p-2">
+            </div>
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Sprint Training</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div><div class="splide__slide splide__slide--clone" style="width: 726px;">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/8m.jpg&quot;); height: 250px;" data-card-height="250">
+            <div class="card-top p-2">
+            </div>
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Resistance Band Squats</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div><div class="splide__slide splide__slide--clone" style="width: 726px;">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/3m.jpg&quot;); height: 250px;" data-card-height="250">
+            <div class="card-top p-2">
+            </div>
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Forward Lunges</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div>
+      <div class="splide__slide splide__slide--clone">
+        <a href="#" class="mx-3">
+          <div class="card card-style me-0 mb-0" style="background-image: url('https://m.media-amazon.com/images/I/81M864YqZbL._AC_UL400_.jpg'); height: 250px;" data-card-height="250">
+            <div class="card-bottom p-2 px-3">
+              <h3 class="color-white line-height-s">Sprint Training</h3>
+              <div class="rounded-xl text-center pb-3">
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                  <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+              </div>
+            </div>
+            <div class="card-overlay bg-gradient"></div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+  <ul class="splide__pagination"><li><button class="splide__pagination__page" type="button" aria-controls="double-slider-1a-slide01 double-slider-1a-slide02" aria-label="Go to page 1"></button></li><li><button class="splide__pagination__page is-active" type="button" aria-controls="double-slider-1a-slide02 double-slider-1a-slide03" aria-label="Go to page 2" aria-current="true"></button></li></ul>
+</div>
+
+
+<div class="d-flex px-3 mb-2">
+  <div class="align-self-center">
+    <h4 class="mb-0">Product Highlight</h4>
+  </div>
+  <div class="align-self-center ms-auto">
+    <a href="#" class="btn btn-full btn-m font-900 text-uppercase rounded-sm shadow-l bg-green-dark">View All</a>
+  </div>
+</div>
+
+<div class="card card-style" style="background-image: url('https://m.media-amazon.com/images/I/61i92FEieUL._AC_UL400_.jpg'); height: 260px;" data-card-height="260">
+  <div class="card-top no-click p-2 m-1">
+    <p class="color-white mb-0 mt-n2 font-9 line-height-xs">
+      1 Hour, 20 Minutes
+    </p>
+  </div>
+  <div class="card-top p-3">
+    <a href="#" class="btn btn-s bg-white color-black rounded-s scale-box font-700 text-uppercase float-end">Start Now</a>
+  </div>
+  <div class="card-bottom m-2">
+    <div class="d-block px-2 py-2 rounded-m">
+      <div class="pe-3">
+        <h1 class="color-white font-23 font-800 mb-0">Train like a Pro</h1>
+        <p class="color-white font-12 mb-0 line-height-s opacity-70">Heavy lifting followed by a grueling cardio session.</p>
+      </div>
+    </div>
+  </div>
+  <div class="card-overlay bg-gradient opacity-80"></div>
+</div>
+
+<div class="page-content header-clear-medium">
+        
+        <div class="card card-style">
+            <div class="content">
+                <h3>Asymetric Gallery</h3>
+                <p>
+                    A gorgeous design for a Portfolio Template for Photographers. Using the powerful Bootstrap Grid to create an incredibly powerful and creative gallery.
+                </p>
+            </div>
+        </div>
+
+        
+        <div class="content">
+            <div class="row mb-0">
+                            
+                <!-- First Set-->
+                <div class="col-6">
+                    <a class="card mx-0 mb-2 card-style external-link" data-card-height="130" data-gallery="gallery-b" href="images/pictures/13l.jpg" style="background-image:url(images/pictures/13.jpg)"></a>
+                    <a class="card mx-0 mb-2 card-style external-link" data-card-height="130" data-gallery="gallery-b" href="images/pictures/28l.jpg" style="background-image:url(images/pictures/28.jpg)"></a>
+                </div>    
+                <div class="col-6 ">
+                    <a class="card mx-0 mb-3 card-style external-link" data-card-height="270" data-gallery="gallery-b" href="images/pictures/11l.jpg" style="background-image:url(images/pictures/11.jpg)">
+                        <div class="card-bottom">
+                            <div class="rounded-xl text-center pb-3">
+                                <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                                <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                                <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                                <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                                <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+                            </div>
+                            <div class="rounded-xl text-center pb-3">
+                              <span class="badge bg-green-dark px-2 py-2 font-10">Same Day Shipping</i></span>
+                              <span class="badge bg-green-dark px-2 py-2 font-10">PRIME</span>
+                            </div>
+                            <p class="color-white text-center opacity-50 pb-3">
+                              APPLE
+                            </p>
+                        </div>
+                        <div class="card-overlay bg-gradient"></div>
+                    </a>
+                </div>    
+                
+                <!-- Second Set-->
+                <div class="col-6 ">
+                    <a class="card mx-0 mb-3 card-style external-link" data-card-height="270" data-gallery="gallery-b" href="images/pictures/11l.jpg" style="background-image:url(images/pictures/11.jpg)">
+                        <div class="card-bottom">
+                            <div class="rounded-xl text-center pb-3">
+                                <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                                <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                                <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                                <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                                <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+                            </div>
+                            <div class="rounded-xl text-center pb-3">
+                              <span class="badge bg-green-dark px-2 py-2 font-10">Same Day Shipping</i></span>
+                              <span class="badge bg-green-dark px-2 py-2 font-10">PRIME</span>
+                            </div>
+                            <p class="color-white text-center opacity-50 pb-3">
+                              SONY
+                            </p>
+                        </div>
+                        <div class="card-overlay bg-gradient"></div>
+                    </a>
+                </div>    
+                <div class="col-6">
+                    <a class="card mx-0 mb-2 card-style external-link" data-card-height="95" data-gallery="gallery-b" href="images/pictures/18l.jpg" style="background-image:url(images/pictures/18.jpg)"></a>
+                    <a class="card mx-0 mb-2 card-style external-link" data-card-height="95" data-gallery="gallery-b" href="images/pictures/20l.jpg" style="background-image:url(images/pictures/20.jpg)"></a>
+                    <a class="card mx-0 mb-2 card-style external-link" data-card-height="95" data-gallery="gallery-b" href="images/pictures/21l.jpg" style="background-image:url(images/pictures/21.jpg)"></a>
+                </div>   
+
+                <div class="col-6">
+                    <a class="card mx-0 mb-2 card-style external-link" data-card-height="95" data-gallery="gallery-b" href="images/pictures/18l.jpg" style="background-image:url(images/pictures/18.jpg)"></a>
+                    <a class="card mx-0 mb-2 card-style external-link" data-card-height="95" data-gallery="gallery-b" href="images/pictures/20l.jpg" style="background-image:url(images/pictures/20.jpg)"></a>
+                    <a class="card mx-0 mb-2 card-style external-link" data-card-height="95" data-gallery="gallery-b" href="images/pictures/21l.jpg" style="background-image:url(images/pictures/21.jpg)"></a>
+                </div>
+                <div class="col-6 ">
+                    <a class="card mx-0 mb-3 card-style external-link" data-card-height="270" data-gallery="gallery-b" href="images/pictures/11l.jpg" style="background-image:url(images/pictures/11.jpg)">
+                        <div class="card-bottom">
+                            <div class="rounded-xl text-center pb-3">
+                                <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                                <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                                <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                                <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                                <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                            </div>
+                            <div class="rounded-xl text-center pb-3">
+                              <span class="badge bg-green-dark px-2 py-2 font-10">Same Day Shipping</i></span>
+                              <span class="badge bg-green-dark px-2 py-2 font-10">PRIME</span>
+                            </div>
+                            <p class="color-white text-center opacity-50 pb-3">
+                              OTTER BOX
+                            </p>
+                        </div>
+                        <div class="card-overlay bg-gradient"></div>
+                    </a>
+                </div>    
+                
+                <!-- Second Set-->
+                <div class="col-6 ">
+                    <a class="card mx-0 mb-3 card-style external-link" data-card-height="270" data-gallery="gallery-b" href="images/pictures/11l.jpg" style="background-image:url(images/pictures/11.jpg)">
+                        <div class="card-bottom">
+                            <div class="rounded-xl text-center pb-3">
+                                <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                                <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                                <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                                <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+                                <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+                            </div>
+                            <div class="rounded-xl text-center pb-3">
+                              <span class="badge bg-green-dark px-2 py-2 font-10">Same Day Shipping</i></span>
+                              <span class="badge bg-green-dark px-2 py-2 font-10">PRIME</span>
+                            </div>
+                            <p class="color-white text-center opacity-50 pb-3">
+                              LEVI
+                            </p>
+                        </div>
+                        <div class="card-overlay bg-gradient"></div>
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a class="card mx-0 mb-2 card-style external-link" data-card-height="130" data-gallery="gallery-b" href="images/pictures/13l.jpg" style="background-image:url(images/pictures/13.jpg)"></a>
+                    <a class="card mx-0 mb-2 card-style external-link" data-card-height="130" data-gallery="gallery-b" href="images/pictures/28l.jpg" style="background-image:url(images/pictures/28.jpg)"></a>
+                </div>   
+                   
+            </div>
+        </div>
+
+
+        
+
+    </div>
+    <!-- End of Page Content--> 
+    <!-- All Menus, Action Sheets, Modals, Notifications, Toasts, Snackbars get Placed outside the <div class="page-content"> -->
+    
+    <div id="menu-schedule" class="menu menu-box-modal menu-box-detached rounded-m" data-menu-height="368" data-menu-width="330">
+        <div class="menu-title"><h1>Book a Photoshoot</h1><a href="#" class="close-menu mt-n2"><i class="fa fa-times font-16"></i></a></div>
+
+        <div class="divider divider-margins mt-3"></div>
+        
+        <div class="content">
+            <div class="input-style input-style-2 has-icon input-required">
+                <i class="input-icon fa fa-user"></i>
+                <span class="color-highlight input-style-1-active">Name</span>
+                <em>(required)</em>
+                <input class="form-control" type="name" placeholder="Jack Sir">
+            </div> 
+            <div class="input-style input-style-2 has-icon input-required">
+                <i class="input-icon fa fa-phone"></i>
+                <span class="color-highlight input-style-1-active">Phone</span>
+                <em>(required)</em>
+                <input class="form-control" type="tel" placeholder="+1 234 567 8097">
+            </div> 
+            <div class="input-style input-style-2 has-icon input-required">
+                <i class="input-icon fa fa-calendar"></i>
+                <span class="color-highlight input-style-1-active">Date</span>
+                <em>(required)</em>
+                <input class="form-control" type="date" placeholder="">
+            </div> 
+            <a href="#" class="close-menu btn btn-m text-uppercase font-700 btn-full bg-highlight rounded-sm mt-4">Call me for Booking</a>
+        </div>
+    </div>

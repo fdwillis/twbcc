@@ -1,0 +1,36 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Trending Products</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Country</th>
+      <th>Tags</th>
+      <th>Asin</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @products.each do |product| %>
+      <tr>
+        <td><%= product.country %></td>
+        <td><%= product.tags %></td>
+        <td><%= product.asin %></td>
+        <td><%= link_to 'Show', product %></td>
+        <% if current_user&.admin? %>
+          <td><%= link_to 'Edit', edit_product_path(product) %></td>
+          <td><%= link_to 'Destroy', product, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <% end %>
+          <td><%= link_to 'Add To Wishlist', wishlist_path(id: product.asin), method: :post, data: { confirm: 'Add this to your wishlist?' } %></td>
+          <td><%= link_to 'Add To Tracking', tracking_path(id: product.asin), method: :post, data: { confirm: 'Add this to your tracking?' } %></td>
+        <td><%= current_user&.present? ? "https://www.#{User::ACCEPTEDcountries[product.country][:site]}/gp/product/#{product.asin}?&tag=#{current_user.amazonUUID}" : params['referredBy'].present? ? "https://www.#{User::ACCEPTEDcountries[product.country][:site]}/gp/product/#{product.asin}?&tag=#{User.find_by(uuid: params['referredBy']).amazonUUID}" : "https://www.#{User::ACCEPTEDcountries[product.country][:site]}/gp/product/#{product.asin}?&tag=netwerthcard-20" %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Product', new_product_path %>

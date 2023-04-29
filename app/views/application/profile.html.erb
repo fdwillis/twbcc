@@ -1,0 +1,49 @@
+<% if current_user %>
+	<div class="card card-style bg-20" data-card-height="300" style="height: 300px;">
+		<div class="card-center p-3">
+		    <h1 class="color-white">Your Profile</h1>
+		</div>
+		<div class="card-top p-3">
+		    <span class="badge bg-blue-dark color-white p-2 float-end">Member</span>
+		    <% if @itemsDue.count == 0 %>
+			    <span class="badge bg-blue-dark color-white p-2 float-end">Affiliate Eligible</span>
+			<% end %>
+		</div>
+		<div class="card-bottom m-3">
+	    <h5 class="color-white float-start">Completion Progress</h5>
+			<% if @itemsDue.count == 1 %>
+				<h5 class="color-white float-end">80% Complete</h5>
+		    <div class="clearfix"></div>
+		    <div class="progress mt-2" style="height:2px;">
+		        <div class="progress-bar border-0 bg-red-dark text-start ps-2" role="progressbar" style="width: 95%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
+		        </div>
+		    </div>
+			<% elsif @itemsDue.count > 1 %>
+				<h5 class="color-white float-end">65% Complete</h5>
+		    <div class="clearfix"></div>
+		    <div class="progress mt-2" style="height:2px;">
+		        <div class="progress-bar border-0 bg-red-dark text-start ps-2" role="progressbar" style="width: 65%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
+		        </div>
+		    </div>
+		    <% else %>
+			    <h5 class="color-white float-end">100% Complete </h5>
+			    <div class="clearfix"></div>
+			    <div class="progress mt-2" style="height:2px;">
+			        <div class="progress-bar border-0 bg-red-dark text-start ps-2" role="progressbar" style="width: 100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
+			        </div>
+			    </div>
+			<% end %>  
+		</div>
+		<div class="card-overlay bg-black opacity-70"></div>
+	</div>
+	<% if @itemsDue.count == 1 %>
+	<% elsif @itemsDue.count > 1 %>
+		<div class="align-self-center ms-auto">
+			Finish Account Setup (Currently Due Items: <%= @itemsDue.count %>)
+		  <a href="<%= @stripeAccountUpdate['url'] %>" target='_blank' class="btn btn-full btn-m font-900 text-uppercase rounded-sm shadow-l bg-green-dark">Complete Setup</a>
+		</div>
+	<% end %>
+<% else%>
+	<%= @profile %>
+	<%= Stripe::Customer.retrieve(@profile.stripeCustomerID) %>
+<% end %>

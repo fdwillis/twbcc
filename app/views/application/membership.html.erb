@@ -1,0 +1,194 @@
+
+
+<% freeMembership = Stripe::Price.retrieve(ENV['freeMembership']) %>
+<% affiliateMonthly = Stripe::Price.retrieve(ENV['affiliateMonthly']) %>
+<% affiliateAnnual = Stripe::Price.retrieve(ENV['affiliateAnnual']) %>
+<% businessMonthly = Stripe::Price.retrieve(ENV['businessMonthly']) %>
+<% businessAnnual = Stripe::Price.retrieve(ENV['businessAnnual']) %>
+<% automationMonthly = Stripe::Price.retrieve(ENV['automationMonthly']) %>
+<% automationAnnual = Stripe::Price.retrieve(ENV['automationAnnual']) %>
+
+<div class="row">
+    <div class="mx-auto card card-style" style="max-width:700px!important;">
+        <div class="content">
+            <div class="d-flex mb-3">
+                <div>
+                    <h1>Unlimited Tranfers</h1>
+                </div>
+                <div class="ms-auto text-end">
+                    <h1><%= number_to_currency(freeMembership['unit_amount'] * 0.01, precision: 2) %></h1>
+                    <p class="mt-0 font-10">One Time</p>
+                </div>
+            </div>
+            <div class="list-group list-custom-small">
+              <% freeMembership['metadata'].each do |point| %>
+                  <a href="#">
+                      <i class="fa color-theme fa-check opacity-50"></i>
+                      <span><%= point[0] %></span>:
+                      <span><%= point[1] %></span>
+                  </a>
+              <% end %>
+                
+            </div>
+            <a href="<%= @freeMembership['url'] %>" class="btn btn-full btn-sm rounded-sm text-uppercase font-700 mt-3 bg-highlight">join now</a>
+            <br>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="mx-auto card card-style" style="max-width:700px!important;">
+        <div class="content">
+            <div class="d-flex mb-3">
+                <div>
+                    <h1>Monthly Affiliate <%= Stripe::Product.retrieve(affiliateMonthly['product'])['name'] %></h1>
+                </div>
+                <div class="ms-auto text-end">
+                    <h1><%= number_to_currency(affiliateMonthly['unit_amount'] * 0.01, precision: 2) %></h1>
+                    <p class="mt-0 font-10">per <%= affiliateMonthly['recurring']['interval'] %></p>
+                </div>
+            </div>
+            <div class="list-group list-custom-small">
+              <% affiliateMonthly['metadata'].each do |point| %>
+                  <a href="#">
+                      <i class="fa color-theme fa-check opacity-50"></i>
+                      <span><%= point[0] %></span>:
+                      <span><%= point[1] %></span>
+                  </a>
+              <% end %>
+                
+            </div>
+            <a href="<%= @affiliateMonthly['url'] %>" class="btn btn-full btn-sm rounded-sm text-uppercase font-700 mt-3 bg-highlight">join now</a>
+            <br>
+        </div>
+    </div>
+    <div class="mx-auto card card-style" style="max-width:700px!important;">
+        <div class="content">
+            <div class="d-flex mb-3">
+                <div>
+                    <h1>Annual Affiliate <%= Stripe::Product.retrieve(affiliateAnnual['product'])['name'] %></h1>
+                </div>
+                <div class="ms-auto text-end">
+                    <h1><%= number_to_currency(affiliateAnnual['unit_amount'] * 0.01, precision: 2) %></h1>
+                    <p class="mt-0 font-10">per <%= affiliateAnnual['recurring']['interval'] %></p>
+                </div>
+            </div>
+            <div class="list-group list-custom-small">
+              <% affiliateAnnual['metadata'].each do |point| %>
+                  <a href="#">
+                      <i class="fa color-theme fa-check opacity-50"></i>
+                      <span><%= point[0] %></span>:
+                      <span><%= point[1] %></span>
+                  </a>
+              <% end %>
+                
+            </div>
+            <a href="<%= @affiliateAnnual['url'] %>" class="btn btn-full btn-sm rounded-sm text-uppercase font-700 mt-3 bg-highlight">join now</a>
+            <br>
+        </div>
+    </div>
+    <div class="mx-auto card card-style" style="max-width:700px!important;">
+        <div class="content">
+            <div class="d-flex mb-3">
+                <div>
+                    <h1>Monthly Business <%= Stripe::Product.retrieve(businessMonthly['product'])['name'] %></h1>
+                </div>
+                <div class="ms-auto text-end">
+                    <h1><%= number_to_currency(businessMonthly['unit_amount'] * 0.01, precision: 2) %></h1>
+                    <p class="mt-0 font-10">per <%= businessMonthly['recurring']['interval'] %></p>
+                </div>
+            </div>
+            <div class="list-group list-custom-small">
+              <% businessMonthly['metadata'].each do |point| %>
+                  <a href="#">
+                      <i class="fa color-theme fa-check opacity-50"></i>
+                      <span><%= point[0] %></span>:
+                      <span><%= point[1] %></span>
+                  </a>
+              <% end %>
+                
+            </div>
+            <a href="<%= @businessMonthly['url'] %>" class="btn btn-full btn-sm rounded-sm text-uppercase font-700 mt-3 bg-highlight">join now</a>
+            <br>
+        </div>
+    </div>
+    <div class="mx-auto card card-style" style="max-width:700px!important;">
+        <div class="content">
+            <div class="d-flex mb-3">
+                <div>
+                    <h1>Annual Business <%= Stripe::Product.retrieve(businessAnnual['product'])['name'] %></h1>
+                </div>
+                <div class="ms-auto text-end">
+                    <h1><%= number_to_currency(businessAnnual['unit_amount'] * 0.01, precision: 2) %></h1>
+                    <p class="mt-0 font-10">per <%= businessAnnual['recurring']['interval'] %></p>
+                </div>
+            </div>
+            <div class="list-group list-custom-small">
+              <% businessAnnual['metadata'].each do |point| %>
+                  <a href="#">
+                      <i class="fa color-theme fa-check opacity-50"></i>
+                      <span><%= point[0] %></span>:
+                      <span><%= point[1] %></span>
+                  </a>
+              <% end %>
+                
+            </div>
+            <a href="<%= @businessAnnual['url'] %>" class="btn btn-full btn-sm rounded-sm text-uppercase font-700 mt-3 bg-highlight">join now</a>
+            <br>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="mx-auto card card-style" style="max-width:700px!important;">
+        <div class="content">
+            <div class="d-flex mb-3">
+                <div>
+                    <h1>Monthly Automation <%= Stripe::Product.retrieve(automationMonthly['product'])['name'] %></h1>
+                </div>
+                <div class="ms-auto text-end">
+                    <h1><%= number_to_currency(automationMonthly['unit_amount'] * 0.01, precision: 2) %></h1>
+                    <p class="mt-0 font-10">per <%= automationMonthly['recurring']['interval'] %></p>
+                </div>
+            </div>
+            <div class="list-group list-custom-small">
+              <% automationMonthly['metadata'].each do |point| %>
+                  <a href="#">
+                      <i class="fa color-theme fa-check opacity-50"></i>
+                      <span><%= point[0] %></span>:
+                      <span><%= point[1] %></span>
+                  </a>
+              <% end %>
+                
+            </div>
+            <a href="<%= @automationMonthly['url'] %>" class="btn btn-full btn-sm rounded-sm text-uppercase font-700 mt-3 bg-highlight">join now</a>
+            <br>
+        </div>
+    </div>
+    <div class="mx-auto card card-style" style="max-width:700px!important;">
+        <div class="content">
+            <div class="d-flex mb-3">
+                <div>
+                    <h1>Annual Automation <%= Stripe::Product.retrieve(automationAnnual['product'])['name'] %></h1>
+                </div>
+                <div class="ms-auto text-end">
+                    <h1><%= number_to_currency(automationAnnual['unit_amount'] * 0.01, precision: 2) %></h1>
+                    <p class="mt-0 font-10">per <%= automationAnnual['recurring']['interval'] %></p>
+                </div>
+            </div>
+            <div class="list-group list-custom-small">
+              <% automationAnnual['metadata'].each do |point| %>
+                  <a href="#">
+                      <i class="fa color-theme fa-check opacity-50"></i>
+                      <span><%= point[0] %></span>:
+                      <span><%= point[1] %></span>
+                  </a>
+              <% end %>
+                
+            </div>
+            <a href="<%= @automationAnnual['url'] %>" class="btn btn-full btn-sm rounded-sm text-uppercase font-700 mt-3 bg-highlight">join now</a>
+            <br>
+        </div>
+    </div>
+</div>
+

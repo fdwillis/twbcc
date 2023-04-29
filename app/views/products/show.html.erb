@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Country:</strong>
+  <%= @product.country %>
+</p>
+
+<p>
+  <strong>Tags:</strong>
+  <%= @product.tags %>
+</p>
+
+<p>
+  <strong>Asin:</strong>
+  <%= @product.asin %>
+</p>
+
+<%= link_to 'Edit', edit_product_path(@product) %> |
+<%= link_to 'Back', products_path %>

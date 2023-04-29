@@ -1,0 +1,33 @@
+<p id="notice"><%= notice %></p>
+<!-- secret shop on each blog post with customer average rating & rating count of a random product from the list associated, and showing the rest in the product wheel below -->
+<p>
+  <strong>Title:</strong>
+  <%= @blog.title %>
+</p>
+
+<p>
+  <strong>Body:</strong>
+  <%= @blog.body %>
+</p>
+
+<p>
+  <strong>Asins:</strong>
+  <%= @blog.asins %>
+</p>
+
+<p>
+  <strong>Users:</strong>
+  <%= @blog.user_id %>
+</p>
+
+<p>
+  <strong>Images:</strong>
+  <%= @blog.images %>
+</p>
+<p>
+  <strong>Tags:</strong>
+  <%= @blog.tags %>
+</p>
+
+<%= link_to 'Edit', edit_blog_path(@blog) %> |
+<%= link_to 'Back', blogs_path %>
