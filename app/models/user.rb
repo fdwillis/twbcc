@@ -109,6 +109,10 @@ class User < ApplicationRecord
     },
   }
 
+  AFFILIATEmembership = [ENV['affiliateMonthly'],ENV['affiliateAnnual']] 
+  BUSINESSmembership = [ENV['businessMonthly'], ENV['businessAnnual']] 
+  AUTOMATIONmembership = [ENV['automationMonthly'], ENV['automationAnnual']] 
+
   def media(options = {})
     embed(@url, options)
   end
@@ -219,6 +223,22 @@ class User < ApplicationRecord
       # 'otter box'
     ].shuffle.take(1)
     approvedProducts.map(&:titleize)
+  end
+
+  def checkMembership
+    membershipValid = []
+    membershipPlans = [ENV['affiliateMonthly'], ENV['affiliateAnnual'], ENV['businessMonthly'], ENV['businessAnnual'], ENV['automationMonthly'], ENV['automationAnnual']]
+    allSubscriptions = Stripe::Subscription.list({customer: stripeCustomerID})['data'].map(&:plan).map(&:id)
+    
+    membershipPlans.each do |planID|
+      if allSubscriptions.include?(planID)
+        membershipPlan = Stripe::Subscription.list({customer: stripeCustomerID, price: planID})
+        membershipType = AFFILIATEmembership.include?(planID) ? 'affiliate' : BUSINESSmembership.include?(planID) ? 'business': AUTOMATIONmembership.include?(planID) ? 'automation': nil
+        membershipValid << {membershipDetails: membershipPlan['data'][0]['items']['data'][0]['plan']}.merge({membershipType: membershipType})
+      end
+    end
+
+    membershipValid[0]
   end
 
   def customer?

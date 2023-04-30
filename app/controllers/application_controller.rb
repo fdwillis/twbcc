@@ -157,7 +157,10 @@ class ApplicationController < ActionController::Base
 
 
 	def profile
+		@profile = current_user.present? ? {stripeCustomer: Stripe::Customer.retrieve(current_user.stripeCustomerID), membershipInfo: current_user.checkMembership} : {stripeCustomer: Stripe::Customer.retrieve(User.find_by(uuid: params['id']).stripeCustomerID), membershipInfo:  User.find_by(uuid: params['id']).checkMembership}
+		
 		if current_user
+			validMembership = current_user.checkMembership
 			@stripeAccountUpdate = Stripe::AccountLink.create(
 			  {
 			    account: Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['connectAccount'],
@@ -168,9 +171,6 @@ class ApplicationController < ActionController::Base
 			)
 
 			@itemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due']
-		else
-			#public visitor
-			@profile = User.find_by(uuid: params['id'])
 		end
 	end
 

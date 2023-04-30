@@ -45,5 +45,4 @@
 	<% end %>
 <% else%>
 	<%= @profile %>
-	<%= Stripe::Customer.retrieve(@profile.stripeCustomerID) %>
 <% end %>

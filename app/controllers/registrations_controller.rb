@@ -169,6 +169,14 @@ class RegistrationsController < ApplicationController
 	      if setSessionVarParams['referredBy'].present? && loadedAffililate.amazonCountry == 'US'
 	      	firstCustomerCharge = Stripe::Charge.list({limit: 1})['data'][0]
 	      	affiliateAccount = Stripe::Customer.retrieve(loadedAffililate.stripeCustomerID)['metadata']['connectAccount']
+	      	
+
+
+	      	
+	      	#only pay if affiliate is active on current membership
+
+
+
 	      	commission = (firstCustomerCharge['amount'].to_i*0.30).to_i
 	      	if Stripe::Account.retrieve(affiliateAccount)['capabilities']['transfers'] == 'active'
 		      	Stripe::Transfer.create({

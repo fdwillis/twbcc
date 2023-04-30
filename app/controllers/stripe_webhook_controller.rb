@@ -4,9 +4,13 @@ class StripeWebhooksController < ApplicationController
     event = params['stripe_webhook']['type']
     stripeObject = params['data']['object']
 
-    if event == 'checkout.session.completed'
-      #update referredBy from custom field onto the stripe customer ID
-      #mark payment as split between affiliate if referredBy is present
+    if event == 'invoice.paid'
+      #pay affiliate -> if affilaite active & current
+      #restore access membership | addons
+    elsif event == 'invoice.payment_failed'
+      #remove access membership | addons
+    elsif event == 'charge.succeeded' #connect account makes sale
+      # take 2% application fee
     end
   end
 end

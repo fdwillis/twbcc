@@ -13,7 +13,8 @@
         <div class="content">
             <div class="d-flex mb-3">
                 <div>
-                    <h1>Unlimited Tranfers</h1>
+                    <h1>Free</h1>
+                    <p class="mt-n3 font-12 color-highlight">You Will Not Be Charged</p>
                 </div>
                 <div class="ms-auto text-end">
                     <h1><%= number_to_currency(freeMembership['unit_amount'] * 0.01, precision: 2) %></h1>
@@ -41,7 +42,8 @@
         <div class="content">
             <div class="d-flex mb-3">
                 <div>
-                    <h1>Monthly Affiliate <%= Stripe::Product.retrieve(affiliateMonthly['product'])['name'] %></h1>
+                    <h1>Monthly Affiliate </h1>
+                    <p class="mt-n3 font-12 color-highlight">Great for affiliates &amp; influencers</p>
                 </div>
                 <div class="ms-auto text-end">
                     <h1><%= number_to_currency(affiliateMonthly['unit_amount'] * 0.01, precision: 2) %></h1>
@@ -66,7 +68,8 @@
         <div class="content">
             <div class="d-flex mb-3">
                 <div>
-                    <h1>Annual Affiliate <%= Stripe::Product.retrieve(affiliateAnnual['product'])['name'] %></h1>
+                    <h1>Annual Affiliate </h1>
+                    <p class="mt-n3 font-12 color-highlight">Great for affiliates &amp; influencers</p>
                 </div>
                 <div class="ms-auto text-end">
                     <h1><%= number_to_currency(affiliateAnnual['unit_amount'] * 0.01, precision: 2) %></h1>
@@ -91,7 +94,8 @@
         <div class="content">
             <div class="d-flex mb-3">
                 <div>
-                    <h1>Monthly Business <%= Stripe::Product.retrieve(businessMonthly['product'])['name'] %></h1>
+                    <h1>Monthly Business </h1>
+                    <p class="mt-n3 font-12 color-highlight">Great for those with a brand or product</p>
                 </div>
                 <div class="ms-auto text-end">
                     <h1><%= number_to_currency(businessMonthly['unit_amount'] * 0.01, precision: 2) %></h1>
@@ -116,7 +120,8 @@
         <div class="content">
             <div class="d-flex mb-3">
                 <div>
-                    <h1>Annual Business <%= Stripe::Product.retrieve(businessAnnual['product'])['name'] %></h1>
+                    <h1>Annual Business </h1>
+                    <p class="mt-n3 font-12 color-highlight">Great for those with a brand or product</p>
                 </div>
                 <div class="ms-auto text-end">
                     <h1><%= number_to_currency(businessAnnual['unit_amount'] * 0.01, precision: 2) %></h1>
@@ -144,7 +149,8 @@
         <div class="content">
             <div class="d-flex mb-3">
                 <div>
-                    <h1>Monthly Automation <%= Stripe::Product.retrieve(automationMonthly['product'])['name'] %></h1>
+                    <h1>Monthly Automation </h1>
+                    <p class="mt-n3 font-12 color-highlight">Great for those who want to scale</p>
                 </div>
                 <div class="ms-auto text-end">
                     <h1><%= number_to_currency(automationMonthly['unit_amount'] * 0.01, precision: 2) %></h1>
@@ -169,7 +175,8 @@
         <div class="content">
             <div class="d-flex mb-3">
                 <div>
-                    <h1>Annual Automation <%= Stripe::Product.retrieve(automationAnnual['product'])['name'] %></h1>
+                    <h1>Annual Automation </h1>
+                    <p class="mt-n3 font-12 color-highlight">Great for those who want to scale</p>
                 </div>
                 <div class="ms-auto text-end">
                     <h1><%= number_to_currency(automationAnnual['unit_amount'] * 0.01, precision: 2) %></h1>
