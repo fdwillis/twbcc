@@ -1,12 +1,12 @@
 <% if current_user %>
-	<div class="card card-style bg-20" data-card-height="300" style="height: 300px;">
+	<div class="card card-style" data-card-height="300" style="height: 300px;">
 		<div class="card-center p-3">
 		    <h1 class="color-white">Your Profile</h1>
 		</div>
 		<div class="card-top p-3">
-		    <span class="badge bg-blue-dark color-white p-2 float-end">Member</span>
+		    <span class="badge bg-blue-dark color-white p-2 float-end m-2">Member</span>
 		    <% if @itemsDue.count == 0 %>
-			    <span class="badge bg-blue-dark color-white p-2 float-end">Affiliate Eligible</span>
+			    <span class="badge bg-blue-dark color-white p-2 float-end m-2">Affiliate Eligible</span>
 			<% end %>
 		</div>
 		<div class="card-bottom m-3">
@@ -36,6 +36,33 @@
 		</div>
 		<div class="card-overlay bg-black opacity-70"></div>
 	</div>
+	<% currentMembersip = @current_user.checkMembership %>
+	<div class="card card-style">
+    <h1 class="p-3">Membership Details <span class="badge bg-green-dark color-white p-2 float-end"><%= currentMembersip[:membershipDetails]['active'] == true ? 'ACTIVE' : currentMembersip[:membershipDetails] %></span></h1>
+		<div class="content row">
+      <div class="col-7">
+          <h5 class="font-600 opacity-80">Level</h5>
+      </div>
+      <div class="col-5">
+          <h5><%= currentMembersip[:membershipType].titleize %></h5>
+      </div>
+      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
+      <div class="col-7">
+          <h5 class="font-600 opacity-80">Cost</h5>
+      </div>
+      <div class="col-5">
+          <h5 class="font-600 opacity-80"><%= number_to_currency(currentMembersip[:membershipDetails]['amount'].to_i * 0.01, precision: 2)%></h5>
+      </div>
+      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
+      <div class="col-7">
+          <h5 class="font-600 opacity-80">Interval</h5>
+      </div>
+      <div class="col-5">
+          <h5>Every <%= currentMembersip[:membershipDetails]['interval'].titleize %></h5>
+      </div>
+      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
+	  </div>
+	</div>
 	<% if @itemsDue.count == 1 %>
 	<% elsif @itemsDue.count > 1 %>
 		<div class="align-self-center ms-auto">
@@ -44,5 +71,7 @@
 		</div>
 	<% end %>
 <% else%>
+	<%= @loadedLink %>
 	<%= @profile %>
+	<%= @userFound.checkMembership %>
 <% end %>

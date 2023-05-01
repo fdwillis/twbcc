@@ -157,8 +157,10 @@ class ApplicationController < ActionController::Base
 
 
 	def profile
-		@profile = current_user.present? ? {stripeCustomer: Stripe::Customer.retrieve(current_user.stripeCustomerID), membershipInfo: current_user.checkMembership} : {stripeCustomer: Stripe::Customer.retrieve(User.find_by(uuid: params['id']).stripeCustomerID), membershipInfo:  User.find_by(uuid: params['id']).checkMembership}
-		
+		@userFound = current_user.present? ? current_user : User.find_by(uuid: params['id'])
+		@profile = Stripe::Customer.retrieve(@userFound.stripeCustomerID)
+		@membershipDetails = @userFound.checkMembership
+
 		if current_user
 			validMembership = current_user.checkMembership
 			@stripeAccountUpdate = Stripe::AccountLink.create(
@@ -172,6 +174,33 @@ class ApplicationController < ActionController::Base
 
 			@itemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due']
 		end
+
+		if @membershipDetails[:membershipDetails][:active]	
+			#split traffic 95/5
+			case true
+			when @profile[:membershipType] == 'automation'#or has addon for specific traffic
+				@loadedLink = ab_test(:amazonLink, {'member' => 95}, {'admin' => 5})
+			when @profile[:membershipType] == 'business'#or has addon for specific traffic
+				@loadedLink = ab_test(:amazonLink, {'member' => 80}, {'admin' => 20})
+			when @profile[:membershipType] == 'affiliate'#or has addon for specific traffic
+				@loadedLink = ab_test(:amazonLink, {'member' => 60}, {'admin' => 40})
+			when @profile[:membershipType] == 'free'#or has addon for specific traffic
+				@loadedLink = ab_test(:amazonLink, {'member' => 50}, {'admin' => 50})
+			end
+		  
+		  #custom profile if active
+		  if @membershipDetails[:membershipType] == 'automation' && !current_user
+		  	fileToFind = ("app/views/automation/#{@userFound.uuid}.html.erb")
+		  	
+		  	if customFile = File.exist?(fileToFind)
+		  		render "automation/#{@userFound.uuid}"
+		  	end
+		  end
+		else
+			@loadedLink = 'admin'
+		end
+
+	  ab_finished(:amazonLink)
 	end
 
 	def tracking

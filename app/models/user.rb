@@ -109,6 +109,7 @@ class User < ApplicationRecord
     },
   }
 
+  FREEmembership = [ENV['freeMembership']] 
   AFFILIATEmembership = [ENV['affiliateMonthly'],ENV['affiliateAnnual']] 
   BUSINESSmembership = [ENV['businessMonthly'], ENV['businessAnnual']] 
   AUTOMATIONmembership = [ENV['automationMonthly'], ENV['automationAnnual']] 
@@ -233,7 +234,7 @@ class User < ApplicationRecord
     membershipPlans.each do |planID|
       if allSubscriptions.include?(planID)
         membershipPlan = Stripe::Subscription.list({customer: stripeCustomerID, price: planID})
-        membershipType = AFFILIATEmembership.include?(planID) ? 'affiliate' : BUSINESSmembership.include?(planID) ? 'business': AUTOMATIONmembership.include?(planID) ? 'automation': nil
+        membershipType = AFFILIATEmembership.include?(planID) ? 'affiliate' : BUSINESSmembership.include?(planID) ? 'business': AUTOMATIONmembership.include?(planID) ? 'automation': FREEmembership.include?(planID) ? 'free' : nil
         membershipValid << {membershipDetails: membershipPlan['data'][0]['items']['data'][0]['plan']}.merge({membershipType: membershipType})
       end
     end
