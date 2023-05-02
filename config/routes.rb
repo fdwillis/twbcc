@@ -20,6 +20,7 @@ Rails.application.routes.draw do
   get "/profile/:id", to: 'application#profile', as: 'profile'
   get "/how-it-works", to: 'application#how_it_works', as: 'how_it_works'
   get "/new-password-set", to: 'registrations#new_password', as: 'new-password-set'
+  get "/checkout/:price/:account", to: 'application#checkout'
   post "/new-password-set", to: 'registrations#new_password'
   post "/wishlist", to: 'application#wishlist'
   post "/tracking", to: 'application#tracking'

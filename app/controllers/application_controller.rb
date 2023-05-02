@@ -5,6 +5,23 @@ class ApplicationController < ActionController::Base
 		@categories = User.rainforestSearch
 	end
 
+	def checkout
+		applicationFeeAmount = Stripe::Price.retrieve(params['price'],{stripe_account: params['account']})['unit_amount'] * 0.02
+		@session = Stripe::Checkout::Session.create({
+			success_url: "http://#{request.env['HTTP_HOST']}",
+      phone_number_collection: {
+	      enabled: true
+	    },
+	    payment_intent_data: {application_fee_amount: applicationFeeAmount.to_i},
+      line_items: [
+        {price: params['price'], quantity: 1},
+      ],
+      mode: 'payment',
+    }, {stripe_account: params['account']})
+
+    redirect_to @session['url']
+	end
+
 	def membership
 		customFields = [{
 			key: 'type',

@@ -129,6 +129,9 @@ class RegistrationsController < ApplicationController
 	      # )
 
 	      #attach details to customer profile and cardholder profile
+	      stripePlan = Stripe::Subscription.list({customer: stripeSessionInfo['customer']})['data'][0]['items']['data'][0]['plan']['id']
+	      commissionRate = {commissionRate: User::FREEmembership.include?(stripePlan) ? 5 : User::AFFILIATEmembership.include?(stripePlan) ? 10 : User::BUSINESSmembership.include?(stripePlan) ? : 20 : User::AUTOMATIONmembership.include?(stripePlan) ? 30 : nil}
+	      
 	      if cardNew.present? && cardHolderNew.present?
 		      customerUpdated = Stripe::Customer.update(
 		        stripeSessionInfo['customer'],{
@@ -137,7 +140,7 @@ class RegistrationsController < ApplicationController
 			          cardHolder: cardHolderNew['id'],
 			          issuedCard: cardNew['id'],
 			          referredBy: setSessionVarParams['referredBy']
-			        }
+			        }.merge(commissionRate)
 			      },
 		      )
 
@@ -147,7 +150,7 @@ class RegistrationsController < ApplicationController
 		        	metadata: {
 			          connectAccount: newStripeAccount['id'],
 			          referredBy: setSessionVarParams['referredBy']
-			        }
+			        }.merge(commissionRate)
 			      },
 		      )
 		    end
