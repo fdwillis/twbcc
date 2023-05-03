@@ -38,7 +38,7 @@
 	</div>
 	<% currentMembersip = @current_user.checkMembership %>
 	<div class="card card-style">
-    <h1 class="p-3">Membership Details <span class="badge bg-green-dark color-white p-2 float-end"><%= currentMembersip[:membershipDetails]['active'] == true ? 'ACTIVE' : currentMembersip[:membershipDetails] %></span></h1>
+    <h1 class="p-3">Membership<span class="badge bg-green-dark color-white p-2 float-end"><%= currentMembersip[:membershipDetails]['active'] == true ? 'ACTIVE' : currentMembersip[:membershipDetails] %></span></h1>
 		<div class="content row">
       <div class="col-7">
           <h5 class="font-600 opacity-80">Level</h5>

@@ -26,13 +26,6 @@ class StripeWebhooksController < ApplicationController
           end
         end
       end
-    elsif event == 'charge.succeeded' #connect account makes sale
-      # take 2% application fee
-      stripeObject['id']
-      Stripe::PaymentIntent.update(
-        stripeObject['payment_intent'],
-        {application_fee_amount: (stripeObject['amount'] * 0.02).to_i
-      }, {stripe_account: params['account']})
     end
   end
 end

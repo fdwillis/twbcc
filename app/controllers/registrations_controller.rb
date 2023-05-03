@@ -171,33 +171,27 @@ class RegistrationsController < ApplicationController
 
 	      if setSessionVarParams['referredBy'].present? && loadedAffililate.amazonCountry == 'US'
 	      	firstCustomerCharge = Stripe::Charge.list({limit: 1})['data'][0]
-	      	affiliateAccount = Stripe::Customer.retrieve(loadedAffililate.stripeCustomerID)['metadata']['connectAccount']
-	      	
+	      	affiliateAccount = Stripe::Customer.retrieve(loadedAffililate.stripeCustomerID)
+	      	commission = (firstCustomerCharge['amount'].to_i*(affiliateAccount['metadata']['commissionRate'].to_i/100)).to_i
 
-
-	      	
 	      	#only pay if affiliate is active on current membership
-
-
-
-	      	commission = (firstCustomerCharge['amount'].to_i*0.30).to_i
-	      	if Stripe::Account.retrieve(affiliateAccount)['capabilities']['transfers'] == 'active'
+	      	if Stripe::Account.retrieve(affiliateAccount['metadata']['connectAccount'])['capabilities']['transfers'] == 'active'
 		      	Stripe::Transfer.create({
 					    amount: commission,
 					    currency: 'usd',
-					    destination: affiliateAccount,
+					    destination: affiliateAccount['metadata']['connectAccount'],
 					    description: "Membership Commission",
 					    source_transaction: firstCustomerCharge['id']
 					  })
 
 					  Stripe::Charge.update(firstCustomerCharge['id'], {metadata: {
-					  	affiliateAccount: affiliateAccount,
+					  	affiliateAccount: affiliateAccount['metadata']['connectAccount'],
 					  	paid: true,
 					  	commission: commission,
 					  }})
 					else
 						Stripe::Charge.update(firstCustomerCharge['id'], {metadata: {
-					  	affiliateAccount: affiliateAccount,
+					  	affiliateAccount: affiliateAccount['metadata']['connectAccount'],
 					  	paid: false,
 					  	commission: commission,
 					  }})

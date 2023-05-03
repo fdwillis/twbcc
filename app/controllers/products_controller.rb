@@ -1,10 +1,30 @@
-#/recommended
+#/trending
 class ProductsController < ApplicationController
   before_action :set_product, only: %i[ show edit update destroy ]
 
   # GET /products or /products.json
   def index
     @products = Product.all
+
+    @userFound = params['referredBy'].present? ? User.find_by(uuid: params['referredBy']) : nil
+    @profile = @userFound.present? ? Stripe::Customer.retrieve(@userFound.stripeCustomerID) : nil
+    @membershipDetails = @userFound.present? ? @userFound.checkMembership : nil
+
+      #split traffic 95/5
+    case true
+    when @membershipDetails&.present? && @membershipDetails[:membershipType] == 'automation' && @membershipDetails[:membershipDetails][:active]#or has addon for specific traffic
+      @loadedLink = ab_test(:amazonLink, {'affiliteLink' => 95}, {'adminLink' => 5})
+    when @membershipDetails&.present? && @membershipDetails[:membershipType] == 'business' && @membershipDetails[:membershipDetails][:active]#or has addon for specific traffic
+      @loadedLink = ab_test(:amazonLink, {'affiliteLink' => 80}, {'adminLink' => 20})
+    when @membershipDetails&.present? && @membershipDetails[:membershipType] == 'affiliate' && @membershipDetails[:membershipDetails][:active]#or has addon for specific traffic
+      @loadedLink = ab_test(:amazonLink, {'affiliteLink' => 60}, {'adminLink' => 40})
+    when @membershipDetails&.present? && @membershipDetails[:membershipType] == 'free' && @membershipDetails[:membershipDetails][:active]#or has addon for specific traffic
+      @loadedLink = ab_test(:amazonLink, {'affiliteLink' => 50}, {'adminLink' => 50})
+    else
+      @loadedLink = 'adminLink'
+    end
+    
+    ab_finished(:amazonLink, reset: true)
   end
 
   # GET /products/1 or /products/1.json

@@ -2586,7 +2586,7 @@ button {
 }
 
 .ios-switch-icon label::before {
-  background-color: #DA4453 !important;
+  background-color: #820eb0 !important;
 }
 .ios-switch-icon i {
   line-height: 32px;
@@ -2692,17 +2692,17 @@ button {
   -webkit-transform: translateX(26px) !important;
 }
 .classic-input:checked ~ .fa-plus {
-  color: #DA4453 !important;
+  color: #820eb0 !important;
   transform: rotate(45deg);
   transition: all 250ms ease;
 }
 .classic-input:checked ~ .fa-angle-down {
-  color: #DA4453 !important;
+  color: #820eb0 !important;
   transform: rotate(180deg);
   transition: all 250ms ease;
 }
 .classic-input:checked ~ .fa-circle {
-  color: #DA4453 !important;
+  color: #820eb0 !important;
   transform: scale(1.3, 1.3);
   transition: all 250ms ease;
 }
@@ -5268,20 +5268,20 @@ input[type=number] {
 
 /* Generating Color Pack*/
 .color-highlight {
-  color: #DA4453 !important;
+  color: #820eb0 !important;
 }
 
 .bg-highlight {
-  background-color: #DA4453 !important;
+  background-color: #820eb0 !important;
   color: #FFF !important;
 }
 
 .border-highlight {
-  border-color: #DA4453 !important;
+  border-color: #820eb0 !important;
 }
 
 .gradient-highlight {
-  background-image: linear-gradient(to bottom, #ED5565, #DA4453) !important;
+  background-image: linear-gradient(to bottom, #ED5565, #820eb0) !important;
 }
 
 .gradient-menu {
@@ -5428,16 +5428,16 @@ input[type=number] {
 }
 
 .color-highlight-dark {
-  color: #DA4453 !important;
+  color: #820eb0 !important;
 }
 
 .color-icon-highlight {
-  stroke: #DA4453 !important;
+  stroke: #820eb0 !important;
   fill: !important;
 }
 
 .bg-highlight-dark {
-  background-color: #DA4453 !important;
+  background-color: #820eb0 !important;
   color: #FFF !important;
 }
 
@@ -5446,15 +5446,15 @@ input[type=number] {
 }
 
 .border-highlight-dark {
-  border-color: #DA4453 !important;
+  border-color: #820eb0 !important;
 }
 
 .focus-highlight:focus {
-  border-color: #DA4453 !important;
+  border-color: #820eb0 !important;
 }
 
 .gradient-highlight {
-  background-image: linear-gradient(to bottom, #ED5565, #DA4453);
+  background-image: linear-gradient(to bottom, #ED5565, #820eb0);
 }
 
 .color-green-light {
@@ -5575,16 +5575,16 @@ input[type=number] {
 }
 
 .color-red-dark {
-  color: #DA4453 !important;
+  color: #820eb0 !important;
 }
 
 .color-icon-red {
-  stroke: #DA4453 !important;
+  stroke: #820eb0 !important;
   fill: rgba(218, 68, 83, 0.3) !important;
 }
 
 .bg-red-dark {
-  background-color: #DA4453 !important;
+  background-color: #820eb0 !important;
   color: #FFF !important;
 }
 
@@ -5593,15 +5593,15 @@ input[type=number] {
 }
 
 .border-red-dark {
-  border-color: #DA4453 !important;
+  border-color: #820eb0 !important;
 }
 
 .focus-red:focus {
-  border-color: #DA4453 !important;
+  border-color: #820eb0 !important;
 }
 
 .gradient-red {
-  background-image: linear-gradient(to bottom, #ED5565, #DA4453);
+  background-image: linear-gradient(to bottom, #ED5565, #820eb0);
 }
 
 .color-orange-light {
@@ -6410,33 +6410,33 @@ input[type=number] {
 .footer-bar-5 strong,
 .footer-bar-4 strong,
 .splide__pagination__page.is-active {
-  background-color: #DA4453 !important;
+  background-color: #820eb0 !important;
 }
 
 .footer-bar-1 .active-nav i,
 .footer-bar-1 .active-nav span,
 .footer-bar-3 .active-nav i {
-  color: #DA4453 !important;
+  color: #820eb0 !important;
 }
 
 .form-floating-over > .form-control:focus ~ label {
-  color: #DA4453;
+  color: #820eb0;
 }
 
 .form-floating-over > .form-control:not(:placeholder-shown) ~ label {
-  color: #DA4453;
+  color: #820eb0;
 }
 
 .form-floating-over > .form-select ~ label {
-  color: #DA4453;
+  color: #820eb0;
 }
 
 .color-highlight {
-  color: #DA4453;
+  color: #820eb0;
 }
 
 .bg-highlight {
-  background-color: #DA4453;
+  background-color: #820eb0;
   color: #FFF !important;
 }
 

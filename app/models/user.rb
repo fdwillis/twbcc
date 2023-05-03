@@ -1,3 +1,4 @@
+require 'split'
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
@@ -113,6 +114,24 @@ class User < ApplicationRecord
   AFFILIATEmembership = [ENV['affiliateMonthly'],ENV['affiliateAnnual']] 
   BUSINESSmembership = [ENV['businessMonthly'], ENV['businessAnnual']] 
   AUTOMATIONmembership = [ENV['automationMonthly'], ENV['automationAnnual']] 
+
+  def self.renderLink(referredBy, country, asin, affiliateOrAdmin)
+    @userFound = referredBy.present? ? User.find_by(uuid: referredBy) : nil
+    @profile = @userFound.present? ? Stripe::Customer.retrieve(@userFound.stripeCustomerID) : nil
+    @membershipDetails = @userFound.present? ? @userFound.checkMembership : nil
+
+    affiliteLink = "https://www.#{ACCEPTEDcountries[country][:site]}/gp/product/#{asin}?&tag=#{@userFound&.amazonUUID}"
+    adminLink =  "https://www.#{ACCEPTEDcountries[country][:site]}/gp/product/#{asin}?&tag=netwerthcard-20"
+
+    #split traffic 95/5
+    if affiliateOrAdmin == 'adminLink'
+      @loadedLink = adminLink
+    else affiliateOrAdmin == 'affiliateLink'
+      @loadedLink = affiliteLink
+    end
+
+    @loadedLink
+  end
 
   def media(options = {})
     embed(@url, options)

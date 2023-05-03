@@ -25,12 +25,11 @@
         <% end %>
           <td><%= link_to 'Add To Wishlist', wishlist_path(id: product.asin), method: :post, data: { confirm: 'Add this to your wishlist?' } %></td>
           <td><%= link_to 'Add To Tracking', tracking_path(id: product.asin), method: :post, data: { confirm: 'Add this to your tracking?' } %></td>
-        <td><%= current_user&.present? ? "https://www.#{User::ACCEPTEDcountries[product.country][:site]}/gp/product/#{product.asin}?&tag=#{current_user.amazonUUID}" : params['referredBy'].present? ? "https://www.#{User::ACCEPTEDcountries[product.country][:site]}/gp/product/#{product.asin}?&tag=#{User.find_by(uuid: params['referredBy']).amazonUUID}" : "https://www.#{User::ACCEPTEDcountries[product.country][:site]}/gp/product/#{product.asin}?&tag=netwerthcard-20" %></td>
+        <td><%= User.renderLink(params['referredBy'], product.country, product.asin,@loadedLink) %></td>
+        <td><%= (@loadedLink) %></td>
       </tr>
     <% end %>
   </tbody>
 </table>
 
 <br>
-
-<%= link_to 'New Product', new_product_path %>

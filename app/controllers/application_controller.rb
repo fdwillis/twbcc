@@ -12,7 +12,9 @@ class ApplicationController < ActionController::Base
       phone_number_collection: {
 	      enabled: true
 	    },
-	    payment_intent_data: {application_fee_amount: applicationFeeAmount.to_i},
+	    payment_intent_data: {
+	    	application_fee_amount: applicationFeeAmount.to_i
+	    },
       line_items: [
         {price: params['price'], quantity: 1},
       ],
@@ -191,18 +193,22 @@ class ApplicationController < ActionController::Base
 
 			@itemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due']
 		end
+		affiliteLink = "https://www.#{ACCEPTEDcountries[country][:site]}/gp/product/#{asin}?&tag=#{User.find_by(uuid: referredBy).amazonUUID}"
+    adminLink =  "https://www.#{ACCEPTEDcountries[country][:site]}/gp/product/#{asin}?&tag=netwerthcard-20"
 
 		if @membershipDetails[:membershipDetails][:active]	
 			#split traffic 95/5
 			case true
-			when @profile[:membershipType] == 'automation'#or has addon for specific traffic
+			when @membershipDetails[:membershipType] == 'automation' && @membershipDetails[:membershipDetails][:active]#or has addon for specific traffic
 				@loadedLink = ab_test(:amazonLink, {'member' => 95}, {'admin' => 5})
-			when @profile[:membershipType] == 'business'#or has addon for specific traffic
+			when @membershipDetails[:membershipType] == 'business' && @membershipDetails[:membershipDetails][:active]#or has addon for specific traffic
 				@loadedLink = ab_test(:amazonLink, {'member' => 80}, {'admin' => 20})
-			when @profile[:membershipType] == 'affiliate'#or has addon for specific traffic
+			when @membershipDetails[:membershipType] == 'affiliate' && @membershipDetails[:membershipDetails][:active]#or has addon for specific traffic
 				@loadedLink = ab_test(:amazonLink, {'member' => 60}, {'admin' => 40})
-			when @profile[:membershipType] == 'free'#or has addon for specific traffic
+			when @membershipDetails[:membershipType] == 'free' && @membershipDetails[:membershipDetails][:active]#or has addon for specific traffic
 				@loadedLink = ab_test(:amazonLink, {'member' => 50}, {'admin' => 50})
+			else
+				@loadedLink = ab_test(:amazonLink, {'admin' => 100})
 			end
 		  
 		  #custom profile if active
@@ -217,7 +223,7 @@ class ApplicationController < ActionController::Base
 			@loadedLink = 'admin'
 		end
 
-	  ab_finished(:amazonLink)
+	  ab_finished(:amazonLink, reset: true)
 	end
 
 	def tracking
