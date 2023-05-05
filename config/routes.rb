@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  mount Split::Dashboard, at: 'split'
   resources :blogs, path: '/blog'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   devise_for :users, path: '/', path_names: { sign_in: 'auth/login', sign_out: 'auth/logout', sign_up: 'auth/sign-up' }, controllers: { registrations: 'registrations', sessions: 'sessions'} do
@@ -15,8 +14,10 @@ Rails.application.routes.draw do
   end
 
   get "/membership", to: 'application#membership', as: 'membership'
+  get "/view-on-amazon/:asin/:country", to: 'products#amazon', as: 'amazon'
   get "/tracking", to: 'application#tracking', as: 'tracking'
   get "/wishlist", to: 'application#wishlist', as: 'wishlist'
+  get "/analytics", to: 'application#analytics', as: 'analytics'
   get "/profile/:id", to: 'application#profile', as: 'profile'
   get "/how-it-works", to: 'application#how_it_works', as: 'how_it_works'
   get "/new-password-set", to: 'registrations#new_password', as: 'new-password-set'
@@ -25,7 +26,7 @@ Rails.application.routes.draw do
   post "/wishlist", to: 'application#wishlist'
   post "/tracking", to: 'application#tracking'
 
-  resources :products, path: '/trending'
-  resources :search, path: '/discover'
+  resources :products, path: '/discover'
+  resources :search, path: '/search'
 
 end

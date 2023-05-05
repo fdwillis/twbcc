@@ -13,6 +13,7 @@ gem 'coffee-rails'
 gem 'jquery-rails'
 gem 'jquery'
 gem 'pwa'
+gem "ahoy_matey"
 gem 'activerecord-session_store'
 gem 'mimemagic', github: 'mimemagicrb/mimemagic', ref: '01f92d86d15d85cfd0f20dabd025dcbd36a8a60f'
 
@@ -32,7 +33,6 @@ gem 'clockwork'
 gem 'faker'
 gem 'oj'
 gem 'curb'
-gem 'split', require: 'split/dashboard'
 gem 'byebug'
 gem 'rails_12factor', group: :production
 

@@ -5,6 +5,10 @@ class ApplicationController < ActionController::Base
 		@categories = User.rainforestSearch
 	end
 
+	def analytics
+		
+	end
+
 	def checkout
 		applicationFeeAmount = Stripe::Price.retrieve(params['price'],{stripe_account: params['account']})['unit_amount'] * 0.02
 		@session = Stripe::Checkout::Session.create({
@@ -193,24 +197,8 @@ class ApplicationController < ActionController::Base
 
 			@itemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due']
 		end
-		affiliteLink = "https://www.#{ACCEPTEDcountries[country][:site]}/gp/product/#{asin}?&tag=#{User.find_by(uuid: referredBy).amazonUUID}"
-    adminLink =  "https://www.#{ACCEPTEDcountries[country][:site]}/gp/product/#{asin}?&tag=netwerthcard-20"
-
+		
 		if @membershipDetails[:membershipDetails][:active]	
-			#split traffic 95/5
-			case true
-			when @membershipDetails[:membershipType] == 'automation' && @membershipDetails[:membershipDetails][:active]#or has addon for specific traffic
-				@loadedLink = ab_test(:amazonLink, {'member' => 95}, {'admin' => 5})
-			when @membershipDetails[:membershipType] == 'business' && @membershipDetails[:membershipDetails][:active]#or has addon for specific traffic
-				@loadedLink = ab_test(:amazonLink, {'member' => 80}, {'admin' => 20})
-			when @membershipDetails[:membershipType] == 'affiliate' && @membershipDetails[:membershipDetails][:active]#or has addon for specific traffic
-				@loadedLink = ab_test(:amazonLink, {'member' => 60}, {'admin' => 40})
-			when @membershipDetails[:membershipType] == 'free' && @membershipDetails[:membershipDetails][:active]#or has addon for specific traffic
-				@loadedLink = ab_test(:amazonLink, {'member' => 50}, {'admin' => 50})
-			else
-				@loadedLink = ab_test(:amazonLink, {'admin' => 100})
-			end
-		  
 		  #custom profile if active
 		  if @membershipDetails[:membershipType] == 'automation' && !current_user
 		  	fileToFind = ("app/views/automation/#{@userFound.uuid}.html.erb")
@@ -222,8 +210,7 @@ class ApplicationController < ActionController::Base
 		else
 			@loadedLink = 'admin'
 		end
-
-	  ab_finished(:amazonLink, reset: true)
+		ahoy.track "Profile Visit", user: @userFound.uuid
 	end
 
 	def tracking

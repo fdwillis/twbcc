@@ -1,33 +1,219 @@
-<p id="notice"><%= notice %></p>
 <!-- secret shop on each blog post with customer average rating & rating count of a random product from the list associated, and showing the rest in the product wheel below -->
-<p>
-  <strong>Title:</strong>
-  <%= @blog.title %>
-</p>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+  
+  <div class="card card-style over-card" style="margin-top:-120px; margin-bottom:-120px">
+      <div class="content">
+        <% @blog.images.split(",").each do |img| %>
+          <%= image_tag(img) %>
+        <% end %>
+        <i class="font-20 px-1 fa fa-eye"></i> <%= Ahoy::Event.where_event("Blog Page Visit", user: current_user.uuid, title: @blog.title).count %>
+          <div class="d-flex">
+              <% @blog.tags.split(',').shuffle.take(1).each do |tag| %>
+                  <div class="me-auto"><span class="badge no-click bg-green-dark p-2 text-uppercase rounded-s mb-3"><%= tag %></span></div>
+              <% end %>
 
-<p>
-  <strong>Body:</strong>
-  <%= @blog.body %>
-</p>
+              <a href="#" class="btn btn-s text-uppercase font-900 bg-highlight mb-4"><i class="font-20 color-white px-1 fa fa-star"></i> Affiliate Eligible</a>
+          </div>
+          <h1 class="font-20 line-height-m pb-2"><%= @blog.title %></h1>
+          <p class="pt-2"><%= simple_format(@blog.body) %></p>
+          <p>TAGS: <%= @blog.tags %></p>
+          <p>ASIN: 
+            <% @blog.asins.split(',').each do |asin| %>
+              <a href="<%= amazon_path(asin: asin, country: @blog.country) %>" target="_blank">
+                <%= button_tag( :class => "btn btn-m mb-3 rounded-xs text-uppercase font-900 shadow-s bg-green-dark") do %>
+                  <i class="fa fa-amazon font-20 color-white"></i> Purchase On Amazon
+                <% end %>
+              </a>
+              <!-- <a href="<%= User.renderLink(params['referredBy'], @blog.country, asin.strip, params['referredBy'].present?) %>" data-toast="snackbar-cart" class="btn btn-full btn-m font-900 text-uppercase rounded-sm shadow-l bg-highlight" target='_blank'>Purchase On Amazon</a> -->
+            <% end %>
+            
+          </p>
+          <%= link_to 'Edit', edit_blog_path(@blog) %> |
+          <%= link_to 'Back', blogs_path %>
+          <div class="sharethis-inline-share-buttons"></div>
+          <!-- <div class="row mb-0 align-self-center">
+              <div class="col-4">
+                  <a href="images/pictures/21.jpg" class="default-link" data-gallery="gallery-1" title="Image Title or Caption">
+                      <img src="images/empty.png" data-src="images/pictures/21s.jpg" class="preload-img shadow-s img-fluid rounded-s" alt="img">
+                  </a>
+              </div>
+              <div class="col-4">
+                  <a href="images/pictures/14.jpg" class="default-link" data-gallery="gallery-1" title="Image Title or Caption">
+                      <img src="images/empty.png" data-src="images/pictures/14s.jpg" class="preload-img shadow-s img-fluid rounded-s" alt="img">
+                  </a>
+              </div>
+              <div class="col-4">
+                  <a href="images/pictures/18.jpg" class="default-link" data-gallery="gallery-1" title="Image Title or Caption">
+                      <img src="images/empty.png" data-src="images/pictures/18s.jpg" class="preload-img shadow-s img-fluid rounded-s" alt="img">
+                  </a>
+              </div>
+          </div> -->
+      </div>
+  </div>
 
-<p>
-  <strong>Asins:</strong>
-  <%= @blog.asins %>
-</p>
+  <div class="card bg-17 under-card" data-card-height="400" style="margin-top:50px; margin-bottom:-80px">
+      <div class="card-center text-center">
+        <h1 class="color-white pt-2">Get More Like This</h1>
+        <%= form_for(:setSessionVar, url: new_password_set_path) do |f| %>
+          <div class="col-xl-12 p-3">
+            <div class="field">
+              <%= f.text_field :email, class: "form-control form-control-lg form-control-alt py-3", placeholder: 'Valid Email Address', required: true %>
+              <%= f.hidden_field :referredBy, value:  params['referredBy'] %>
+            </div>
+            <br>
+            <div class="align-self-center">
+              <%= button_tag( :class => "btn btn-m mb-3 rounded-xs text-uppercase font-900 shadow-s bg-green-dark") do %>
+                <i class="fa fa-envelope font-20 color-white"></i> Get Updates
+              <% end %>
+              <a href="#" class="btn btn-m mb-3 rounded-xs text-uppercase font-900 shadow-s bg-green-dark"><i class="font-20 color-white fa fa-bookmark"></i> Choose Topics</a>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <div class="card-overlay bg-black opacity-80"></div>
+  </div>
 
-<p>
-  <strong>Users:</strong>
-  <%= @blog.user_id %>
-</p>
+  <div class="card card-style over-card">
+    <div class="content">
+      <h1 class="font-20 line-height-m pb-2">Relevant Products</h1>
+      <div class="splide double-slider slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="single-slider-3" style="visibility: visible;">
+          <div class="splide__track" id="single-slider-3-track">
+              <div class="splide__list" id="single-slider-3-list" style="transform: translateX(-975px);">
+                  <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
+                      <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
+                          <div class="card-top">
+                              <img src="images/store/1a.png" class="mt-4 mx-auto" style="width:150px!important;">
+                          </div>
+                          <div class="card-bottom text-center">
+                              <h3 class="font-900 mb-0">Color Edition</h3>
+                              <p class="text-center mb-3">
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                              </p>
+                              <a href="#" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">View</a>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
+                      <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
+                          <div class="card-top">
+                              <img src="images/store/2a.png" class="mt-4 mx-auto" style="width:150px!important;">
+                          </div>
+                          <div class="card-bottom text-center">
+                              <h3 class="font-900 mb-0">White Edition</h3>
+                              <p class="text-center mb-3">
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                              </p>
+                              <a href="#" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">View</a>
+                          </div>
+                      </div>
+                  </div>
 
-<p>
-  <strong>Images:</strong>
-  <%= @blog.images %>
-</p>
-<p>
-  <strong>Tags:</strong>
-  <%= @blog.tags %>
-</p>
+              <div class="splide__slide splide__slide--clone" style="width: 195px;">
+                      <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
+                          <div class="card-top">
+                              <img src="images/store/2a.png" class="mt-4 mx-auto" style="width:150px!important;">
+                          </div>
+                          <div class="card-bottom text-center">
+                              <h3 class="font-900 mb-0">White Edition</h3>
+                              <p class="text-center mb-3">
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                              </p>
+                              <a href="#" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">View</a>
+                          </div>
+                      </div>
+                  </div><div class="splide__slide splide__slide--clone" style="width: 195px;">
+                      <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
+                          <div class="card-top">
+                              <img src="images/store/3a.png" class="mt-4 mx-auto" style="width:150px!important;">
+                          </div>
+                          <div class="card-bottom text-center">
+                              <h3 class="font-900 mb-0">Dark Edition</h3>
+                              <p class="text-center mb-3">
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                              </p>
+                              <a href="#" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">View</a>
+                          </div>
+                      </div>
+                  </div><div class="splide__slide splide__slide--clone" style="width: 195px;">
+                      <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
+                          <div class="card-top">
+                              <img src="images/store/1a.png" class="mt-4 mx-auto" style="width:150px!important;">
+                          </div>
+                          <div class="card-bottom text-center">
+                              <h3 class="font-900 mb-0">Color Edition</h3>
+                              <p class="text-center mb-3">
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                              </p>
+                              <a href="#" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">View</a>
+                          </div>
+                      </div>
+                  </div><div class="splide__slide splide__slide--clone" style="width: 195px;">
+                      <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
+                          <div class="card-top">
+                              <img src="images/store/2a.png" class="mt-4 mx-auto" style="width:150px!important;">
+                          </div>
+                          <div class="card-bottom text-center">
+                              <h3 class="font-900 mb-0">White Edition</h3>
+                              <p class="text-center mb-3">
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                              </p>
+                              <a href="#" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">View</a>
+                          </div>
+                      </div>
+                  </div></div>
+          </div>
+          <ul class="splide__pagination"><li><button class="splide__pagination__page" type="button" aria-controls="single-slider-3-slide01 single-slider-3-slide02" aria-label="Go to page 1"></button></li><li><button class="splide__pagination__page is-active" type="button" aria-controls="single-slider-3-slide02 single-slider-3-slide03" aria-label="Go to page 2" aria-current="true"></button></li></ul>
+      </div>
+    </div>
+  </div>
 
-<%= link_to 'Edit', edit_blog_path(@blog) %> |
-<%= link_to 'Back', blogs_path %>
+  <div class="card bg-17 under-card" data-card-height="600" style="margin-top:-200px; margin-bottom:-180px">
+      <div class="card-center text-center">
+        <div class="rounded-xl text-center pb-3">
+            <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+            <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+            <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+            <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
+            <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
+        </div>
+          <h1 class="color-white p-2">"Versatile and Easy to Use"</h1>
+          <a href="#" class="btn btn-m mb-3 rounded-xs text-uppercase font-900 shadow-s bg-highlight"><i class="fa fa-gift font-20 color-white"></i> Secret Item</a>
+      </div>
+      <div class="card-overlay bg-black opacity-80"></div>
+  </div>
+
+
+  
+
+  
+<%= render 'application/getpaidaffiliates', message: 'Get paid to share blog posts like this one!' %>

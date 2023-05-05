@@ -9,6 +9,7 @@ class BlogsController < ApplicationController
 
   # GET /blogs/1 or /blogs/1.json
   def show
+    ahoy.track "Blog Page Visit", title: @blog.title, user: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
   end
 
   # GET /blogs/new
@@ -22,7 +23,16 @@ class BlogsController < ApplicationController
 
   # POST /blogs or /blogs.json
   def create
+    images = []
     @blog = current_user.blogs.create!(blog_params)
+
+    params['attachment']['file'].each_with_index do |image, indx|
+      Cloudinary::Uploader.upload(image.tempfile, :use_filename => true, :folder => "blog/#{current_user.uuid}", :public_id => "#{blog_params['title']}-#{indx}")
+      images.push("https://res.cloudinary.com/dulizdfij/image/upload/blog/#{current_user.uuid}/#{@blog.title.strip}-#{indx}.jpg")
+    end
+
+    @blog.update(images: images.join(","))
+
     respond_to do |format|
       if @blog.save
         format.html { redirect_to blog_url(@blog), notice: "Blog was successfully created." }
@@ -60,11 +70,11 @@ class BlogsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_blog
-      @blog = Blog.find(params[:id])
+      @blog = Blog.friendly.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
     def blog_params
-      params.require(:blog).permit(:title, :body, :asins, :user_id, :images, :tags).reject{|_, v| v.blank?}
+      params.require(:blog).permit(:title, :body, :asins, :user_id, :images, :tags, :country).reject{|_, v| v.blank?}
     end
 end

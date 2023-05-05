@@ -1,7 +1,10 @@
+<br>
+<br>
+<br>
 <% if current_user %>
 	<div class="card card-style" data-card-height="300" style="height: 300px;">
 		<div class="card-center p-3">
-		    <h1 class="color-white">Your Profile</h1>
+		    <h1 class="color-white"><%= @profile['name'] %></h1>
 		</div>
 		<div class="card-top p-3">
 		    <span class="badge bg-blue-dark color-white p-2 float-end m-2">Member</span>
@@ -15,21 +18,21 @@
 				<h5 class="color-white float-end">80% Complete</h5>
 		    <div class="clearfix"></div>
 		    <div class="progress mt-2" style="height:2px;">
-		        <div class="progress-bar border-0 bg-red-dark text-start ps-2" role="progressbar" style="width: 95%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
+		        <div class="progress-bar border-0 bg-green-dark text-start ps-2" role="progressbar" style="width: 95%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
 		        </div>
 		    </div>
 			<% elsif @itemsDue.count > 1 %>
 				<h5 class="color-white float-end">65% Complete</h5>
 		    <div class="clearfix"></div>
 		    <div class="progress mt-2" style="height:2px;">
-		        <div class="progress-bar border-0 bg-red-dark text-start ps-2" role="progressbar" style="width: 65%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
+		        <div class="progress-bar border-0 bg-green-dark text-start ps-2" role="progressbar" style="width: 65%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
 		        </div>
 		    </div>
 		    <% else %>
 			    <h5 class="color-white float-end">100% Complete </h5>
 			    <div class="clearfix"></div>
 			    <div class="progress mt-2" style="height:2px;">
-			        <div class="progress-bar border-0 bg-red-dark text-start ps-2" role="progressbar" style="width: 100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
+			        <div class="progress-bar border-0 bg-green-dark text-start ps-2" role="progressbar" style="width: 100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
 			        </div>
 			    </div>
 			<% end %>  

@@ -174,6 +174,7 @@ class RegistrationsController < ApplicationController
 	      	affiliateAccount = Stripe::Customer.retrieve(loadedAffililate.stripeCustomerID)
 	      	commission = (firstCustomerCharge['amount'].to_i*(affiliateAccount['metadata']['commissionRate'].to_i/100)).to_i
 
+	      	ahoy.track "Membership Signup", member: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).uuid, user: setSessionVarParams['referredBy']
 	      	#only pay if affiliate is active on current membership
 	      	if Stripe::Account.retrieve(affiliateAccount['metadata']['connectAccount'])['capabilities']['transfers'] == 'active'
 		      	Stripe::Transfer.create({

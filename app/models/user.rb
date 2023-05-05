@@ -1,4 +1,3 @@
-require 'split'
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
@@ -124,10 +123,12 @@ class User < ApplicationRecord
     adminLink =  "https://www.#{ACCEPTEDcountries[country][:site]}/gp/product/#{asin}?&tag=netwerthcard-20"
 
     #split traffic 95/5
-    if affiliateOrAdmin == 'adminLink'
+    if affiliateOrAdmin == false
       @loadedLink = adminLink
-    else affiliateOrAdmin == 'affiliateLink'
+    elsif affiliateOrAdmin == true
       @loadedLink = affiliteLink
+    else
+      @loadedLink = adminLink
     end
 
     @loadedLink

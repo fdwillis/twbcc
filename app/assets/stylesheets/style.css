@@ -5575,16 +5575,16 @@ input[type=number] {
 }
 
 .color-red-dark {
-  color: #820eb0 !important;
+  color: #ff172a !important;
 }
 
 .color-icon-red {
-  stroke: #820eb0 !important;
+  stroke: #ff172a !important;
   fill: rgba(218, 68, 83, 0.3) !important;
 }
 
 .bg-red-dark {
-  background-color: #820eb0 !important;
+  background-color: #ff172a !important;
   color: #FFF !important;
 }
 
@@ -5593,11 +5593,11 @@ input[type=number] {
 }
 
 .border-red-dark {
-  border-color: #820eb0 !important;
+  border-color: #ff172a !important;
 }
 
 .focus-red:focus {
-  border-color: #820eb0 !important;
+  border-color: #ff172a !important;
 }
 
 .gradient-red {

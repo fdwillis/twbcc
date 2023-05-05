@@ -9,27 +9,17 @@ class ProductsController < ApplicationController
     @userFound = params['referredBy'].present? ? User.find_by(uuid: params['referredBy']) : nil
     @profile = @userFound.present? ? Stripe::Customer.retrieve(@userFound.stripeCustomerID) : nil
     @membershipDetails = @userFound.present? ? @userFound.checkMembership : nil
+  end
 
-      #split traffic 95/5
-    case true
-    when @membershipDetails&.present? && @membershipDetails[:membershipType] == 'automation' && @membershipDetails[:membershipDetails][:active]#or has addon for specific traffic
-      @loadedLink = ab_test(:amazonLink, {'affiliteLink' => 95}, {'adminLink' => 5})
-    when @membershipDetails&.present? && @membershipDetails[:membershipType] == 'business' && @membershipDetails[:membershipDetails][:active]#or has addon for specific traffic
-      @loadedLink = ab_test(:amazonLink, {'affiliteLink' => 80}, {'adminLink' => 20})
-    when @membershipDetails&.present? && @membershipDetails[:membershipType] == 'affiliate' && @membershipDetails[:membershipDetails][:active]#or has addon for specific traffic
-      @loadedLink = ab_test(:amazonLink, {'affiliteLink' => 60}, {'adminLink' => 40})
-    when @membershipDetails&.present? && @membershipDetails[:membershipType] == 'free' && @membershipDetails[:membershipDetails][:active]#or has addon for specific traffic
-      @loadedLink = ab_test(:amazonLink, {'affiliteLink' => 50}, {'adminLink' => 50})
-    else
-      @loadedLink = 'adminLink'
-    end
-    
-    ab_finished(:amazonLink, reset: true)
+  def amazon
+    ahoy.track "Product Purchase Intent", product: params['asin'], user: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
+    redirect_to "https://www.#{User::ACCEPTEDcountries[params[:country]][:site]}/gp/product/#{params['asin']}?&tag=#{params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).amazonUUID : ENV['usAmazonTag']}"
   end
 
   # GET /products/1 or /products/1.json
   def show
   	@dataFromApi = User.rainforestProduct(params[:id])
+    ahoy.track "Product Visit", product: params[:id], user: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
   end
 
   # GET /products/new
