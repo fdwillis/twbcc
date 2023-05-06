@@ -17,7 +17,7 @@ class ProductsController < ApplicationController
 
   def amazon
     ahoy.track "Product Purchase Intent", product: params['asin'], user: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
-    redirect_to "https://www.#{User::ACCEPTEDcountries[params[:country]][:site]}/dp/product/#{params['asin']}?&tag=#{params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).amazonUUID : ENV['usAmazonTag']}"
+    redirect_to "https://www.#{User::ACCEPTEDcountries[params[:country]][:site]}/dp/product/#{params['asin']}?&tag=#{params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).amazonUUID : (current_user.present? && !current_user.referredBy.nil?) ? User.find_by(uuid: current_user.referredBy).amazonUUID : ENV['usAmazonTag']}"
   end
 
   # GET /products/1 or /products/1.json

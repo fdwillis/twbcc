@@ -2,6 +2,7 @@
 <br>
 <br>
 <% if current_user %>
+
 	<div class="card card-style" data-card-height="300" style="height: 300px;">
 		<div class="card-center p-3">
 		    <h1 class="color-white"><%= @profile['name'] %></h1>
@@ -81,4 +82,7 @@
 	<%= @loadedLink %>
 	<%= @profile %>
 	<%= @userFound.checkMembership %>
+	<% @userFound.blogs.each do |post| %>
+		<%= post %>
+	<% end %>
 <% end %>

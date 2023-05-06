@@ -1,6 +1,6 @@
 
 <div class="page-content header-clear-medium">
-  <% if current_user&.admin? %>  
+  <% if current_user&.admin? || (current_user&.checkMembership.present? && current_user&.checkMembership[:membershipType] == 'affiliate') %>  
   <!-- or if business(max 10) or if automation (unlimited) -->
     <%= link_to 'New Blog', new_blog_path %>
   <% end %>
