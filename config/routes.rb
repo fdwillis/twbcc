@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   resources :blogs, path: '/blog'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
-  devise_for :users, path: '/', path_names: { sign_in: 'auth/login', sign_out: 'auth/logout', sign_up: 'auth/sign-up' }, controllers: { registrations: 'registrations', sessions: 'sessions'} do
+  devise_for :users, path: '/', path_names: { sign_out: 'auth/logout', sign_up: 'auth/sign-up' }, controllers: { registrations: 'registrations', sessions: 'sessions'} do
     get '/auth/logout' => 'sessions#destroy'
   end
 
@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   end
 
   unauthenticated :user do
-    root 'search#index'
+    root 'products#index'
   end
 
   get "/membership", to: 'application#membership', as: 'membership'

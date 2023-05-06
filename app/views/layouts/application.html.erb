@@ -84,14 +84,14 @@
               <div class="list-group list-custom-small list-icon-0">
                 <a href="/loved" data-menu="menu-backgrounds">
                   <i class="fa font-12 fa-heart bg-highlight rounded-sm color-white"></i>
-                  <span>Loved <%= current_user.present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['wishlist'].split(',').uniq.size})" : nil %></span>
+                  <span>Loved <%= current_user.present? && Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['wishlist'].present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['wishlist'].split(',').uniq.size})" : nil %></span>
                   <i class="fa fa-angle-right"></i>
                 </a>
               </div>
               <div class="list-group list-custom-small list-icon-0">
                 <a href="/list" data-menu="menu-backgrounds">
                   <i class="fa font-12 fa-list bg-orange-dark rounded-sm color-white"></i>
-                  <span>List <%= current_user.present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].split(',').uniq.size})" : nil %></span>
+                  <span>List <%= current_user.present? && Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].split(',').uniq.size})" : nil %></span>
                   <i class="fa fa-angle-right"></i>
                 </a>
               </div>

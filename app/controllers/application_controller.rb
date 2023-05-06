@@ -184,6 +184,7 @@ class ApplicationController < ActionController::Base
 		@userFound = current_user.present? ? current_user : User.find_by(uuid: params['id'])
 		@profile = Stripe::Customer.retrieve(@userFound.stripeCustomerID)
 		@membershipDetails = @userFound.checkMembership
+		@profileMetadata = @profile['metadata']
 
 		if current_user
 			validMembership = current_user.checkMembership
@@ -197,9 +198,10 @@ class ApplicationController < ActionController::Base
 			)
 
 			@itemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due']
+		else
+			ahoy.track "Profile Visit", user: @userFound.uuid
 		end
-		
-		if @membershipDetails[:membershipDetails][:active]	
+		if @membershipDetails.present? && @membershipDetails[:membershipDetails][:active]	
 		  #custom profile if active
 		  if @membershipDetails[:membershipType] == 'automation' && !current_user
 		  	fileToFind = ("app/views/automation/#{@userFound.uuid}.html.erb")
@@ -211,42 +213,61 @@ class ApplicationController < ActionController::Base
 		else
 			@loadedLink = 'admin'
 		end
-		ahoy.track "Profile Visit", user: @userFound.uuid
 	end
 
 	def list
 		if current_user&.present?
 			customerToUpdate = Stripe::Customer.retrieve(current_user&.stripeCustomerID)
-			@tracking = customerToUpdate['metadata']['tracking'].present? ? customerToUpdate['metadata']['tracking'].split(',').uniq : nil
+			@tracking = customerToUpdate['metadata']['tracking'].present? ? customerToUpdate['metadata']['tracking'].split(',').uniq : []
+			@profileMetadata = customerToUpdate['metadata']
 		end
-		if request.post?
-			if params[:id].present?
-				customerUpdated = Stripe::Customer.update(current_user.stripeCustomerID,{
-					metadata: {
-						tracking: customerToUpdate['metadata']['tracking'].present? ? (customerToUpdate['metadata']['tracking']+"#{params[:id]},") : "#{params[:id]},"
-					}
-				})
-				flash[:success] = 'Added To Your Tracking List'
-				redirect_to request.referrer
-			end
+		
+		if params[:remove] == 'true'
+			@newMeta = @profileMetadata['tracking'].split(',') - [params[:id]]
+			customerUpdated = Stripe::Customer.update(current_user.stripeCustomerID,{
+				metadata: {
+					tracking: @newMeta.empty? ? "," : @newMeta[0].blank? ? "," : @newMeta
+				}
+			})
+			
+			flash[:success] = 'Removed From Your Public List'
+			redirect_to request.referrer
+		elsif params[:id].present?
+			customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID,{
+				metadata: {
+					tracking: customerToUpdate['metadata']['tracking'].present? ? (customerToUpdate['metadata']['tracking']+"#{params[:id]},") : "#{params[:id]},"
+				}
+			})
+			flash[:success] = 'Added To Your Public List'
+			redirect_to request.referrer
 		end
 	end
 	
 	def loved
 		if current_user&.present?
 			customerToUpdate = Stripe::Customer.retrieve(current_user.stripeCustomerID)
-			@wishlist = customerToUpdate['metadata']['wishlist'].present? ? customerToUpdate['metadata']['wishlist'].split(',').uniq : nil
+			@wishlist = customerToUpdate['metadata']['wishlist'].present? ? customerToUpdate['metadata']['wishlist'].split(',').uniq : []
+			@profileMetadata = customerToUpdate['metadata']
 		end
-		if request.post?
-			if params[:id].present?
-				customerUpdated = Stripe::Customer.update(current_user.stripeCustomerID,{
-					metadata: {
-						wishlist: customerToUpdate['metadata']['wishlist'].present? ? (customerToUpdate['metadata']['wishlist']+"#{params[:id]},") : "#{params[:id]},"
-					}
-				})
-				flash[:success] = 'Added To Your Wishlist'
-				redirect_to request.referrer
-			end
+		
+		if params[:remove] == 'true'
+			@newMeta = @profileMetadata['wishlist'].split(',') - [params[:id]]
+			customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID,{
+				metadata: {
+					wishlist: @newMeta.empty? ? "," : @newMeta[0].blank? ? "," : @newMeta
+				}
+			})
+			
+			flash[:success] = 'Removed From Your Wishlist'
+			redirect_to request.referrer
+		elsif params[:id].present?
+			customerUpdated = Stripe::Customer.update(current_user.stripeCustomerID,{
+				metadata: {
+					wishlist: customerToUpdate['metadata']['wishlist'].present? ? (customerToUpdate['metadata']['wishlist']+"#{params[:id]},") : "#{params[:id]},"
+				}
+			})
+			flash[:success] = 'Added To Your Wishlist'
+			redirect_to request.referrer
 		end
 	end
 

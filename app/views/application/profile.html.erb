@@ -40,6 +40,7 @@
 		<div class="card-overlay bg-black opacity-70"></div>
 	</div>
 	<% currentMembersip = @current_user.checkMembership %>
+    <% if @membershipDetails.present? %>
 	<div class="card card-style">
     <h1 class="p-3">Membership<span class="badge bg-green-dark color-white p-2 float-end"><%= currentMembersip[:membershipDetails]['active'] == true ? 'ACTIVE' : currentMembersip[:membershipDetails] %></span></h1>
 		<div class="content row">
@@ -66,6 +67,9 @@
       <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
 	  </div>
 	</div>
+  <% else %>
+	  Upgrade Your Free Membership
+	<% end %>
 	<% if @itemsDue.count == 1 %>
 	<% elsif @itemsDue.count > 1 %>
 		<div class="align-self-center ms-auto">

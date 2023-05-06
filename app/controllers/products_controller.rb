@@ -22,6 +22,8 @@ class ProductsController < ApplicationController
 
   # GET /products/1 or /products/1.json
   def show
+    @posts = Blog.where("asins like ?", params[:id])
+    @profileMetadata = current_user.present? ? Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata'] : []
     if params['recommended'].present?
       ahoy.track "Recommended Product Visit", product: params[:id], user: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
     else

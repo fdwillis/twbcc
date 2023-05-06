@@ -13,9 +13,9 @@
             <p><%= link_to 'Edit', edit_blog_path(@blog) %> | <%= link_to 'Back', blogs_path %></p>
           <% end %>
         <% if @blog.images.present? %>
-          <div class="splide single-slider slider-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="single-slider-334" style="visibility: visible;">
-            <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button" aria-controls="single-slider-334-track" aria-label="Go to last slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button><button class="splide__arrow splide__arrow--next" type="button" aria-controls="single-slider-334-track" aria-label="Next slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button></div><div class="splide__track" id="single-slider-334-track">
-                    <div class="splide__list" id="single-slider-334-list" style="transform: translateX(-3024px);">
+          <div class="splide double-slider slider-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="double-slider-334" style="visibility: visible;">
+            <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button" aria-controls="double-slider-334-track" aria-label="Go to last slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button><button class="splide__arrow splide__arrow--next" type="button" aria-controls="double-slider-334-track" aria-label="Next slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button></div><div class="splide__track" id="double-slider-334-track">
+                    <div class="splide__list" id="double-slider-334-list" style="transform: translateX(-3024px);">
                       
                         <% @blog.images.split(',').each do |img| %>
                           <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 1512px;">
@@ -31,7 +31,7 @@
                     </div>
 
                 </div>
-            <ul class="splide__pagination"><li><button class="splide__pagination__page is-active" type="button" aria-controls="single-slider-334-slide01" aria-label="Go to slide 1" aria-current="true"></button></li><li><button class="splide__pagination__page" type="button" aria-controls="single-slider-334-slide02" aria-label="Go to slide 2"></button></li><li><button class="splide__pagination__page" type="button" aria-controls="single-slider-334-slide03" aria-label="Go to slide 3"></button></li></ul>
+            <ul class="splide__pagination"><li><button class="splide__pagination__page is-active" type="button" aria-controls="double-slider-334-slide01" aria-label="Go to slide 1" aria-current="true"></button></li><li><button class="splide__pagination__page" type="button" aria-controls="double-slider-334-slide02" aria-label="Go to slide 2"></button></li><li><button class="splide__pagination__page" type="button" aria-controls="double-slider-334-slide03" aria-label="Go to slide 3"></button></li></ul>
           </div>
         <% end %>
       <div class="content">
@@ -60,18 +60,21 @@
           <div class="font-20 text-center">
             Share With The World <%= social_share_button_tag(@blog.title, :url => "https://#{request.env['HTTP_HOST']}", :image =>  @blog.images.split(',').shuffle.take(1)[0], desc: truncate(@blog.body, length: 50)) %>
           </div>
+          <% @blog.tags.split(',').shuffle.each do |tag| %>
+              <span class="badge no-click bg-green-dark p-2 text-uppercase rounded-s mb-3"><%= tag %></span>
+          <% end %>
       </div>
   </div>
 
 
   <h1 class="content">Shop</h1>
-  <div class="splide single-slider slider-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="single-slider-34" style="visibility: visible;">
-    <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button" aria-controls="single-slider-34-track" aria-label="Go to last slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button><button class="splide__arrow splide__arrow--next" type="button" aria-controls="single-slider-34-track" aria-label="Next slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button></div><div class="splide__track" id="single-slider-34-track">
-            <div class="splide__list" id="single-slider-34-list" style="transform: translateX(-3024px);">
+  <div class="splide double-slider slider-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="double-slider-34" style="visibility: visible;">
+    <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button" aria-controls="double-slider-34-track" aria-label="Go to last slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button><button class="splide__arrow splide__arrow--next" type="button" aria-controls="double-slider-34-track" aria-label="Next slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button></div><div class="splide__track" id="double-slider-34-track">
+            <div class="splide__list" id="double-slider-34-list" style="transform: translateX(-3024px);">
               <% @blog.asins.split(',').each do |asin| %>
                 <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 1512px;">
                     <div data-card-height="300" class="card mx-3 bg-14 rounded-m shadow-l" style='background-image: url("<%=  asin %>");height: 300px;'>
-                        <div class="card-bottom text-center mb-3 row">
+                        <div class="content card-bottom text-center mb-3 row">
                           <div class="col-6">
                             <a href="<%= amazon_path(asin: asin, country: @blog['country']) %>" target='_blank'>
                               <%= button_tag( :class => "btn btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
@@ -94,7 +97,7 @@
             </div>
 
         </div>
-    <ul class="splide__pagination"><li><button class="splide__pagination__page is-active" type="button" aria-controls="single-slider-34-slide01" aria-label="Go to slide 1" aria-current="true"></button></li><li><button class="splide__pagination__page" type="button" aria-controls="single-slider-34-slide02" aria-label="Go to slide 2"></button></li><li><button class="splide__pagination__page" type="button" aria-controls="single-slider-34-slide03" aria-label="Go to slide 3"></button></li></ul>
+    <ul class="splide__pagination"><li><button class="splide__pagination__page is-active" type="button" aria-controls="double-slider-34-slide01" aria-label="Go to slide 1" aria-current="true"></button></li><li><button class="splide__pagination__page" type="button" aria-controls="double-slider-34-slide02" aria-label="Go to slide 2"></button></li><li><button class="splide__pagination__page" type="button" aria-controls="double-slider-34-slide03" aria-label="Go to slide 3"></button></li></ul>
   </div>
   
 

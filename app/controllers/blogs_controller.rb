@@ -58,7 +58,9 @@ class BlogsController < ApplicationController
         end
       end
 
-      @blog.update(images: images.join(","))
+      if images.present?
+        @blog.update(images: images.join(","))
+      end
       
       if @blog.update(blog_params)
         format.html { redirect_to blog_url(@blog), notice: "Blog was successfully updated." }
