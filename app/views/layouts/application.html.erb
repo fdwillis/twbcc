@@ -5,8 +5,8 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= stylesheet_link_tag 'application', media: 'all' %>
+    <%= javascript_include_tag 'application' %>
     <link rel="stylesheet" type="text/css" href="/assets/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="/assets/style.css">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -23,48 +23,29 @@
     <div id="page">
 
       <div class="header header-fixed header-logo-center ">
-          <a href="index.html" class="header-title">Oarlin</a>
-          <a href="#" data-back-button="" class="header-icon header-icon-1"><i class="fa fa-arrow-left"></i></a>
-          <a href="#" data-toggle-theme="" class="header-icon header-icon-4"><i class="fa fa-lightbulb"></i></a>
+          <a href="/" class="header-title">Oarlin</a>
+          <!-- <a href='javascript:history.go(-1);' data-back-button="" class="header-icon header-icon-1"><i class="fa fa-arrow-left"></i></a> -->
+          <a href="#" data-menu="menu-sidebar-right-1" class="active-nav"><i class="header-icon header-icon-4 fa fa-bars"></i><span></span></a>
       </div>
 
-      <div id="footer-bar" class="footer-bar-1">
-        <% if request.fullpath.include?('/discover') %>
-          <a href="/discover" class="active-nav"><i class="fa fa-globe"></i><span>Discover</span></a>
+      <div id="footer-bar" class="footer-bar-1" data-no-turbolink>
+        <% if request.fullpath.include?('/explore')||request.fullpath.include?('/product') %>
+          <a href="/explore" class="active-nav" data-no-turbolink><i class="fa fa-globe"></i><span>Explore</span></a>
         <% else %>
-          <a href="/discover"><i class="fa fa-globe"></i><span>Discover</span></a>
-        <% end %>
-
-        <% if request.fullpath.include?('/tracking') %>
-          <a href="/tracking" class="active-nav"><i class="fa fa-paper-plane"></i><span>Tracking</span></a>
-        <% else %>
-          <a href="/tracking"><i class="fa fa-paper-plane"></i><span>Tracking</span></a>
+          <a href="/explore" data-no-turbolink><i class="fa fa-globe"></i><span>Explore</span></a>
         <% end %>
 
         <% if request.fullpath.include?('/search') %>
-          <a href="/search" class="active-nav"><i class="fa fa-search"></i><span>Search</span></a>
+          <a href="/search" class="active-nav" data-no-turbolink><i class="fa fa-search"></i><span>Search</span></a>
         <% else %>
-          <a href="/search"><i class="fa fa-search"></i><span>Search</span></a>
+          <a href="/search" data-no-turbolink><i class="fa fa-search"></i><span>Search</span></a>
         <% end %>
-
-       <!--  <% if request.fullpath.include?('/wishlist') %>
-          <a href="/wishlist" class="active-nav"><i class="fa fa-gift"></i><span>Wishlist</span></a>
-        <% else %>
-          <a href="/wishlist"><i class="fa fa-gift"></i><span>Wishlist</span></a>
-        <% end %> -->
 
         <% if request.fullpath.include?('/blog') %>
-          <a href="/blog" class="active-nav"><i class="fa fa-paste"></i><span>Posts</span></a>
+          <a href="/blog" class="active-nav" data-no-turbolink><i class="fa fa-paste"></i><span>Posts</span></a>
         <% else %>
-          <a href="/blog"><i class="fa fa-paste"></i><span>Posts</span></a>
+          <a href="/blog" data-no-turbolink><i class="fa fa-paste"></i><span>Posts</span></a>
         <% end %>
-
-        <% if request.fullpath.include?('/profile') || request.fullpath.include?('/wishlist') || request.fullpath.include?('/how-it-works') %>
-          <a href="#" data-menu="menu-sidebar-right-1" class="active-nav"><i class="fa fa-bars"></i><span>Menu</span></a>
-        <% else %>
-          <a href="#" data-menu="menu-sidebar-right-1"><i class="fa fa-bars"></i><span>Menu</span></a>
-        <% end %>
-
       </div>
 
 
@@ -86,7 +67,62 @@
                 </div>
               <% end %>
             </div>
-            <% if current_user %>
+            
+          </div>
+
+
+          <div class="card card-style">
+            <div class="content my-0">
+              <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Account</h5>
+              <div class="list-group list-custom-small list-icon-0">
+                <a href=<%= current_user.present? ? "/profile/#{current_user.uuid}" : new_user_session_path %>>
+                  <i class="fa font-12 fa-user bg-blue-dark rounded-sm color-white"></i>
+                  <span>Profile</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+              </div>
+              <div class="list-group list-custom-small list-icon-0">
+                <a href="/loved" data-menu="menu-backgrounds">
+                  <i class="fa font-12 fa-heart bg-highlight rounded-sm color-white"></i>
+                  <span>Loved <%= current_user.present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['wishlist'].split(',').uniq.size})" : nil %></span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+              </div>
+              <div class="list-group list-custom-small list-icon-0">
+                <a href="/list" data-menu="menu-backgrounds">
+                  <i class="fa font-12 fa-list bg-orange-dark rounded-sm color-white"></i>
+                  <span>List <%= current_user.present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].split(',').uniq.size})" : nil %></span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+              </div>
+              <% if current_user&.admin? %>
+                <div class="list-group list-custom-small list-icon-0">
+                  <a href="/analytics" data-menu="menu-backgrounds">
+                    <i class="fa font-12 fa-signal bg-green-dark rounded-sm color-white"></i>
+                    <span>Analytics</span>
+                    <i class="fa fa-angle-right"></i>
+                  </a>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="card card-style">
+            <div class="content my-0">
+              <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Company</h5>
+              <div class="list-group list-custom-small list-icon-0">
+                <a href="#" data-menu="menu-backgrounds">
+                  <i class="fa font-12 fa-users bg-yellow-dark rounded-sm color-white"></i>
+                  <span>How It Works</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+              </div>
+              
+            </div>
+          </div>
+
+        </div>
+        <% if current_user %>
               <div class="position-sticky w-100 bottom-0 end-0 pb-1">
                   <div class="content">
                     <div class="list-group list-custom-small list-icon-0">
@@ -110,51 +146,6 @@
                 </div>
               </div>
             <% end %>
-          </div>
-
-
-          <div class="card card-style">
-            <div class="content my-0">
-              <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Account</h5>
-              <div class="list-group list-custom-small list-icon-0">
-                <a href=<%= current_user.present? ? "/profile/#{current_user.uuid}" : new_user_session_path %>>
-                  <i class="fa font-12 fa-user bg-blue-dark rounded-sm color-white"></i>
-                  <span>Profile</span>
-                  <i class="fa fa-angle-right"></i>
-                </a>
-              </div>
-              <div class="list-group list-custom-small list-icon-0">
-                <a href="/wishlist" data-menu="menu-backgrounds">
-                  <i class="fa font-12 fa-gift bg-highlight rounded-sm color-white"></i>
-                  <span>Wishlist <%= current_user.present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['wishlist'].split(',').uniq.size})" : nil %></span>
-                  <i class="fa fa-angle-right"></i>
-                </a>
-              </div>
-              <div class="list-group list-custom-small list-icon-0">
-                <a href="/analytics" data-menu="menu-backgrounds">
-                  <i class="fa font-12 fa-signal bg-green-dark rounded-sm color-white"></i>
-                  <span>Analytics</span>
-                  <i class="fa fa-angle-right"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div class="card card-style">
-            <div class="content my-0">
-              <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Company</h5>
-              <div class="list-group list-custom-small list-icon-0">
-                <a href="#" data-menu="menu-backgrounds">
-                  <i class="fa font-12 fa-users bg-yellow-dark rounded-sm color-white"></i>
-                  <span>How It Works</span>
-                  <i class="fa fa-angle-right"></i>
-                </a>
-              </div>
-              
-            </div>
-          </div>
-
-        </div>
       </div>
 
 

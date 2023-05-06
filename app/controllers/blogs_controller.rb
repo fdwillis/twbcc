@@ -4,7 +4,9 @@ class BlogsController < ApplicationController
 
   # GET /blogs or /blogs.json
   def index
-    @blogs = Blog.all
+    @featured = []
+    @blogs = Blog.paginate(page: params[:page], per_page: 8)
+    Blog.all.map{|blog| blog['tags'].split(',').include?('featured') ? @featured << blog : next}
   end
 
   # GET /blogs/1 or /blogs/1.json
@@ -25,10 +27,11 @@ class BlogsController < ApplicationController
   def create
     images = []
     @blog = current_user.blogs.create!(blog_params)
-
-    params['attachment']['file'].each_with_index do |image, indx|
-      Cloudinary::Uploader.upload(image.tempfile, :use_filename => true, :folder => "blog/#{current_user.uuid}", :public_id => "#{blog_params['title']}-#{indx}")
-      images.push("https://res.cloudinary.com/dulizdfij/image/upload/blog/#{current_user.uuid}/#{@blog.title.strip}-#{indx}.jpg")
+    if params['attachment'].present?
+      params['attachment']['file'].each_with_index do |image, indx|
+        Cloudinary::Uploader.upload(image.tempfile, :use_filename => true, :folder => "blog/#{current_user.uuid}", :public_id => "#{blog_params['title'].parameterize(separator: '-')}-#{indx}")
+        images.push("https://res.cloudinary.com/dulizdfij/image/upload/blog/#{current_user.uuid}/#{@blog.title.parameterize(separator: '-')}-#{indx}.jpg")
+      end
     end
 
     @blog.update(images: images.join(","))
@@ -47,6 +50,16 @@ class BlogsController < ApplicationController
   # PATCH/PUT /blogs/1 or /blogs/1.json
   def update
     respond_to do |format|
+      images = []
+      if params['attachment'].present?
+        params['attachment']['file'].each_with_index do |image, indx|
+          Cloudinary::Uploader.upload(image.tempfile, :use_filename => true, :folder => "blog/#{current_user.uuid}", :public_id => "#{blog_params['title'].parameterize(separator: '-')}-#{indx}")
+          images.push("https://res.cloudinary.com/dulizdfij/image/upload/blog/#{current_user.uuid}/#{@blog.title.parameterize(separator: '-')}-#{indx}.jpg")
+        end
+      end
+
+      @blog.update(images: images.join(","))
+      
       if @blog.update(blog_params)
         format.html { redirect_to blog_url(@blog), notice: "Blog was successfully updated." }
         format.json { render :show, status: :ok, location: @blog }

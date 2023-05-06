@@ -11,7 +11,7 @@
 // about supported directives.
 //
 //= require rails-ujs
+//= require social-share-button
 //= require ahoy
-//= require jquery 
 //= require jquery_ujs
 //= require_tree .

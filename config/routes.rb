@@ -15,18 +15,20 @@ Rails.application.routes.draw do
 
   get "/membership", to: 'application#membership', as: 'membership'
   get "/view-on-amazon/:asin/:country", to: 'products#amazon', as: 'amazon'
-  get "/tracking", to: 'application#tracking', as: 'tracking'
-  get "/wishlist", to: 'application#wishlist', as: 'wishlist'
+  get "/list", to: 'application#list', as: 'list'
+  get "/loved", to: 'application#loved', as: 'loved'
   get "/analytics", to: 'application#analytics', as: 'analytics'
   get "/profile/:id", to: 'application#profile', as: 'profile'
   get "/how-it-works", to: 'application#how_it_works', as: 'how_it_works'
   get "/new-password-set", to: 'registrations#new_password', as: 'new-password-set'
   get "/checkout/:price/:account", to: 'application#checkout'
+  get "/explore/:country", to: 'products#explore'
+  get "/explore/", to: 'products#index'
   post "/new-password-set", to: 'registrations#new_password'
-  post "/wishlist", to: 'application#wishlist'
-  post "/tracking", to: 'application#tracking'
+  post "/loved", to: 'application#loved'
+  post "/list", to: 'application#list'
 
-  resources :products, path: '/discover'
+  resources :products, path: '/product'
   resources :search, path: '/search'
 
 end

@@ -11,15 +11,22 @@ class ProductsController < ApplicationController
     @membershipDetails = @userFound.present? ? @userFound.checkMembership : nil
   end
 
+  def explore
+    @products = Product.where(country: params[:country])
+  end
+
   def amazon
     ahoy.track "Product Purchase Intent", product: params['asin'], user: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
-    redirect_to "https://www.#{User::ACCEPTEDcountries[params[:country]][:site]}/gp/product/#{params['asin']}?&tag=#{params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).amazonUUID : ENV['usAmazonTag']}"
+    redirect_to "https://www.#{User::ACCEPTEDcountries[params[:country]][:site]}/dp/product/#{params['asin']}?&tag=#{params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).amazonUUID : ENV['usAmazonTag']}"
   end
 
   # GET /products/1 or /products/1.json
   def show
-  	@dataFromApi = User.rainforestProduct(params[:id])
-    ahoy.track "Product Visit", product: params[:id], user: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
+    if params['recommended'].present?
+      ahoy.track "Recommended Product Visit", product: params[:id], user: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
+    else
+      ahoy.track "Product Visit", product: params[:id], user: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
+    end
   end
 
   # GET /products/new
@@ -72,7 +79,7 @@ class ProductsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_product
-      @product = Product.friendly.find(params[:id])
+      @product = Product.find_by(asin: params[:id].upcase).present? ? Product.friendly.find_by(asin: params[:id].upcase) : User.rainforestProduct(params[:id])
     end
 
     # Only allow a list of trusted parameters through.

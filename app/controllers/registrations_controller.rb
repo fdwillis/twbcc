@@ -130,7 +130,7 @@ class RegistrationsController < ApplicationController
 
 	      #attach details to customer profile and cardholder profile
 	      stripePlan = Stripe::Subscription.list({customer: stripeSessionInfo['customer']})['data'][0]['items']['data'][0]['plan']['id']
-	      commissionRate = {commissionRate: User::FREEmembership.include?(stripePlan) ? 5 : User::AFFILIATEmembership.include?(stripePlan) ? 10 : User::BUSINESSmembership.include?(stripePlan) ? : 20 : User::AUTOMATIONmembership.include?(stripePlan) ? 30 : nil}
+	      commissionRate = {commissionRate: User::FREEmembership.include?(stripePlan) ? 5 : User::AFFILIATEmembership.include?(stripePlan) ? 10 : User::BUSINESSmembership.include?(stripePlan) ? : 20 : User::AUTOMATIONmembership.include?(stripePlan) ? 30 : 0}
 	      
 	      if cardNew.present? && cardHolderNew.present?
 		      customerUpdated = Stripe::Customer.update(

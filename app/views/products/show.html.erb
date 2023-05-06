@@ -1,32 +1,7 @@
-<!-- need to build @product with data from rainforest -->
-<p id="notice"><%= notice %></p>
 
-<p>
-  <strong>Country:</strong>
-  <%= @product.country %>
-</p>
-
-<p>
-  <strong>Tags:</strong>
-  <%= @product.tags %>
-</p>
-
-<p>
-  <strong>Asin:</strong>
-  <%= @product.asin %>
-</p>
-
-<%= link_to 'Edit', edit_product_path(@product) %> |
-<%= link_to 'Back', products_path %>
-
-<script type="text/javascript">
-  analytics.track('Recommended Viewed', {
-    asin: <%= @product.asin %>
-    tags: <%= @product.tags %>
-    country: <%= @product.country %>
-  });
-</script>
-
+<br>
+<br>
+<br>
 <div class="splide single-slider slider-no-dots" id="single-slider-1">
   <div class="splide__track">
       <div class="splide__list">
@@ -60,25 +35,35 @@
       </div>
   </div>
 </div>
-
+        
 <div class="card card-overflow card-style">
   <div class="content">
       <div class="d-flex">
           <div class="flex-grow-1">
               <h1 class="font-30">StickyMobile</h1>
-              <p class="mt-n1 font-12 color-highlight mb-4"><i class="fa fa-globe"></i> <%= User::ACCEPTEDcountries[@product.country][:country] %></p>
+              
+
+              <p class="mt-n1 font-12 color-highlight mb-4"></p>
+              <!-- User::ACCEPTEDcountries.values.detect {|item| item[:site] == rainforestResponseLinkForThisProduct.split("://www.")[1].split("/")[0] } -->
           </div>
-          <div class="flex-shrink-1 mt-1">
-            <a href="#" data-toast="snackbar-favorites" class="icon icon-xs rounded-pill shadow-m ms-2 bg-highlight"><i class="fa fa-gift"></i></a>
-            <a href="#" data-toast="snackbar-favorites" class="icon icon-xs rounded-pill shadow-m ms-2 color-highlight"><i class="fa fa-gift"></i></a>
-            <a href="#" data-toast="snackbar-favorites" class="icon icon-xs rounded-pill shadow-m ms-2 bg-highlight"><i class="fa fa-paper-plane"></i></a>
-            <a href="#" data-toast="snackbar-favorites" class="icon icon-xs rounded-pill shadow-m ms-2 color-highlight"><i class="fa fa-paper-plane"></i></a>
+          <div class="flex-shrink-1 m-1">
+
+            <% if current_user %>
+              
+            <% else %>
+              <a href="<%= list_path(id: @product['asin']) %>" method='POST' data-confirm="Add this to your public list?" class="icon icon-xs rounded-pill shadow-m ms-2 bg-highlight"><i class="fa fa-list"></i></a>
+              <a href="<%= list_path(id: @product['asin']) %>" method='POST' data-confirm="Add this to your loved list?" class="icon icon-xs rounded-pill shadow-m ms-2 bg-highlight"><i class="fa fa-heart"></i></a>
+            <% end %>
+          </div>
+
+          <div class="flex-shrink-1 m-1">
+            <a href="#" class="btn btn-s text-uppercase font-900 bg-highlight mb-4"><span class="flag-icon flag-icon-<%= @product.country.downcase %> font-20"></span><i class="font-20 color-white px-1 fa fa-amazon"></i> Affiliate Eligible</a>
           </div>
       </div>
-      
+      <!-- add renderforest Keywords via response 'keywords_list' -->
       <div class="divider"></div>
-        <div class="me-auto">
-          <% @product.tags.split(',').each do |tag| %>
+        <div class="me-auto"> 
+          <% @product['tags'].split(',').each do |tag| %> 
             <span class="badge no-click bg-green-dark p-2 text-uppercase rounded-s mb-3"><%= tag %></span>
           <% end %>
         </div>
@@ -144,26 +129,23 @@
           </div>
       </div>
       
-      <div class="d-flex mt-4">
-          <div class="flex-grow-1">
-              <span class="font-11">Share with the World </span>
-              <p class="mt-n2">
-                  <strong class="color-theme">Share or Save for Later</strong>
-              </p>
-          </div>
-          <div class="sharethis-inline-share-buttons"></div>
-          
-      </div>
+      
       
       <div class="divider mt-4"></div>
       
-      <a href="<%= amazon_path(asin: @product.asin, country: @product.country) %>" target='_blank'>
+      <a href="<%= amazon_path(asin: @product['asin'], country: @product['country']) %>" target='_blank'>
         <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-highlight form-control") do %>
           <i class="fa fa-amazon font-20 color-white"></i> Purchase On Amazon
         <% end %>
       </a>
-
-      <%= Ahoy::Event.where_event("Product Purchase Intent", product: @product.asin.upcase).count %>
+      <div class="d-flex mt-4">
+          <div class="flex-grow-1">
+            <div class="font-20 text-center">
+              Share With The World <%= social_share_button_tag("Title", :url => "https://#{request.env['HTTP_HOST']}?&referredBy=#{current_user.present? ? current_user.uuid : nil}", :image =>  "https://images.mktw.net/im-720056?width=700&height=466", desc: truncate("Body", length: 50)) %>
+            </div>
+          </div>
+      </div>
+      <!-- <%= Ahoy::Event.where_event("Product Purchase Intent", product: @product['asin'].upcase).count %> -->
       
   </div>
 </div>

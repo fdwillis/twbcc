@@ -29,8 +29,6 @@
   <div class="field">
     <%= form.label :images %>
     <%= form.file_field :images, multiple: true, name: "attachment[file][]" %>
-    <%= cl_image_upload_tag(:image_id, :html => { :multiple => true }, :use_filename => true, :folder => "blog/#{current_user.uuid}") %>
-
   </div>
 
   <div class="field">
@@ -43,10 +41,7 @@
     <%= form.select :country, [['Australia', 'AU'], ['Belgium', 'BE'], ['Brazil', 'BR'], ['Canada', 'CA'], ['China', 'CN'], ['France', 'FR'], ['Germany', 'DE'], ['India', 'IN'], ['Italy', 'IT'], ['Japan', 'JP'], ['Mexico', 'MX'], ['Netherlands', 'NL'], ['Poland', 'PL'], ['Saudi Arabia', 'SA'], ['Singapore', 'SG'], ['Spain', 'ES'], ['Sweden', 'SE'], ['United Arab Emirates', 'AE'], ['United Kingdom', 'GB'], ['United States', 'US']], required: true, class: 'lp-pom-form-field', style: 'background-color: #1b6a62;' %>
   </div>
 
-  <div class="field">
-    <%= form.label :user_id %>
-    <%= form.text_field :user_id, value: current_user&.id %>
-  </div>
+    <%= form.hidden_field :user_id, value: current_user&.id %>
 
   <div class="actions">
     <%= form.submit %>

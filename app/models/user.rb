@@ -1,3 +1,4 @@
+require 'will_paginate/array'
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
@@ -32,6 +33,11 @@ class User < ApplicationRecord
       currency: 'cny',
       country: 'China',
     },
+    'EG' => {
+      site: 'amazon.eg',
+      currency: 'egp',
+      country: 'Egypt',
+    },
     'FR' => {
       site: 'amazon.fr',
       currency: 'eur',
@@ -65,7 +71,7 @@ class User < ApplicationRecord
     'NL' => {
       site: 'amazon.nl',
       currency: 'eur',
-      country: 'The Netherlands',
+      country: 'Netherlands',
     },
     'PL' => {
       site: 'amazon.pl',
@@ -91,6 +97,11 @@ class User < ApplicationRecord
       site: 'amazon.se',
       currency: 'sek',
       country: 'Sweden',
+    },
+    'TR' => {
+      site: 'amazon.com.tr',
+      currency: 'try',
+      country: 'Turkey',
     },
     'AE' => {
       site: 'amazon.ae',
@@ -119,8 +130,8 @@ class User < ApplicationRecord
     @profile = @userFound.present? ? Stripe::Customer.retrieve(@userFound.stripeCustomerID) : nil
     @membershipDetails = @userFound.present? ? @userFound.checkMembership : nil
 
-    affiliteLink = "https://www.#{ACCEPTEDcountries[country][:site]}/gp/product/#{asin}?&tag=#{@userFound&.amazonUUID}"
-    adminLink =  "https://www.#{ACCEPTEDcountries[country][:site]}/gp/product/#{asin}?&tag=netwerthcard-20"
+    affiliteLink = "https://www.#{ACCEPTEDcountries[country][:site]}/dp/product/#{asin}?&tag=#{@userFound&.amazonUUID}"
+    adminLink =  "https://www.#{ACCEPTEDcountries[country][:site]}/dp/product/#{asin}?&tag=netwerthcard-20"
 
     #split traffic 95/5
     if affiliateOrAdmin == false
@@ -138,46 +149,49 @@ class User < ApplicationRecord
     embed(@url, options)
   end
 
-  def self.rainforestProduct(asin = nil)
+  def self.rainforestProduct(asin = nil, country)
     @data = []
+    debugger
+    return
     if asin.present?
-      res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=product&amazon_domain=amazon.com&asin=#{asin}")
+      res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=product&amazon_domain=#{ACCEPTEDcountries[country][:site]}&asin=#{asin}")
       loadedData = Oj.load(res.body)['product']
       @data << {product: asin, data: loadedData}
     else
       #auto load
       autoSearchProducts.each do |product|
-        categoriesLoaded = rainforestSearch(product)
+        categoriesLoaded = rainforestSearch(product, country)
         categoriesLoaded[(rand(0..(categoriesLoaded.count-1)))][:data][0..14]
         asin = categoriesLoaded[(rand(0..(categoriesLoaded.count-1)))][:data][0..14][0]['asin']
-        res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=product&amazon_domain=amazon.com&asin=#{asin}")
+        res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=product&amazon_domain=#{ACCEPTEDcountries[country][:site]}&asin=#{asin}")
         loadedData = Oj.load(res.body)['product']
         @data << {product: product, data: loadedData}
         # asin = loadedData['search_results'][rand(1..10)]['asin']
         # link = ENV['amazonUS']
 
-        # "https://www.amazon.com/gp/product/#{loadedData['search_results'][rand(1..10)]['asin']}?&tag=#{ENV['usAmazonTag']}"
+        # "https://www.amazon.com/dp/#{loadedData['search_results'][rand(1..10)]['asin']}&tag=#{ENV['usAmazonTag']}"
       end
     end
+
     @data
+    {'asin'=> asin, 'country'=> 'US', 'tags'=> 'RAINFOREST CALL'}
   end
 
-  def self.rainforestSearch(term = nil)
+  def self.rainforestSearch(term = nil, country)
     @data = []
+    debugger
+    return
     if term.present?
-      res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=search&amazon_domain=amazon.com&search_term=#{term.split.join('+')}")
+      res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=search&amazon_domain=#{ACCEPTEDcountries[country][:site]}&search_term=#{term.split.join('+')}")
       loadedData = Oj.load(res.body)['search_results']
       @data << {category: term, data: loadedData}
     else
       #auto load
       autoSearchCategories.each do |category|
-        res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=search&amazon_domain=amazon.com&search_term=#{category.split.join('+')}")
+        res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=search&amazon_domain=#{ACCEPTEDcountries[country][:site]}&search_term=#{category.split.join('+')}")
         loadedData = Oj.load(res.body)['search_results']
         @data << {category: category, data: loadedData}
-        # asin = loadedData['search_results'][rand(1..10)]['asin']
-        # link = ENV['amazonUS']
-
-        # "https://www.amazon.com/gp/product/#{loadedData['search_results'][rand(1..10)]['asin']}?&tag=#{ENV['usAmazonTag']}"
+        # return country in response to display flag
       end
     end
     @data

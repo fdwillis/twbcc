@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+	before_action :authenticate_user!, only: [:list, :loved] 
 
 	def home
 		@products = User.rainforestProduct
@@ -8,7 +9,7 @@ class ApplicationController < ActionController::Base
 	def analytics
 		
 	end
-
+# <%= Ahoy::Event.where_event("Search Terms").count %>
 	def checkout
 		applicationFeeAmount = Stripe::Price.retrieve(params['price'],{stripe_account: params['account']})['unit_amount'] * 0.02
 		@session = Stripe::Checkout::Session.create({
@@ -213,7 +214,7 @@ class ApplicationController < ActionController::Base
 		ahoy.track "Profile Visit", user: @userFound.uuid
 	end
 
-	def tracking
+	def list
 		if current_user&.present?
 			customerToUpdate = Stripe::Customer.retrieve(current_user&.stripeCustomerID)
 			@tracking = customerToUpdate['metadata']['tracking'].present? ? customerToUpdate['metadata']['tracking'].split(',').uniq : nil
@@ -231,7 +232,7 @@ class ApplicationController < ActionController::Base
 		end
 	end
 	
-	def wishlist
+	def loved
 		if current_user&.present?
 			customerToUpdate = Stripe::Customer.retrieve(current_user.stripeCustomerID)
 			@wishlist = customerToUpdate['metadata']['wishlist'].present? ? customerToUpdate['metadata']['wishlist'].split(',').uniq : nil

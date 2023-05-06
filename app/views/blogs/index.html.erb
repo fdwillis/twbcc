@@ -1,249 +1,133 @@
-<p id="notice"><%= notice %></p>
-
-<h1>Blogs</h1>
-
-<table>
-  <thead>
-    <tr>
-      <th>Title</th>
-      <th>Body</th>
-      <th>Asins</th>
-      <th>Users</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @blogs.each do |blog| %>
-      <tr>
-        <td><%= blog.title %></td>
-        <td><%= blog.body %></td>
-        <td><%= blog.asins %></td>
-        <td><%= blog.user_id %></td>
-        <td><%= link_to 'Show', blog %></td>
-        <td><%= link_to 'Edit', edit_blog_path(blog) %></td>
-        <td><%= link_to 'Destroy', blog, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<br>
-
-<%= link_to 'New Blog', new_blog_path %>
 
 <div class="page-content header-clear-medium">
-
+  <% if current_user&.admin? %>  
+  <!-- or if business(max 10) or if automation (unlimited) -->
+    <%= link_to 'New Blog', new_blog_path %>
+  <% end %>
+  <% if @featured.present? %>
     <div class="splide single-slider slider-no-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="single-slider-1" style="visibility: visible;">
         <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button" aria-controls="single-slider-1-track" aria-label="Previous slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button><button class="splide__arrow splide__arrow--next" type="button" aria-controls="single-slider-1-track" aria-label="Next slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button></div><div class="splide__track" id="single-slider-1-track">
             <div class="splide__list" id="single-slider-1-list" style="transform: translateX(-4536px);">
+              <% @featured.each do |blog| %>
                 <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 1512px;">
-                    <a href="#" class="card card-style" style="background-image: url('https://i.ytimg.com/vi/dec7nO0SO34/maxresdefault.jpg')" data-card-height="300" style="height: 300px;">
+                    <a href="/blog/<%= blog.title.parameterize(separator: '-') %>" class="card card-style" style='background-image: url("<%=  blog.images.split(',').shuffle.first %>")' data-card-height="300" style="height: 300px;">
                         <div class="card-top">
-                            <span class="badge float-end bg-red-dark p-2 text-uppercase rounded-s m-2">SPORTS</span>
+                            <% @blogs[0].tags.split(',').shuffle.take(1).each do |tag| %>
+                              <span class="badge float-end bg-highlight p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                            <% end %>
                         </div>
                         <div class="card-bottom m-3">
-                            <h1 class="color-white font-20">
-                                The Apple Watch is keeps you on track with your workouts.
-                            </h1>
-                            <p class="mb-0 color-white font-12 opacity-40 pt-1">Posted by Enabled - 2 Hours, 21 Minutes Ago</p>
-                        </div>
-                        <div class="card-overlay bg-gradient opacity-90"></div>
-                    </a>
-                </div><div class="splide__slide splide__slide--clone" style="width: 1512px;">
-                    <a href="#" class="card card-style" style="background-image: url('https://i.ytimg.com/vi/dec7nO0SO34/maxresdefault.jpg')" data-card-height="300" style="height: 300px;">
-                        <div class="card-top">
-                            <span class="badge float-end bg-green-dark p-2 text-uppercase rounded-s m-2">BUSINESS</span>
-                        </div>
-                        <div class="card-bottom m-3">
-                            <h1 class="color-white font-20">
-                                Keep your schedule organized. Here are the best tricks.
-                            </h1>
-                            <p class="mb-0 color-white font-12 opacity-40 pt-1">Posted by Enabled - 3 Hours, 37 Minutes Ago</p>
-                        </div>
-                        <div class="card-overlay bg-gradient opacity-90"></div>
-                    </a>
-                </div><div class="splide__slide" id="single-slider-1-slide01" aria-hidden="true" tabindex="-1" style="width: 1512px;">
-                    <a href="#" class="card card-style" style="background-image: url('https://i.ytimg.com/vi/dec7nO0SO34/maxresdefault.jpg')" data-card-height="300" style="height: 300px;">
-                        <div class="card-top">
-                            <span class="badge float-end bg-blue-dark p-2 text-uppercase rounded-s m-2">Technology</span>
-                        </div>
-                        <div class="card-bottom m-3">
-                            <h1 class="color-white font-20">
-                                Apple's new Macbook M1 is perfect. Here are our thoughts.
-                            </h1>
-                            <p class="mb-0 color-white font-12 opacity-40 pt-1">Posted by Enabled - 25 Minutes Ago</p>
+                            <h1 class="color-white font-20"><%= blog.title %></h1>
+                            <p class="mb-0 color-white font-12 opacity-40 pt-1"><%= time_ago_in_words(blog.created_at) %> ago</p>
                         </div>
                         <div class="card-overlay bg-gradient opacity-90"></div>
                     </a>
                 </div>
-                <div class="splide__slide is-active is-visible" id="single-slider-1-slide02" style="width: 1512px;" aria-hidden="false" tabindex="0">
-                    <a href="#" class="card card-style" style="background-image: url('https://i.ytimg.com/vi/dec7nO0SO34/maxresdefault.jpg')" data-card-height="300" style="height: 300px;">
-                        <div class="card-top">
-                            <span class="badge float-end bg-red-dark p-2 text-uppercase rounded-s m-2">SPORTS</span>
-                        </div>
-                        <div class="card-bottom m-3">
-                            <h1 class="color-white font-20">
-                                The Apple Watch is keeps you on track with your workouts.
-                            </h1>
-                            <p class="mb-0 color-white font-12 opacity-40 pt-1">Posted by Enabled - 2 Hours, 21 Minutes Ago</p>
-                        </div>
-                        <div class="card-overlay bg-gradient opacity-90"></div>
-                    </a>
-                </div>
-                <div class="splide__slide" id="single-slider-1-slide03" style="width: 1512px;" aria-hidden="true" tabindex="-1">
-                    <a href="#" class="card card-style" style="background-image: url('https://i.ytimg.com/vi/dec7nO0SO34/maxresdefault.jpg')" data-card-height="300" style="height: 300px;">
-                        <div class="card-top">
-                            <span class="badge float-end bg-green-dark p-2 text-uppercase rounded-s m-2">BUSINESS</span>
-                        </div>
-                        <div class="card-bottom m-3">
-                            <h1 class="color-white font-20">
-                                Keep your schedule organized. Here are the best tricks.
-                            </h1>
-                            <p class="mb-0 color-white font-12 opacity-40 pt-1">Posted by Enabled - 3 Hours, 37 Minutes Ago</p>
-                        </div>
-                        <div class="card-overlay bg-gradient opacity-90"></div>
-                    </a>
-                </div>
-            <div class="splide__slide splide__slide--clone" style="width: 1512px;">
-                    <a href="#" class="card card-style" style="background-image: url('https://m.media-amazon.com/images/I/81M864YqZbL._AC_SX679_.jpg')" data-card-height="300" style="height: 300px;">
-                        <div class="card-top">
-                            <span class="badge float-end bg-blue-dark p-2 text-uppercase rounded-s m-2">Technology</span>
-                        </div>
-                        <div class="card-bottom m-3">
-                            <h1 class="color-white font-20">
-                                Apple's new Macbook M1 is perfect. Here are our thoughts.
-                            </h1>
-                            <p class="mb-0 color-white font-12 opacity-40 pt-1">Posted by Enabled - 25 Minutes Ago</p>
-                        </div>
-                        <div class="card-overlay bg-gradient opacity-90"></div>
-                    </a>
-                </div><div class="splide__slide splide__slide--clone" style="width: 1512px;">
-                    <a href="#" class="card card-style" style="background-image: url('https://m.media-amazon.com/images/I/81M864YqZbL._AC_SX679_.jpg')" data-card-height="300" style="height: 300px;">
-                        <div class="card-top">
-                            <span class="badge float-end bg-red-dark p-2 text-uppercase rounded-s m-2">SPORTS</span>
-                        </div>
-                        <div class="card-bottom m-3">
-                            <h1 class="color-white font-20">
-                                The Apple Watch is keeps you on track with your workouts.
-                            </h1>
-                            <p class="mb-0 color-white font-12 opacity-40 pt-1">Posted by Enabled - 2 Hours, 21 Minutes Ago</p>
-                        </div>
-                        <div class="card-overlay bg-gradient opacity-90"></div>
-                    </a>
-                </div></div>
+              <% end %>
         </div>
     <ul class="splide__pagination"><li><button class="splide__pagination__page" type="button" aria-controls="single-slider-1-slide01" aria-label="Go to slide 1"></button></li><li><button class="splide__pagination__page is-active" type="button" aria-controls="single-slider-1-slide02" aria-label="Go to slide 2" aria-current="true"></button></li><li><button class="splide__pagination__page" type="button" aria-controls="single-slider-1-slide03" aria-label="Go to slide 3"></button></li></ul></div>
+  <% end %>
     <%= render 'application/getpaidaffiliates', message: 'Oarlin members can get paid to share any posts or product!' %>
     <div class="row mb-0">
         <div class="col-6 pe-0">
-            <a href="#" class="card card-style mb-2" style="background-image: url('https://i.ytimg.com/vi/dec7nO0SO34/maxresdefault.jpg')" data-card-height="135" style="height: 135px;">
+          <% if @blogs[0].present? %>
+            <a href="/blog/<%= @blogs[0].title.parameterize(separator: '-') %>" class="card card-style mb-2" style='background-image: url("<%=  @blogs[0].images.split(',').shuffle.first %>");height: 135px;' data-card-height="135">
                 <div class="card-top text-center">
-                    <span class="badge bg-red-dark px-2 py-1 color-white m-3">FRESH NOW</span>
+                  <% @blogs[0].tags.split(',').shuffle.take(1).each do |tag| %>
+                    <span class="badge float-end bg-green-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                  <% end %>
                 </div>
                 <div class="card-bottom p-3">
                     <h5 class="color-white font-500 font-14 mb-n1">
-                        Appkit Outselling all new Products.
+                        <%= @blogs[0].title %>
                     </h5>
-                    <span class="color-white opacity-50 font-10">2 hours ago</span>
+                    <span class="color-white opacity-50 font-10">
+                      <%= time_ago_in_words(@blogs[0].created_at) %> ago</span>
                 </div>
                 <div class="card-overlay bg-black opacity-70"></div>
             </a>
-            <a href="#" class="card card-style mb-2" style="background-image: url('https://m.media-amazon.com/images/I/81M864YqZbL._AC_SX679_.jpg')" data-card-height="135" style="height: 135px;">
+          <% end %>
+          <% if @blogs[1].present? %>
+            <a href="/blog/<%= @blogs[1].title.parameterize(separator: '-') %>" class="card card-style mb-2" data-card-height="135" style='background-image: url("<%=  @blogs[1].images.split(',').shuffle.first %>");height: 135px;'>
                 <div class="card-top text-center">
-                    <span class="badge bg-blue-dark px-2 py-1 color-white m-3">LATEST NEWS</span>
+                  <% @blogs[1].tags.split(',').shuffle.take(1).each do |tag| %>
+                    <span class="badge float-end bg-yellow-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                  <% end %>
                 </div>
                 <div class="card-bottom p-3">
-                    <h5 class="color-white font-500 font-14 mb-n1">
-                        Azures loved by all our customers.
-                    </h5>
-                    <span class="color-white opacity-50 font-10">2 hours ago</span>
+                    <h5 class="color-white font-500 font-14 mb-n1"><%= @blogs[1].title %></h5>
+                    <span class="color-white opacity-50 font-10"><%= time_ago_in_words(@blogs[1].created_at) %> ago</span>
                 </div>
                 <div class="card-overlay bg-black opacity-70"></div>
             </a>
+          <% end %>
         </div>
         <div class="col-6 ps-0">
-            <a href="#" class="card card-style ms-0" style="background-image: url('https://m.media-amazon.com/images/I/81M864YqZbL._AC_SX679_.jpg')" data-card-height="280" style="height: 280px;">
+          <% if @blogs[2].present? %>
+            <a href="/blog/<%= @blogs[2].title.parameterize(separator: '-') %>" class="card card-style ms-0" style='background-image: url("<%=  @blogs[2].images.split(',').shuffle.first %>")' data-card-height="280" style="height: 280px;">
                 <div class="card-top text-center">
-                    <span class="badge bg-green-dark px-2 py-1 color-white m-3">TRENDING NOW</span>
+                  <% @blogs[2].tags.split(',').shuffle.take(1).each do |tag| %>
+                    <span class="badge float-end bg-orange-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                  <% end %>
                 </div>
                 <div class="card-bottom p-3">
-                    <h5 class="color-white font-500">
-                        Sticky is now the absolute best PWA selling on Envato
-                    </h5>
-                    <span class="color-white opacity-50 font-10">2 hours ago</span>
+                    <h5 class="color-white font-500"><%= @blogs[2].title %></h5>
+                    <span class="color-white opacity-50 font-10"><%= time_ago_in_words(@blogs[2].created_at) %> ago</span>
                 </div>
                 <div class="card-overlay bg-black opacity-70"></div>
             </a>
+          <% end %>
         </div>
     </div>
-
-    <div class="card card-style mt-n3" data-card-height="200" style="height: 200px;">
-        <div class="card-top">
-            <a href="#" class="btn btn-s m-3 rounded-sm text-uppercase font-700 bg-red-dark float-end">WATCH LIVE <i class="fa fa-play-circle ps-2"></i></a>
-        </div>
-        <div class="card-bottom p-3">
-            <h1 class="font-24 font-700 mb-n1 color-white">Live Feed</h1>
-            <p class="color-white mb-0 opacity-50">
-                Join the live coverage now!
-            </p>
-        </div>
-        <div class="card-overlay bg-gradient"></div>
-        <div class="card-overlay-infinite preload-img entered loaded" data-src="images/pictures/_bg-infinite.jpg" data-ll-status="loaded" style="background-image: url(&quot;images/pictures/_bg-infinite.jpg&quot;);"></div>
-    </div>
-
 
     <div class="row mb-0 mt-n3">
         <div class="col-6 pe-0">
-            <a href="#" class="card card-style" style="background-image: url('https://m.media-amazon.com/images/I/81M864YqZbL._AC_SX679_.jpg')" data-card-height="280" style="height: 280px;">
+          <% if @blogs[3].present? %>
+            <a href="/blog/<%= @blogs[3].title.parameterize(separator: '-') %>" class="card card-style" style="background-image: url('<%=  @blogs[3].images.split(',').shuffle.first %>');height: 280px;" data-card-height="280" style="">
                 <div class="card-top text-center">
-                    <span class="badge bg-orange-dark px-2 py-1 color-white m-3"><i class="fa fa-fire me-2"></i>HOT</span>
+                  <% @blogs[3].tags.split(',').shuffle.take(1).each do |tag| %>
+                    <span class="badge float-end bg-red-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                  <% end %>
                 </div>
                 <div class="card-bottom p-3">
-                    <h5 class="color-white font-500">
-                        React and Vue Integrations arriving in 2021.
-                    </h5>
-                    <span class="color-white opacity-50 font-10">2 hours ago</span>
+                    <h5 class="color-white font-500"><%= @blogs[3].title %></h5>
+                    <span class="color-white opacity-50 font-10"><%= time_ago_in_words(@blogs[3].created_at) %> ago</span>
                 </div>
                 <div class="card-overlay bg-black opacity-80"></div>
             </a>
+          <% end %>
         </div>
         <div class="col-6 ps-0">
-            <a href="#" class="card ms-0 card-style mb-2" data-card-height="135" style="height: 135px;">
+          <% if @blogs[4].present? %>
+            <a href="/blog/<%= @blogs[4].title.parameterize(separator: '-') %>" class="card ms-0 card-style mb-2" data-card-height="135" style="background-image: url('<%=  @blogs[4].images.split(',').shuffle.first %>');height: 135px;">
                 <div class="card-top text-center">
-                    <span class="badge bg-brown-dark px-2 py-1 color-white m-3"><i class="fa fa-code me-2"></i>STANDARDS</span>
+                    <% @blogs[4].tags.split(',').shuffle.take(1).each do |tag| %>
+                      <span class="badge float-end bg-brown-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                    <% end %>
                 </div>
                 <div class="card-bottom p-3">
-                    <h5 class="color-white font-500 font-14 mb-n1">
-                        jQuery will be replaced by Vanilla JS
-                    </h5>
-                    <span class="color-white opacity-50 font-10">2 hours ago</span>
+                    <h5 class="color-white font-500 font-14 mb-n1"><%= @blogs[4].title %></h5>
+                    <span class="color-white opacity-50 font-10"><%= time_ago_in_words(@blogs[4].created_at) %> ago</span>
                 </div>
                 <div class="card-overlay bg-black opacity-70"></div>
             </a>
-            <a href="#" class="card ms-0 card-style mb-2" data-card-height="135" style="height: 135px;">
+          <% end %>
+          <% if @blogs[5].present? %>
+            <a href="/blog/<%= @blogs[5].title.parameterize(separator: '-') %>" class="card ms-0 card-style mb-2" data-card-height="135" style="background-image: url('<%=  @blogs[5].images.split(',').shuffle.first %>');height: 135px;">
                 <div class="card-top text-center">
-                    <span class="badge bg-green-dark px-2 py-1 color-white m-3"><i class="fa fa-user me-2"></i>OPINIONS</span>
+                    <% @blogs[5].tags.split(',').shuffle.take(1).each do |tag| %>
+                      <span class="badge float-end bg-blue-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                    <% end %>
                 </div>
                 <div class="card-bottom p-3">
-                    <h5 class="color-white font-500 font-14 mb-n1">
-                        React or Vue? You decide, we will add it.
-                    </h5>
-                    <span class="color-white opacity-50 font-10">2 hours ago</span>
+                    <h5 class="color-white font-500 font-14 mb-n1"><%= @blogs[5].title %></h5>
+                    <span class="color-white opacity-50 font-10"><%= time_ago_in_words(@blogs[5].created_at) %> ago</span>
                 </div>
                 <div class="card-overlay bg-black opacity-70"></div>
             </a>
+          <% end %>
         </div>
     </div>
-    <a href="#" class="card card-style mt-n2" data-card-height="200" style="height: 200px;">
-        <div class="card-top text-end">
-            <span class="badge bg-pink2-dark px-2 py-1 color-white m-3">FOR YOU NOW!</span>
-        </div>
-        <div class="card-bottom p-3">
-            <h4 class="color-white font-500">
-                Sticky Mobile gets another absolutely awesome update for customers.
-            </h4>
-        </div>
-        <div class="card-overlay bg-gradient"></div>
-    </a>
 </div>
+<%= will_paginate @blogs, class: 'btn btn-lg m-3 rounded-sm text-uppercase font-700 bg-highlight float-end' %>
+

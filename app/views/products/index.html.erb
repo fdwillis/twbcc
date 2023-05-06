@@ -1,270 +1,30 @@
-<p id="notice"><%= notice %></p>
-
-<h1>Trending Products</h1>
-
-<table>
-  <thead>
-    <tr>
-      <th>Country</th>
-      <th>Tags</th>
-      <th>Asin</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @products.each do |product| %>
-      <tr>
-        <td><%= product.country %></td>
-        <td><%= product.tags %></td>
-        <td><%= product.asin %></td>
-        <td><%= link_to 'Show', product %></td>
-        <% if current_user&.admin? %>
-          <td><%= link_to 'Edit', edit_product_path(product) %></td>
-          <td><%= link_to 'Destroy', product, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-        <% end %>
-          <td><%= link_to 'Add To Wishlist', wishlist_path(id: product.asin), method: :post, data: { confirm: 'Add this to your wishlist?' } %></td>
-          <td><%= link_to 'Add To Tracking', tracking_path(id: product.asin), method: :post, data: { confirm: 'Add this to your tracking?' } %></td>
-        <td><%= User.renderLink(params['referredBy'], product.country, product.asin, params['referredBy'].present?) %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
+<br>
+<br>
 <br>
 
 <div class="card card-style over-card">
   <div class="content">
-    <h1 class="font-20 line-height-m pb-2">United States Amazon</h1>
-    <div class="splide double-slider slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="single-slider-3" style="visibility: visible;">
+    <h1 class="font-20 line-height-m pb-2">Explore Amazon Products</h1>
+    <div class="splide double-slider slider-no-dots slider-arrows splide--loop splide--ltr splide--draggable is-active" id="single-slider-3" style="visibility: visible;">
         <div class="splide__track" id="single-slider-3-track">
             <div class="splide__list" id="single-slider-3-list" style="transform: translateX(-975px);">
-                <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
-                    <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
-                        <div class="card-top">
-                            <img src="images/store/1a.png" class="mt-4 mx-auto" style="width:150px!important;">
-                        </div>
-                        <div class="card-bottom text-center">
-                            <h3 class="font-900 mb-0">Color Edition</h3>
-                            <p class="text-center mb-3">
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                            </p>
-                            <a href="#" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">View</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
-                    <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
-                        <div class="card-top">
-                            <img src="images/store/2a.png" class="mt-4 mx-auto" style="width:150px!important;">
-                        </div>
-                        <div class="card-bottom text-center">
-                            <h3 class="font-900 mb-0">White Edition</h3>
-                            <p class="text-center mb-3">
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                            </p>
-                            <a href="#" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">View</a>
-                        </div>
-                    </div>
-                </div>
-
-            <div class="splide__slide splide__slide--clone" style="width: 195px;">
-                    <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
-                        <div class="card-top">
-                            <img src="images/store/2a.png" class="mt-4 mx-auto" style="width:150px!important;">
-                        </div>
-                        <div class="card-bottom text-center">
-                            <h3 class="font-900 mb-0">White Edition</h3>
-                            <p class="text-center mb-3">
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                            </p>
-                            <a href="#" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">View</a>
-                        </div>
-                    </div>
-                </div><div class="splide__slide splide__slide--clone" style="width: 195px;">
-                    <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
-                        <div class="card-top">
-                            <img src="images/store/3a.png" class="mt-4 mx-auto" style="width:150px!important;">
-                        </div>
-                        <div class="card-bottom text-center">
-                            <h3 class="font-900 mb-0">Dark Edition</h3>
-                            <p class="text-center mb-3">
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                            </p>
-                            <a href="#" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">View</a>
-                        </div>
-                    </div>
-                </div><div class="splide__slide splide__slide--clone" style="width: 195px;">
-                    <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
-                        <div class="card-top">
-                            <img src="images/store/1a.png" class="mt-4 mx-auto" style="width:150px!important;">
-                        </div>
-                        <div class="card-bottom text-center">
-                            <h3 class="font-900 mb-0">Color Edition</h3>
-                            <p class="text-center mb-3">
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                            </p>
-                            <a href="#" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">View</a>
-                        </div>
-                    </div>
-                </div><div class="splide__slide splide__slide--clone" style="width: 195px;">
-                    <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
-                        <div class="card-top">
-                            <img src="images/store/2a.png" class="mt-4 mx-auto" style="width:150px!important;">
-                        </div>
-                        <div class="card-bottom text-center">
-                            <h3 class="font-900 mb-0">White Edition</h3>
-                            <p class="text-center mb-3">
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                            </p>
-                            <a href="#" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">View</a>
-                        </div>
-                    </div>
-                </div></div>
+              <% User::ACCEPTEDcountries.keys.each do |country| %>
+                <% if Product.all.map(&:country).uniq.include?(country) %>
+                  <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
+                      <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
+                          <div class="card-bottom text-center">
+                            <span class="fa fa-amazon display-1"></span>
+                            <h3 class="font-900 mb-0"><%= User::ACCEPTEDcountries[country][:country] %></h3>
+                            <p class="text-center mb-3"><span class="flag-icon flag-icon-<%= country.downcase %> display-1"></span></p>
+                            <a href="/explore/<%= country %>" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">Explore</a>
+                          </div>
+                      </div>
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
         </div>
         <ul class="splide__pagination"><li><button class="splide__pagination__page" type="button" aria-controls="single-slider-3-slide01 single-slider-3-slide02" aria-label="Go to page 1"></button></li><li><button class="splide__pagination__page is-active" type="button" aria-controls="single-slider-3-slide02 single-slider-3-slide03" aria-label="Go to page 2" aria-current="true"></button></li></ul>
-    </div>
-  </div>
-</div>
-
-<div class="card card-style over-card">
-  <div class="content">
-    <h1 class="font-20 line-height-m pb-2">United Kingdom Amazon</h1>
-    <div class="splide double-slider slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="single-slider-8934" style="visibility: visible;">
-        <div class="splide__track" id="single-slider-8934-track">
-            <div class="splide__list" id="single-slider-8934-list" style="transform: translateX(-975px);">
-                <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
-                    <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
-                        <div class="card-top">
-                            <img src="images/store/1a.png" class="mt-4 mx-auto" style="width:150px!important;">
-                        </div>
-                        <div class="card-bottom text-center">
-                            <h3 class="font-900 mb-0">Color Edition</h3>
-                            <p class="text-center mb-3">
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                            </p>
-                            <a href="#" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">View</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
-                    <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
-                        <div class="card-top">
-                            <img src="images/store/2a.png" class="mt-4 mx-auto" style="width:150px!important;">
-                        </div>
-                        <div class="card-bottom text-center">
-                            <h3 class="font-900 mb-0">White Edition</h3>
-                            <p class="text-center mb-3">
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                            </p>
-                            <a href="#" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">View</a>
-                        </div>
-                    </div>
-                </div>
-
-            <div class="splide__slide splide__slide--clone" style="width: 195px;">
-                    <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
-                        <div class="card-top">
-                            <img src="images/store/2a.png" class="mt-4 mx-auto" style="width:150px!important;">
-                        </div>
-                        <div class="card-bottom text-center">
-                            <h3 class="font-900 mb-0">White Edition</h3>
-                            <p class="text-center mb-3">
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                            </p>
-                            <a href="#" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">View</a>
-                        </div>
-                    </div>
-                </div><div class="splide__slide splide__slide--clone" style="width: 195px;">
-                    <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
-                        <div class="card-top">
-                            <img src="images/store/3a.png" class="mt-4 mx-auto" style="width:150px!important;">
-                        </div>
-                        <div class="card-bottom text-center">
-                            <h3 class="font-900 mb-0">Dark Edition</h3>
-                            <p class="text-center mb-3">
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                            </p>
-                            <a href="#" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">View</a>
-                        </div>
-                    </div>
-                </div><div class="splide__slide splide__slide--clone" style="width: 195px;">
-                    <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
-                        <div class="card-top">
-                            <img src="images/store/1a.png" class="mt-4 mx-auto" style="width:150px!important;">
-                        </div>
-                        <div class="card-bottom text-center">
-                            <h3 class="font-900 mb-0">Color Edition</h3>
-                            <p class="text-center mb-3">
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                            </p>
-                            <a href="#" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">View</a>
-                        </div>
-                    </div>
-                </div><div class="splide__slide splide__slide--clone" style="width: 195px;">
-                    <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
-                        <div class="card-top">
-                            <img src="images/store/2a.png" class="mt-4 mx-auto" style="width:150px!important;">
-                        </div>
-                        <div class="card-bottom text-center">
-                            <h3 class="font-900 mb-0">White Edition</h3>
-                            <p class="text-center mb-3">
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                            </p>
-                            <a href="#" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">View</a>
-                        </div>
-                    </div>
-                </div></div>
-        </div>
-        <ul class="splide__pagination"><li><button class="splide__pagination__page" type="button" aria-controls="single-slider-8934-slide01 single-slider-8934-slide02" aria-label="Go to page 1"></button></li><li><button class="splide__pagination__page is-active" type="button" aria-controls="single-slider-8934-slide02 single-slider-8934-slide03" aria-label="Go to page 2" aria-current="true"></button></li></ul>
     </div>
   </div>
 </div>

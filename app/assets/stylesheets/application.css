@@ -11,10 +11,12 @@
  * It is generally better to create a new file per style scope.
  *
  *= require_tree .
+ *= require social-share-button
  *= require font-awesome
+ *= require flag-icon
  *= require_self
  */
- 
+ @import "social-share-button";
  @media all and (display-mode: standalone) {
 	.alert {
 	  margin-top: 50px;
