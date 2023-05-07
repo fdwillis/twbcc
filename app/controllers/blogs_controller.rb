@@ -1,6 +1,7 @@
 class BlogsController < ApplicationController
   before_action :set_blog, only: %i[ show edit update destroy ]
   before_action :authenticate_user!, except: [:index, :show]
+  before_action :checkAccess, only: %i[ new ]
 
   # GET /blogs or /blogs.json
   def index
@@ -92,5 +93,11 @@ class BlogsController < ApplicationController
     # Only allow a list of trusted parameters through.
     def blog_params
       params.require(:blog).permit(:title, :body, :asins, :user_id, :images, :tags, :country).reject{|_, v| v.blank?}
+    end
+    def checkAccess
+      unless current_user&.admin? || (current_user&.present? && current_user&.checkMembership[:membershipType] == 'business' && current_user&.checkMembership[:membershipDetails][:active] == true) || (current_user&.present? && current_user&.checkMembership[:membershipType] == 'automation'&& current_user&.checkMembership[:membershipDetails][:active] == true)
+        flash[:error] = "No Access"
+        redirect_to root_path
+      end
     end
 end

@@ -1,6 +1,7 @@
 #/trending
 class ProductsController < ApplicationController
   before_action :set_product, only: %i[ show edit update destroy ]
+  before_action :checkAdmin, only: %i[ new ]
 
   # GET /products or /products.json
   def index
@@ -92,5 +93,12 @@ class ProductsController < ApplicationController
     # Only allow a list of trusted parameters through.
     def product_params
       params.require(:product).permit(:country, :tags, :asin, :referredBy)
+    end
+
+    def checkAdmin
+      unless current_user&.admin?
+        flash[:error] = "No Access"
+        redirect_to root_path
+      end
     end
 end
