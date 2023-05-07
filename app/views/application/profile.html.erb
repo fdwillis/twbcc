@@ -45,7 +45,7 @@
 	</div>
   <% if @membershipDetails.present? %>
 	  <div class="content row">
-	    <span class="badge bg-highlight color-white p-2 float-end rounded-sm"><span class="flag-icon flag-icon-<%= current_user&.amazonCountry.downcase %> font-20"></span><i class="font-20 color-white px-1 fa fa-amazon"></i> <%= currentMembersip[:membershipDetails]['active'] == true ? 'ACTIVE' : currentMembersip[:membershipDetails]['interval'] == 'N/A' ? 'ACTIVE' : currentMembersip[:membershipDetails] %></span>
+	    <span class="badge bg-highlight color-white p-2 float-end rounded-sm"><i class="font-20 color-white px-1 fa fa-amazon"></i><span class="flag-icon flag-icon-<%= current_user&.amazonCountry.downcase %> font-20"></span> <%= currentMembersip[:membershipDetails]['active'] == true ? 'ACTIVE' : currentMembersip[:membershipDetails]['interval'] == 'N/A' ? 'ACTIVE' : currentMembersip[:membershipDetails] %></span>
 	  </div>
 		<div class="card card-style">
 	    <h1 class="p-3">Membership</h1>
