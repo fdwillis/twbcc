@@ -8,16 +8,16 @@
 		<!-- 		<%= @profileMetadata %> -->
 		<div class="card-center p-3">
 		    <h1 class="color-white"><%= @profile['name'] %>#<%= current_user&.uuid %></h1>
-		    <small><%= Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'][5..Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'].size] %></small>
 		</div>
 		<div class="card-top p-3">
-		    <span class="badge bg-blue-dark color-white p-2 float-end m-2 rounded-s">Member</span>
+		    <span class="badge bg-green-dark color-white p-2 float-end m-2 rounded-s"><%= currentMembersip[:membershipType].titleize %></span>
+		    <span class="badge bg-aqua-dark color-white p-2 float-end m-2 rounded-s">Member</span>
 		    <% if @accountItemsDue.count == 0 %>
 			    <span class="badge bg-blue-dark color-white p-2 float-end m-2 rounded-s"></span>
 			<% end %>
 		</div>
 		<div class="card-bottom m-3">
-	    <h5 class="color-white float-start">Completion Progress</h5>
+	    <h5 class="color-white float-start">Progress</h5>
 			<% if @accountItemsDue.count == 1 && (currentMembersip[:membershipType] == 'business' || currentMembersip[:membershipType] == 'automation') %>
 				<h5 class="color-white float-end">80% Complete</h5>
 		    <div class="clearfix"></div>
@@ -44,39 +44,43 @@
 		<div class="card-overlay bg-black opacity-70"></div>
 	</div>
   <% if @membershipDetails.present? %>
-	<div class="card card-style">
-    <h1 class="p-3">Membership<span class="badge bg-highlight color-white p-2 float-end rounded-s"><span class="flag-icon flag-icon-<%= current_user&.amazonCountry.downcase %> font-20"></span><i class="font-20 color-white px-1 fa fa-amazon"></i> <%= currentMembersip[:membershipDetails]['active'] == true ? 'ACTIVE' : currentMembersip[:membershipDetails]['interval'] == 'N/A' ? 'ACTIVE' : currentMembersip[:membershipDetails] %></span></h1>
-		<div class="content row">
-      <div class="col-7">
-          <h5 class="font-600 opacity-80">Level</h5>
-      </div>
-      <div class="col-5">
-          <h5><%= currentMembersip[:membershipType].titleize %></h5>
-      </div>
-      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
-      <div class="col-7">
-          <h5 class="font-600 opacity-80">Cost</h5>
-      </div>
-      <div class="col-5">
-          <h5 class="font-600 opacity-80"><%= number_to_currency(currentMembersip[:membershipDetails]['amount'].to_i * 0.01, precision: 2)%></h5>
-      </div>
-      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
-      <div class="col-7">
-          <h5 class="font-600 opacity-80">Interval</h5>
-      </div>
-      <div class="col-5">
-          <h5>Every <%= currentMembersip[:membershipDetails]['interval'].titleize %></h5>
-      </div>
-      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
-      <% if currentMembersip[:membershipType] != 'free' %>
-	      <a href="<%= cancel_path %>">
-	        <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
-	          <i class="fa fa-minus-circle font-20 color-white"></i> Cancel Membership
-	        <% end %>
-	      </a>
-      <% end %>
+	  <div class="content row">
+	    <span class="badge bg-highlight color-white p-2 float-end rounded-sm"><span class="flag-icon flag-icon-<%= current_user&.amazonCountry.downcase %> font-20"></span><i class="font-20 color-white px-1 fa fa-amazon"></i> <%= currentMembersip[:membershipDetails]['active'] == true ? 'ACTIVE' : currentMembersip[:membershipDetails]['interval'] == 'N/A' ? 'ACTIVE' : currentMembersip[:membershipDetails] %></span>
 	  </div>
-	</div>
+		<div class="card card-style">
+	    <h1 class="p-3">Membership</h1>
+			<div class="content row">
+				<div class="col-7">
+	          <h5 class="font-600 opacity-80">Level</h5>
+	      </div>
+	      <div class="col-5">
+	          <h5><%= currentMembersip[:membershipType].titleize %></h5>
+	      </div>
+	      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
+	      <div class="col-7">
+	          <h5 class="font-600 opacity-80">Cost</h5>
+	      </div>
+	      <div class="col-5">
+	          <h5 class="font-600 opacity-80"><%= number_to_currency(currentMembersip[:membershipDetails]['amount'].to_i * 0.01, precision: 2)%></h5>
+	      </div>
+	      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
+	      <div class="col-7">
+	          <h5 class="font-600 opacity-80">Interval</h5>
+	      </div>
+	      <div class="col-5">
+	          <h5>Every <%= currentMembersip[:membershipDetails]['interval'].titleize %></h5>
+	      </div>
+	      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
+	      <% if currentMembersip[:membershipType] != 'free' %>
+		      <a href="<%= cancel_path %>">
+		        <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
+		          <i class="fa fa-minus-circle font-20 color-white"></i> Cancel Membership
+		        <% end %>
+		      </a>
+	      <% end %>
+		  </div>
+			<small class="text-center">SELLER ID: <%= Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'][5..Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'].size] %></small>
+		</div>
   <% else %>
 	  Upgrade Your Free Membership
 	<% end %>
