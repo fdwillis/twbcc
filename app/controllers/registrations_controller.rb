@@ -183,13 +183,12 @@ class RegistrationsController < ApplicationController
 	      )
 
 	      #pay affiliate for membership if US affiliate
-
+	      
 	      if setSessionVarParams['referredBy'].present? && loadedAffililate.checkMembership[:membershipType] != 'free' && loadedAffililate&.checkMembership[:membershipDetails][:active] #&& loadedAffililate.amazonCountry == 'US'
 	      	firstCustomerCharge = Stripe::Charge.list({limit: 1})['data'][0]
 	      	affiliateAccount = Stripe::Customer.retrieve(loadedAffililate.stripeCustomerID)
 	      	commission = (firstCustomerCharge['amount'].to_i*(affiliateAccount['metadata']['commissionRate'].to_f/100)).to_i
 	      	#analytics
-	      	ahoy.track "Membership Signup", member: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).uuid, user: setSessionVarParams['referredBy']
 	      	#only pay if affiliate is active on current membership
 	      	if Stripe::Account.retrieve(affiliateAccount['metadata']['connectAccount'])['capabilities']['transfers'] == 'active'
 		      	Stripe::Transfer.create({
@@ -199,21 +198,11 @@ class RegistrationsController < ApplicationController
 					    description: "Membership Commission",
 					    source_transaction: firstCustomerCharge['id']
 					  })
-
-					  Stripe::Charge.update(firstCustomerCharge['id'], {metadata: {
-					  	affiliateAccount: affiliateAccount['metadata']['connectAccount'],
-					  	paid: true,
-					  	commission: commission,
-					  }})
-					else
-						Stripe::Charge.update(firstCustomerCharge['id'], {metadata: {
-					  	affiliateAccount: affiliateAccount['metadata']['connectAccount'],
-					  	paid: false,
-					  	commission: commission,
-					  }})
 					end
 	      end
 
+      	ahoy.track "Membership Signup", member: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).uuid, referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : 'admin'
+	      
 	      flash[:success] = "Your Account Setup Is Complete!"
 
 	      redirect_to request.referrer
