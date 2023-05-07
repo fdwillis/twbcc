@@ -24,6 +24,7 @@ Rails.application.routes.draw do
   get "/checkout/:price/:account", to: 'application#checkout'
   get "/explore/:country", to: 'products#explore'
   get "/explore/", to: 'products#index'
+  post "/cancel", to: 'application#cancel', as: 'cancel'
   post "/new-password-set", to: 'registrations#new_password'
   post "/loved", to: 'application#loved'
   post "/list", to: 'application#list'

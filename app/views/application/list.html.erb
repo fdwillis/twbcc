@@ -2,20 +2,16 @@
 <br>
 <br>
 <% if current_user %>
-	<div class="mt-2 content">
-		<% @tracking.each do |item| %>
-				<div class="card card-style mb-3">
-					<div class="d-flex">
-						<div class="ps-2 ms-2 align-self-center">
-							<h1 class="pt-4 font-22"><%= item %></h1>
-							<p class="font-11 opacity-50 mt-n2 mb-4">The latest Smartphone Devices </p>
-						</div>
-					</div>
-            <a href="#" data-toast="snackbar-favorites" class="icon icon-xs rounded-pill shadow-m ms-2 bg-highlight"><i class="fa fa-gift"></i></a>
-            <a href="#" data-toast="snackbar-favorites" class="icon icon-xs rounded-pill shadow-m ms-2 color-highlight"><i class="fa fa-gift"></i></a>
-            <a href="#" data-toast="snackbar-favorites" class="icon icon-xs rounded-pill shadow-m ms-2 bg-highlight"><i class="fa fa-paper-plane"></i></a>
-            <a href="#" data-toast="snackbar-favorites" class="icon icon-xs rounded-pill shadow-m ms-2 color-highlight"><i class="fa fa-paper-plane"></i></a>
+	<div class="row">
+		<h1 class="opacity-50 text-center mb-4">These Products Show On Your Public Profile</h1>
+		<% @tracking.uniq.each do |item| %>
+			<a href="<%= list_path(id: item, remove: true) %>" class="col-6">
+				<div class="card card-style me-0 mb-3 text-center pt-2">
+					<i class="fa fa-list color-highlight fa-3x mt-4"></i>
+					<h1 class="pt-4 font-20"><%= item %></h1>
+					<p class="font-11 opacity-50 mt-n2 mb-4">Remove</p>
 				</div>
+			</a>
 		<% end %>
 	</div>
 <% else %>

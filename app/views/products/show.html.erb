@@ -51,36 +51,34 @@
               <p class="mt-n1 font-12 color-highlight mb-4"></p>
               <!-- User::ACCEPTEDcountries.values.detect {|item| item[:site] == rainforestResponseLinkForThisProduct.split("://www.")[1].split("/")[0] } -->
           </div>
-          <div class="flex-shrink-1 m-1">
+            <div class="flex-shrink-1 m-1">
+              <a href="#" data-menu="flag-country-explained" class="btn btn-s text-uppercase font-900 bg-highlight mb-4 rounded-sm"><i class="font-20 color-white px-1 fa fa-amazon"></i><span class="flag-icon flag-icon-<%= @product.country.downcase %> font-20"></span></a>
+            </div>
+            <div class="flex-shrink-1 m-1">
+              <% if current_user %>
 
-            <% if current_user %>
-<!--             <%= @profileMetadata %> -->
-              <% if @profileMetadata.present? && @profileMetadata['tracking'].present? && @profileMetadata['tracking'].split(',').include?(@product['asin']) %>
-                <a href="<%= list_path(id: @product['asin'], remove: true)  %>" class="icon icon-xs rounded-pill shadow-m ms-2 color-white"><i class="fa fa-list color-highlight"></i></a>
+                  <% if @profileMetadata.present? && @profileMetadata['tracking'].present? && @profileMetadata['tracking'].split(',').include?("#{@product['asin']}-#{@product['country']}") %>
+                    <a href="<%= list_path(id: @product['asin'], remove: true)  %>" class="icon icon-xs rounded-pill color-white"><i class="fa fa-list color-highlight"></i></a>
+                  <% else %>
+                    <a href="<%= list_path(id: @product['asin'], country: @product['country'])  %>" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-list"></i></a>
+                  <% end %>
+                  <% if @profileMetadata.present? && @profileMetadata['wishlist'].present? && @profileMetadata['wishlist'].split(',').include?("#{@product['asin']}-#{@product['country']}") %>
+                    <a href="<%= loved_path(id: @product['asin'], remove: true)  %>" class="icon icon-xs rounded-pill color-white"><i class="fa fa-heart color-highlight"></i></a>
+                  <% else %>
+                    <a href="<%= loved_path(id: @product['asin'], country: @product['country'])  %>" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-heart"></i></a>
+
+                  <% end %>
               <% else %>
-                <a href="<%= list_path(id: @product['asin'])  %>" class="icon icon-xs rounded-pill shadow-m ms-2 bg-highlight"><i class="fa fa-list"></i></a>
+
+                <a href="<%= list_path(id: @product['asin'])  %>" data-confirm="Add this to your loved list?" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-heart"></i></a>
+                <a href="<%= list_path(id: @product['asin'])  %>" data-confirm="Add this to your public list?" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-list"></i></a>
               <% end %>
-              <% if @profileMetadata.present? && @profileMetadata['wishlist'].present? && @profileMetadata['wishlist'].split(',').include?(@product['asin']) %>
-                <a href="<%= loved_path(id: @product['asin'], remove: true)  %>" class="icon icon-xs rounded-pill shadow-m ms-2 color-white"><i class="fa fa-heart color-highlight"></i></a>
-              <% else %>
-                <a href="<%= loved_path(id: @product['asin'])  %>" class="icon icon-xs rounded-pill shadow-m ms-2 bg-highlight"><i class="fa fa-heart"></i></a>
-
-              <% end %>
-            <% else %>
-
-              <a href="<%= list_path(id: @product['asin'])  %>" data-confirm="Add this to your loved list?" class="icon icon-xs rounded-pill shadow-m ms-2 bg-highlight"><i class="fa fa-heart"></i></a>
-              <a href="<%= list_path(id: @product['asin'])  %>" data-confirm="Add this to your public list?" class="icon icon-xs rounded-pill shadow-m ms-2 bg-highlight"><i class="fa fa-list"></i></a>
-            <% end %>
-          </div>
-
-          <div class="flex-shrink-1 m-1">
-            <a href="#" class="btn btn-s text-uppercase font-900 bg-highlight mb-4"><span class="flag-icon flag-icon-<%= @product.country.downcase %> font-20"></span><i class="font-20 color-white px-1 fa fa-amazon"></i> Affiliate Eligible</a>
-          </div>
+            </div>
       </div>
       <!-- add renderforest Keywords via response 'keywords_list' -->
       <div class="divider"></div>
         
-      <%=  @posts %>
+      
       <p>
           The best selling Mobile Progressive Web App on the Envato Marketplaces just got even better now, with 3.0 introducing
           Boostrap 4.x compatibility and a tone of new gorgeous features!
@@ -146,7 +144,7 @@
       
       <div class="divider mt-4"></div>
       
-      <a href="<%= amazon_path(asin: @product['asin'], country: @product['country']) %>" target='_blank'>
+      <a href="<%= amazon_path(asin: @product['asin'], country: @product['country']) %>/?&referredBy=<%= params['referredBy'] %> " target='_blank'>
         <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-highlight form-control") do %>
           <i class="fa fa-amazon font-20 color-white"></i> Purchase On Amazon
         <% end %>
@@ -223,43 +221,42 @@
   </div>
 
 </div>
-
-<div class="splide double-slider slider-no-dots" id="double-slider-2">
-  <div class="content mb-4">
-    <h2>Posts</h2>
+<% if @posts.present? %>
+  <div class="card card-style">
+    <div class="content mb-4">
+        <h2>Posts With These Products</h2>
+        <p>Products you may also like based on what you're currently looking at.
+    </div>
+    <div class="splide double-slider slider-no-arrows slider-no-dots" id="double-slider-1">
+        <div class="splide__track">
+            <div class="splide__list">
+              <% @posts.each do |post| %>
+                <div class="splide__slide">
+                    <div data-card-height="230" class="card mx-3 rounded-m shadow-l bg-13">
+                        <div class="card-bottom text-center">
+                            <h2 class="color-white font-900 mb-0"><%= post.title %></h2>
+                            <p class="text-center mb-3">
+                                <i class="fa fa-star color-yellow-dark"></i>
+                                <i class="fa fa-star color-yellow-dark"></i>
+                                <i class="fa fa-star color-yellow-dark"></i>
+                                <i class="fa fa-star color-yellow-dark"></i>
+                                <i class="fa fa-star color-yellow-dark"></i>
+                            </p>
+                            <a href="<%= blog_path(id: post) %>" class='btn btn-m font-900 text-uppercase rounded-sm bg-highlight btn-full me-2 ms-2 mb-2'>
+                              <%= button_tag( :class => "") do %>
+                                <i class="fa fa-info-circle font-20 color-white text-center"></i>
+                              <% end %>
+                            </a>
+                        </div>
+                        <div class="card-overlay bg-gradient"></div>
+                    </div>
+                </div>
+              <% end %>
+            </div>
+        </div>
+    </div>
   </div>
-  <div class="splide__track">
-      <div class="splide__list">
-          <div class="splide__slide">
-              <div class="card rounded-m shadow-l mx-3 bg-13" data-card-height="300">
-                  <div class="card-bottom text-center mb-0">
-                      <h1 class="color-white font-700 mb-0">StickyMobile</h1>
-                      <p class="color-white">The Menu Everyone Requested.</p>
-                  </div>
-                  <div class="card-overlay bg-gradient"></div>
-              </div>
-          </div>
-          <div class="splide__slide">
-              <div class="card rounded-m shadow-l mx-3 bg-29" data-card-height="300">
-                  <div class="card-bottom text-center mb-0">
-                      <h1 class="color-white font-700 mb-0">Carefuly Built</h1>
-                      <p class="color-white">Flexibility, Speed, Ease of Use.</p>
-                  </div>
-                  <div class="card-overlay bg-gradient"></div>
-              </div>
-          </div>
-          <div class="splide__slide">
-              <div class="card rounded-m shadow-l mx-3 bg-29" data-card-height="300">
-                  <div class="card-bottom text-center mb-0">
-                      <h1 class="color-white font-700 mb-0">Elite Quality</h1>
-                      <p class="color-white">Mobile Website, App or PWA Ready.</p>
-                  </div>
-                  <div class="card-overlay bg-gradient"></div>
-              </div>
-          </div>
-      </div>
-  </div>
-</div>
+<% end %>
 <%= render 'application/getpaidaffiliates', message: 'Get paid to share products like this one!' %>
 <!-- <a href="#" data-toast="snackbar-cart" class="btn btn-full me-3 ms-3 btn-m font-900 text-uppercase rounded-sm shadow-l mb-4 bg-green-dark">Purchase Today</a> -->
 
@@ -283,7 +280,13 @@
                               <i class="fa fa-star color-yellow-dark"></i>
                               <i class="fa fa-star color-yellow-dark"></i>
                           </p>
-                          <a href="#" class="btn btn-s btn-full text-uppercase font-900 bg-red-dark rounded-s me-2 ms-2 mb-2">View</a>
+                          <a href="#" class=""></a>
+
+                          <a class="btn btn-s btn-full text-uppercase font-900 bg-red-dark rounded-s me-2 ms-2 mb-2">
+                            <%= button_tag( :class => "") do %>
+                              <span class="fa fa-info-circle font-20"></span> 
+                            <% end %>
+                          </a>  
                       </div>
                       <div class="card-overlay bg-gradient"></div>
                   </div>
@@ -354,3 +357,32 @@
 
   </div>
 </div>  -->
+
+
+<div id="flag-country-explained" class="menu menu-box-modal rounded-m" data-menu-width="330" style="display: block; width: 330px;">
+  <div class="content">
+    <div class="text-center">
+      <span class="font-20 icon icon-xxl fa fa-amazon"></span>
+    </div>
+    <h5 class="text-center">This Icon Means There Are Amazon Affiliate Links Present</a>
+    </h5>
+    <small>This Page Contains Amazon Affiliate Links That Will Earn That Affiliate Commission If Purchased. We Automate This Process For All Amazon Associates &amp; Pay Commission On Our Memberships As Well. Oarlin Commissions Only Available In USA</small>
+    <a data-menu="modal-wizard-step-2">
+      <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-highlight form-control mt-4 mb-4") do %>
+        <span class="flag-icon flag-icon-<%= @product.country.downcase %> font-20"></span> What Does This Icon Mean?
+      <% end %>
+    </a>  
+  </div>
+</div>
+
+<div id="modal-wizard-step-2" class="menu menu-box-modal rounded-m" data-menu-width="330" style="display: block; width: 330px;">
+  <div class="content mb-2">
+    <div class="text-center">
+      <span class="flag-icon flag-icon-<%= @product.country.downcase %> font-20"></span>
+    </div>
+    <h5 class="text-center">This Icon Means The Amazon Affiliate Links Originate From <%= User::ACCEPTEDcountries[@product.country.upcase][:country] %>. </a>
+    </h5>
+    <small>Affiliates From Other Countries May Be Eligible. Check With Amazon Or Contact Us To Help. These Products May Not Be Available For Purchase In All Countries.</small>
+ 
+  </div>
+</div>

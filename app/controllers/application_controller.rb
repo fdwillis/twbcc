@@ -6,6 +6,23 @@ class ApplicationController < ActionController::Base
 		@categories = User.rainforestSearch
 	end
 
+	def cancel
+		allSubscriptions = Stripe::Subscription.list({customer: current_user&.stripeCustomerID})['data'].map(&:id)
+		allSubscriptions.each do |id|
+			Stripe::Subscription.cancel(id)
+		end
+
+		Stripe::Subscription.create({
+		  customer: current_user&.stripeCustomerID,
+		  items: [
+		    {price: ENV['freeMembership']},
+		  ],
+		})
+
+		flash[:success] = "Membership Canceled"
+		redirect_to request.referrer
+	end
+
 	def analytics
 		
 	end
@@ -44,18 +61,14 @@ class ApplicationController < ActionController::Base
 			dropdown: {options: [
 				{label: 'Australia', value: 'AU'},
 				{label: 'Belgium', value: 'BE'},
-				{label: 'Brazil', value: 'BR'},
 				{label: 'Canada', value: 'CA'},
-				{label: 'China', value: 'CN'},
 				{label: 'France', value: 'FR'},
 				{label: 'Germany', value: 'DE'},
-				{label: 'India', value: 'IN'},
 				{label: 'Italy', value: 'IT'},
 				{label: 'Japan', value: 'JP'},
 				{label: 'Mexico', value: 'MX'},
 				{label: 'Netherlands', value: 'NL'},
 				{label: 'Poland', value: 'PL'},
-				{label: 'Saudi Arabia', value: 'SA'},
 				{label: 'Singapore', value: 'SG'},
 				{label: 'Spain', value: 'ES'},
 				{label: 'Sweden', value: 'SE'},
@@ -67,18 +80,14 @@ class ApplicationController < ActionController::Base
 		allowedCountries = [
 	      	'AU',
 	      	'BE',
-	      	'BR',
 	      	'CA',
-	      	'CN',
 	      	'FR',
 	      	'DE',
-	      	'IN',
 	      	'IT',
 	      	'JP',
 	      	'MX',
 	      	'NL',
 	      	'PL',
-	      	'SA',
 	      	'SG',
 	      	'ES',
 	      	'SE',
@@ -197,10 +206,25 @@ class ApplicationController < ActionController::Base
 			  },
 			)
 
-			@itemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due']
+			@accountItemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due']
+			
+			# if current_user&.amazonCountry != 'US'
+			# 	@recipientAccountUpdate = Stripe::AccountLink.create(
+			# 	  {
+			# 	    account: Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['connectAccount'],
+			# 	    refresh_url: "http://#{request.env['HTTP_HOST']}",
+			# 	    return_url: "http://#{request.env['HTTP_HOST']}",
+			# 	    type: 'account_onboarding',
+			# 	  },
+			# 	)
+
+			# 	@recipientAccountItemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['recipientAccount'])['requirements']['currently_due']
+			# end
 		else
+			#analytics
 			ahoy.track "Profile Visit", user: @userFound.uuid
 		end
+		
 		if @membershipDetails.present? && @membershipDetails[:membershipDetails][:active]	
 		  #custom profile if active
 		  if @membershipDetails[:membershipType] == 'automation' && !current_user
@@ -218,24 +242,26 @@ class ApplicationController < ActionController::Base
 	def list
 		if current_user&.present?
 			customerToUpdate = Stripe::Customer.retrieve(current_user&.stripeCustomerID)
-			@tracking = customerToUpdate['metadata']['tracking'].present? ? customerToUpdate['metadata']['tracking'].split(',').uniq : []
+			@tracking = (customerToUpdate['metadata']['tracking'].present? ? customerToUpdate['metadata']['tracking'].split(',').uniq : []).reject(&:blank?)
 			@profileMetadata = customerToUpdate['metadata']
+			
 		end
 		
 		if params[:remove] == 'true'
-			@newMeta = @profileMetadata['tracking'].split(',') - [params[:id]]
+			@newMeta = (@profileMetadata['tracking'].split(',') - [params[:id]]).reject(&:blank?).join(",")
 			customerUpdated = Stripe::Customer.update(current_user.stripeCustomerID,{
 				metadata: {
-					tracking: @newMeta.empty? ? "," : @newMeta[0].blank? ? "," : @newMeta
+					tracking: @newMeta.nil? ? "," : @newMeta.blank? ? "," : @newMeta
 				}
 			})
 			
 			flash[:success] = 'Removed From Your Public List'
 			redirect_to request.referrer
 		elsif params[:id].present?
+			
 			customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID,{
 				metadata: {
-					tracking: customerToUpdate['metadata']['tracking'].present? ? (customerToUpdate['metadata']['tracking']+"#{params[:id]},") : "#{params[:id]},"
+					tracking: customerToUpdate['metadata']['tracking'].present? ? (customerToUpdate['metadata']['tracking']+"#{params[:id]}-#{params[:country]},") : "#{params[:id]}-#{params[:country]},"
 				}
 			})
 			flash[:success] = 'Added To Your Public List'
@@ -246,26 +272,30 @@ class ApplicationController < ActionController::Base
 	def loved
 		if current_user&.present?
 			customerToUpdate = Stripe::Customer.retrieve(current_user.stripeCustomerID)
-			@wishlist = customerToUpdate['metadata']['wishlist'].present? ? customerToUpdate['metadata']['wishlist'].split(',').uniq : []
+			@wishlist = (customerToUpdate['metadata']['wishlist'].present? ? customerToUpdate['metadata']['wishlist'].split(',').uniq : []).reject(&:blank?)
 			@profileMetadata = customerToUpdate['metadata']
+			
 		end
 		
 		if params[:remove] == 'true'
-			@newMeta = @profileMetadata['wishlist'].split(',') - [params[:id]]
+			@newMeta = (@profileMetadata['wishlist'].split(',') - [params[:id]]).reject(&:blank?).join(",")
 			customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID,{
 				metadata: {
-					wishlist: @newMeta.empty? ? "," : @newMeta[0].blank? ? "," : @newMeta
+					wishlist: @newMeta.nil? ? "," : @newMeta.blank? ? "," : @newMeta
 				}
 			})
 			
 			flash[:success] = 'Removed From Your Wishlist'
 			redirect_to request.referrer
 		elsif params[:id].present?
+			
 			customerUpdated = Stripe::Customer.update(current_user.stripeCustomerID,{
 				metadata: {
-					wishlist: customerToUpdate['metadata']['wishlist'].present? ? (customerToUpdate['metadata']['wishlist']+"#{params[:id]},") : "#{params[:id]},"
+					wishlist: customerToUpdate['metadata']['wishlist'].present? ? (customerToUpdate['metadata']['wishlist']+"#{params[:id]}-#{params[:country]},") : "#{params[:id]}-#{params[:country]},"
 				}
 			})
+			#analytics
+			ahoy.track "Added To Wishlist", product: params[:id]
 			flash[:success] = 'Added To Your Wishlist'
 			redirect_to request.referrer
 		end

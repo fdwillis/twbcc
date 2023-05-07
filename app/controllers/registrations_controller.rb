@@ -7,6 +7,7 @@ class RegistrationsController < ApplicationController
 	      )
 	      stripeCustomer = Stripe::Customer.retrieve(stripeSessionInfo['customer'])
 	      loadedAffililate = User.find_by(uuid: setSessionVarParams['referredBy'])
+	      stripePlan = Stripe::Subscription.list({customer: stripeSessionInfo['customer']})['data'][0]['items']['data'][0]['plan']['id']
 	      if stripeSessionInfo['custom_fields'][1]['dropdown']['value'] == 'US'
 		      #make cardholder -> usa and uk
 		      if stripeSessionInfo['custom_fields'][0]['dropdown']['value'] == 'company'
@@ -101,7 +102,20 @@ class RegistrationsController < ApplicationController
 		          # treasury: {requested: true},
 		          # us_bank_account_ach_payments: {requested: true},
 		        },
+		        tos_acceptance: {service_agreement: 'full'},
 		      })
+
+		   #    recipientAccount = Stripe::Account.create(
+					#   {
+					#     type: 'custom',
+					#     country: stripeSessionInfo['custom_fields'][1]['dropdown']['value'],
+					#     email: stripeCustomer['email'],
+					#     capabilities: {
+					#     	transfers: {requested: true},
+					#     },
+					#     tos_acceptance: {service_agreement: 'recipient'},
+					#   },
+					# )
 		    end
 
 	      # Stripe::Account.update(newStripeAccount['id'],{
@@ -129,7 +143,7 @@ class RegistrationsController < ApplicationController
 	      # )
 
 	      #attach details to customer profile and cardholder profile
-	      stripePlan = Stripe::Subscription.list({customer: stripeSessionInfo['customer']})['data'][0]['items']['data'][0]['plan']['id']
+	      
 	      commissionRate = {commissionRate: User::FREEmembership.include?(stripePlan) == true ? 0 : User::AFFILIATEmembership.include?(stripePlan) == true ? 10 : User::BUSINESSmembership.include?(stripePlan) == true ? 20 : User::AUTOMATIONmembership.include?(stripePlan) == true ? 30 : 0}
 	      
 	      if cardNew.present? && cardHolderNew.present?
@@ -149,6 +163,7 @@ class RegistrationsController < ApplicationController
 		        stripeSessionInfo['customer'],{
 		        	metadata: {
 			          connectAccount: newStripeAccount['id'],
+			          # recipientAccount: recipientAccount['id'],
 			          referredBy: setSessionVarParams['referredBy']
 			        }.merge(commissionRate)
 			      },
@@ -169,18 +184,18 @@ class RegistrationsController < ApplicationController
 
 	      #pay affiliate for membership if US affiliate
 
-	      if setSessionVarParams['referredBy'].present? && loadedAffililate.amazonCountry == 'US'
+	      if setSessionVarParams['referredBy'].present? && loadedAffililate.checkMembership[:membershipType] != 'free' && loadedAffililate&.checkMembership[:membershipDetails][:active] #&& loadedAffililate.amazonCountry == 'US'
 	      	firstCustomerCharge = Stripe::Charge.list({limit: 1})['data'][0]
 	      	affiliateAccount = Stripe::Customer.retrieve(loadedAffililate.stripeCustomerID)
-	      	commission = (firstCustomerCharge['amount'].to_i*(affiliateAccount['metadata']['commissionRate'].to_i/100)).to_i
-
+	      	commission = (firstCustomerCharge['amount'].to_i*(affiliateAccount['metadata']['commissionRate'].to_f/100)).to_i
+	      	#analytics
 	      	ahoy.track "Membership Signup", member: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).uuid, user: setSessionVarParams['referredBy']
 	      	#only pay if affiliate is active on current membership
 	      	if Stripe::Account.retrieve(affiliateAccount['metadata']['connectAccount'])['capabilities']['transfers'] == 'active'
 		      	Stripe::Transfer.create({
 					    amount: commission,
 					    currency: 'usd',
-					    destination: affiliateAccount['metadata']['connectAccount'],
+					    destination: loadedAffililate.amazonCountry == 'US' ? affiliateAccount['metadata']['connectAccount'] : affiliateAccount['metadata']['recipientAccount'],
 					    description: "Membership Commission",
 					    source_transaction: firstCustomerCharge['id']
 					  })

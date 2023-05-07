@@ -11,6 +11,7 @@ class BlogsController < ApplicationController
 
   # GET /blogs/1 or /blogs/1.json
   def show
+    #analytics
     ahoy.track "Blog Page Visit", title: @blog.title, user: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
   end
 

@@ -18,25 +18,10 @@ class User < ApplicationRecord
       currency: 'eur',
       country: 'Belgium',
     },
-    'BR' => {
-      site: 'amazon.com.br',
-      currency: 'brl',
-      country: 'Brazil',
-    },
     'CA' => {
       site: 'amazon.ca',
       currency: 'cad',
       country: 'Canada',
-    },
-    'CN' => {
-      site: 'amazon.cn',
-      currency: 'cny',
-      country: 'China',
-    },
-    'EG' => {
-      site: 'amazon.eg',
-      currency: 'egp',
-      country: 'Egypt',
     },
     'FR' => {
       site: 'amazon.fr',
@@ -47,11 +32,6 @@ class User < ApplicationRecord
       site: 'amazon.de',
       currency: 'eur',
       country: 'Germany',
-    },
-    'IN' => {
-      site: 'amazon.in',
-      currency: 'inr',
-      country: 'India',
     },
     'IT' => {
       site: 'amazon.it',
@@ -78,11 +58,6 @@ class User < ApplicationRecord
       currency: 'pln',
       country: 'Poland',
     },
-    'SA' => {
-      site: 'amazon.sa',
-      currency: 'sar',
-      country: 'Saudi Arabia',
-    },
     'SG' => {
       site: 'amazon.sg',
       currency: 'sgd',
@@ -97,11 +72,6 @@ class User < ApplicationRecord
       site: 'amazon.se',
       currency: 'sek',
       country: 'Sweden',
-    },
-    'TR' => {
-      site: 'amazon.com.tr',
-      currency: 'try',
-      country: 'Turkey',
     },
     'AE' => {
       site: 'amazon.ae',
@@ -151,8 +121,6 @@ class User < ApplicationRecord
 
   def self.rainforestProduct(asin = nil, country)
     @data = []
-    debugger
-    return
     if asin.present?
       res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=product&amazon_domain=#{ACCEPTEDcountries[country][:site]}&asin=#{asin}")
       loadedData = Oj.load(res.body)['product']
@@ -179,8 +147,6 @@ class User < ApplicationRecord
 
   def self.rainforestSearch(term = nil, country)
     @data = []
-    debugger
-    return
     if term.present?
       res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=search&amazon_domain=#{ACCEPTEDcountries[country][:site]}&search_term=#{term.split.join('+')}")
       loadedData = Oj.load(res.body)['search_results']
@@ -266,14 +232,15 @@ class User < ApplicationRecord
     allSubscriptions = Stripe::Subscription.list({customer: stripeCustomerID})['data'].map(&:plan).map(&:id)
     
     membershipPlans.each do |planID|
-      if allSubscriptions.include?(planID)
+      case true
+      when allSubscriptions.include?(planID)
         membershipPlan = Stripe::Subscription.list({customer: stripeCustomerID, price: planID})
-        membershipType = AFFILIATEmembership.include?(planID) ? 'affiliate' : BUSINESSmembership.include?(planID) ? 'business': AUTOMATIONmembership.include?(planID) ? 'automation': FREEmembership.include?(planID) ? 'free' : nil
+        membershipType = AFFILIATEmembership.include?(planID) ? 'affiliate' : BUSINESSmembership.include?(planID) ? 'business': AUTOMATIONmembership.include?(planID) ? 'automation': FREEmembership.include?(planID) ? 'free' : 'free'
         membershipValid << {membershipDetails: membershipPlan['data'][0]['items']['data'][0]['plan']}.merge({membershipType: membershipType})
       end
     end
 
-    membershipValid[0]
+    membershipValid.present? ? membershipValid[0] : {membershipDetails: {active: true, 'interval' => 'N/A'},membershipType: 'free'}
   end
 
   def customer?
