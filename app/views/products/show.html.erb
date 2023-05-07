@@ -145,7 +145,7 @@
       <div class="divider mt-4"></div>
       
       <a href="<%= amazon_path(asin: @product['asin'], country: @product['country']) %>/?&referredBy=<%= params['referredBy'] %> " target='_blank'>
-        <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-highlight form-control") do %>
+        <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
           <i class="fa fa-amazon font-20 color-white"></i> Purchase On Amazon
         <% end %>
       </a>
@@ -221,6 +221,7 @@
   </div>
 
 </div>
+<%= render 'application/getpaidaffiliates', message: 'Get paid to share products like this one!' %>
 <% if @posts.present? %>
   <div class="card card-style">
     <div class="content mb-4">
@@ -257,76 +258,10 @@
     </div>
   </div>
 <% end %>
-<%= render 'application/getpaidaffiliates', message: 'Get paid to share products like this one!' %>
 <!-- <a href="#" data-toast="snackbar-cart" class="btn btn-full me-3 ms-3 btn-m font-900 text-uppercase rounded-sm shadow-l mb-4 bg-green-dark">Purchase Today</a> -->
 
 
-<div class="card card-style">
-  <div class="content mb-4">
-      <h2>Similar Products</h2>
-      <p>Products you may also like based on what you're currently looking at.
-  </div>
-  <div class="splide double-slider slider-no-arrows slider-no-dots" id="double-slider-1">
-      <div class="splide__track">
-          <div class="splide__list">
-              <div class="splide__slide">
-                  <div data-card-height="230" class="card mx-3 rounded-m shadow-l bg-13">
-                      <div class="card-bottom text-center">
-                          <h2 class="color-white font-900 mb-0">EazyMobile</h2>
-                          <p class="text-center mb-3">
-                              <i class="fa fa-star color-yellow-dark"></i>
-                              <i class="fa fa-star color-yellow-dark"></i>
-                              <i class="fa fa-star color-yellow-dark"></i>
-                              <i class="fa fa-star color-yellow-dark"></i>
-                              <i class="fa fa-star color-yellow-dark"></i>
-                          </p>
-                          <a href="#" class=""></a>
 
-                          <a class="btn btn-s btn-full text-uppercase font-900 bg-red-dark rounded-s me-2 ms-2 mb-2">
-                            <%= button_tag( :class => "") do %>
-                              <span class="fa fa-info-circle font-20"></span> 
-                            <% end %>
-                          </a>  
-                      </div>
-                      <div class="card-overlay bg-gradient"></div>
-                  </div>
-              </div>
-              <div class="splide__slide">
-                  <div data-card-height="230" class="card mx-3 rounded-m shadow-l bg-27">
-                      <div class="card-bottom text-center">
-                          <h2 class="color-white font-900 mb-0">UltraMobile</h2>
-                          <p class="text-center mb-3">
-                              <i class="fa fa-star color-yellow-dark"></i>
-                              <i class="fa fa-star color-yellow-dark"></i>
-                              <i class="fa fa-star color-yellow-dark"></i>
-                              <i class="fa fa-star color-yellow-dark"></i>
-                              <i class="fa fa-star color-yellow-dark"></i>
-                          </p>
-                          <a href="#" class="btn btn-s btn-full text-uppercase font-900 bg-red-dark rounded-s me-2 ms-2 mb-2">View</a>
-                      </div>
-                      <div class="card-overlay bg-gradient"></div>
-                  </div>
-              </div>
-              <div class="splide__slide">
-                  <div data-card-height="230" class="card mx-3 rounded-m shadow-l bg-17">
-                      <div class="card-bottom text-center">
-                          <h2 class="color-white font-900 mb-0">KolorMobile</h2>
-                          <p class="text-center mb-3">
-                              <i class="fa fa-star color-yellow-dark"></i>
-                              <i class="fa fa-star color-yellow-dark"></i>
-                              <i class="fa fa-star color-yellow-dark"></i>
-                              <i class="fa fa-star color-yellow-dark"></i>
-                              <i class="fa fa-star color-yellow-dark"></i>
-                          </p>
-                          <a href="#" class="btn btn-s btn-full text-uppercase font-900 bg-red-dark rounded-s me-2 ms-2 mb-2">View</a>
-                      </div>
-                      <div class="card-overlay bg-gradient"></div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
-</div>
 
 <!-- <div class="card card-style">
   <div class="content mb-0">
