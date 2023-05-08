@@ -1341,7 +1341,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Externally loading Javascript files for better performance.
 
         var plugIdent, plugClass, plugMain, plugCall;
-        var plugLoc = "plugins/"
+        var plugLoc = ""
 
         let plugins = [
           {
@@ -1364,9 +1364,9 @@ document.addEventListener('DOMContentLoaded', () => {
           },
           {
             id: 'gallery',
-            plug: 'glightbox/glightbox.js',
-            call: 'glightbox/glightbox-call.js',
-            style: 'glightbox/glightbox.css',
+            plug: 'assets/javascripts/glightbox.js',
+            call: 'assets/javascripts/glightbox-call.js',
+            style: 'assets/javascripts/glightbox.css',
             trigger: '[data-gallery]'
           },
           {

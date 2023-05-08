@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::Base
-	before_action :authenticate_user!, only: [:list, :loved] 
+	before_action :authenticate_user!, only: [:loved] 
 
 	def home
 		@products = User.rainforestProduct
@@ -21,6 +21,45 @@ class ApplicationController < ActionController::Base
 
 		flash[:success] = "Membership Canceled"
 		redirect_to request.referrer
+	end
+
+	def commissions
+		@pulledAffiliate = Stripe::Customer.retrieve(User.find_by(uuid: params[:id])&.stripeCustomerID)
+		@pulledCommissions = Stripe::Customer.list(limit: 100)
+		@accountsFromAffiliate = @pulledCommissions['data'].reject{|e| e['metadata']['referredBy'] != params[:id]}
+		@activeSubs = []
+		@inactiveSubs = []
+		@accountsFromAffiliate.each do |cusID|
+	  	listofSubscriptionsFromCusID = Stripe::Subscription.list(limit: 100, customer: cusID)['data']
+	    if listofSubscriptionsFromCusID.size > 0 
+		  	listofSubscriptionsFromCusID.each do |subscriptionX| 
+		    	# debugger
+			  	if subscriptionX['status'] == 'active' 
+			  		@activeSubs << subscriptionX
+			  	else
+			  		@inactiveSubs << subscriptionX
+			  	end
+		  	end
+	  	end
+		end
+		@expectedAnnualCommission = 0
+
+		@activeSubs.each do |suba|
+			suba['items']['data'].map(&:plan).each do |plan|
+				if plan['interval'] == 'month'
+					
+					@expectedAnnualCommission += (plan['amount'] * 12) * (@pulledAffiliate['metadata']['commissionRate'].to_i * 0.01)
+				end
+
+				if plan['interval'] == 'year'
+					
+					@expectedAnnualCommission += (plan['amount']) * (@pulledAffiliate['metadata']['commissionRate'].to_i * 0.01)
+				end
+
+			end
+		end
+
+		
 	end
 
 	def analytics

@@ -13,17 +13,17 @@
 
   <div class="field">
     <%= form.label :title %>
-    <%= form.text_field :title %>
+    <%= form.text_field :title, required: true %>
   </div>
 
   <div class="field">
     <%= form.label :body %>
-    <%= form.text_area :body %>
+    <%= form.text_area :body, required: true %>
   </div>
 
   <div class="field">
     <%= form.label :asins %>
-    <%= form.text_field :asins %>
+    <%= form.text_field :asins, required: true %>
   </div>
 
   <div class="field">
@@ -33,7 +33,7 @@
 
   <div class="field">
     <%= form.label :tags %>
-    <%= form.text_field :tags %>
+    <%= form.text_field :tags, required: true %>
   </div>
 
   <div class="field">

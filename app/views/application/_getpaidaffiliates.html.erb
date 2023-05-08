@@ -1,12 +1,12 @@
-<div class="card card-style over-card bg-highlight m-4">
+<div class="card card-style over-card bg-highlight">
   <div class="content">
     <div class="d-flex">
       <div class="me-auto">
-        <h1 class="pt-2 color-white">Get Paid To Share</h1>
+        <h1 class="pt-2 color-white"><%= title %></h1>
         <p class="color-white"><%= message %></p>
       </div>
     </div>
     <br>
-    <a href="#" class="btn btn-m btn-full mb-3 rounded-sm text-uppercase font-900 color-highlight bg-theme"><i class="font-20 color-highlight px-1 fa fa-star"></i> Learn More</a>
+    <a href="?&referredBy=<%= params['referredBy'] %>" class="btn btn-m btn-full mb-3 rounded-sm text-uppercase font-900 color-highlight bg-theme"><i class="font-20 color-highlight px-1 fa fa-info-circle"></i> Learn More</a>
   </div>
 </div>

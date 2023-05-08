@@ -8,6 +8,7 @@
     <%= stylesheet_link_tag 'application', media: 'all' %>
     <%= javascript_include_tag 'application' %>
     <link rel="stylesheet" type="text/css" href="/assets/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/assets/glightbox.css">
     <link rel="stylesheet" type="text/css" href="/assets/style.css">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
@@ -23,28 +24,28 @@
     <div id="page">
 
       <div class="header header-fixed header-logo-center ">
-          <a href="/" class="header-title">Oarlin</a>
+          <a href="/?&referredBy=<%= params['referredBy'] %>" class="header-title font-30 color-highlight">Oarlin</a>
           <!-- <a href='javascript:history.go(-1);' data-back-button="" class="header-icon header-icon-1"><i class="fa fa-arrow-left"></i></a> -->
-          <a href="#" data-menu="menu-sidebar-right-1" class="active-nav"><i class="header-icon header-icon-4 fa fa-bars"></i><span></span></a>
+          <a href="#" data-menu="menu-sidebar-right-1" class="active-nav"><i class="header-icon header-icon-4 fa fa-bars font-25"></i><span></span></a>
       </div>
 
       <div id="footer-bar" class="footer-bar-1" data-no-turbolink>
-        <% if request.fullpath.include?('/explore')||request.fullpath.include?('/product') %>
-          <a href="/explore" class="active-nav" data-no-turbolink><i class="fa fa-globe"></i><span>Explore</span></a>
+        <% if request.fullpath.include?('/explore')|| request.fullpath.include?('/product') || request.fullpath == "/?&referredBy=#{params['referredBy']}" %>
+          <a href="/explore?&referredBy=<%= params['referredBy']  %>" class="active-nav" data-no-turbolink><i class="font-25 fa fa-globe"></i><span>Explore</span></a>
         <% else %>
-          <a href="/explore" data-no-turbolink><i class="fa fa-globe"></i><span>Explore</span></a>
+          <a href="/explore?&referredBy=<%= params['referredBy']  %>" data-no-turbolink><i class="opacity-40 font-25 fa fa-globe"></i><span class="opacity-40">Explore</span></a>
         <% end %>
 
         <% if request.fullpath.include?('/search') %>
-          <a href="/search" class="active-nav" data-no-turbolink><i class="fa fa-search"></i><span>Search</span></a>
+          <a href="/search?&referredBy=<%= params['referredBy']  %>" class="active-nav" data-no-turbolink><i class="font-25 fa fa-search"></i><span>Search</span></a>
         <% else %>
-          <a href="/search" data-no-turbolink><i class="fa fa-search"></i><span>Search</span></a>
+          <a href="/search?&referredBy=<%= params['referredBy']  %>" data-no-turbolink><i class="opacity-40 font-25 fa fa-search"></i><span class="opacity-40">Search</span></a>
         <% end %>
 
         <% if request.fullpath.include?('/blog') %>
-          <a href="/blog" class="active-nav" data-no-turbolink><i class="fa fa-paste"></i><span>Posts</span></a>
+          <a href="/blog?&referredBy=<%= params['referredBy']  %>" class="active-nav" data-no-turbolink><i class="font-25 fa fa-forumbee"></i><span>The Hive</span></a>
         <% else %>
-          <a href="/blog" data-no-turbolink><i class="fa fa-paste"></i><span>Posts</span></a>
+          <a href="/blog?&referredBy=<%= params['referredBy']  %>" data-no-turbolink><i class="opacity-40 font-25 fa fa-forumbee"></i><span class="opacity-40">The Hive</span></a>
         <% end %>
       </div>
 
@@ -75,9 +76,20 @@
             <div class="content my-0">
               <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Account</h5>
               <div class="list-group list-custom-small list-icon-0">
-                <a href=<%= current_user.present? ? "/profile/#{current_user.uuid}" : new_user_session_path %>>
+                <a href=<%= current_user.present? ? "/profile/#{current_user.uuid}?&referredBy=#{params['referredBy']}" : "/profile/#{User.all.shuffle.take(1)[0].uuid}/?&referredBy=#{params['referredBy']}" %>>
                   <i class="fa font-12 fa-user bg-blue-dark rounded-sm color-white"></i>
-                  <span>Profile</span>
+                  <span>
+                    Profile
+                  </span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+              </div>
+              <div class="list-group list-custom-small list-icon-0">
+                <a href=<%= current_user.present? ? "/commissions/#{current_user.uuid}?&referredBy=#{params['referredBy']}" : "/commissions/#{User.all.shuffle.take(1)[0].uuid}/?&referredBy=#{params['referredBy']}" %>>
+                  <i class="fa font-12 fa-money bg-mint-dark rounded-sm color-white"></i>
+                  <span>
+                   Commissions
+                  </span>
                   <i class="fa fa-angle-right"></i>
                 </a>
               </div>
@@ -89,7 +101,7 @@
                 </a>
               </div> -->
               <div class="list-group list-custom-small list-icon-0">
-                <a href="/list">
+                <a href="/list?&referredBy=<%= params['referredBy'] %>">
                   <i class="fa font-12 fa-list bg-orange-dark rounded-sm color-white"></i>
                   <span>List <%= current_user.present? && Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].split(',').reject(&:blank?).uniq.size})" : nil %></span>
                   <i class="fa fa-angle-right"></i>
@@ -112,7 +124,7 @@
               <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Company</h5>
               <% if !current_user %>
                 <div class="list-group list-custom-small list-icon-0">
-                  <a href="/membership">
+                  <a href="/membership?&referredBy=<%= params['referredBy'] %>">
                     <i class="fa font-12 fa-users bg-highlight rounded-sm color-white"></i>
                     <span>Membership</span>
                     <i class="fa fa-angle-right"></i>
@@ -146,7 +158,7 @@
               <div class="position-sticky w-100 bottom-0 end-0 pb-1">
                 <div class="content">
                     <div class="list-group list-custom-small list-icon-0">
-                      <a href="<%= new_user_session_path %>" data-toggle-theme="" data-trigger-switch="switch-dark2-mode" class="border-0">
+                      <a href="<%= new_user_session_path %>?&referredBy=<%= params['referredBy'] %>" data-toggle-theme="" data-trigger-switch="switch-dark2-mode" class="border-0">
                         <i class="fa font-12 fa-sign-in bg-green-dark color-white rounded-sm"></i>
                         <span>Login</span>
                         <i class="fa fa-angle-right"></i>
@@ -212,8 +224,9 @@
         <div class="footer card card-style">
             <a href="#" class="footer-title"><span class="color-highlight">Oarlin</span></a>
             <p class="footer-copyright">Copyright © Enabled <span id="copyright-year">2023</span>. All Rights Reserved.</p>
-            <p class="footer-links"><a href="#" class="color-highlight">Privacy Policy</a> | <a href="#" class="color-highlight">Terms and Conditions</a> | <a href="#" class="back-to-top color-highlight"> Back to Top</a></p>
+            <!-- <p class="footer-links"><a href="" class="color-highlight">Privacy Policy</a> | <a href="#" class="color-highlight">Terms and Conditions</a> | <a href="#" class="back-to-top color-highlight"> Back to Top</a></p> -->
             <div class="clear"></div>
+            <p class="footer-links"><a>FOR THE CULTURE</a> | <a target='_blank' href="https://www.themarathonclothing.com/" class="back-to-top color-highlight"> REST IN PEACE NIPSEY</a> | <a target='_blank' href="https://shop.mambaandmambacita.org/" class="back-to-top color-highlight"> REST IN PEACE KOBE</a></p>
         </div>
         <br>
         <br>
@@ -338,5 +351,7 @@
     <script type="text/javascript" src="/assets/jquery.js"></script>
     <script type="text/javascript" src="/assets/bootstrap.min.js"></script>
     <script type="text/javascript" src="/assets/custom.js"></script>
+    <script type="text/javascript" src="/assets/glightbox-call.js"></script>
+    <script type="text/javascript" src="/assets/glightbox.js"></script>
   </body>
 </html>

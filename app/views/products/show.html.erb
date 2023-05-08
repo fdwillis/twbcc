@@ -1,323 +1,307 @@
 
-<br>
-<br>
-<br>
-<div class="splide double-slider slider-no-dots" id="double-slider-12">
-  <div class="splide__track">
-      <div class="splide__list">
-          <div class="splide__slide">
-              <div class="card rounded-m shadow-l mx-3 bg-13" data-card-height="300">
-                  <div class="card-bottom text-center mb-0">
-                      <h1 class="color-white font-700 mb-0">StickyMobile</h1>
-                      <p class="color-white">The Menu Everyone Requested.</p>
-                  </div>
-                  <div class="card-overlay bg-gradient"></div>
-              </div>
-          </div>
-          <div class="splide__slide">
-              <div class="card rounded-m shadow-l mx-3 bg-29" data-card-height="300">
-                  <div class="card-bottom text-center mb-0">
-                      <h1 class="color-white font-700 mb-0">Carefuly Built</h1>
-                      <p class="color-white">Flexibility, Speed, Ease of Use.</p>
-                  </div>
-                  <div class="card-overlay bg-gradient"></div>
-              </div>
-          </div>
-          <div class="splide__slide">
-              <div class="card rounded-m shadow-l mx-3 bg-29" data-card-height="300">
-                  <div class="card-bottom text-center mb-0">
-                      <h1 class="color-white font-700 mb-0">Elite Quality</h1>
-                      <p class="color-white">Mobile Website, App or PWA Ready.</p>
-                  </div>
-                  <div class="card-overlay bg-gradient"></div>
-              </div>
-          </div>
-      </div>
-  </div>
-</div>
-        
-<div class="card card-overflow card-style">
-  <div class="content">
-      <div class="d-flex">
-          <div class="flex-grow-1">
-              <h1 class="font-30">StickyMobile</h1>
-              <div class="me-auto"> 
-                <% @product['tags'].split(',').each do |tag| %> 
-                  <span class="badge no-click bg-green-dark p-2 text-uppercase rounded-s mb-3"><%= tag %></span>
-                <% end %>
-              </div>
-              
+<div class="header-clear-medium">  
+  <div class="splide double-slider slider-no-dots" id="double-slider-12">
+    <div class="splide__track">
+        <div class="splide__list">
+            <div class="splide__slide">
+                <div class="card rounded-m shadow-l mx-3 bg-13" data-card-height="300">
+                    <div class="card-bottom text-center mb-0">
+                        <h1 class="color-white font-700 mb-0">StickyMobile
 
-              <p class="mt-n1 font-12 color-highlight mb-4"></p>
-              <!-- User::ACCEPTEDcountries.values.detect {|item| item[:site] == rainforestResponseLinkForThisProduct.split("://www.")[1].split("/")[0] } -->
-          </div>
-            <div class="flex-shrink-1 m-1">
-              <a href="#" data-menu="flag-country-explained" class="btn btn-s text-uppercase font-900 bg-highlight mb-4 rounded-sm"><i class="font-20 color-white px-1 fa fa-amazon"></i><span class="flag-icon flag-icon-<%= @product.country.downcase %> font-20"></span></a>
-            </div>
-            <div class="flex-shrink-1 m-1">
-              <% if current_user %>
-
-                  <% if @profileMetadata.present? && @profileMetadata['tracking'].present? && @profileMetadata['tracking'].split(',').include?("#{@product['asin']}-#{@product['country']}") %>
-                    <a href="<%= list_path(id: @product['asin'], remove: true)  %>" class="icon icon-xs rounded-pill color-white"><i class="fa fa-list color-highlight"></i></a>
-                  <% else %>
-                    <a href="<%= list_path(id: @product['asin'], country: @product['country'])  %>" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-list"></i></a>
-                  <% end %>
-                  <% if @profileMetadata.present? && @profileMetadata['wishlist'].present? && @profileMetadata['wishlist'].split(',').include?("#{@product['asin']}-#{@product['country']}") %>
-                    <a href="<%= loved_path(id: @product['asin'], remove: true)  %>" class="icon icon-xs rounded-pill color-white"><i class="fa fa-heart color-highlight"></i></a>
-                  <% else %>
-                    <a href="<%= loved_path(id: @product['asin'], country: @product['country'])  %>" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-heart"></i></a>
-
-                  <% end %>
-              <% else %>
-
-                <a href="<%= list_path(id: @product['asin'])  %>" data-confirm="Add this to your loved list?" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-heart"></i></a>
-                <a href="<%= list_path(id: @product['asin'])  %>" data-confirm="Add this to your public list?" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-list"></i></a>
-              <% end %>
-            </div>
-      </div>
-      <!-- add renderforest Keywords via response 'keywords_list' -->
-      <div class="divider"></div>
-        
-      
-      <p>
-          The best selling Mobile Progressive Web App on the Envato Marketplaces just got even better now, with 3.0 introducing
-          Boostrap 4.x compatibility and a tone of new gorgeous features!
-      </p>
-      
-      <div class="row">
-          <div class="col-4">
-              <span class="font-11">PWA</span>
-              <p class="mt-n2 mb-1">
-                  <strong class="color-theme">Yes</strong>
-              </p>
-          </div>
-          <div class="col-4">
-              <span class="font-11">Boostrap</span>
-              <p class="mt-n2 mb-1">
-                  <strong class="color-theme">4.4+</strong>
-              </p>
-          </div>
-          <div class="col-4">
-              <span class="font-11">Dark Mode</span>
-              <p class="mt-n2 mb-1">
-                  <strong class="color-theme">Yes</strong>
-              </p>
-          </div>
-          <div class="col-4">
-              <span class="font-11">Cordova</span>
-              <p class="mt-n2 mb-1">
-                  <strong class="color-theme">Compatible</strong>
-              </p>
-          </div>
-          <div class="col-4">
-              <span class="font-11">Components</span>
-              <p class="mt-n2 mb-1">
-                  <strong class="color-theme">100+</strong>
-              </p>
-          </div>
-          <div class="col-4">
-              <span class="font-11">Total Pages</span>
-              <p class="mt-n2 mb-1">
-                  <strong class="color-theme">150+</strong>
-              </p>
-          </div>
-      </div>
-      
-      <div class="d-flex mt-3">
-          <div class="flex-grow-1">
-              <span class="font-11">Ratings & Reviews </span>
-              <p class="mt-n2">
-                  <strong class="color-theme">4.9</strong>
-                  <i class="fa fa-star color-yellow-dark ps-2"></i>
-                  <i class="fa fa-star color-yellow-dark"></i>
-                  <i class="fa fa-star color-yellow-dark"></i>
-                  <i class="fa fa-star color-yellow-dark"></i>
-                  <i class="fa fa-star color-yellow-dark"></i>
-              </p>
-          </div>
-          <div class="flex-shrink-1 mt-2">
-              <a href="#">98 Reviews</a>
-          </div>
-      </div>
-      
-      
-      
-      <div class="divider mt-4"></div>
-      
-      <a href="<%= amazon_path(asin: @product['asin'], country: @product['country']) %>/?&referredBy=<%= params['referredBy'] %> " target='_blank'>
-        <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
-          <i class="fa fa-amazon font-20 color-white"></i> Purchase On Amazon
-        <% end %>
-      </a>
-      <div class="d-flex mt-4">
-          <div class="flex-grow-1">
-            <div class="font-20 text-center">
-              Share With The World <%= social_share_button_tag("Title", :url => "https://#{request.env['HTTP_HOST']}?&referredBy=#{current_user.present? ? current_user.uuid : nil}", :image =>  "https://images.mktw.net/im-720056?width=700&height=466", desc: truncate("Body", length: 50)) %>
-            </div>
-          </div>
-      </div>
-      <!-- <%= Ahoy::Event.where_event("Product Purchase Intent", product: @product['asin'].upcase).count %> -->
-      
-  </div>
-</div>
-       
-
-<div class="card card-style">
-  <div class="content">
-      <h2>Product Reviews</h2>
-      <p>
-          Awesome feedback from our customers that we wanted to share with you! These made our days better!
-      </p>
-  </div>
-      
-  <div class="content">
-      <div class="d-flex">
-          <div class="flex-grow-1">
-              <h1 class="float-start fa-4x font-900 me-3">5.00</h1>
-              <h5 class="font-11 font-500 mb-n2">average rating</h5>
-              <span>
-                  <i class="fa fa-star color-yellow-dark"></i>
-                  <i class="fa fa-star color-yellow-dark"></i>
-                  <i class="fa fa-star color-yellow-dark"></i>
-                  <i class="fa fa-star color-yellow-dark"></i>
-                  <i class="fa fa-star color-yellow-dark"></i>
-              </span>
-          </div>
-          <div>
-              <h6 class="text-end">John Doe</h6>
-              <p class="font-10 mb-0 mt-n2 opacity-40 text-end">21th March 2025</p>
-          </div>
-      </div>
-      <p class="mt-3">
-          It's a very complete HTML template and it's really fast as well. I like the way it's setup, did had to do some research before I got to know how it works though. I hope they will keep the support they deliver, because for me that's the most important part of buying a template.
-      </p>
-  </div>
-
-
-      
-  <div class="divider divider-margins mb-3"></div>
-      
-  <div class="content">
-      <div class="d-flex">
-          <div class="flex-grow-1">
-              <h1 class="float-start fa-4x font-900 me-3">4.98</h1>
-              <h5 class="font-11 font-500 mb-n2">average rating</h5>
-              <span>
-                  <i class="fa fa-star color-yellow-dark"></i>
-                  <i class="fa fa-star color-yellow-dark"></i>
-                  <i class="fa fa-star color-yellow-dark"></i>
-                  <i class="fa fa-star color-yellow-dark"></i>
-                  <i class="fa fa-star color-yellow-dark"></i>
-              </span>
-          </div>
-          <div>
-              <h6 class="text-end">John Doe</h6>
-              <p class="font-10 mb-0 mt-n2 opacity-40 text-end">21th March 2025</p>
-          </div>
-      </div>
-      <p class="mt-3">
-          It's a very complete HTML template and it's really fast as well. I like the way it's setup, did had to do some research before I got to know how it works though. I hope they will keep the support they deliver, because for me that's the most important part of buying a template.
-      </p>
-  </div>
-
-</div>
-<%= render 'application/getpaidaffiliates', message: 'Get paid to share products like this one!' %>
-<% if @posts.present? %>
-  <div class="card card-style">
-    <div class="content mb-4">
-        <h2>Posts With These Products</h2>
-        <p>Products you may also like based on what you're currently looking at.
-    </div>
-    <div class="splide double-slider slider-no-arrows slider-no-dots" id="double-slider-1">
-        <div class="splide__track">
-            <div class="splide__list">
-              <% @posts.each do |post| %>
-                <div class="splide__slide">
-                    <div data-card-height="230" class="card mx-3 rounded-m shadow-l bg-13">
-                        <div class="card-bottom text-center">
-                            <h2 class="color-white font-900 mb-0"><%= post.title %></h2>
-                            <p class="text-center mb-3">
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                                <i class="fa fa-star color-yellow-dark"></i>
-                            </p>
-                            <a href="<%= blog_path(id: post) %>" class='btn btn-m font-900 text-uppercase rounded-sm bg-highlight btn-full me-2 ms-2 mb-2'>
-                              <%= button_tag( :class => "") do %>
-                                <i class="fa fa-info-circle font-20 color-white text-center"></i>
-                              <% end %>
-                            </a>
-                        </div>
-                        <div class="card-overlay bg-gradient"></div>
+                        </h1>
+                        <p class="color-white">The Menu Everyone Requested.</p>
                     </div>
+                    <div class="card-overlay bg-gradient"></div>
                 </div>
-              <% end %>
+            </div>
+            <div class="splide__slide">
+                <div class="card rounded-m shadow-l mx-3 bg-29" data-card-height="300">
+                    <div class="card-bottom text-center mb-0">
+                        <h1 class="color-white font-700 mb-0">Carefuly Built</h1>
+                        <p class="color-white">Flexibility, Speed, Ease of Use.</p>
+                    </div>
+                    <div class="card-overlay bg-gradient"></div>
+                </div>
+            </div>
+            <div class="splide__slide">
+                <div class="card rounded-m shadow-l mx-3 bg-29" data-card-height="300">
+                    <div class="card-bottom text-center mb-0">
+                        <h1 class="color-white font-700 mb-0">Elite Quality</h1>
+                        <p class="color-white">Mobile Website, App or PWA Ready.</p>
+                    </div>
+                    <div class="card-overlay bg-gradient"></div>
+                </div>
             </div>
         </div>
     </div>
   </div>
-<% end %>
-<!-- <a href="#" data-toast="snackbar-cart" class="btn btn-full me-3 ms-3 btn-m font-900 text-uppercase rounded-sm shadow-l mb-4 bg-green-dark">Purchase Today</a> -->
+          
+  <div class="card card-overflow card-style">
+    <div class="content">
+        <div class="d-flex">
+            <div class="flex-grow-1">
+                <h1 class="font-20">
+                  Product Title You Clicked<br>
+                  <i class="font-20 px-1 fa fa-eye"></i> <%= Ahoy::Event.where_event("Product Visit", product: params[:id]).size %>
+                </h1>
+                <div class="me-auto"> 
+                  <% @product['tags'].split(',').each do |tag| %> 
+                    <span class="badge no-click bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s mb-3"><%= tag %></span>
+                  <% end %>
+                </div>
+                
+
+                <p class="mt-n1 font-12 color-highlight mb-4"></p>
+                <!-- User::ACCEPTEDcountries.values.detect {|item| item[:site] == rainforestResponseLinkForThisProduct.split("://www.")[1].split("/")[0] } -->
+            </div>
+              <div class="flex-shrink-1 m-1">
+                <a href="#" data-menu="flag-country-explained" class="btn btn-s text-uppercase font-900 bg-highlight mb-4 rounded-sm"><i class="font-20 color-white px-1 fa fa-amazon"></i><span class="flag-icon flag-icon-<%= @product.country.downcase %> font-20"></span></a>
+              </div>
+              <div class="flex-shrink-1 m-1">
+                <% if current_user %>
+
+                    <% if @profileMetadata.present? && @profileMetadata['tracking'].present? && @profileMetadata['tracking'].split(',').include?("#{@product['asin']}-#{@product['country']}") %>
+                      <a href="<%= list_path(id: @product['asin'], remove: true)  %>?&referredBy=<%= params['referredBy'] %>" class="icon icon-xs rounded-pill color-white"><i class="fa fa-list color-highlight"></i></a>
+                    <% else %>
+                      <a href="<%= list_path(id: @product['asin'], country: @product['country'])  %>?&referredBy=<%= params['referredBy'] %>" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-list"></i></a>
+                    <% end %>
+                    <% if @profileMetadata.present? && @profileMetadata['wishlist'].present? && @profileMetadata['wishlist'].split(',').include?("#{@product['asin']}-#{@product['country']}") %>
+                      <a href="<%= loved_path(id: @product['asin'], remove: true)  %>?&referredBy=<%= params['referredBy'] %>" class="icon icon-xs rounded-pill color-white"><i class="fa fa-heart color-highlight"></i></a>
+                    <% else %>
+                      <a href="<%= loved_path(id: @product['asin'], country: @product['country'])  %>?&referredBy=<%= params['referredBy'] %>" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-heart"></i></a>
+
+                    <% end %>
+                <% else %>
+
+                  <a href="<%= list_path(id: @product['asin'])  %>?&referredBy=<%= params['referredBy'] %>" data-confirm="Add this to your loved list?" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-heart"></i></a>
+                  <a href="<%= list_path(id: @product['asin'])  %>?&referredBy=<%= params['referredBy'] %>" data-confirm="Add this to your public list?" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-list"></i></a>
+                <% end %>
+              </div>
+        </div>
+        <!-- add renderforest Keywords via response 'keywords_list' -->
+        <div class="divider"></div>
+          
+        
+        <p>
+            The best selling Mobile Progressive Web App on the Envato Marketplaces just got even better now, with 3.0 introducing
+            Boostrap 4.x compatibility and a tone of new gorgeous features!
+        </p>
+        
+        <div class="row">
+            <div class="col-4">
+                <span class="font-11">PWA</span>
+                <p class="mt-n2 mb-1">
+                    <strong class="color-theme">Yes</strong>
+                </p>
+            </div>
+            <div class="col-4">
+                <span class="font-11">Boostrap</span>
+                <p class="mt-n2 mb-1">
+                    <strong class="color-theme">4.4+</strong>
+                </p>
+            </div>
+            <div class="col-4">
+                <span class="font-11">Dark Mode</span>
+                <p class="mt-n2 mb-1">
+                    <strong class="color-theme">Yes</strong>
+                </p>
+            </div>
+            <div class="col-4">
+                <span class="font-11">Cordova</span>
+                <p class="mt-n2 mb-1">
+                    <strong class="color-theme">Compatible</strong>
+                </p>
+            </div>
+            <div class="col-4">
+                <span class="font-11">Components</span>
+                <p class="mt-n2 mb-1">
+                    <strong class="color-theme">100+</strong>
+                </p>
+            </div>
+            <div class="col-4">
+                <span class="font-11">Total Pages</span>
+                <p class="mt-n2 mb-1">
+                    <strong class="color-theme">150+</strong>
+                </p>
+            </div>
+        </div>
+        
+        <div class="d-flex mt-3">
+            <div class="flex-grow-1">
+                <span class="font-11">Ratings & Reviews </span>
+                <p class="mt-n2">
+                    <strong class="color-theme">4.9</strong>
+                    <i class="fa fa-star color-yellow-dark ps-2"></i>
+                    <i class="fa fa-star color-yellow-dark"></i>
+                    <i class="fa fa-star color-yellow-dark"></i>
+                    <i class="fa fa-star color-yellow-dark"></i>
+                    <i class="fa fa-star color-yellow-dark"></i>
+                </p>
+            </div>
+            <div class="flex-shrink-1 mt-2">
+                <a href="#">98 Reviews</a>
+            </div>
+        </div>
+        
+        
+        
+        <div class="divider mt-4"></div>
+        
+        <a href="<%= amazon_path(asin: @product['asin'], country: @product['country']) %>/?&referredBy=<%= params['referredBy'] %> " target='_blank'>
+          <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
+            <i class="fa fa-amazon font-20 color-white"></i> Purchase On Amazon
+          <% end %>
+        </a>
+        <div class="d-flex mt-4">
+            <div class="flex-grow-1">
+              <div class="font-20 text-center">
+                Share With The World <%= social_share_button_tag("Title", :url => "https://#{request.env['HTTP_HOST']}?&referredBy=#{params['referredBy']}", :image =>  "https://images.mktw.net/im-720056?width=700&height=466", desc: truncate("Body", length: 50)) %>
+              </div>
+            </div>
+        </div>
+        <!-- <%= Ahoy::Event.where_event("Product Purchase Intent", product: @product['asin'].upcase).count %> -->
+        <div class="card card-style">
+              <div class="content mb-0">
+                  <h2>Product Gallery</h2>
+                  <p>
+                      Here are the best and most beautiful features our product has to offer. Just tap and move through the images.
+                  </p>
+                  <div class="row text-center row-cols-3 mb-0">
+                      <a class="col mb-4" data-gallery="gallery-1" href="images/pictures/1t.jpg" title="Vynil and Typerwritter">
+                          <img src="images/pictures/1s.jpg" data-src="images/pictures/1s.jpg" class="img-fluid rounded-m preload-img entered loaded" alt="img" data-ll-status="loaded">
+                      </a>
+                      
+                  </div>
+
+              </div>
+          </div>
+    </div>
+  </div>
+         
+
+  <div class="card card-style">
+    <div class="content">
+        <h2>Product Reviews</h2>
+        <p>
+            Awesome feedback from our customers that we wanted to share with you! These made our days better!
+        </p>
+    </div>
+        
+    <div class="content">
+        <div class="d-flex">
+            <div class="flex-grow-1">
+                <h1 class="float-start fa-4x font-900 me-3">5.00</h1>
+                <h5 class="font-11 font-500 mb-n2">average rating</h5>
+                <span>
+                    <i class="fa fa-star color-yellow-dark"></i>
+                    <i class="fa fa-star color-yellow-dark"></i>
+                    <i class="fa fa-star color-yellow-dark"></i>
+                    <i class="fa fa-star color-yellow-dark"></i>
+                    <i class="fa fa-star color-yellow-dark"></i>
+                </span>
+            </div>
+            <div>
+                <h6 class="text-end">John Doe</h6>
+                <p class="font-10 mb-0 mt-n2 opacity-40 text-end">21th March 2025</p>
+            </div>
+        </div>
+        <p class="mt-3">
+            It's a very complete HTML template and it's really fast as well. I like the way it's setup, did had to do some research before I got to know how it works though. I hope they will keep the support they deliver, because for me that's the most important part of buying a template.
+        </p>
+    </div>
 
 
+        
+    <div class="divider divider-margins mb-3"></div>
+        
+    <div class="content">
+        <div class="d-flex">
+            <div class="flex-grow-1">
+                <h1 class="float-start fa-4x font-900 me-3">4.98</h1>
+                <h5 class="font-11 font-500 mb-n2">average rating</h5>
+                <span>
+                    <i class="fa fa-star color-yellow-dark"></i>
+                    <i class="fa fa-star color-yellow-dark"></i>
+                    <i class="fa fa-star color-yellow-dark"></i>
+                    <i class="fa fa-star color-yellow-dark"></i>
+                    <i class="fa fa-star color-yellow-dark"></i>
+                </span>
+            </div>
+            <div>
+                <h6 class="text-end">John Doe</h6>
+                <p class="font-10 mb-0 mt-n2 opacity-40 text-end">21th March 2025</p>
+            </div>
+        </div>
+        <p class="mt-3">
+            It's a very complete HTML template and it's really fast as well. I like the way it's setup, did had to do some research before I got to know how it works though. I hope they will keep the support they deliver, because for me that's the most important part of buying a template.
+        </p>
+    </div>
 
-
-<!-- <div class="card card-style">
-  <div class="content mb-0">
-      <h2>Product Gallery</h2>
-      <p class="mt-n1">
-          Here are the best and most beautiful features our product has to offer. Just tap and move through the images.
-      </p>
-      <div class="row text-center row-cols-3 mb-0">
-          <a class="col mb-4" data-gallery="gallery-1" href="images/pictures/1t.jpg" title="Vynil and Typerwritter">
-              <img src="images/empty.png" data-src="images/pictures/1s.jpg" class="img-fluid rounded-m preload-img" alt="img">
-          </a>
-          <a class="col mb-4" data-gallery="gallery-1" href="images/pictures/2t.jpg" title="Cream Cookie">
-              <img src="images/empty.png" data-src="images/pictures/2s.jpg" class="img-fluid rounded-m preload-img" alt="img">
-          </a>
-          <a class="col mb-4" data-gallery="gallery-1" href="images/pictures/3t.jpg" title="Cookies and Flowers">
-              <img src="images/empty.png" data-src="images/pictures/3s.jpg" class="img-fluid rounded-m preload-img" alt="img">
-          </a>
-          <a class="col mb-4" data-gallery="gallery-1" href="images/pictures/4t.jpg" title="Pots and Pans">
-              <img src="images/empty.png" data-src="images/pictures/4s.jpg" class="img-fluid rounded-m preload-img" alt="img">
-          </a>
-          <a class="col mb-4" data-gallery="gallery-1" href="images/pictures/5t.jpg" title="Berries are Packed with Fiber">
-              <img src="images/empty.png" data-src="images/pictures/5s.jpg" class="img-fluid rounded-m preload-img" alt="img">
-          </a>
-          <a class="col mb-4" data-gallery="gallery-1" href="images/pictures/6t.jpg" title="A beautiful Retro Camera">
-              <img src="images/empty.png" data-src="images/pictures/6s.jpg" class="img-fluid rounded-m preload-img" alt="img">
-          </a>
+  </div>
+  <%= render 'application/getpaidaffiliates', message: ['Get paid to share products like this one!'.titleize, 'Share this page for a chance to earn commission!'.titleize].sample, title: ['You could earn commission'.titleize, 'explore, share, earn'.titleize].sample %>
+  <% if @posts.present? %>
+    <div class="card card-style">
+      <div class="content mb-4">
+          <h2>Posts With These Products</h2>
+          <p>Products you may also like based on what you're currently looking at.
       </div>
-
-  </div>
-</div>  -->
-
-
-<div id="flag-country-explained" class="menu menu-box-modal rounded-m" data-menu-width="330" style="display: block; width: 330px;">
-  <div class="content">
-    <div class="text-center">
-      <span class="font-20 icon icon-xxl fa fa-amazon"></span>
+      <div class="splide double-slider slider-no-arrows slider-no-dots" id="double-slider-1">
+          <div class="splide__track">
+              <div class="splide__list">
+                <% @posts.each do |post| %>
+                  <div class="splide__slide">
+                      <div data-card-height="230" class="card mx-3 rounded-m shadow-l bg-13">
+                          <div class="card-bottom text-center">
+                              <h2 class="color-white font-900 mb-0"><%= post.title %></h2>
+                              <p class="text-center mb-3">
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                                  <i class="fa fa-star color-yellow-dark"></i>
+                              </p>
+                              <a href="<%= blog_path(id: post) %>?&referredBy=<%= params['referredBy'] %>" class='btn btn-m font-900 text-uppercase rounded-sm bg-highlight btn-full me-2 ms-2 mb-2'>
+                                <%= button_tag( :class => "") do %>
+                                  <i class="fa fa-info-circle font-20 color-white text-center"></i>
+                                <% end %>
+                              </a>
+                          </div>
+                          <div class="card-overlay bg-gradient"></div>
+                      </div>
+                  </div>
+                <% end %>
+              </div>
+          </div>
+      </div>
     </div>
-    <h5 class="text-center">This Icon Means There Are Amazon Affiliate Links Present</a>
-    </h5>
-    <small>This Page Contains Amazon Affiliate Links That Will Earn That Affiliate Commission If Purchased. We Automate This Process For All Amazon Associates &amp; Pay Commission On Our Memberships As Well. Oarlin Commissions Only Available In USA</small>
-    <a data-menu="modal-wizard-step-2">
-      <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-highlight form-control mt-4 mb-4") do %>
-        <span class="flag-icon flag-icon-<%= @product.country.downcase %> font-20"></span> What Does This Icon Mean?
-      <% end %>
-    </a>  
-  </div>
-</div>
+  <% end %>
 
-<div id="modal-wizard-step-2" class="menu menu-box-modal rounded-m" data-menu-width="330" style="display: block; width: 330px;">
-  <div class="content mb-2">
-    <div class="text-center">
-      <span class="flag-icon flag-icon-<%= @product.country.downcase %> font-20"></span>
+
+  <div id="flag-country-explained" class="menu menu-box-modal rounded-m" data-menu-width="330" style="display: block; width: 330px;">
+    <div class="content">
+      <div class="text-center">
+        <span class="font-40 icon icon-xxl fa fa-amazon"></span>
+      </div>
+      <h5 class="text-center">This Icon Means There Are Amazon Affiliate Links Present</a>
+      </h5>
+      <small>This Page Contains Amazon Affiliate Links That Will Earn That Affiliate Commission If Purchased. We Automate This Process For All Amazon Associates &amp; Pay Commission On Our Memberships As Well. Oarlin Commissions Only Available In USA</small>
+      <a data-menu="modal-wizard-step-2">
+        <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-highlight form-control mt-4 mb-4") do %>
+          <span class="flag-icon flag-icon-<%= @product.country.downcase %> font-20"></span> What Does This Icon Mean?
+        <% end %>
+      </a>  
     </div>
-    <h5 class="text-center">This Icon Means The Amazon Affiliate Links Originate From <%= User::ACCEPTEDcountries[@product.country.upcase][:country] %>. </a>
-    </h5>
-    <small>Affiliates From Other Countries May Be Eligible. Check With Amazon Or Contact Us To Help. These Products May Not Be Available For Purchase In All Countries.</small>
- 
+  </div>
+
+  <div id="modal-wizard-step-2" class="menu menu-box-modal rounded-m" data-menu-width="330" style="display: block; width: 330px;">
+    <div class="content mb-2">
+      <div class="text-center">
+        <span class="flag-icon flag-icon-<%= @product.country.downcase %> font-40"></span>
+      </div>
+      <h5 class="text-center">This Icon Means The Amazon Affiliate Links Originate From <%= User::ACCEPTEDcountries[@product.country.upcase][:country] %>. </a>
+      </h5>
+      <small>Affiliates From Other Countries May Be Eligible. Check With Amazon Or Contact Us To Help. These Products May Not Be Available For Purchase In All Countries.</small>
+   
+    </div>
   </div>
 </div>

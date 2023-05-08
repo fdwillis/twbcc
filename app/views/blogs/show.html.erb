@@ -1,23 +1,14 @@
-
-
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-  
-  <div class="card card-style over-card" style="margin-top:-120px; margin-bottom:10px">
+<div class="header-clear-medium">
+  <div class="card card-style over-card mb-4">
           
         <% if @blog.images.present? %>
           <div class="splide double-slider slider-no-dots slider-no-arrows splide--loop splide--ltr splide--draggable is-active" id="double-slider-334" style="visibility: visible;">
             <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button" aria-controls="double-slider-334-track" aria-label="Go to last slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button><button class="splide__arrow splide__arrow--next" type="button" aria-controls="double-slider-334-track" aria-label="Next slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button></div><div class="splide__track" id="double-slider-334-track">
                     <div class="splide__list" id="double-slider-334-list" style="transform: translateX(-3024px);">
                       
-                        <% @blog.images.split(',').each do |img| %>
+                        <% @blog.images.split(',').each_with_index do |img, indx| %>
                           <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 1512px;">
-                              <div data-card-height="300" class="card mx-3 bg-14 rounded-m shadow-l" style='background-image: url("<%=  img %>");height: 300px;'>
+                              <div data-card-height="300" class="card mx-3 bg-14 rounded-m shadow-l" style='background-image: url("<%=  "https://res.cloudinary.com/dulizdfij/image/upload/c_fill,g_auto/blog/#{current_user.uuid}/#{@blog.title.parameterize(separator: "-")}-#{indx}.jpg" %>");height: 300px;'>
                                   <!-- <div class="card-bottom text-center mb-3">
                                       <h2 class="color-white text-uppercase font-900 mb-0">Top Notch Quality</h2>
                                       <p class="under-heading color-white">Flexibility, Speed, Ease of Use.</p>
@@ -39,7 +30,7 @@
 
           
           <% if @blog&.user == current_user || current_user&.manager? %>
-            <a href="<%= edit_blog_path(@blog) %>" class='mb-4'>
+            <a href="<%= edit_blog_path(@blog) %>?&referredBy=<%= params['referredBy'] %>?&referredBy=<%= params['referredBy'] %>" class='mb-4'>
               <%= button_tag( :class => "btn btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
                 <i class="fa fa-pencil font-20 color-white"></i>
               <% end %>
@@ -47,26 +38,34 @@
             <br><br><br>
           <% end %>
           <div class="d-flex">
-              <% @blog.tags.split(',').shuffle.take(1).each do |tag| %>
-                  <div class="me-auto"><span class="badge no-click bg-green-dark p-2 text-uppercase rounded-s mb-3"><%= tag %></span></div>
+            <div class="flex-grow-1">
+              <h1 class="font-20">
+                <%= @blog.title %><br>
+                <i class="font-20 px-1 fa fa-eye"></i> <%= Ahoy::Event.where_event("Blog Page Visit", title: @blog.title).count %>
+              </h1>
+              <% @blog&.tags.present? && @blog&.tags.split(',').shuffle.each do |tag| %>
+                <span class="badge no-click bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s mb-3"><%= tag %></span>
               <% end %>
+            </div>
+            <div class="flex-shrink-1 m-1">
               <a href="#" data-menu="flag-country-explained" class="btn btn-s text-uppercase font-900 bg-highlight mb-4 rounded-sm"><i class="font-20 color-white px-1 fa fa-amazon"></i><span class="flag-icon flag-icon-<%= @blog.country.downcase %> font-20"></span></a></a>
+            </div>
           </div>
-
-          <h1 class="font-20 line-height-m pb-2">
-            <%= @blog.title %><br>
-            <i class="font-20 px-1 fa fa-eye"></i> <%= Ahoy::Event.where_event("Blog Page Visit", title: @blog.title).count %>
-          </h1>
-          
-
           <p class="pt-2"><%= simple_format(@blog.body) %></p>
           <div class="font-20 text-center">
             Share With The World <%= social_share_button_tag(@blog.title, :url => "https://#{request.env['HTTP_HOST']}", :image =>  @blog.images.split(',').shuffle.take(1)[0], desc: truncate(@blog.body, length: 50)) %>
           </div>
       </div>
+      <div class="row row-cols-3">
+        <% @blog.images.split(',').each_with_index do |img,indx| %>
+          <a data-gallery="gallery-1" href="<%= "https://res.cloudinary.com/dulizdfij/image/upload/c_fill,g_auto/blog/#{current_user.uuid}/#{@blog.title.parameterize(separator: "-")}-#{indx}.jpg" %>" title="<%= @blog.title %>">
+              <img src="<%=  "https://res.cloudinary.com/dulizdfij/image/upload/c_fill,g_auto/blog/#{current_user.uuid}/#{@blog.title.parameterize(separator: "-")}-#{indx}.jpg" %>" data-src="<%= "https://res.cloudinary.com/dulizdfij/image/upload/c_fill,g_auto/blog/#{current_user.uuid}/#{@blog.title.parameterize(separator: "-")}-#{indx}.jpg"%>" class="img-fluid rounded-m preload-img entered loaded" alt="img" data-ll-status="loaded" style="height: 200;">
+          </a>
+        <% end %>
+      </div>
   </div>
     
-  <%= render 'application/getpaidaffiliates', message: 'Get paid to share blog posts like this one!' %>
+  <%= render 'application/getpaidaffiliates', message: ['Get paid to share blog posts like this one!'.titleize, 'Earn a commission when you share!'.titleize], title: ['Getting Paid is as easy as sharing'.titleize, 'explore, share, earn'.titleize].sample %>
 
 
   <div class="card card-style">
@@ -77,7 +76,7 @@
     <div class="splide double-slider slider-no-arrows slider-no-dots" id="double-slider-1">
         <div class="splide__track">
             <div class="splide__list">
-              <% @blog.asins.split(',').each do |asin| %>
+              <% @blog&.asins.present? && @blog&.asins.split(',').each do |asin| %>
                 <div class="splide__slide">
                     <div data-card-height="230" class="card mx-3 rounded-m shadow-l bg-13">
                         <div class="card-bottom text-center">
@@ -89,7 +88,7 @@
                                 <i class="fa fa-star color-yellow-dark"></i>
                                 <i class="fa fa-star color-yellow-dark"></i>
                             </p>
-                            <a href="<%= product_path(id: asin) %>" class='btn btn-m font-900 text-uppercase rounded-sm bg-highlight btn-full me-2 ms-2 mb-2'>
+                            <a href="<%= product_path(id: asin) %>?&referredBy=<%= params['referredBy'] %>" class='btn btn-m font-900 text-uppercase rounded-sm bg-highlight btn-full me-2 ms-2 mb-2'>
                               <%= button_tag( :class => "") do %>
                                 <i class="fa fa-info-circle font-20 color-white text-center"></i>
                               <% end %>
@@ -118,17 +117,17 @@
             <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
         </div>
           <h1 class="color-white p-2">"Versatile and Easy to Use"</h1>
-          <a href="#" class="btn btn-m mb-3 rounded-xs text-uppercase font-900 shadow-s bg-yellow-dark"><i class="fa fa-amazon font-20 color-white"></i> Secret Item</a>
+          <a href="/view-on-amazon/<%= @blog&.asins.split(',').shuffle[0] %>/<%= @blog.country.downcase %>/?&referredBy=<%= params['referredBy'] %>" class="btn btn-m mb-3 rounded-xs text-uppercase font-900 shadow-s bg-yellow-dark" target='_blank'><i class="fa fa-amazon font-20 color-white"></i> Secret Item</a>
       </div>
       <div class="card-overlay bg-black opacity-80"></div>
   </div>
-
+</div>
   
 
 <div id="flag-country-explained" class="menu menu-box-modal rounded-m" data-menu-width="330" style="display: block; width: 330px;">
   <div class="content">
     <div class="text-center">
-      <span class="font-20 icon icon-xxl fa fa-amazon"></span>
+      <span class="font-40 icon icon-xxl fa fa-amazon"></span>
     </div>
     <h5 class="text-center">This Icon Means There Are Amazon Affiliate Links Present</a>
     </h5>
@@ -144,7 +143,7 @@
 <div id="modal-wizard-step-2" class="menu menu-box-modal rounded-m" data-menu-width="330" style="display: block; width: 330px;">
   <div class="content mb-2">
     <div class="text-center">
-      <span class="flag-icon flag-icon-<%= @blog.country.downcase %> font-20"></span>
+      <span class="flag-icon flag-icon-<%= @blog.country.downcase %> font-40"></span>
     </div>
     <h5 class="text-center">This Icon Means The Amazon Affiliate Links Originate From <%= User::ACCEPTEDcountries[@blog.country.upcase][:country] %>. </a>
     </h5>

@@ -1,17 +1,22 @@
-
-<div class="page-content header-clear-medium">
+<div class="header-clear-medium">
 <!--   <%= current_user&.checkMembership %> -->
   <% if current_user&.admin? || (current_user&.present? && current_user&.checkMembership[:membershipType] == 'business' && current_user.blogs.size <= 9 && current_user&.checkMembership[:membershipDetails][:active] == true) || (current_user&.present? && current_user&.checkMembership[:membershipType] == 'automation'&& current_user&.checkMembership[:membershipDetails][:active] == true) %>  
-    <%= link_to 'New Post', new_blog_path, class: 'btn btn-m btn-full mb-3 rounded-sm text-uppercase font-900 color-highlight bg-theme' %>
+    <%= link_to 'New Post', "/blog/new?&referredBy=#{params['referredBy']}", class: 'btn btn-m btn-full mb-3 rounded-sm text-uppercase font-900 color-highlight bg-theme' %>
   <% end %>
 
+  <div class="card card-style mt-2">
+    <div class="content text-center">
+        <h1 class="text-center">The Hive</h1>
+        <p class="boxed-text-l pb-4 font-14">The <i class="fa fa-amazon font-14"></i> Products Affiliates Are Buzzing About!</p>
+    </div>
+  </div>
   <% if @featured.present? %>
     <div class="splide double-slider slider-no-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="double-slider-1" style="visibility: visible;">
         <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button" aria-controls="double-slider-1-track" aria-label="Previous slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button><button class="splide__arrow splide__arrow--next" type="button" aria-controls="double-slider-1-track" aria-label="Next slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button></div><div class="splide__track" id="double-slider-1-track">
             <div class="splide__list" id="double-slider-1-list" style="transform: translateX(-4536px);">
               <% @featured.each do |blog| %>
                 <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 1512px;">
-                    <a href="/blog/<%= blog.title.parameterize(separator: '-') %>" class="card card-style" style='background-image: url("<%=  blog.images.split(',').shuffle.first %>")' data-card-height="300" style="height: 300px;">
+                    <a href="/blog/<%= blog.title.parameterize(separator: '-') %>?&referredBy=<%= params['referredBy'] %>" class="card card-style" style='background-image: url("<%=  blog.images.split(',').shuffle.first %>")' data-card-height="300" style="height: 300px;">
                         <div class="card-top">
                           <span class="p-2 m-1 float-end flag-icon flag-icon-<%= blog.country.downcase %> font-20"></span>
                             
@@ -27,15 +32,15 @@
         </div>
     <ul class="splide__pagination"><li><button class="splide__pagination__page" type="button" aria-controls="double-slider-1-slide01" aria-label="Go to slide 1"></button></li><li><button class="splide__pagination__page is-active" type="button" aria-controls="double-slider-1-slide02" aria-label="Go to slide 2" aria-current="true"></button></li><li><button class="splide__pagination__page" type="button" aria-controls="double-slider-1-slide03" aria-label="Go to slide 3"></button></li></ul></div>
   <% end %>
-    <%= render 'application/getpaidaffiliates', message: 'Oarlin members can get paid to share any posts or product!' %>
+    <%= render 'application/getpaidaffiliates', message: 'Oarlin members can get paid to share any posts or product!', title: ['You could earn commission'.titleize, 'explore, share, earn'.titleize].sample %>
     <div class="row mb-0">
         <div class="col-6 pe-0">
           <% if @blogs[0].present? %>
-            <a href="/blog/<%= @blogs[0].title.parameterize(separator: '-') %>" class="card card-style mb-2" style='background-image: url("<%=  @blogs[0].images.split(',').shuffle.first %>");height: 135px;' data-card-height="135">
+            <a href="/blog/<%= @blogs[0].title.parameterize(separator: '-') %>?&referredBy=<%= params['referredBy'] %>" class="card card-style mb-2" style='background-image: url("<%=  @blogs[0].images.split(',').shuffle.first %>");height: 135px;' data-card-height="135">
                 <div class="card-top text-center">
                   <span class="p-2 m-1 float-end flag-icon flag-icon-<%= @blogs[0].country.downcase %> font-20"></span>
-                  <% @blogs[0].tags.split(',').shuffle.take(1).each do |tag| %>
-                    <span class="badge float-end bg-pink-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                  <% @blogs[0]&.tags.present? && @blogs[0]&.tags&.split(',').shuffle.take(1).each do |tag| %>
+                    <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
                   <% end %>
                 </div>
 
@@ -52,11 +57,11 @@
             </a>
           <% end %>
           <% if @blogs[1].present? %>
-            <a href="/blog/<%= @blogs[1].title.parameterize(separator: '-') %>" class="card card-style mb-2" data-card-height="135" style='background-image: url("<%=  @blogs[1].images.split(',').shuffle.first %>");height: 135px;'>
+            <a href="/blog/<%= @blogs[1].title.parameterize(separator: '-') %>?&referredBy=<%= params['referredBy'] %>" class="card card-style mb-2" data-card-height="135" style='background-image: url("<%=  @blogs[1].images.split(',').shuffle.first %>");height: 135px;'>
                 <div class="card-top text-center">
                   <span class="p-2 m-1 float-end flag-icon flag-icon-<%= @blogs[1].country.downcase %> font-20"></span>
-                  <% @blogs[1].tags.split(',').shuffle.take(1).each do |tag| %>
-                    <span class="badge float-end bg-yellow-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                  <% @blogs[1]&.tags.present? && @blogs[1]&.tags&.split(',').shuffle.take(1).each do |tag| %>
+                    <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
                   <% end %>
                 </div>
                 <div class="card-bottom p-3">
@@ -69,11 +74,11 @@
         </div>
         <div class="col-6 ps-0">
           <% if @blogs[2].present? %>
-            <a href="/blog/<%= @blogs[2].title.parameterize(separator: '-') %>" class="card card-style ms-0" style='background-image: url("<%=  @blogs[2].images.split(',').shuffle.first %>")' data-card-height="280" style="height: 280px;">
+            <a href="/blog/<%= @blogs[2].title.parameterize(separator: '-') %>?&referredBy=<%= params['referredBy'] %>" class="card card-style ms-0" style='background-image: url("<%=  @blogs[2].images.split(',').shuffle.first %>")' data-card-height="280" style="height: 280px;">
                 <div class="card-top text-center">
                   <span class="p-2 m-1 float-end flag-icon flag-icon-<%= @blogs[2].country.downcase %> font-20"></span>
-                  <% @blogs[2].tags.split(',').shuffle.take(1).each do |tag| %>
-                    <span class="badge float-end bg-orange-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                  <% @blogs[2]&.tags.present? && @blogs[2]&.tags&.split(',').shuffle.take(1).each do |tag| %>
+                    <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
                   <% end %>
                 </div>
                 <div class="card-bottom p-3">
@@ -89,11 +94,11 @@
     <div class="row mb-0 mt-n3">
         <div class="col-6 pe-0">
           <% if @blogs[3].present? %>
-            <a href="/blog/<%= @blogs[3].title.parameterize(separator: '-') %>" class="card card-style" style="background-image: url('<%=  @blogs[3].images.split(',').shuffle.first %>');height: 280px;" data-card-height="280" style="">
+            <a href="/blog/<%= @blogs[3].title.parameterize(separator: '-') %>?&referredBy=<%= params['referredBy'] %>" class="card card-style" style="background-image: url('<%=  @blogs[3].images.split(',').shuffle.first %>');height: 280px;" data-card-height="280" style="">
                 <div class="card-top text-center">
                   <span class="p-2 m-1 float-end flag-icon flag-icon-<%= @blogs[3].country.downcase %> font-20"></span>
-                  <% @blogs[3].tags.split(',').shuffle.take(1).each do |tag| %>
-                    <span class="badge float-end bg-red-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                  <% @blogs[3]&.tags.present? && @blogs[3]&.tags&.split(',').shuffle.take(1).each do |tag| %>
+                    <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
                   <% end %>
                 </div>
                 <div class="card-bottom p-3">
@@ -106,11 +111,11 @@
         </div>
         <div class="col-6 ps-0">
           <% if @blogs[4].present? %>
-            <a href="/blog/<%= @blogs[4].title.parameterize(separator: '-') %>" class="card ms-0 card-style mb-2" data-card-height="135" style="background-image: url('<%=  @blogs[4].images.split(',').shuffle.first %>');height: 135px;">
+            <a href="/blog/<%= @blogs[4].title.parameterize(separator: '-') %>?&referredBy=<%= params['referredBy'] %>" class="card ms-0 card-style mb-2" data-card-height="135" style="background-image: url('<%=  @blogs[4].images.split(',').shuffle.first %>');height: 135px;">
                 <div class="card-top text-center">
                   <span class="p-2 m-1 float-end flag-icon flag-icon-<%= @blogs[4].country.downcase %> font-20"></span>
-                    <% @blogs[4].tags.split(',').shuffle.take(1).each do |tag| %>
-                      <span class="badge float-end bg-aqua-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                    <% @blogs[4]&.tags.present? && @blogs[4]&.tags&.split(',').shuffle.take(1).each do |tag| %>
+                      <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
                     <% end %>
                 </div>
                 <div class="card-bottom p-3">
@@ -121,11 +126,11 @@
             </a>
           <% end %>
           <% if @blogs[5].present? %>
-            <a href="/blog/<%= @blogs[5].title.parameterize(separator: '-') %>" class="card ms-0 card-style mb-2" data-card-height="135" style="background-image: url('<%=  @blogs[5].images.split(',').shuffle.first %>');height: 135px;">
+            <a href="/blog/<%= @blogs[5].title.parameterize(separator: '-') %>?&referredBy=<%= params['referredBy'] %>" class="card ms-0 card-style mb-2" data-card-height="135" style="background-image: url('<%=  @blogs[5].images.split(',').shuffle.first %>');height: 135px;">
                 <div class="card-top text-center">
                   <span class="p-2 m-1 float-end flag-icon flag-icon-<%= @blogs[5].country.downcase %> font-20"></span>
-                    <% @blogs[5].tags.split(',').shuffle.take(1).each do |tag| %>
-                      <span class="badge float-end bg-blue-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                    <% @blogs[5]&.tags.present? && @blogs[5]&.tags&.split(',').shuffle.take(1).each do |tag| %>
+                      <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
                     <% end %>
                 </div>
                 <div class="card-bottom p-3">

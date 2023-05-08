@@ -7,7 +7,7 @@ class BlogsController < ApplicationController
   def index
     @featured = []
     @blogs = Blog.paginate(page: params[:page], per_page: 8)
-    Blog.all.map{|blog| blog['tags'].split(',').include?('featured') ? @featured << blog : next}
+    @blogs.map{|blog| blog['tags'].split(',').reject(&:blank?).include?('featured') ? @featured << blog : nil}
   end
 
   # GET /blogs/1 or /blogs/1.json
@@ -32,7 +32,7 @@ class BlogsController < ApplicationController
     if params['attachment'].present?
       params['attachment']['file'].each_with_index do |image, indx|
         Cloudinary::Uploader.upload(image.tempfile, :use_filename => true, :folder => "blog/#{current_user.uuid}", :public_id => "#{blog_params['title'].parameterize(separator: '-')}-#{indx}")
-        images.push("https://res.cloudinary.com/dulizdfij/image/upload/blog/#{current_user.uuid}/#{@blog.title.parameterize(separator: '-')}-#{indx}.jpg")
+        images.push("https://res.cloudinary.com/dulizdfij/image/upload/blog/#{current_user.uuid.downcase}/#{@blog.title.parameterize(separator: '-')}-#{indx}.jpg")
       end
     end
 
@@ -40,7 +40,7 @@ class BlogsController < ApplicationController
 
     respond_to do |format|
       if @blog.save
-        format.html { redirect_to blog_url(@blog), notice: "Blog was successfully created." }
+        format.html { redirect_to "#{blog_url(@blog)}/?&referredBy=#{params['referredBy']}", notice: "Blog was successfully created." }
         format.json { render :show, status: :created, location: @blog }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -54,9 +54,17 @@ class BlogsController < ApplicationController
     respond_to do |format|
       images = []
       if params['attachment'].present?
+        if @blog.images.split(',').size > 0
+          @blog.images.split(',').each_with_index do |img, indx|
+            result = Cloudinary::Api.delete_resources(["#{@blog['title'].parameterize(separator: '-')}-#{indx}"])
+          end
+        end
+
         params['attachment']['file'].each_with_index do |image, indx|
+
           Cloudinary::Uploader.upload(image.tempfile, :use_filename => true, :folder => "blog/#{current_user.uuid}", :public_id => "#{blog_params['title'].parameterize(separator: '-')}-#{indx}")
           images.push("https://res.cloudinary.com/dulizdfij/image/upload/blog/#{current_user.uuid}/#{@blog.title.parameterize(separator: '-')}-#{indx}.jpg")
+
         end
       end
 
@@ -65,7 +73,7 @@ class BlogsController < ApplicationController
       end
       
       if @blog.update(blog_params)
-        format.html { redirect_to blog_url(@blog), notice: "Blog was successfully updated." }
+        format.html { redirect_to "#{blog_url(@blog)}/?&referredBy=#{params['referredBy']}", notice: "Blog was successfully updated." }
         format.json { render :show, status: :ok, location: @blog }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -79,7 +87,7 @@ class BlogsController < ApplicationController
     @blog.destroy
 
     respond_to do |format|
-      format.html { redirect_to blogs_url, notice: "Blog was successfully destroyed." }
+      format.html { redirect_to "#{blogs_url}/?&referredBy=#{params['referredBy']}", notice: "Blog was successfully destroyed." }
       format.json { head :no_content }
     end
   end

@@ -1,0 +1,49 @@
+<div class="header-clear-medium">
+	<h5 class="opacity-50 text-center">Expected</h5>
+	<h4 class="opacity-50 text-center">Annual Commission - <%= number_to_currency(@expectedAnnualCommission * 0.01, precision: 2) %></h4>
+	<h1 class="opacity-50 text-center mb-4 font-15"><%= current_user.present? ? "#{@pulledAffiliate['metadata']['commissionRate']}% Commission Rate" : nil %></h1>
+
+	<div class="card card-style bg-theme pb-0">
+        <div id="tab-group-1">
+            <div class="tab-controls tabs-small" data-highlight="bg-highlight-dark">
+                <a href="#" data-active="" data-bs-toggle="collapse" data-bs-target="#tab-1" class="bg-highlight-dark no-click" aria-expanded="true">Active</a>
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-2" class="collapsed" aria-expanded="false">Inactive</a>
+            </div>
+            <div data-bs-parent="#tab-group-1" class="pt-3 collapse show" id="tab-1" style="">
+                <div class="mx-3 list-group list-custom-large">
+                	<% if (@activeSubs.size > 0) &&  %>
+                    	<% @activeSubs.each do |subscr| %>
+                        <a href="#">
+                            <i class="fa fa-check rounded-xl bg-mint-dark"></i>
+                            <span class="left-10 font-20"><%= subscr['plan']['interval'] == 'year' ? 'Annual' : 'Monthly' %> Subsciption</span>
+                            <strong class="left-10 font-12"><%= subscr['id'][4..subscr['id'].size] %></strong>
+                            <span class="badge bg-green-dark font-15 rounded-sm"><%= number_to_currency(((subscr['plan']['amount'].to_i) * (@pulledAffiliate['metadata']['commissionRate'].to_i * 0.01)).to_i * 0.01, precision: 2) %> <%= subscr['plan']['currency'].upcase %></span>
+                            <i class="fa fa-angle-right"></i>
+                        </a>
+                      <% end %>
+                  <% else %>
+	                    <h1 class="opacity-50 text-center mb-4">No Commissions Earned</h1>
+                  <% end %>
+                </div>
+            </div>
+
+            <div data-bs-parent="#tab-group-1" class="pt-3 collapse" id="tab-2" style="">
+                <div class="mx-3 list-group list-custom-large">
+                  <% if (@inactiveSubs.size > 0) &&  %>
+                    	<% @inactiveSubs.each do |subscr| %>
+                        <a href="#">
+                            <i class="fa fa-heart rounded-xl bg-red-dark"></i>
+                            <span class="left-10"><%= subscr %></span>
+                            <strong class="left-10">Monthly Subsciption</strong>
+                            <span class="badge bg-red-light font-11">15.00 USD</span>
+                            <i class="fa fa-angle-right"></i>
+                        </a>
+                      <% end %>
+                  <% else %>
+	                    <h1 class="opacity-50 text-center mb-4">All Commissions Active</h1>
+                  <% end %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

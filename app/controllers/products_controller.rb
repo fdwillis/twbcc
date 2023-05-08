@@ -13,27 +13,27 @@ class ProductsController < ApplicationController
   end
 
   def explore
-    @products = Product.where(country: params[:country]).paginate(page: params[:page], per_page: 8)
+    @products = Product.where(country: params['country']).paginate(page: params['page'], per_page: 8)
   end
 
   def amazon
     #analytics
     ahoy.track "Product Purchase Intent", product: params['asin'], user: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
-    redirect_to "https://www.#{User::ACCEPTEDcountries[params[:country]][:site]}/dp/product/#{params['asin']}?&tag=#{params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).amazonUUID : (current_user.present? && !current_user.referredBy.nil?) ? User.find_by(uuid: current_user.referredBy).amazonUUID : ENV['usAmazonTag']}"
+    redirect_to "https://www.#{User::ACCEPTEDcountries[params['country'].upcase][:site]}/dp/product/#{params['asin']}?&tag=#{(current_user&.present? && !current_user.referredBy.nil?) ? User.find_by(uuid: current_user&.referredBy).amazonUUID : params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).amazonUUID :  ENV['usAmazonTag']}"
   end
 
   # GET /products/1 or /products/1.json
   def show
 
-    @posts = Blog.where("asins like ?", "%#{params[:id].upcase}%")
+    @posts = Blog.where("asins like ?", "%#{params['id'].upcase}%")
     @profileMetadata = current_user.present? ? Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata'] : []
    
    if params['recommended'].present?
       #analytics
-      ahoy.track "Recommended Product Visit", product: params[:id], user: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
+      ahoy.track "Recommended Product Visit", product: params['id'], user: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
     else
       #analytics
-      ahoy.track "Product Visit", product: params[:id], user: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
+      ahoy.track "Product Visit", product: params['id'], user: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
     end
   end
 
@@ -87,7 +87,7 @@ class ProductsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_product
-      @product = Product.find_by(asin: params[:id].upcase).present? ? Product.friendly.find_by(asin: params[:id].upcase) : User.rainforestProduct(params[:id])
+      @product = Product.find_by(asin: params['id'].upcase).present? ? Product.friendly.find_by(asin: params['id'].upcase) : User.rainforestProduct(params['id'])
     end
 
     # Only allow a list of trusted parameters through.

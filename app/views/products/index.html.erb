@@ -1,30 +1,30 @@
-<br>
-<br>
-<br>
-
-<div class="card card-style over-card">
-  <div class="content">
-    <!-- <h1 class="font-20 line-height-m pb-2">Explore Amazon Products</h1> -->
-    <div class="splide double-slider slider-no-dots slider-arrows splide--loop splide--ltr splide--draggable is-active" id="single-slider-3" style="visibility: visible;">
-        <div class="splide__track" id="single-slider-3-track">
-            <div class="splide__list" id="single-slider-3-list" style="transform: translateX(-975px);">
-              <% User::ACCEPTEDcountries.keys.each do |country| %>
-                <% if Product.all.map(&:country).uniq.include?(country) %>
-                  <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
-                      <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
-                          <div class="card-bottom text-center">
-                            <span class="fa fa-amazon display-1"></span>
-                            <h3 class="font-900 mb-0"><%= User::ACCEPTEDcountries[country][:country] %></h3>
-                            <p class="text-center mb-3"><span class="flag-icon flag-icon-<%= country.downcase %> display-1"></span></p>
-                            <a href="/explore/<%= country %>" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">Explore</a>
-                          </div>
-                      </div>
-                  </div>
+<div class="header-clear-medium">
+  <div class="card card-style over-card">
+    <div class="content">
+      <!-- <h1 class="font-20 line-height-m pb-2">Explore Amazon Products</h1> -->
+      <div class="splide double-slider slider-no-dots slider-arrows splide--loop splide--ltr splide--draggable is-active" id="single-slider-3" style="visibility: visible;">
+          <div class="splide__track" id="single-slider-3-track">
+              <div class="splide__list" id="single-slider-3-list" style="transform: translateX(-975px);">
+                <% User::ACCEPTEDcountries.keys.each do |country| %>
+                  <% if Product.all.map(&:country).uniq.include?(country) %>
+                    <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
+                        <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
+                            <div class="card-top text-center">
+                              <span class="fa fa-amazon display-1"></span>
+                            </div>
+                            <div class="card-bottom text-center">
+                              <span class="flag-icon flag-icon-<%= country.downcase %> display-1"></span>
+                              <h3 class="font-900 mb-0"><%= User::ACCEPTEDcountries[country][:country] %></h3>
+                              <a href="/explore/<%= country %>?&referredBy=<%=params['referredBy']%>" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">Explore</a>
+                            </div>
+                        </div>
+                    </div>
+                  <% end %>
                 <% end %>
-              <% end %>
-            </div>
-        </div>
-        <ul class="splide__pagination"><li><button class="splide__pagination__page" type="button" aria-controls="single-slider-3-slide01 single-slider-3-slide02" aria-label="Go to page 1"></button></li><li><button class="splide__pagination__page is-active" type="button" aria-controls="single-slider-3-slide02 single-slider-3-slide03" aria-label="Go to page 2" aria-current="true"></button></li></ul>
+              </div>
+          </div>
+          <ul class="splide__pagination"><li><button class="splide__pagination__page" type="button" aria-controls="single-slider-3-slide01 single-slider-3-slide02" aria-label="Go to page 1"></button></li><li><button class="splide__pagination__page is-active" type="button" aria-controls="single-slider-3-slide02 single-slider-3-slide03" aria-label="Go to page 2" aria-current="true"></button></li></ul>
+      </div>
     </div>
   </div>
 </div>
