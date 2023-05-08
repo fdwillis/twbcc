@@ -6,9 +6,11 @@
 			<!-- 		<%= @profileMetadata %> -->
 			<div class="card-center p-3">
 			    <h1 class="color-white"><%= @profile['name'].titleize %>#<%= current_user&.uuid %></h1>
+			    
+			    <span class="flag-icon flag-icon-<%= current_user&.amazonCountry.downcase %> font-40"></span>
 			</div>
 			<div class="card-top p-3">
-			    <span class="badge bg-green-dark color-white p-2 float-end m-2 rounded-s"><%= currentMembersip[:membershipType].titleize %></span>
+			    <span class="badge bg-highlight color-white p-2 float-end m-2 rounded-s"><%= currentMembersip[:membershipType].titleize %></span>
 			    <span class="badge bg-aqua-dark color-white p-2 float-end m-2 rounded-s">Member</span>
 			    <% if @accountItemsDue.count == 0 %>
 				    <span class="badge bg-blue-dark color-white p-2 float-end m-2 rounded-s"></span>
@@ -16,35 +18,26 @@
 			</div>
 			<div class="card-bottom m-3">
 		    <h5 class="color-white float-start">Seller Progress</h5>
-				<% if @accountItemsDue.count == 1 && (currentMembersip[:membershipType] == 'business' || currentMembersip[:membershipType] == 'automation') %>
-					<h5 class="color-white float-end">80% Complete</h5>
-			    <div class="clearfix"></div>
-			    <div class="progress mt-2" style="height:2px;">
-			        <div class="progress-bar border-0 bg-green-dark text-start ps-2" role="progressbar" style="width: 95%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
-			        </div>
-			    </div>
-				<% elsif @accountItemsDue.count > 1 && (currentMembersip[:membershipType] == 'business' || currentMembersip[:membershipType] == 'automation') %>
-					<h5 class="color-white float-end">65% Complete</h5>
-			    <div class="clearfix"></div>
-			    <div class="progress mt-2" style="height:2px;">
-			        <div class="progress-bar border-0 bg-green-dark text-start ps-2" role="progressbar" style="width: 65%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
-			        </div>
-			    </div>
-			    <% else %>
-				    <h5 class="color-white float-end">100% Complete </h5>
-				    <div class="clearfix"></div>
-				    <div class="progress mt-2" style="height:2px;">
-				        <div class="progress-bar border-0 bg-green-dark text-start ps-2" role="progressbar" style="width: 100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
-				        </div>
-				    </div>
-				<% end %>  
+				
+			<h5 class="color-white float-end">65% Complete</h5>
+		    <div class="clearfix"></div>
+		    <div class="progress mt-2" style="height:2px;">
+		        <div class="progress-bar border-0 bg-green-dark text-start ps-2" role="progressbar" style="width: 65%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
+		        </div>
+		    </div>
+			    
 			</div>
 			<div class="card-overlay bg-black opacity-70"></div>
 		</div>
 	  <% if @membershipDetails.present? %>
-		  <div class="content row">
-		    <span class="badge bg-highlight color-white p-2 float-end rounded-sm"><i class="font-20 color-white px-1 fa fa-amazon"></i><span class="flag-icon flag-icon-<%= current_user&.amazonCountry.downcase %> font-20"></span></span>
-		  </div>
+	  	<% if @accountItemsDue.size > 0 %>
+			  <div class="content row">
+			    <a href="<%= @stripeAccountUpdate['url'] %>" class="badge bg-green-dark color-white p-2 float-end rounded-sm font-30">
+				    	Fininsh
+			    	 <i class="font-30 color-white px-1 fa fa-amazon"></i>
+			    </a>
+			  </div>
+			 <% end %>
 		  
 			<div class="card card-style">
 		    <h1 class="p-3">Membership</h1>

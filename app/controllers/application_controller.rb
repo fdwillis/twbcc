@@ -256,7 +256,6 @@ class ApplicationController < ActionController::Base
 
 			@accountItemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due']
 			
-			# if current_user&.amazonCountry != 'US'
 			# 	@recipientAccountUpdate = Stripe::AccountLink.create(
 			# 	  {
 			# 	    account: Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['connectAccount'],
@@ -267,7 +266,6 @@ class ApplicationController < ActionController::Base
 			# 	)
 
 			# 	@recipientAccountItemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['recipientAccount'])['requirements']['currently_due']
-			# end
 		else
 			#analytics
 			ahoy.track "Profile Visit", uuid: @userFound.uuid, previousPage: request.referrer

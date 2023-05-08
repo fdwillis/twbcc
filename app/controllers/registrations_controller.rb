@@ -183,7 +183,7 @@ class RegistrationsController < ApplicationController
 	      )
 
 	      #pay affiliate for membership if US affiliate
-	      if setSessionVarParams['referredBy'].present? && loadedAffililate.checkMembership[:membershipType] != 'free' && loadedAffililate&.checkMembership[:membershipDetails][:active] #&& loadedAffililate.amazonCountry == 'US'
+	      if setSessionVarParams['referredBy'].present? && loadedAffililate.checkMembership[:membershipType] != 'free' && loadedAffililate&.checkMembership[:membershipDetails][:active] && loadedAffililate.amazonCountry.upcase == 'US'
 	      	firstCustomerCharge = Stripe::Charge.list({limit: 1})['data'][0]
 	      	affiliateAccount = Stripe::Customer.retrieve(loadedAffililate.stripeCustomerID)
 	      	commission = (firstCustomerCharge['amount'].to_i*(affiliateAccount['metadata']['commissionRate'].to_f/100)).to_i

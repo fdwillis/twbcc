@@ -15,7 +15,7 @@ class StripeWebhooksController < ApplicationController
         affiliateConnectAccount = stripeAffiliate['metadata']['connectAccount']
 
         subscriptionList.each do |subscription|
-          if validMemberships.include?(subscription['id']) && subscription['active'] == true
+          if validMemberships.include?(subscription['id']) && subscription['active'] == true && loadedAffililate.amazonCountry == 'US'
             Stripe::Transfer.create({
               amount: (subscription['amount']*(stripeAffiliate['metadata']['commissionRate']/100)).to_i,
               currency: 'usd',
