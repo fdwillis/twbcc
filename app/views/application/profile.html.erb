@@ -18,13 +18,22 @@
 			</div>
 			<div class="card-bottom m-3">
 		    <h5 class="color-white float-start">Seller Progress</h5>
-				
-			<h5 class="color-white float-end">65% Complete</h5>
-		    <div class="clearfix"></div>
-		    <div class="progress mt-2" style="height:2px;">
-		        <div class="progress-bar border-0 bg-green-dark text-start ps-2" role="progressbar" style="width: 65%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
-		        </div>
-		    </div>
+			<% if @accountItemsDue.size > 0 %>
+				<h5 class="color-white float-end">65% Complete</h5>
+			    <div class="clearfix"></div>
+			    <div class="progress mt-2" style="height:2px;">
+			        <div class="progress-bar border-0 bg-green-dark text-start ps-2" role="progressbar" style="width: 65%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
+			        </div>
+			    </div>
+			<% end %>
+			<% if @accountItemsDue.size == 0 %>
+				<h5 class="color-white float-end">100% Complete</h5>
+			    <div class="clearfix"></div>
+			    <div class="progress mt-2" style="height:2px;">
+			        <div class="progress-bar border-0 bg-green-dark text-start ps-2" role="progressbar" style="width: 100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
+			        </div>
+			    </div>
+			<% end %>
 			    
 			</div>
 			<div class="card-overlay bg-black opacity-70"></div>

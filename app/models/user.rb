@@ -244,66 +244,23 @@ class User < ApplicationRecord
   end
 
   def customer?
-    accessPin.split(',').each do |role|
-      case true
-      when role == 'customer'
-        return true
-      when role == 'admin'
-        return true
-      else
-        next
-      end
-    end
+    accessPin.split(',').include?('customer')
   end
 
   def connectAccount?
-    accessPin.split(',').each do |role|
-      case true
-      when role == 'connectAccount'
-        return true
-      when role == 'admin'
-        return true
-      else
-        next
-      end
-    end
+    accessPin.split(',').include?('connectAccount')
   end
 
   def trustee?
-    accessPin.split(',').each do |role|
-      case true
-      when role == 'trustee'
-        return true
-      when role == 'admin'
-        return true
-      else
-        next
-      end
-    end   
+    accessPin.split(',').include?('trustee')
   end
 
   def manager?
-    accessPin.split(',').each do |role|
-      case true
-      when role == 'manager'
-        return true
-      when role == 'admin'
-        return true
-      else
-        next
-      end
-    end
+    accessPin.split(',').include?('manager')
   end
 
   def admin?
-    accessPin.split(',').each do |role|
-      case true
-      when role == 'admin'
-        return true
-      else
-        next
-      end
-    end   
+    accessPin.split(',').include?('admin')
   end
 
   private
