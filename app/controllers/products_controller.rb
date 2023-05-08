@@ -87,7 +87,7 @@ class ProductsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_product
-      @product = Product.find_by(asin: params['id'].upcase).present? ? Product.friendly.find_by(asin: params['id'].upcase) : User.rainforestProduct(params['id'])
+      @product = Product.find_by(asin: params['id']).present? ? Product.friendly.find_by(asin: params['id']) : User.rainforestProduct(params['id'])
     end
 
     # Only allow a list of trusted parameters through.

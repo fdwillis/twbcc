@@ -23,6 +23,9 @@ module Shortz
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.0
+    config.exceptions_app = self.routes
+    config.exceptions_app = ->(env) { ErrorsController.action(:show).call(env) }
+    config.consider_all_requests_local  = false # true
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers

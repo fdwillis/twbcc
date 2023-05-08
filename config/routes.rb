@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   resources :blogs, path: '/blog'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
-  devise_for :users, path: '/', path_names: { sign_in: 'auth/login', sign_out: 'auth/logout', sign_up: 'auth/sign-up' }, controllers: { registrations: 'registrations', sessions: 'sessions'} do
+  devise_for :users, path: '/', path_names: { sign_in: 'auth/login', sign_out: 'auth/logout' }, controllers: { registrations: 'registrations', sessions: 'sessions'} do
     get '/auth/logout' => 'sessions#destroy'
   end
 
@@ -13,6 +13,10 @@ Rails.application.routes.draw do
     root 'products#index'
   end
 
+  %w( 404 422 500 503 ).each do |code|
+    get code, :to => "errors#show", :code => code
+  end
+  
   get "/membership", to: 'application#membership', as: 'membership'
   get "/view-on-amazon/:asin/:country", to: 'products#amazon', as: 'amazon'
   get "/list", to: 'application#list', as: 'list'

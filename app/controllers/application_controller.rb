@@ -341,7 +341,13 @@ class ApplicationController < ActionController::Base
 	end
 
 	def how_it_works
-		
+		@headlines = ab_test(:howItWorksHeadline, 
+			{'Effortless Automation For Amazon Earnings' => 20}, 
+			{'The Ultimate Solution For Amazon Associates' => 20}, 
+			{'Powerful Automation For Amazon Associates' => 20},
+			{'Oarlin - Exclusively For Amazon Associates' => 20},
+			{'Supercharging Marketing For Amazon Associates' => 20},
+		)
 	end
 end
 

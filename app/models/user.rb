@@ -244,43 +244,67 @@ class User < ApplicationRecord
   end
 
   def customer?
-    customerAccess.include?(accessPin)
+    accessPin.split(',').each do |role|
+      case true
+      when role == 'customer'
+        return true
+      when role == 'admin'
+        return true
+      else
+        next
+      end
+    end
   end
 
   def connectAccount?
-    connectAccountAccess.include?(accessPin)
+    accessPin.split(',').each do |role|
+      case true
+      when role == 'connectAccount'
+        return true
+      when role == 'admin'
+        return true
+      else
+        next
+      end
+    end
   end
 
   def trustee?
-    trusteeAccess.include?(accessPin)     
+    accessPin.split(',').each do |role|
+      case true
+      when role == 'trustee'
+        return true
+      when role == 'admin'
+        return true
+      else
+        next
+      end
+    end   
   end
 
   def manager?
-    managerAccess.include?(accessPin)
+    accessPin.split(',').each do |role|
+      case true
+      when role == 'manager'
+        return true
+      when role == 'admin'
+        return true
+      else
+        next
+      end
+    end
   end
 
   def admin?
-    adminAccess.include?(accessPin)     
+    accessPin.split(',').each do |role|
+      case true
+      when role == 'admin'
+        return true
+      else
+        next
+      end
+    end   
   end
 
   private
-  def connectAccountAccess
-    return ['connectAccount']
-  end
-
-  def customerAccess
-    return ['customer']
-  end
-
-  def trusteeAccess
-    return ['trustee']
-  end
-
-  def managerAccess
-    return ['manager', 'trustee', 'admin']
-  end
-  
-  def adminAccess
-    return ['admin' , 'trustee']
-  end
 end

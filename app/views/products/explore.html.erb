@@ -7,103 +7,105 @@
        
       </div>
     </div>
-    <div class="col-6 pe-0">
-      <% if @products[0].present? %>
-        <a href="/product/<%= @products[0].asin.parameterize(separator: '-') %>?&referredBy=<%= params['referredBy'] %>" class="card card-style mb-2" style='background-image: url("https://images.mktw.net/im-720056?width=700&height=466");height: 135px;' data-card-height="135">
-            <div class="card-top text-center">
-              <% @products[0].tags.split(',').shuffle.take(1).each do |tag| %>
-                <span class="badge float-end bg-green-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
-              <% end %>
-            </div>
-            <div class="card-bottom p-3">
-                <h5 class="color-white font-500 font-14 mb-n1">
-                    <%= @products[0].asin %>
-                </h5>
-                <span class="color-white opacity-50 font-10">
-                  <%= time_ago_in_words(@products[0].created_at) %> ago</span>
-            </div>
-            <div class="card-overlay bg-black opacity-70"></div>
-        </a>
-      <% end %>
-      <% if @products[1].present? %>
-        <a href="/product/<%= @products[1].asin.parameterize(separator: '-') %>" class="card card-style mb-2" data-card-height="135" style='background-image: url("https://images.mktw.net/im-720056?width=700&height=466");height: 135px;'>
-            <div class="card-top text-center">
-              <% @products[1].tags.split(',').shuffle.take(1).each do |tag| %>
-                <span class="badge float-end bg-yellow-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
-              <% end %>
-            </div>
-            <div class="card-bottom p-3">
-                <h5 class="color-white font-500 font-14 mb-n1"><%= @products[1].asin %></h5>
-                <span class="color-white opacity-50 font-10"><%= time_ago_in_words(@products[1].created_at) %> ago</span>
-            </div>
-            <div class="card-overlay bg-black opacity-70"></div>
-        </a>
-      <% end %>
-    </div>
-    <div class="col-6 ps-0">
-      <% if @products[2].present? %>
-        <a href="/product/<%= @products[2].asin.parameterize(separator: '-') %>" class="card card-style ms-0" style='background-image: url("https://images.mktw.net/im-720056?width=700&height=466")' data-card-height="280" style="height: 280px;">
-            <div class="card-top text-center">
-              <% @products[2].tags.split(',').shuffle.take(1).each do |tag| %>
-                <span class="badge float-end bg-orange-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
-              <% end %>
-            </div>
-            <div class="card-bottom p-3">
-                <h5 class="color-white font-500"><%= @products[2].asin %></h5>
-                <span class="color-white opacity-50 font-10"><%= time_ago_in_words(@products[2].created_at) %> ago</span>
-            </div>
-            <div class="card-overlay bg-black opacity-70"></div>
-        </a>
-      <% end %>
+    <div class="row mb-0">
+      <div class="col-6 pe-0">
+        <% if @products[0].present? %>
+          <a href="/product/<%= @products[0].asin.parameterize(separator: '-') %>?&referredBy=<%= params['referredBy'] %>" class="card card-style mb-2" style='background-image: url("https://images.mktw.net/im-720056?width=700&height=466");height: 135px;' data-card-height="135">
+              <div class="card-top text-center">
+                <% @products[0].tags.split(',').shuffle.take(1).each do |tag| %>
+                  <span class="badge float-end bg-green-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                <% end %>
+              </div>
+              <div class="card-bottom p-3">
+                  <h5 class="color-white font-500 font-14 mb-n1">
+                      <%= @products[0].asin %>
+                  </h5>
+                  <span class="color-white opacity-50 font-10">
+                    <%= time_ago_in_words(@products[0].created_at) %> ago</span>
+              </div>
+              <div class="card-overlay bg-black opacity-70"></div>
+          </a>
+        <% end %>
+        <% if @products[1].present? %>
+          <a href="/product/<%= @products[1].asin.parameterize(separator: '-') %>" class="card card-style mb-2" data-card-height="135" style='background-image: url("https://images.mktw.net/im-720056?width=700&height=466");height: 135px;'>
+              <div class="card-top text-center">
+                <% @products[1].tags.split(',').shuffle.take(1).each do |tag| %>
+                  <span class="badge float-end bg-yellow-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                <% end %>
+              </div>
+              <div class="card-bottom p-3">
+                  <h5 class="color-white font-500 font-14 mb-n1"><%= @products[1].asin %></h5>
+                  <span class="color-white opacity-50 font-10"><%= time_ago_in_words(@products[1].created_at) %> ago</span>
+              </div>
+              <div class="card-overlay bg-black opacity-70"></div>
+          </a>
+        <% end %>
+      </div>
+      <div class="col-6 ps-0">
+        <% if @products[2].present? %>
+          <a href="/product/<%= @products[2].asin.parameterize(separator: '-') %>" class="card card-style ms-0" style='background-image: url("https://images.mktw.net/im-720056?width=700&height=466")' data-card-height="280" style="height: 280px;">
+              <div class="card-top text-center">
+                <% @products[2].tags.split(',').shuffle.take(1).each do |tag| %>
+                  <span class="badge float-end bg-orange-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                <% end %>
+              </div>
+              <div class="card-bottom p-3">
+                  <h5 class="color-white font-500"><%= @products[2].asin %></h5>
+                  <span class="color-white opacity-50 font-10"><%= time_ago_in_words(@products[2].created_at) %> ago</span>
+              </div>
+              <div class="card-overlay bg-black opacity-70"></div>
+          </a>
+        <% end %>
+      </div>
     </div>
 
-  <div class="row mb-0 mt-n3">
-    <div class="col-6 pe-0">
-      <% if @products[3].present? %>
-        <a href="/product/<%= @products[3].asin.parameterize(separator: '-') %>" class="card card-style" style="background-image: url('https://images.mktw.net/im-720056?width=700&height=466');height: 280px;" data-card-height="280" style="">
-            <div class="card-top text-center">
-              <% @products[3].tags.split(',').shuffle.take(1).each do |tag| %>
-                <span class="badge float-end bg-red-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
-              <% end %>
-            </div>
-            <div class="card-bottom p-3">
-                <h5 class="color-white font-500"><%= @products[3].asin %></h5>
-                <span class="color-white opacity-50 font-10"><%= time_ago_in_words(@products[3].created_at) %> ago</span>
-            </div>
-            <div class="card-overlay bg-black opacity-80"></div>
-        </a>
-      <% end %>
-    </div>
-    <div class="col-6 ps-0">
-      <% if @products[4].present? %>
-        <a href="/product/<%= @products[4].asin.parameterize(separator: '-') %>" class="card ms-0 card-style mb-2" data-card-height="135" style="background-image: url('https://images.mktw.net/im-720056?width=700&height=466');height: 135px;">
-            <div class="card-top text-center">
-                <% @products[4].tags.split(',').shuffle.take(1).each do |tag| %>
-                  <span class="badge float-end bg-brown-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+    <div class="row mb-0 mt-n3">
+      <div class="col-6 pe-0">
+        <% if @products[3].present? %>
+          <a href="/product/<%= @products[3].asin.parameterize(separator: '-') %>" class="card card-style" style="background-image: url('https://images.mktw.net/im-720056?width=700&height=466');height: 280px;" data-card-height="280" style="">
+              <div class="card-top text-center">
+                <% @products[3].tags.split(',').shuffle.take(1).each do |tag| %>
+                  <span class="badge float-end bg-red-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
                 <% end %>
-            </div>
-            <div class="card-bottom p-3">
-                <h5 class="color-white font-500 font-14 mb-n1"><%= @products[4].asin %></h5>
-                <span class="color-white opacity-50 font-10"><%= time_ago_in_words(@products[4].created_at) %> ago</span>
-            </div>
-            <div class="card-overlay bg-black opacity-70"></div>
-        </a>
-      <% end %>
-      <% if @products[5].present? %>
-        <a href="/product/<%= @products[5].asin.parameterize(separator: '-') %>" class="card ms-0 card-style mb-2" data-card-height="135" style="background-image: url('https://images.mktw.net/im-720056?width=700&height=466');height: 135px;">
-            <div class="card-top text-center">
-                <% @products[5].tags.split(',').shuffle.take(1).each do |tag| %>
-                  <span class="badge float-end bg-blue-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
-                <% end %>
-            </div>
-            <div class="card-bottom p-3">
-                <h5 class="color-white font-500 font-14 mb-n1"><%= @products[5].asin %></h5>
-                <span class="color-white opacity-50 font-10"><%= time_ago_in_words(@products[5].created_at) %> ago</span>
-            </div>
-            <div class="card-overlay bg-black opacity-70"></div>
-        </a>
-      <% end %>
+              </div>
+              <div class="card-bottom p-3">
+                  <h5 class="color-white font-500"><%= @products[3].asin %></h5>
+                  <span class="color-white opacity-50 font-10"><%= time_ago_in_words(@products[3].created_at) %> ago</span>
+              </div>
+              <div class="card-overlay bg-black opacity-80"></div>
+          </a>
+        <% end %>
+      </div>
+      <div class="col-6 ps-0">
+        <% if @products[4].present? %>
+          <a href="/product/<%= @products[4].asin.parameterize(separator: '-') %>" class="card ms-0 card-style mb-2" data-card-height="135" style="background-image: url('https://images.mktw.net/im-720056?width=700&height=466');height: 135px;">
+              <div class="card-top text-center">
+                  <% @products[4].tags.split(',').shuffle.take(1).each do |tag| %>
+                    <span class="badge float-end bg-brown-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                  <% end %>
+              </div>
+              <div class="card-bottom p-3">
+                  <h5 class="color-white font-500 font-14 mb-n1"><%= @products[4].asin %></h5>
+                  <span class="color-white opacity-50 font-10"><%= time_ago_in_words(@products[4].created_at) %> ago</span>
+              </div>
+              <div class="card-overlay bg-black opacity-70"></div>
+          </a>
+        <% end %>
+        <% if @products[5].present? %>
+          <a href="/product/<%= @products[5].asin.parameterize(separator: '-') %>" class="card ms-0 card-style mb-2" data-card-height="135" style="background-image: url('https://images.mktw.net/im-720056?width=700&height=466');height: 135px;">
+              <div class="card-top text-center">
+                  <% @products[5].tags.split(',').shuffle.take(1).each do |tag| %>
+                    <span class="badge float-end bg-blue-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                  <% end %>
+              </div>
+              <div class="card-bottom p-3">
+                  <h5 class="color-white font-500 font-14 mb-n1"><%= @products[5].asin %></h5>
+                  <span class="color-white opacity-50 font-10"><%= time_ago_in_words(@products[5].created_at) %> ago</span>
+              </div>
+              <div class="card-overlay bg-black opacity-70"></div>
+          </a>
+        <% end %>
+      </div>
     </div>
-  </div>
   <%= will_paginate @products, class: 'btn btn-lg m-3 rounded-sm text-uppercase font-700 bg-highlight float-end' %>
 </div>
