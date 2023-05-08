@@ -145,7 +145,7 @@
     <div class="text-center">
       <span class="flag-icon flag-icon-<%= @blog.country.downcase %> font-40"></span>
     </div>
-    <h5 class="text-center">This Icon Means The Amazon Affiliate Links Originate From <%= User::ACCEPTEDcountries[@blog.country.upcase][:country] %>. </a>
+    <h5 class="text-center">This Icon Means The Amazon Affiliate Links Originate From <%= User::ACCEPTEDcountries[@blog.country.downcase][:country] %>. </a>
     </h5>
     <small>Affiliates From Other Countries May Be Eligible. Check With Amazon Or Contact Us To Help. These Products May Not Be Available For Purchase In All Countries.</small>
  
