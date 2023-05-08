@@ -7,6 +7,6 @@
       </div>
     </div>
     <br>
-    <a href="/how-it-works/?&referredBy=<%= params['referredBy'] %>" class="btn btn-m btn-full mb-3 rounded-sm text-uppercase font-900 color-highlight bg-theme"><i class="font-20 color-highlight px-1 fa fa-info-circle"></i> Learn More</a>
+    <a href="/how-it-works/?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="btn btn-m btn-full mb-3 rounded-sm text-uppercase font-900 color-highlight bg-theme"><i class="font-20 color-highlight px-1 fa fa-info-circle"></i> Learn More</a>
   </div>
 </div>

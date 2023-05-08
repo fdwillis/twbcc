@@ -5,7 +5,7 @@
 		<div class="card card-style" data-card-height="300" style="height: 300px;">
 			<!-- 		<%= @profileMetadata %> -->
 			<div class="card-center p-3">
-			    <h1 class="color-white"><%= @profile['name'] %>#<%= current_user&.uuid %></h1>
+			    <h1 class="color-white"><%= @profile['name'].titleize %>#<%= current_user&.uuid %></h1>
 			</div>
 			<div class="card-top p-3">
 			    <span class="badge bg-green-dark color-white p-2 float-end m-2 rounded-s"><%= currentMembersip[:membershipType].titleize %></span>
@@ -103,7 +103,8 @@
 		<div class="d-flex pt-2">
 	      <div class="align-self-center me-auto">
 	          <strong class="text-uppercase opacity-60 font-12">Oarlin Welcomes You</strong>
-	          <h1 class=" font-27"><%=@profile['name']%></h1>
+	          <h1 class=" font-27"><%=@profile['name'].titleize%></h1>
+	          <span class="flag-icon flag-icon-<%= @userFound.amazonCountry.downcase %> font-40"></span>
 	      </div>
 	  </div>
 		<div class="content mt-2 mb-n3">

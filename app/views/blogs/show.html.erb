@@ -30,7 +30,7 @@
 
           
           <% if @blog&.user == current_user || current_user&.manager? %>
-            <a href="<%= edit_blog_path(@blog) %>?&referredBy=<%= params['referredBy'] %>?&referredBy=<%= params['referredBy'] %>" class='mb-4'>
+            <a href="<%= edit_blog_path(@blog) %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class='mb-4'>
               <%= button_tag( :class => "btn btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
                 <i class="fa fa-pencil font-20 color-white"></i>
               <% end %>
@@ -88,7 +88,7 @@
                                 <i class="fa fa-star color-yellow-dark"></i>
                                 <i class="fa fa-star color-yellow-dark"></i>
                             </p>
-                            <a href="<%= product_path(id: asin) %>?&referredBy=<%= params['referredBy'] %>" class='btn btn-m font-900 text-uppercase rounded-sm bg-highlight btn-full me-2 ms-2 mb-2'>
+                            <a href="<%= product_path(id: asin) %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class='btn btn-m font-900 text-uppercase rounded-sm bg-highlight btn-full me-2 ms-2 mb-2'>
                               <%= button_tag( :class => "") do %>
                                 <i class="fa fa-info-circle font-20 color-white text-center"></i>
                               <% end %>
@@ -117,7 +117,7 @@
             <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
         </div>
           <h1 class="color-white p-2">"Versatile and Easy to Use"</h1>
-          <a href="/view-on-amazon/<%= @blog&.asins.split(',').shuffle[0] %>/<%= @blog.country.downcase %>/?&referredBy=<%= params['referredBy'] %>" class="btn btn-m mb-3 rounded-xs text-uppercase font-900 shadow-s bg-yellow-dark" target='_blank'><i class="fa fa-amazon font-20 color-white"></i> Secret Item</a>
+          <a href="/view-on-amazon/<%= @blog&.asins.split(',').shuffle[0] %>/<%= @blog.country.downcase %>/?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="btn btn-m mb-3 rounded-xs text-uppercase font-900 shadow-s bg-yellow-dark" target='_blank'><i class="fa fa-amazon font-20 color-white"></i> Secret Item</a>
       </div>
       <div class="card-overlay bg-black opacity-80"></div>
   </div>

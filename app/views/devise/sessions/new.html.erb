@@ -28,7 +28,7 @@
                       </div>
 
                       <div class="d-flex mt-4 mb-4">
-                          <div class="w-50 font-11 pb-2 text-start"><a href="/membership?&referredBy=<%= params['referredBy'] %>">Create Account</a></div>
+                          <div class="w-50 font-11 pb-2 text-start"><a href="/membership?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">Create Account</a></div>
                           <div class="w-50 font-11 pb-2 text-end">Forgot Password - <%= mail_to "team@oarlin.com", "Email Us" %></div>
                       </div>
 

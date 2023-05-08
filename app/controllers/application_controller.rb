@@ -34,7 +34,6 @@ class ApplicationController < ActionController::Base
 			  	listofSubscriptionsFromCusID = Stripe::Subscription.list(limit: 100, customer: cusID)['data']
 			    if listofSubscriptionsFromCusID.size > 0 
 				  	listofSubscriptionsFromCusID.each do |subscriptionX| 
-				    	# debugger
 					  	if subscriptionX['status'] == 'active' 
 					  		@activeSubs << subscriptionX
 					  	else

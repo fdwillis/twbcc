@@ -61,20 +61,20 @@
                 <% if current_user %>
 
                     <% if @profileMetadata.present? && @profileMetadata['tracking'].present? && @profileMetadata['tracking'].split(',').include?("#{@product['asin']}-#{@product['country']}") %>
-                      <a href="<%= list_path(id: @product['asin'], remove: true)  %>?&referredBy=<%= params['referredBy'] %>" class="icon icon-xs rounded-pill color-white"><i class="fa fa-list color-highlight"></i></a>
+                      <a href="<%= list_path(id: @product['asin'], remove: true)  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs rounded-pill color-white"><i class="fa fa-list color-highlight"></i></a>
                     <% else %>
-                      <a href="<%= list_path(id: @product['asin'], country: @product['country'])  %>?&referredBy=<%= params['referredBy'] %>" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-list"></i></a>
+                      <a href="<%= list_path(id: @product['asin'], country: @product['country'])  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-list"></i></a>
                     <% end %>
                     <% if @profileMetadata.present? && @profileMetadata['wishlist'].present? && @profileMetadata['wishlist'].split(',').include?("#{@product['asin']}-#{@product['country']}") %>
-                      <a href="<%= loved_path(id: @product['asin'], remove: true)  %>?&referredBy=<%= params['referredBy'] %>" class="icon icon-xs rounded-pill color-white"><i class="fa fa-heart color-highlight"></i></a>
+                      <a href="<%= loved_path(id: @product['asin'], remove: true)  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs rounded-pill color-white"><i class="fa fa-heart color-highlight"></i></a>
                     <% else %>
-                      <a href="<%= loved_path(id: @product['asin'], country: @product['country'])  %>?&referredBy=<%= params['referredBy'] %>" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-heart"></i></a>
+                      <a href="<%= loved_path(id: @product['asin'], country: @product['country'])  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-heart"></i></a>
 
                     <% end %>
                 <% else %>
 
-                  <a href="<%= list_path(id: @product['asin'])  %>?&referredBy=<%= params['referredBy'] %>" data-confirm="Add this to your loved list?" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-heart"></i></a>
-                  <a href="<%= list_path(id: @product['asin'])  %>?&referredBy=<%= params['referredBy'] %>" data-confirm="Add this to your public list?" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-list"></i></a>
+                  <a href="<%= list_path(id: @product['asin'])  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" data-confirm="Add this to your loved list?" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-heart"></i></a>
+                  <a href="<%= list_path(id: @product['asin'])  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" data-confirm="Add this to your public list?" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-list"></i></a>
                 <% end %>
               </div>
         </div>
@@ -147,7 +147,7 @@
         
         <div class="divider mt-4"></div>
         
-        <a href="<%= amazon_path(asin: @product['asin'], country: @product['country']) %>/?&referredBy=<%= params['referredBy'] %> " target='_blank'>
+        <a href="<%= amazon_path(asin: @product['asin'], country: @product['country']) %>/?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %> " target='_blank'>
           <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
             <i class="fa fa-amazon font-20 color-white"></i> Purchase On Amazon
           <% end %>
@@ -155,7 +155,7 @@
         <div class="d-flex mt-4">
             <div class="flex-grow-1">
               <div class="font-20 text-center">
-                Share With The World <%= social_share_button_tag("Title", :url => "https://#{request.env['HTTP_HOST']}?&referredBy=#{params['referredBy']}", :image =>  "https://images.mktw.net/im-720056?width=700&height=466", desc: truncate("Body", length: 50)) %>
+                Share With The World <%= social_share_button_tag("Title", :url => "https://#{request.env['HTTP_HOST']}?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}", :image =>  "https://images.mktw.net/im-720056?width=700&height=466", desc: truncate("Body", length: 50)) %>
               </div>
             </div>
         </div>
@@ -260,7 +260,7 @@
                                   <i class="fa fa-star color-yellow-dark"></i>
                                   <i class="fa fa-star color-yellow-dark"></i>
                               </p>
-                              <a href="<%= blog_path(id: post) %>?&referredBy=<%= params['referredBy'] %>" class='btn btn-m font-900 text-uppercase rounded-sm bg-highlight btn-full me-2 ms-2 mb-2'>
+                              <a href="<%= blog_path(id: post) %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class='btn btn-m font-900 text-uppercase rounded-sm bg-highlight btn-full me-2 ms-2 mb-2'>
                                 <%= button_tag( :class => "") do %>
                                   <i class="fa fa-info-circle font-20 color-white text-center"></i>
                                 <% end %>

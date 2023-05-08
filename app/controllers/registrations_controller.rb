@@ -55,7 +55,7 @@ class RegistrationsController < ApplicationController
 		      #make card only in usa and uk currently
 		      cardNew = Stripe::Issuing::Card.create({
 		        cardholder: cardHolderNew['id'],
-		        currency: User::ACCEPTEDcountries[stripeSessionInfo['custom_fields'][1]['dropdown']['value']][:currency],
+		        currency: User::ACCEPTEDcountries[stripeSessionInfo['custom_fields'][1]['dropdown']['value'].downcase][:currency],
 		        type: 'physical',
 		        spending_controls: {spending_limits: {}},
 		        status: 'active',
@@ -153,7 +153,7 @@ class RegistrationsController < ApplicationController
 			          connectAccount: newStripeAccount['id'],
 			          cardHolder: cardHolderNew['id'],
 			          issuedCard: cardNew['id'],
-			          referredBy: setSessionVarParams['referredBy']
+			          referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : ','
 			        }.merge(commissionRate)
 			      },
 		      )
@@ -164,7 +164,7 @@ class RegistrationsController < ApplicationController
 		        	metadata: {
 			          connectAccount: newStripeAccount['id'],
 			          # recipientAccount: recipientAccount['id'],
-			          referredBy: setSessionVarParams['referredBy']
+			          referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : ','
 			        }.merge(commissionRate)
 			      },
 		      )
@@ -172,7 +172,7 @@ class RegistrationsController < ApplicationController
 	      #make user with password passed
 	      
 	      User.create(
-	        referredBy: setSessionVarParams['referredBy'],
+	        referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : ',',
 	        email: stripeCustomer['email'], 
 	        password: setSessionVarParams['password'], 
 	        amazonCountry: stripeSessionInfo['custom_fields'][1]['dropdown']['value'],
@@ -183,7 +183,6 @@ class RegistrationsController < ApplicationController
 	      )
 
 	      #pay affiliate for membership if US affiliate
-	      
 	      if setSessionVarParams['referredBy'].present? && loadedAffililate.checkMembership[:membershipType] != 'free' && loadedAffililate&.checkMembership[:membershipDetails][:active] #&& loadedAffililate.amazonCountry == 'US'
 	      	firstCustomerCharge = Stripe::Charge.list({limit: 1})['data'][0]
 	      	affiliateAccount = Stripe::Customer.retrieve(loadedAffililate.stripeCustomerID)

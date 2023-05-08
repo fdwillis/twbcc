@@ -15,7 +15,7 @@
                             <div class="card-bottom text-center">
                               <span class="flag-icon flag-icon-<%= country.downcase %> display-1"></span>
                               <h3 class="font-900 mb-0"><%= User::ACCEPTEDcountries[country][:country] %></h3>
-                              <a href="/explore/<%= country %>?&referredBy=<%=params['referredBy']%>" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">Explore</a>
+                              <a href="/explore/<%= country %>?&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-s btn-center-s text-uppercase font-900 bg-highlight rounded-s mb-4">Explore</a>
                             </div>
                         </div>
                     </div>
