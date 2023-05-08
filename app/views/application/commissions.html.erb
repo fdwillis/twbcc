@@ -1,108 +1,73 @@
 <div class="header-clear-medium">
-	<h5 class="opacity-50 text-center">Expected</h5>
-	<h4 class="opacity-50 text-center">Annual Commission - <%= number_to_currency(@expectedAnnualCommission * 0.01, precision: 2) %></h4>
-	<h1 class="opacity-50 text-center mb-4 font-15"><%= current_user.present? ? "#{@pulledAffiliate['metadata']['commissionRate']}% Commission Rate" : nil %></h1>
-
-	<div class="card card-style bg-theme pb-0">
-        <div id="tab-group-1">
-            <div class="tab-controls tabs-small" data-highlight="bg-highlight-dark">
-                <a href="#" data-active="" data-bs-toggle="collapse" data-bs-target="#tab-1" class="bg-highlight-dark no-click" aria-expanded="true">Active</a>
-                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-2" class="collapsed" aria-expanded="false">Inactive</a>
-            </div>
-            <div data-bs-parent="#tab-group-1" class="pt-3 collapse show" id="tab-1" style="">
-                <div class="mx-3 list-group list-custom-large">
-                	<% if (@activeSubs.size > 0) &&  %>
-                    	<% @activeSubs.each do |subscr| %>
-                        <a href="#">
-                            <i class="fa fa-check rounded-xl bg-mint-dark"></i>
-                            <span class="left-10 font-20 mb-4"><%= subscr['plan']['interval'] == 'year' ? 'Annual' : 'Monthly' %> Subsciption</span>
-                            <strong class="left-10 font-12 mb-4">Renews: <%= Time.at(subscr['current_period_end']).to_date.strftime("%B #{Time.at(subscr['current_period_end']).to_date.day.ordinalize}, %Y") %></strong>
-                            <span class="badge bg-green-dark font-15 rounded-sm mt-5"><%= number_to_currency(((subscr['plan']['amount'].to_i) * (@pulledAffiliate['metadata']['commissionRate'].to_i * 0.01)).to_i * 0.01, precision: 2) %> <%= subscr['plan']['currency'].upcase %></span>
-                            <i class="fa fa-angle-right mt-3"></i>
-                        </a>
-                      <% end %>
-                  <% else %>
-	                    <h1 class="opacity-50 text-center mb-4">No Commissions Earned</h1>
-                  <% end %>
-                </div>
-            </div>
-
-            <div data-bs-parent="#tab-group-1" class="pt-3 collapse" id="tab-2" style="">
-                <div class="mx-3 list-group list-custom-large">
-                  <% if (@inactiveSubs.size > 0) &&  %>
-                    	<% @inactiveSubs.each do |subscr| %>
-                        <a href="#">
-                            <i class="fa fa-heart rounded-xl bg-red-dark"></i>
-                            <span class="left-10"><%= subscr %></span>
-                            <strong class="left-10">Monthly Subsciption</strong>
-                            <span class="badge bg-red-light font-11">15.00 USD</span>
-                            <i class="fa fa-angle-right"></i>
-                        </a>
-                      <% end %>
-                  <% else %>
-	                    <h1 class="opacity-50 text-center mb-4">All Commissions Active</h1>
-                  <% end %>
-                </div>
-            </div>
-        </div>
-    </div>
+	<h5 class="opacity-50 text-center">Expected Commissions</h5>
+  <h5 class="opacity-50 text-center">(<%= User.find_by(uuid: params[:id]).amazonCountry.upcase %>) <%= User::ACCEPTEDcountries[User.find_by(uuid: params[:id]).amazonCountry.downcase][:country] %> Affiliate</h5>
+	<h1 class="opacity-50 text-center mb-4 font-15 mb-2"><%= current_user.present? ? "#{@pulledAffiliate['metadata']['commissionRate']}% Commission Rate" : nil %></h1>
 </div>
+
 <div class="card card-style">
   <div class="content mb-0">
-      <h4 class="font-700 text-uppercase font-12 opacity-30 mb-3 mt-n2">Account Standing</h4>
+      <h4 class="font-700 text-uppercase font-12 opacity-30 mb-3 mt-n2">Overview</h4>
       <div class="d-flex">
-          <div class="pe-4 align-self-center">
-              <p class="font-600 color-highlight mb-n1">Balance</p>
-              <h1 class="mb-2">$81,657</h1>
+          <div class="pe-4 align-self-center text-center">
+              <span class="flag-icon flag-icon-<%= User.find_by(uuid: params[:id]).amazonCountry.downcase %> font-20"></span>
+              <p class="font-600 color-highlight mb-n1">Available</p>
+              <h1 class="mb-2"><%= Stripe::Balance.retrieve({stripe_account: @pulledAffiliate['metadata']['connectAccount']})['available'].present? ?  number_to_currency(Stripe::Balance.retrieve({stripe_account: @pulledAffiliate['metadata']['connectAccount']})['available'][0]['amount'] * 0.01, precision: 2) : '$0.00' %></h1>
           </div>
           <div class="w-100 align-self-center ps-3">
-              <h6 class="font-14 font-700">Income<span class="float-end color-green-dark">+$1.355</span></h6>
+              <h6 class="font-14 font-700">Annual<span class="float-end color-highlight-dark"><%= number_to_currency(@combinedCommissions * 0.01, precision: 2) %></span></h6>
               <div class="divider mb-2 mt-1"></div>
-              <h6 class="font-14 font-700">Expenses<span class="float-end color-red-dark">-$5.615</span></h6>
+              <h6 class="font-14 font-700">Monthly<span class="float-end color-highlight-dark"><%= number_to_currency((@combinedCommissions/12) * 0.01, precision: 2) %></span></h6>
+              <div class="divider mb-2 mt-1"></div>
+              <h6 class="font-14 font-700">Last Deposit<span class="float-end color-highlight-dark"><%= @payouts.present? ? Time.at( @payouts.first['arrival_date']).to_date.strftime("%B #{Time.at( @payouts.first['arrival_date']).to_date.day}") : Time.at(Time.now).to_date.strftime("%B #{Time.at(Time.now).to_date.day}") %></span></h6>
           </div>
       </div>      
       <div class="divider mt-2 mb-3"></div>
+      
       <div class="row mb-0">
-          <div class="col-4">
+          <div class="col-6 text-center">
               <div class="mx-0 mb-3">
-                  <h6 class="font-12 font-800 text-uppercase opacity-30">Income</h6>
-                  <h3 class="color-green-dark font-20 mb-0">+21.6%</h3>
+                  <h6 class="font-12 font-800 text-uppercase opacity-30">Paid</h6>
+                  <h3 class="color-grass-dark font-20 mb-0"><%= number_to_currency(@payouts.map(&:amount).sum * 0.01, precision: 2) %></h3>
               </div>
           </div>
-          <div class="col-4 text-center">
+          <div class="col-6 text-center">
               <div class="mx-0 mb-3">
-                  <h6 class="font-12 font-800 text-uppercase opacity-30">Expenses</h6>
-                  <h3 class="color-red-dark font-20 mb-0">-18.2%</h3>
+                  <h6 class="font-12 font-800 text-uppercase opacity-30">Pending</h6>
+                  <h3 class="color-yellow-dark font-20 mb-0"><%= number_to_currency(Stripe::Balance.retrieve({stripe_account: @pulledAffiliate['metadata']['connectAccount']})['pending'][0]['amount'] * 0.01, precision: 2) %></h3>
               </div>
           </div>
-          <div class="col-4 pe-3 text-end">
+          <!-- <div class="col-4 pe-3 text-end">
               <div class="mx-0 mb-3">
-                  <h6 class="font-12 font-800 text-uppercase opacity-30">Savings</h6>
-                  <h3 class="color-blue-dark font-20 mb-0">$3,121</h3>
+                  <h6 class="font-12 font-800 text-uppercase opacity-30">Last Deposit</h6>
+                  <h3 class="color-aqua-dark font-20 mb-0">
+                  <%= @payouts.present? ? Time.at( @payouts.first['arrival_date']).to_date.strftime("%B #{Time.at( @payouts.first['arrival_date']).to_date.day}") : Time.at(Time.now).to_date.strftime("%B #{Time.at(Time.now).to_date.day}") %></h3>
               </div>
-          </div>              
+          </div>   -->            
       </div>
+      <h5 class="opacity-50 text-center pb-2">For Participating US Affiliates</h5>
   </div>            
 </div>
+<% if current_user %>
+  <!-- affiliate store product wheel excluding current subscriptions -->
+<% else %>
+  <%= render 'application/getpaidaffiliates', message: 'Oarlin members can get paid to share any posts or product!', title: ['You could earn commission'.titleize, 'explore, share, earn'.titleize].sample %>
+<% end %>
 <div class="card card-style">
   <div class="content mb-0">
-      <h4 class="font-700 text-uppercase font-12 opacity-30 mb-3 mt-n2">Exchange Rates</h4>
+      <h4 class="font-700 text-uppercase font-12 opacity-30 mb-3 mt-n2">Details</h4>
       <div class="row mb-3">
           <div class="col-4"><p class="font-14 mb-0 font-800 color-theme text-start">Type</p></div>
-          <div class="col-4"><p class="font-14 mb-0 font-800 color-theme text-center">Next Payment</p></div>
-          <div class="col-4"><p class="font-14 mb-0 font-800 color-theme text-end">Sale</p></div>
+          <div class="col-4"><p class="font-14 mb-0 font-800 color-theme text-center">Renews</p></div>
+          <div class="col-4"><p class="font-14 mb-0 font-800 color-theme text-end">Amount</p></div>
           <div class="divider w-100 mb-2 mt-2"></div>
-          <div class="col-4"><p class="font-13 mb-0 font-500 color-theme text-start">Amount</p></div>
-          <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-center"><i class="fa fa-arrow-up color-green-dark pe-1"></i> 24.10</p></div>
-          <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-end"><i class="fa fa-arrow-down color-red-dark pe-1"></i> 14.10</p></div>
+
+        <% @activeSubs.each do |subscr| %>
+          <div class="col-4"><p class="font-12 mb-0 font-800 color-theme text-start"><%= subscr['plan']['interval'] == 'year' ? 'Annual' : 'Monthly' %></p></div>
+          <div class="col-4"><p class="font-12 mb-0 font-800 color-theme text-center"> <%= Time.at(subscr['current_period_end']).to_date.strftime("%B #{Time.at(subscr['current_period_end']).to_date.day}, %Y") %></p></div>
+          <div class="col-4"><p class="font-12 mb-0 font-800 color-grass-dark text-end"> <%= number_to_currency(((subscr['plan']['amount'].to_i) * (@pulledAffiliate['metadata']['commissionRate'].to_i * 0.01)).to_i * 0.01, precision: 2) %> <%= subscr['plan']['currency'].upcase %></p></div>
           <div class="divider w-100 mb-2 mt-2"></div>
-          <div class="col-4"><p class="font-13 mb-0 font-500 color-theme text-start">EUR</p></div>
-          <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-center"><i class="fa fa-arrow-down color-red-dark pe-1"></i> 14.10</p></div>
-          <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-end"><i class="fa fa-arrow-up color-green-dark pe-1"></i> 18.10</p></div>
-          <div class="divider w-100 mb-2 mt-2"></div>
-          <div class="col-4"><p class="font-13 mb-0 font-500 color-theme text-start">BTC</p></div>
-          <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-center"><i class="fa fa-minus color-yellow-dark pe-1"></i> 18.10</p></div>
-          <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-end"><i class="fa fa-minus color-yellow-dark pe-1"></i> 14.10</p></div>
+        <% end %>
       </div>
   </div>    
 </div>
+

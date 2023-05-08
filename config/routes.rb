@@ -1,5 +1,7 @@
+require 'split'
 Rails.application.routes.draw do
-  resources :blogs, path: '/blog'
+
+  mount Split::Dashboard, at: 'split-tests-for-analytics'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   devise_for :users, path: '/', path_names: { sign_in: 'auth/login', sign_out: 'auth/logout' }, controllers: { registrations: 'registrations', sessions: 'sessions'} do
     get '/auth/logout' => 'sessions#destroy'
@@ -34,6 +36,7 @@ Rails.application.routes.draw do
   post "/loved", to: 'application#loved'
   post "/list", to: 'application#list'
 
+  resources :blogs, path: '/blog'
   resources :products, path: '/product'
   resources :search, path: '/search'
 

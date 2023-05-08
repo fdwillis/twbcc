@@ -24,42 +24,52 @@ class ApplicationController < ActionController::Base
 	end
 
 	def commissions
-		@pulledAffiliate = Stripe::Customer.retrieve(User.find_by(uuid: params[:id])&.stripeCustomerID)
-		@pulledCommissions = Stripe::Customer.list(limit: 100)
-		@accountsFromAffiliate = @pulledCommissions['data'].reject{|e| e['metadata']['referredBy'] != params[:id]}
-		@activeSubs = []
-		@inactiveSubs = []
-		@accountsFromAffiliate.each do |cusID|
-	  	listofSubscriptionsFromCusID = Stripe::Subscription.list(limit: 100, customer: cusID)['data']
-	    if listofSubscriptionsFromCusID.size > 0 
-		  	listofSubscriptionsFromCusID.each do |subscriptionX| 
-		    	# debugger
-			  	if subscriptionX['status'] == 'active' 
-			  		@activeSubs << subscriptionX
-			  	else
-			  		@inactiveSubs << subscriptionX
+		begin
+				@pulledAffiliate = Stripe::Customer.retrieve(User.find_by(uuid: params[:id])&.stripeCustomerID)
+				@pulledCommissions = Stripe::Customer.list(limit: 100)
+				@accountsFromAffiliate = @pulledCommissions['data'].reject{|e| e['metadata']['referredBy'] != params[:id]}
+				@activeSubs = []
+				@inactiveSubs = []
+				@accountsFromAffiliate.each do |cusID|
+			  	listofSubscriptionsFromCusID = Stripe::Subscription.list(limit: 100, customer: cusID)['data']
+			    if listofSubscriptionsFromCusID.size > 0 
+				  	listofSubscriptionsFromCusID.each do |subscriptionX| 
+				    	# debugger
+					  	if subscriptionX['status'] == 'active' 
+					  		@activeSubs << subscriptionX
+					  	else
+					  		@inactiveSubs << subscriptionX
+					  	end
+				  	end
 			  	end
-		  	end
-	  	end
-		end
-		@expectedAnnualCommission = 0
+				end
+				@combinedCommissions = 0
+				@monthlyCommissions = 0
+				@annualCommissions = 0
 
-		@activeSubs.each do |suba|
-			suba['items']['data'].map(&:plan).each do |plan|
-				if plan['interval'] == 'month'
-					
-					@expectedAnnualCommission += (plan['amount'] * 12) * (@pulledAffiliate['metadata']['commissionRate'].to_i * 0.01)
+				@activeSubs.map(&:items).map(&:data).flatten.map(&:plan).each do |plan|
+					if plan['interval'] == 'month'
+						@combinedCommissions += (plan['amount'] * 12) * (@pulledAffiliate['metadata']['commissionRate'].to_i * 0.01)
+						@monthlyCommissions += 1
+					end
+
+					if plan['interval'] == 'year'
+						
+						@combinedCommissions += (plan['amount']) * (@pulledAffiliate['metadata']['commissionRate'].to_i * 0.01)
+						@annualCommissions += 1
+					end
 				end
 
-				if plan['interval'] == 'year'
-					
-					@expectedAnnualCommission += (plan['amount']) * (@pulledAffiliate['metadata']['commissionRate'].to_i * 0.01)
-				end
+				@combinedCommissions
 
-			end
-		end
-
-		
+				@payouts = Stripe::Payout.list({limit: 3},{stripe_account: @pulledAffiliate['metadata']['connectAccount']})['data']
+		rescue Stripe::StripeError => e
+      flash[:error] = "Something is wrong. \n #{e}"
+      redirect_to request.referrer
+    rescue Exception => e
+      flash[:error] = "Something is wrong. \n #{e}"
+      redirect_to request.referrer
+    end
 	end
 
 	def analytics
@@ -261,7 +271,7 @@ class ApplicationController < ActionController::Base
 			# end
 		else
 			#analytics
-			ahoy.track "Profile Visit", user: @userFound.uuid
+			ahoy.track "Profile Visit", uuid: @userFound.uuid, previousPage: request.referrer
 		end
 		
 		if @membershipDetails.present? && @membershipDetails[:membershipDetails][:active]	
@@ -334,7 +344,7 @@ class ApplicationController < ActionController::Base
 				}
 			})
 			#analytics
-			ahoy.track "Added To Wishlist", product: params[:id]
+			ahoy.track "Added To Wishlist", asin: params[:id], uuid: current_user&.uuid, previousPage: request.referrer
 			flash[:success] = 'Added To Your Wishlist'
 			redirect_to request.referrer
 		end
@@ -342,12 +352,13 @@ class ApplicationController < ActionController::Base
 
 	def how_it_works
 		@headlines = ab_test(:howItWorksHeadline, 
-			{'Effortless Automation For Amazon Earnings' => 20}, 
-			{'The Ultimate Solution For Amazon Associates' => 20}, 
-			{'Powerful Automation For Amazon Associates' => 20},
+			{'Signup - Share - Earn' => 20}, 
+			{'Integrate Directly With Amazon Associates' => 20}, 
+			{'Customizable Automation For Affiliates' => 20},
 			{'Oarlin - Join The Hive' => 20},
-			{'Supercharging Marketing For Amazon Associates' => 20},
+			{'Supercharged Automation For Affiliates' => 20},
 		)
+		# ab_finished(:howItWorksHeadline, reset: true)
 	end
 end
 

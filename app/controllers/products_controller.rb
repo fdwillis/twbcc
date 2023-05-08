@@ -18,7 +18,7 @@ class ProductsController < ApplicationController
 
   def amazon
     #analytics
-    ahoy.track "Product Purchase Intent", product: params['asin'], user: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
+    ahoy.track "Product Purchase Intent", previousPage: request.referrer, asin: params['asin'], referredBy: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
     redirect_to "https://www.#{User::ACCEPTEDcountries[params['country'].upcase][:site]}/dp/product/#{params['asin']}?&tag=#{(current_user&.present? && !current_user.referredBy.nil?) ? User.find_by(uuid: current_user&.referredBy).amazonUUID : params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).amazonUUID :  ENV['usAmazonTag']}"
   end
 
@@ -30,10 +30,10 @@ class ProductsController < ApplicationController
    
    if params['recommended'].present?
       #analytics
-      ahoy.track "Recommended Product Visit", product: params['id'], user: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
+      ahoy.track "Recommended Product Visit", previousPage: request.referrer, asin: params['id'], referredBy: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
     else
       #analytics
-      ahoy.track "Product Visit", product: params['id'], user: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
+      ahoy.track "Product Visit", previousPage: request.referrer, asin: params['id'], referredBy: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
     end
   end
 

@@ -13,7 +13,7 @@ class BlogsController < ApplicationController
   # GET /blogs/1 or /blogs/1.json
   def show
     #analytics
-    ahoy.track "Blog Page Visit", title: @blog.title, user: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user.present? ? current_user.uuid : 'admin'
+    ahoy.track "Blog Page Visit", previousPage: request.referrer, title: @blog.title, referredBy: params['referredBy'].present? ? User.find_by(uuid: params['referredBy']).uuid : current_user&.present? ? current_user&.uuid : 'admin', uuid: @blog&.user&.uuid
   end
 
   # GET /blogs/new

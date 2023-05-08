@@ -203,7 +203,7 @@ class RegistrationsController < ApplicationController
 	      
 	    	ab_finished(:howItWorksHeadline, reset: true)
 
-      	ahoy.track "Membership Signup", member: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).uuid, referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : 'admin'
+      	ahoy.track "Membership Signup", previousPage: request.referrer, uuid: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).uuid, referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : 'admin'
 	      
 	      flash[:success] = "Your Account Setup Is Complete!"
 
