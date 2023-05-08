@@ -15,10 +15,10 @@
                     	<% @activeSubs.each do |subscr| %>
                         <a href="#">
                             <i class="fa fa-check rounded-xl bg-mint-dark"></i>
-                            <span class="left-10 font-20"><%= subscr['plan']['interval'] == 'year' ? 'Annual' : 'Monthly' %> Subsciption</span>
-                            <strong class="left-10 font-12"><%= subscr['id'][4..subscr['id'].size] %></strong>
-                            <span class="badge bg-green-dark font-15 rounded-sm"><%= number_to_currency(((subscr['plan']['amount'].to_i) * (@pulledAffiliate['metadata']['commissionRate'].to_i * 0.01)).to_i * 0.01, precision: 2) %> <%= subscr['plan']['currency'].upcase %></span>
-                            <i class="fa fa-angle-right"></i>
+                            <span class="left-10 font-20 mb-4"><%= subscr['plan']['interval'] == 'year' ? 'Annual' : 'Monthly' %> Subsciption</span>
+                            <strong class="left-10 font-12 mb-4">Renews: <%= Time.at(subscr['current_period_end']).to_date.strftime("%B #{Time.at(subscr['current_period_end']).to_date.day.ordinalize}, %Y") %></strong>
+                            <span class="badge bg-green-dark font-15 rounded-sm mt-5"><%= number_to_currency(((subscr['plan']['amount'].to_i) * (@pulledAffiliate['metadata']['commissionRate'].to_i * 0.01)).to_i * 0.01, precision: 2) %> <%= subscr['plan']['currency'].upcase %></span>
+                            <i class="fa fa-angle-right mt-3"></i>
                         </a>
                       <% end %>
                   <% else %>
@@ -46,4 +46,63 @@
             </div>
         </div>
     </div>
+</div>
+<div class="card card-style">
+  <div class="content mb-0">
+      <h4 class="font-700 text-uppercase font-12 opacity-30 mb-3 mt-n2">Account Standing</h4>
+      <div class="d-flex">
+          <div class="pe-4 align-self-center">
+              <p class="font-600 color-highlight mb-n1">Balance</p>
+              <h1 class="mb-2">$81,657</h1>
+          </div>
+          <div class="w-100 align-self-center ps-3">
+              <h6 class="font-14 font-700">Income<span class="float-end color-green-dark">+$1.355</span></h6>
+              <div class="divider mb-2 mt-1"></div>
+              <h6 class="font-14 font-700">Expenses<span class="float-end color-red-dark">-$5.615</span></h6>
+          </div>
+      </div>      
+      <div class="divider mt-2 mb-3"></div>
+      <div class="row mb-0">
+          <div class="col-4">
+              <div class="mx-0 mb-3">
+                  <h6 class="font-12 font-800 text-uppercase opacity-30">Income</h6>
+                  <h3 class="color-green-dark font-20 mb-0">+21.6%</h3>
+              </div>
+          </div>
+          <div class="col-4 text-center">
+              <div class="mx-0 mb-3">
+                  <h6 class="font-12 font-800 text-uppercase opacity-30">Expenses</h6>
+                  <h3 class="color-red-dark font-20 mb-0">-18.2%</h3>
+              </div>
+          </div>
+          <div class="col-4 pe-3 text-end">
+              <div class="mx-0 mb-3">
+                  <h6 class="font-12 font-800 text-uppercase opacity-30">Savings</h6>
+                  <h3 class="color-blue-dark font-20 mb-0">$3,121</h3>
+              </div>
+          </div>              
+      </div>
+  </div>            
+</div>
+<div class="card card-style">
+  <div class="content mb-0">
+      <h4 class="font-700 text-uppercase font-12 opacity-30 mb-3 mt-n2">Exchange Rates</h4>
+      <div class="row mb-3">
+          <div class="col-4"><p class="font-14 mb-0 font-800 color-theme text-start">Type</p></div>
+          <div class="col-4"><p class="font-14 mb-0 font-800 color-theme text-center">Next Payment</p></div>
+          <div class="col-4"><p class="font-14 mb-0 font-800 color-theme text-end">Sale</p></div>
+          <div class="divider w-100 mb-2 mt-2"></div>
+          <div class="col-4"><p class="font-13 mb-0 font-500 color-theme text-start">Amount</p></div>
+          <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-center"><i class="fa fa-arrow-up color-green-dark pe-1"></i> 24.10</p></div>
+          <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-end"><i class="fa fa-arrow-down color-red-dark pe-1"></i> 14.10</p></div>
+          <div class="divider w-100 mb-2 mt-2"></div>
+          <div class="col-4"><p class="font-13 mb-0 font-500 color-theme text-start">EUR</p></div>
+          <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-center"><i class="fa fa-arrow-down color-red-dark pe-1"></i> 14.10</p></div>
+          <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-end"><i class="fa fa-arrow-up color-green-dark pe-1"></i> 18.10</p></div>
+          <div class="divider w-100 mb-2 mt-2"></div>
+          <div class="col-4"><p class="font-13 mb-0 font-500 color-theme text-start">BTC</p></div>
+          <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-center"><i class="fa fa-minus color-yellow-dark pe-1"></i> 18.10</p></div>
+          <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-end"><i class="fa fa-minus color-yellow-dark pe-1"></i> 14.10</p></div>
+      </div>
+  </div>    
 </div>

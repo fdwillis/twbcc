@@ -8,82 +8,82 @@ class User < ApplicationRecord
   include MediaEmbed::Handler
 
   ACCEPTEDcountries = {
-    'AU' => {
+    'au' => {
       site: 'amazon.com.au',
       currency: 'aud',
       country: 'Australia', 
     },
-    'BE' => {
+    'be' => {
       site: 'amazon.com.be',
       currency: 'eur',
       country: 'Belgium',
     },
-    'CA' => {
+    'ca' => {
       site: 'amazon.ca',
       currency: 'cad',
       country: 'Canada',
     },
-    'FR' => {
+    'fr' => {
       site: 'amazon.fr',
       currency: 'eur',
       country: 'France',
     },
-    'DE' => {
+    'de' => {
       site: 'amazon.de',
       currency: 'eur',
       country: 'Germany',
     },
-    'IT' => {
+    'it' => {
       site: 'amazon.it',
       currency: 'eur',
       country: 'Italy',
     },
-    'JP' => {
+    'jp' => {
       site: 'amazon.co.jp',
       currency: 'jpy',
       country: 'Japan',
     },
-    'MX' => {
+    'mx' => {
       site: 'amazon.com.mx',
       currency: 'mxn',
       country: 'Mexico',
     },
-    'NL' => {
+    'nl' => {
       site: 'amazon.nl',
       currency: 'eur',
       country: 'Netherlands',
     },
-    'PL' => {
+    'pl' => {
       site: 'amazon.pl',
       currency: 'pln',
       country: 'Poland',
     },
-    'SG' => {
+    'sg' => {
       site: 'amazon.sg',
       currency: 'sgd',
       country: 'Singapore',
     },
-    'ES' => {
+    'es' => {
       site: 'amazon.es',
       currency: 'eur',
       country: 'Spain',
     },
-    'SE' => {
+    'se' => {
       site: 'amazon.se',
       currency: 'sek',
       country: 'Sweden',
     },
-    'AE' => {
+    'ae' => {
       site: 'amazon.ae',
       currency: 'aed',
       country: 'United Arab Emirates',
     },
-    'GB' => {
+    'gb' => {
       site: 'amazon.co.uk',
       currency: 'gbp',
       country: 'United Kingdom',
     },
-    'US' => {
+    'us' => {
       site: 'amazon.com',
       currency: 'usd',
       country: 'United States',

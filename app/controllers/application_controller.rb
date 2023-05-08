@@ -345,7 +345,7 @@ class ApplicationController < ActionController::Base
 			{'Effortless Automation For Amazon Earnings' => 20}, 
 			{'The Ultimate Solution For Amazon Associates' => 20}, 
 			{'Powerful Automation For Amazon Associates' => 20},
-			{'Oarlin - Exclusively For Amazon Associates' => 20},
+			{'Oarlin - Join The Hive' => 20},
 			{'Supercharging Marketing For Amazon Associates' => 20},
 		)
 	end
