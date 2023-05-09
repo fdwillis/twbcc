@@ -1,5 +1,4 @@
 
-
 <% freeMembership = Stripe::Price.retrieve(ENV['freeMembership']) %>
 <% affiliateMonthly = Stripe::Price.retrieve(ENV['affiliateMonthly']) %>
 <% affiliateAnnual = Stripe::Price.retrieve(ENV['affiliateAnnual']) %>
@@ -8,195 +7,269 @@
 <% automationMonthly = Stripe::Price.retrieve(ENV['automationMonthly']) %>
 <% automationAnnual = Stripe::Price.retrieve(ENV['automationAnnual']) %>
 
-<div class="header-clear-medium">    
-    <div class="row">
-        <div class="mx-auto card card-style" style="max-width:700px!important;">
-            <div class="content">
-                <div class="d-flex mb-3">
-                    <div>
-                        <h1>Free</h1>
-                        <p class=" font-12 color-highlight">You Will Not Be Charged - Card Required</p>
-                    </div>
-                    <div class="ms-auto text-end">
-                        <h1><%= number_to_currency(freeMembership['unit_amount'] * 0.01, precision: 2) %></h1>
-                    </div>
-                </div>
-                <div class="list-group list-custom-small">
-                  <% freeMembership['metadata'].each do |point| %>
-                      <a href="#">
-                          <i class="fa color-theme fa-check opacity-50"></i>
-                          <span><%= point[0] %></span>:
-                          <span><%= point[1] %></span>
-                      </a>
-                  <% end %>
-                    
-                </div>
-                <a href="<%= @freeMembership['url'] %>" class="btn btn-full btn-sm rounded-sm text-uppercase font-700 mt-3 bg-highlight">Try For Free</a>
-                <br>
-            </div>
-        </div>
+<div class="header-clear-medium">       
+  <% if current_user %>
+    <div class="card card-style mt-2">
+      <div class="content text-center">
+          <h1 class="text-center">Your Membership Was Found</h1>
+          <p class="boxed-text-l mb-n1 font-14">Do You Want To Upgrade?</p>
+          <div class="font-11 pb-2 text-center"><%= mail_to "team@oarlin.com", "EMAIL US" %></div>
+      </div><!-- #sprint2 -->
     </div>
-
-    <div class="row">
-        <div class="mx-auto card card-style" style="max-width:700px!important;">
-            <div class="content">
-                <div class="d-flex mb-3">
-                    <div>
-                        <h1>Monthly Affiliate </h1>
-                        <p class=" font-12 color-highlight">Great For Content Creators, Affiliates, And Influencers</p>
-                    </div>
-                    <div class="ms-auto text-end">
-                        <h1><%= number_to_currency(affiliateMonthly['unit_amount'] * 0.01, precision: 2) %></h1>
-                        <p class="mt-0 font-10">MONTHLY</p>
-                    </div>
-                </div>
-                <div class="list-group list-custom-small">
-                  <% affiliateMonthly['metadata'].each do |point| %>
-                      <a href="#">
-                          <i class="fa color-theme fa-check opacity-50"></i>
-                          <span><%= point[0] %></span>:
-                          <span><%= point[1] %></span>
-                      </a>
-                  <% end %>
-                    
-                </div>
-                <a href="<%= @affiliateMonthly['url'] %>" class="btn btn-full btn-sm rounded-sm text-uppercase font-700 mt-3 bg-highlight">Start Promoting</a>
-                <br>
-            </div>
-        </div>
-        <div class="mx-auto card card-style" style="max-width:700px!important;">
-            <div class="content">
-                <div class="d-flex mb-3">
-                    <div>
-                        <h1>Annual Affiliate </h1>
-                        <p class=" font-12 color-highlight">Great For Content Creators, Affiliates, And Influencers</p>
-                    </div>
-                    <div class="ms-auto text-end">
-                        <h1><%= number_to_currency(affiliateAnnual['unit_amount'] * 0.01, precision: 2) %></h1>
-                        <p class="mt-0 font-10">ANNUALLY</p>
-                    </div>
-                </div>
-                <div class="list-group list-custom-small">
-                  <% affiliateAnnual['metadata'].each do |point| %>
-                      <a href="#">
-                          <i class="fa color-theme fa-check opacity-50"></i>
-                          <span><%= point[0] %></span>:
-                          <span><%= point[1] %></span>
-                      </a>
-                  <% end %>
-                    
-                </div>
-                <a href="<%= @affiliateAnnual['url'] %>" class="btn btn-full btn-sm rounded-sm text-uppercase font-700 mt-3 bg-highlight">Start Promoting</a>
-                <br>
-            </div>
-        </div>
-        <div class="mx-auto card card-style" style="max-width:700px!important;">
-            <div class="content">
-                <div class="d-flex mb-3">
-                    <div>
-                        <h1>Monthly Business </h1>
-                        <p class=" font-12 color-highlight">Great For Those Ready To Sell</p>
-                    </div>
-                    <div class="ms-auto text-end">
-                        <h1><%= number_to_currency(businessMonthly['unit_amount'] * 0.01, precision: 2) %></h1>
-                        <p class="mt-0 font-10">MONTHLY</p>
-                    </div>
-                </div>
-                <div class="list-group list-custom-small">
-                  <% businessMonthly['metadata'].each do |point| %>
-                      <a href="#">
-                          <i class="fa color-theme fa-check opacity-50"></i>
-                          <span><%= point[0] %></span>:
-                          <span><%= point[1] %></span>
-                      </a>
-                  <% end %>
-                    
-                </div>
-                <a href="<%= @businessMonthly['url'] %>" class="btn btn-full btn-sm rounded-sm text-uppercase font-700 mt-3 bg-highlight">Start Selling</a>
-                <br>
-            </div>
-        </div>
-        <div class="mx-auto card card-style" style="max-width:700px!important;">
-            <div class="content">
-                <div class="d-flex mb-3">
-                    <div>
-                        <h1>Annual Business </h1>
-                        <p class=" font-12 color-highlight">Great For Those Ready To Sell</p>
-                    </div>
-                    <div class="ms-auto text-end">
-                        <h1><%= number_to_currency(businessAnnual['unit_amount'] * 0.01, precision: 2) %></h1>
-                        <p class="mt-0 font-10">ANNUALLY</p>
-                    </div>
-                </div>
-                <div class="list-group list-custom-small">
-                  <% businessAnnual['metadata'].each do |point| %>
-                      <a href="#">
-                          <i class="fa color-theme fa-check opacity-50"></i>
-                          <span><%= point[0] %></span>:
-                          <span><%= point[1] %></span>
-                      </a>
-                  <% end %>
-                    
-                </div>
-                <a href="<%= @businessAnnual['url'] %>" class="btn btn-full btn-sm rounded-sm text-uppercase font-700 mt-3 bg-highlight">Start Selling</a>
-                <br>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="mx-auto card card-style" style="max-width:700px!important;">
-            <div class="content">
-                <div class="d-flex mb-3">
-                    <div>
-                        <h1>Monthly Automation </h1>
-                        <p class=" font-12 color-highlight">Great For Those Who Want Scale</p>
-                    </div>
-                    <div class="ms-auto text-end">
-                        <h1><%= number_to_currency(automationMonthly['unit_amount'] * 0.01, precision: 2) %></h1>
-                        <p class="mt-0 font-10">MONTHLY</p>
-                    </div>
-                </div>
-                <div class="list-group list-custom-small">
-                  <% automationMonthly['metadata'].each do |point| %>
-                      <a href="#">
-                          <i class="fa color-theme fa-check opacity-50"></i>
-                          <span><%= point[0] %></span>:
-                          <span><%= point[1] %></span>
-                      </a>
-                  <% end %>
-                    
-                </div>
-                <a href="<%= @automationMonthly['url'] %>" class="btn btn-full btn-sm rounded-sm text-uppercase font-700 mt-3 bg-highlight">Start Scaling</a>
-                <br>
-            </div>
-        </div>
-        <div class="mx-auto card card-style" style="max-width:700px!important;">
-            <div class="content">
-                <div class="d-flex mb-3">
-                    <div>
-                        <h1>Annual Automation </h1>
-                        <p class=" font-12 color-highlight">Great For Those Who Want Scale</p>
-                    </div>
-                    <div class="ms-auto text-end">
-                        <h1><%= number_to_currency(automationAnnual['unit_amount'] * 0.01, precision: 2) %></h1>
-                        <p class="mt-0 font-10">ANNUALLY</p>
-                    </div>
-                </div>
-                <div class="list-group list-custom-small">
+  <% end %>
+  <div class="card card-style bg-theme pb-0">
+      <div id="tab-group-1">
+          <h1 class="font-700 font-30 opacity-50 mb-4 text-center mt-4">Pick Your Plan</h1>
+          <div class="content row">
+              <div class="col-6 text-center">
+                <h1 class="color-highlight">Feature List</h1>
+                <h4 class="font-12 opacity-50 text-center">
+                  <i class="fa fa-info-circle color-yellow-dark "></i> Explains This Feature
+                </h4>
+                  
                   <% automationAnnual['metadata'].each do |point| %>
-                      <a href="#">
-                          <i class="fa color-theme fa-check opacity-50"></i>
-                          <span><%= point[0] %></span>:
-                          <span><%= point[1] %></span>
-                      </a>
+                    <span href="#" class="text-center" data-toast="<%= point[1] %>">
+                      <%= button_tag( :class => "") do %>
+                        <i class="fa fa-info-circle color-yellow-dark "></i> <%= point[0] %> 
+                      <% end %>
+                    </span><br>
                   <% end %>
-                    
-                </div>
-                <a href="<%= @automationAnnual['url'] %>" class="btn btn-full btn-sm rounded-sm text-uppercase font-700 mt-3 bg-highlight">Start Scaling</a>
-                <br>
-            </div>
-        </div>
-    </div>
+              </div>
+              <div class="col-6 text-center">
+                  <h1>Free Member</h1>
+                  <p class=" font-12 color-highlight mb-n2">Card Required</p>
+                  <div class="list-group list-custom-small">
+                    <% freeMembership['metadata'].each do |point| %>
+                        
+                      <span href="#" class="text-center font-15">
+                        <%= point[0] %> 
 
+                      </span>
+                      <div class="divider mb-2 mt-1"></div>
+                    <% end %>
+                      
+                  </div>
+                  <small href="<%= @freeMembership['url'] %>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Try For Free</small>
+              </div>
+          </div>
+
+          <div data-bs-parent="#tab-group-1" class="pt-0" id="tab-2">
+            <h1 class="font-700 font-20 opacity-50 mb-4 text-center mt-4">Monthly Plans</h1>
+            <div class="content text-center">
+              <!-- <h1 class="font-20 line-height-m pb-2">Explore Amazon Products</h1> -->
+              <div class="splide double-slider slider-no-dots slider-arrows splide--loop splide--ltr splide--draggable is-active" id="single-slider-3" style="visibility: visible;">
+                <div class="splide__track" id="single-slider-3-track">
+                  <div class="splide__list" id="single-slider-3-list" style="transform: translateX(-975px);">
+                    <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
+                      <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
+                        <div class="content">
+                          <div class="card-top text-center">
+                            <div class="mt-4">
+                                <p class=" font-12 color-highlight m-n2">For Online Personalities</p>
+                                <h4 class="font-12 opacity-50 text-center">Affiliate Member</h4>
+                                <h1 class="m-n2 p-2"><%= number_to_currency(affiliateMonthly['unit_amount'] * 0.01, precision: 2) %></h1>
+                            </div>
+                            <div class="mt-4 text-end">
+                            </div>
+                            <div class="list-group list-custom-small mb-n5">
+                              <% affiliateMonthly['metadata'].each do |point| %>
+                                  
+                                  <span href="#" class="text-center font-15">
+                                    <%= point[0] %> 
+
+                                  </span>
+                                  <div class="divider mb-2 mt-1"></div>
+                              <% end %>
+                                
+                            </div>
+                          </div>
+                          <div class="content card-bottom text-center">
+                            <small href="<%= @affiliateMonthly['url'] %>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Choose</small>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
+                      <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
+                        <div class="content">
+                          <div class="card-top text-center">
+                            <div class="mt-4">
+                                <p class=" font-12 color-highlight m-n2">Your Business Your Way</p>
+                                <h4 class="font-12 opacity-50 text-center">Business Member</h4>
+                                <h1 class="m-n2 p-2"><%= number_to_currency(businessMonthly['unit_amount'] * 0.01, precision: 2) %></h1>
+                            </div>
+                            <div class="mt-4 text-end">
+                            </div>
+                            <div class="list-group list-custom-small mb-n5">
+                              <% businessMonthly['metadata'].each do |point| %>
+                                  
+                                  <span href="#" class="text-center ">
+                                    <%= button_tag( :class => "") do %>
+                                    <%= point[0] %> 
+                                    <% end %>
+                                  </span>
+                                  <div class="divider mb-2 mt-1"></div>
+                              <% end %>
+                                
+                            </div>
+                          </div>
+                          <div class="content card-bottom text-center">
+                            <small href="<%= @businessMonthly['url'] %>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Choose</small>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
+                      <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
+                        <div class="content">
+                          <div class="card-top text-center">
+                            <div class="mt-4">
+                                <p class=" font-12 color-highlight m-n2">For Those Who Scale</p>
+                                <h4 class="font-12 opacity-50 text-center">Automation Member</h4>
+                                <h1 class="m-n2 p-2"><%= number_to_currency(automationMonthly['unit_amount'] * 0.01, precision: 2) %></h1>
+                            </div>
+                            <div class="mt-4 text-end">
+                            </div>
+                            <div class="list-group list-custom-small mb-n5">
+                              <% automationMonthly['metadata'].each do |point| %>
+                                  
+                                  <span href="#" class="text-center font-15">
+                                    <%= point[0] %> 
+
+                                  </span>
+                                  <div class="divider mb-2 mt-1"></div>
+                              <% end %>
+                                
+                            </div>
+                          </div>
+                          <div class="content card-bottom text-center">
+                            <small href="<%= @automationMonthly['url'] %>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Choose</small>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              
+              < Slide To View More Plans >
+            </div>
+          </div>
+
+          <div data-bs-parent="#tab-group-1" id="tab-2">
+            <h1 class="font-700 font-20 opacity-50 text-center mt-4">Annual Plans</h1>
+            <h4 class="font-700 font-12 opacity-50 mb-4 text-center">17% Discount</h4>
+            <div class="content text-center">
+              <!-- <h1 class="font-20 line-height-m pb-2">Explore Amazon Products</h1> -->
+              <div class="splide double-slider slider-no-dots slider-arrows splide--loop splide--ltr splide--draggable is-active" id="single-slider-3432" style="visibility: visible;">
+                <div class="splide__track" id="single-slider-3432-track">
+                  <div class="splide__list" id="single-slider-3432-list" style="transform: translateX(-975px);">
+                    <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
+                      <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
+                        <div class="content">
+                          <div class="card-top text-center">
+                            <div class="mt-4">
+                                <p class=" font-12 color-highlight m-n2">For Online Personalities</p>
+                                <h4 class="font-12 opacity-50 text-center">Affiliate Member</h4>
+                                <h1 class="m-n2 p-2"><%= number_to_currency(affiliateAnnual['unit_amount'] * 0.01, precision: 2) %></h1>
+                            </div>
+                            <div class="mt-4 text-end">
+                            </div>
+                            <div class="list-group list-custom-small mb-n5">
+                              <% affiliateAnnual['metadata'].each do |point| %>
+                                  
+                                  <span href="#" class="text-center font-15">
+                                    <%= point[0] %> 
+
+                                  </span>
+                                  <div class="divider mb-2 mt-1"></div>
+                              <% end %>
+                                
+                            </div>
+                          </div>
+                          <div class="content card-bottom text-center">
+                            <small href="<%= @affiliateAnnual['url'] %>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Choose</small>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
+                      <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
+                        <div class="content">
+                          <div class="card-top text-center">
+                            <div class="mt-4">
+                                <p class=" font-12 color-highlight m-n2">Your Business Your Way</p>
+                                <h4 class="font-12 opacity-50 text-center">Business Member</h4>
+                                <h1 class="m-n2 p-2"><%= number_to_currency(businessAnnual['unit_amount'] * 0.01, precision: 2) %></h1>
+                            </div>
+                            <div class="mt-4 text-end">
+                            </div>
+                            <div class="list-group list-custom-small mb-n5">
+                              <% businessAnnual['metadata'].each do |point| %>
+                                  
+                                  <span href="#" class="text-center font-15">
+                                    <%= point[0] %> 
+
+                                  </span>
+                                  <div class="divider mb-2 mt-1"></div>
+                              <% end %>
+                                
+                            </div>
+                          </div>
+                          <div class="content card-bottom text-center">
+                            <small href="<%= @businessAnnual['url'] %>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Choose</small>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
+                      <div data-card-height="350" class="card mx-1 rounded-m shadow-l" style="height: 350px;">
+                        <div class="content">
+                          <div class="card-top text-center">
+                            <div class="mt-4">
+                                <p class=" font-12 color-highlight m-n2">For Those Who Scale</p>
+                                <h4 class="font-12 opacity-50 text-center">Automation Member</h4>
+                                <h1 class="m-n2 p-2"><%= number_to_currency(automationAnnual['unit_amount'] * 0.01, precision: 2) %></h1>
+                            </div>
+                            <div class="mt-4 text-end">
+                            </div>
+                            <div class="list-group list-custom-small mb-n5">
+                              <% automationAnnual['metadata'].each do |point| %>
+                                  
+                                  <span href="#" class="text-center font-15">
+                                    <%= point[0] %> 
+
+                                  </span>
+                                  <div class="divider mb-2 mt-1"></div>
+                              <% end %>
+                                
+                            </div>
+                          </div>
+                          <div class="content card-bottom text-center">
+                            <small href="<%= @automationAnnual['url'] %>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Choose</small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              
+              < Slide To View More Plans >
+            </div>
+          </div>
+      </div>
+  </div>
 </div>
+
+<% automationAnnual['metadata'].each do |point| %>
+
+<div id="<%= point[1] %>" class="snackbar-toast rounded-m bg-highlight-dark fade hide" data-bs-delay="5000" data-bs-autohide="true"><i class="fa fa-info-circle me-3"></i> <%= point[1] %></div>
+<% end %>

@@ -3976,7 +3976,7 @@ input[type=number] {
   left: 10px !important;
   right: 10px !important;
   padding: 0px 18px;
-  line-height: 50px;
+  line-height: 25px;
   border-radius: 8px;
   overflow: hidden;
   z-index: 95;

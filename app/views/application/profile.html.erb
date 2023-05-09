@@ -39,14 +39,6 @@
 			<div class="card-overlay bg-black opacity-70"></div>
 		</div>
 	  <% if @membershipDetails.present? %>
-	  	<% if @accountItemsDue.size > 0 %>
-			  <div class="content row">
-			    <a href="<%= @stripeAccountUpdate['url'] %>" class="badge bg-green-dark color-white p-2 float-end rounded-sm font-30">
-				    	Fininsh
-			    	 <i class="font-30 color-white px-1 fa fa-amazon"></i>
-			    </a>
-			  </div>
-			 <% end %>
 		  
 			<div class="card card-style">
 		    <h1 class="p-3">Membership</h1>

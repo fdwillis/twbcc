@@ -6,8 +6,9 @@ class BlogsController < ApplicationController
   # GET /blogs or /blogs.json
   def index
     @featured = []
-    @blogs = Blog.paginate(page: params[:page], per_page: 8)
+    @blogs = Blog.paginate(page: params['page'], per_page: 8)
     @blogs.map{|blog| blog['tags'].split(',').reject(&:blank?).include?('featured') ? @featured << blog : nil}
+    ahoy.track "Blog Page Results", previousPage: request.referrer, currentPage: params['page']
   end
 
   # GET /blogs/1 or /blogs/1.json

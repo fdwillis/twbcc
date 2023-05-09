@@ -14,6 +14,7 @@ class ProductsController < ApplicationController
 
   def explore
     @products = Product.where(country: params['country']).paginate(page: params['page'], per_page: 8)
+    ahoy.track "Product Page Results", previousPage: request.referrer, currentPage: params['page']
   end
 
   def amazon

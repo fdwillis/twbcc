@@ -3,8 +3,8 @@
         <div data-card-height="cover" class="card" style="height: 945px;">
             <div class="card-center">
                 <div class="ps-5 pe-5">
-                    <h1 class="text-center font-800 font-40 mb-1">Sign In</h1>
-                    <p class="color-highlight text-center font-12">Let's get you logged in</p>
+                    <h1 class="text-center font-800 font-40 mb-1 text-uppercase">Sign In</h1>
+                    <p class="color-highlight text-center font-12 text-uppercase">Let's get you logged in</p>
 
                     <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
 
@@ -28,11 +28,11 @@
                       </div>
 
                       <div class="d-flex mt-4 mb-4">
-                          <div class="w-50 font-11 pb-2 text-start"><a href="/membership?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">Create Account</a></div>
-                          <div class="w-50 font-11 pb-2 text-end">Forgot? - <%= mail_to "team@oarlin.com", "Email Us" %></div>
+                          <div class="w-50 font-11 pb-2 text-start"><a href="/membership?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">CREATE ACCOUNT</a></div>
+                          <div class="w-50 font-11 pb-2 text-end">FORGOT? - <%= mail_to "team@oarlin.com", "EMAIL US" %></div>
                       </div>
 
-                      <%= f.submit "Log in", class: 'back-button btn btn-full btn-m shadow-large rounded-sm text-uppercase font-700 bg-highlight form-control' %>
+                      <%= f.submit "Sign in", class: 'back-button btn btn-full btn-m shadow-large rounded-sm text-uppercase font-700 bg-highlight form-control' %>
                     <% end %>
                     <div class="divider mt-4"></div>
                     <!-- <a href="#" class="btn btn-icon btn-m btn-full shadow-l rounded-sm bg-facebook text-uppercase font-700 text-start"><i class="fab fa-facebook-f text-center bg-transparent"></i>Sign in with Facebook</a>

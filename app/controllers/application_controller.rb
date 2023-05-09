@@ -1,6 +1,10 @@
 class ApplicationController < ActionController::Base
 	before_action :authenticate_user!, only: [:loved] 
 
+	def discounts #sprint2
+		
+	end
+
 	def home
 		@products = User.rainforestProduct
 		@categories = User.rainforestSearch
@@ -331,7 +335,7 @@ class ApplicationController < ActionController::Base
 				}
 			})
 			
-			flash[:success] = 'Removed From Your Wishlist'
+			flash[:success] = 'Removed From Your Love List'
 			redirect_to request.referrer
 		elsif params[:id].present?
 			
@@ -341,8 +345,8 @@ class ApplicationController < ActionController::Base
 				}
 			})
 			#analytics
-			ahoy.track "Added To Wishlist", asin: params[:id], uuid: current_user&.uuid, previousPage: request.referrer
-			flash[:success] = 'Added To Your Wishlist'
+			ahoy.track "Added To Loved List", asin: params[:id], uuid: current_user&.uuid, previousPage: request.referrer
+			flash[:success] = 'Added To Your Loved List'
 			redirect_to request.referrer
 		end
 	end
