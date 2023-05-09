@@ -5,6 +5,10 @@ class ApplicationController < ActionController::Base
 		
 	end
 
+	def split_session
+		redirect_to "#{request.referrer}?&referredBy=#{params[:splitSession]}"
+	end
+
 	def home
 		@products = User.rainforestProduct
 		@categories = User.rainforestSearch

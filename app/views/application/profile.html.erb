@@ -118,7 +118,7 @@
 		                </div>
 		            </a>
 		            <div class="col-12">
-		              <a href="<%= product_path(id: itm) %>">
+		              <a href="<%= amazon_path(id: itm) %>/?&referredBy=<%= @userFound&.uuid  %>">
 		                <%= button_tag( :class => "btn btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
 		                  <i class="fa fa-amazon font-20 color-white"></i>
 		                <% end %>

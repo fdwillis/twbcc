@@ -1,4 +1,25 @@
+<div class="row text-center mt-5 mb-n5">
+  <% if (!User.find_by(uuid: @blog&.user&.uuid).admin?) %>
+    <% if (current_user&.present? && current_user != @blog&.user) %>
+      <small class="opacity-50 text-center mb-3">
+        <%= button_tag( :class => "", 'data-toast'=>"split-sessions") do %>
+          <span class="fa fa-info-circle color-yellow-dark p-2" ></span><u><em> Affiliate: "<%= Stripe::Customer.retrieve(User.find_by(uuid: @blog&.user&.uuid)&.stripeCustomerID)['name'].titleize %>" Posted This</em></u>
+        <% end %>
+        
+      </small>
+    <% end %>
+  <% else %>
+    <small class="opacity-50 text-center">
+      <%= button_tag( :class => "") do %>
+        </span> <u><em></em></u>
+      <% end %>
+      An Oarlin Original
+    </small>
+
+  <% end %>
+</div>
 <div class="header-clear-medium">
+
   <div class="card card-style over-card mb-4">
           
         <% if @blog.images.present? %>
@@ -37,8 +58,9 @@
             </a>
             <br><br><br>
           <% end %>
+          
           <div class="d-flex">
-            <div class="flex-grow-1">
+            <div class="flex-grow-1 p-1">
               <h1 class="font-20">
                 <%= @blog.title %><br>
                 <i class="font-20 px-1 fa fa-eye"></i> <%= Ahoy::Event.where_event("Blog Page Visit", title: @blog.title).count %>
@@ -49,10 +71,12 @@
                 <% end %>
               <% end %>
             </div>
-            <div class="flex-shrink-1 m-1">
-              <a href="#" data-menu="flag-country-explained" class="btn btn-s text-uppercase font-900 bg-highlight mb-4 rounded-sm"><i class="font-20 color-white px-1 fa fa-amazon"></i><span class="flag-icon flag-icon-<%= @blog.country.downcase %> font-20"></span></a></a>
+            <div class="flex-shrink-1 p-1">
+              <a href="#" data-menu="flag-country-explained" class="btn btn-sm text-uppercase font-900 bg-highlight mb-4 rounded-sm"><i class="font-20 color-white px-1 fa fa-amazon"></i><span class="flag-icon flag-icon-<%= @blog.country.downcase %> font-20"></span></a></a>
             </div>
           </div>
+          
+          <div class="divider mt-2 mb-3"></div>
           <p class="pt-2"><%= simple_format(@blog.body) %></p>
           <div class="font-20 text-center">
             Share With The World <%= social_share_button_tag(@blog.title, :url => "https://#{request.env['HTTP_HOST']}", :image =>  @blog.images.split(',').shuffle.take(1)[0], desc: truncate(@blog.body, length: 50)) %>
@@ -90,7 +114,7 @@
                                 <i class="fa fa-star color-yellow-dark"></i>
                                 <i class="fa fa-star color-yellow-dark"></i>
                             </p>
-                            <a href="<%= product_path(id: asin) %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class='btn btn-m font-900 text-uppercase rounded-sm bg-highlight btn-full me-2 ms-2 mb-2'>
+                            <a href="<%= product_path(id: asin) %>?&referredBy=<%= @blog&.user&.uuid  %>" class='btn btn-m font-900 text-uppercase rounded-sm bg-highlight btn-full me-2 ms-2 mb-2'>
                               <%= button_tag( :class => "") do %>
                                 <i class="fa fa-info-circle font-20 color-white text-center"></i>
                               <% end %>
@@ -119,7 +143,7 @@
             <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
         </div>
           <h1 class="color-white p-2">"Versatile and Easy to Use"</h1>
-          <a href="/view-on-amazon/<%= @blog&.asins.split(',').shuffle[0] %>/<%= @blog.country.downcase %>/?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="btn btn-m mb-3 rounded-xs text-uppercase font-900 shadow-s bg-yellow-dark" target='_blank'><i class="fa fa-amazon font-20 color-white"></i> Secret Item</a>
+          <a href="/view-on-amazon/<%= @blog&.asins.split(',').shuffle[0] %>/<%= @blog.country.downcase %>/?&referredBy=<%=  @blog&.user&.uuid %>" class="btn btn-m mb-3 rounded-xs text-uppercase font-900 shadow-s bg-yellow-dark" target='_blank'><i class="fa fa-amazon font-20 color-white"></i> Secret Item</a>
       </div>
       <div class="card-overlay bg-black opacity-80"></div>
   </div>
@@ -153,3 +177,4 @@
  
   </div>
 </div>
+<div id="split-sessions" class="snackbar-toast rounded-m bg-highlight-dark fade hide" data-bs-delay="10000" data-bs-autohide="true"><i class="fa fa-info-circle color-yellow-dark "></i> Give credit where it's due! Before you purchase something recommended from The Hive we make sure to fill the links with their Amazon associates ID</div>

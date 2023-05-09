@@ -230,8 +230,9 @@
             </script>
           <% end %>
           <div class="page-content">
-            <% if !current_user && User.find_by(uuid: params['referredBy']).present? %>
-              <h1 class="font-700 font-10 opacity-50 text-center mt-5 mb-n5"><%= Stripe::Customer.retrieve(User.find_by(uuid: params['referredBy'])&.stripeCustomerID)['name'] %> GOT YOU HERE</h1>
+            <% if User.find_by(uuid: params['referredBy']).present? %>
+              <h1 class="font-700 font-10 opacity-50 text-center mt-5 mb-n5">
+                "<%= Stripe::Customer.retrieve(User.find_by(uuid: params['referredBy'])&.stripeCustomerID)['name'].titleize %>" GOT YOU HERE</h1>
             <% end %>
             <%= yield %>
           </div>
