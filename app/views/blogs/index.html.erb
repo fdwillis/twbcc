@@ -7,7 +7,7 @@
   <div class="card card-style mt-2">
     <div class="content text-center">
         <h1 class="font-700 font-25 opacity-50 text-center mt-4">Welcome To The Hive</h1>
-        <h1 class="font-700 font-18 opacity-50 text-center">Products With Buzz!</h1>
+        <h1 class="font-700 font-18 opacity-50 text-center">Amazon Products With Buzz!</h1>
     </div>
   </div>
   <% if @featured.present? %>
@@ -143,5 +143,22 @@
         </div>
     </div>
 </div>
-<%= will_paginate @blogs, class: 'btn btn-lg m-3 rounded-sm text-uppercase font-700 bg-highlight float-end', style: "text-decoration:none" %>
+<br>
+<nav aria-label="pagination-demo">
+    <ul class="pagination justify-content-center">
+        <% if params['page'].to_i > 1 %>
+          <li class="page-item">
+              <a class="page-link rounded-xs bg-highlight color-white py-2 border-0" href="/blog?page=<%= params['page'].to_i - 1 %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" tabindex="-1" aria-disabled="true"><i class="fa fa-angle-left"></i></a>
+          </li>
+        <% end %>
+        <% @blogs.total_pages.times do |pageNum|%>
 
+          <li class="page-item"><a class="page-link rounded-xs py-2 bg-highlight color-white border-0" disabled='true' href="/blog?page=<%= pageNum + 1 %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>"><%= pageNum + 1 %></a></li>
+        <% end %>
+        <% if params['page'].to_i < @blogs.total_pages %>
+          <li class="page-item">
+              <a class="page-link rounded-xs bg-highlight color-white py-2 border-0" href="/blog?page=<%= params['page'].to_i + 1 %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>"><i class="fa fa-angle-right"></i></a>
+          </li>
+        <% end %>
+    </ul>
+</nav>
