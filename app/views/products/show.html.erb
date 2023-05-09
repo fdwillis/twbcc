@@ -46,7 +46,9 @@
                 </h1>
                 <div class="me-auto"> 
                   <% @product['tags'].split(',').each do |tag| %> 
-                    <span class="badge no-click bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s mb-3"><%= tag %></span>
+                      <% if tag.present? %>
+                        <span class="badge no-click bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s mb-3"><%= tag %></span>
+                      <% end %>
                   <% end %>
                 </div>
                 

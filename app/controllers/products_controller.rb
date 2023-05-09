@@ -13,7 +13,7 @@ class ProductsController < ApplicationController
   end
 
   def explore
-    @products = Product.where(country: params['country']).paginate(page: params['page'], per_page: 8)
+    @products = Product.all.where(country: params['country']).shuffle.paginate(page: params['page'], per_page: 8)
     ahoy.track "Product Page Results", previousPage: request.referrer, currentPage: params['page']
   end
 
@@ -53,7 +53,7 @@ class ProductsController < ApplicationController
 
     respond_to do |format|
       if @product.save
-        format.html { redirect_to product_url(@product), notice: "Product was successfully created." }
+        format.html { redirect_to explore_path, notice: "Product was successfully created." }
         format.json { render :show, status: :created, location: @product }
       else
         format.html { render :new, status: :unprocessable_entity }

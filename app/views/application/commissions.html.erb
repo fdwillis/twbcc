@@ -12,6 +12,8 @@
               <span class="flag-icon flag-icon-<%= User.find_by(uuid: params[:id]).amazonCountry.downcase %> font-20"></span>
               <p class="font-600 color-highlight mb-n1">Available</p>
               <h1 class="mb-2"><%= Stripe::Balance.retrieve({stripe_account: @pulledAffiliate['metadata']['connectAccount']})['available'].present? ?  number_to_currency(Stripe::Balance.retrieve({stripe_account: @pulledAffiliate['metadata']['connectAccount']})['available'][0]['amount'] * 0.01, precision: 2) : '$0.00' %></h1>
+              <h1 class="font-700 font-20 mb-4 text-center mt-n3 color-grass-dark "><%= User::ACCEPTEDcountries[User.find_by(uuid: params[:id]).amazonCountry.downcase][:currency].upcase %></h1>
+
           </div>
           <div class="w-100 align-self-center ps-3">
               <h6 class="font-14 font-700">Annual<span class="float-end color-highlight-dark"><%= number_to_currency(@combinedCommissions * 0.01, precision: 2) %></span></h6>

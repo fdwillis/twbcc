@@ -6,7 +6,7 @@ class BlogsController < ApplicationController
   # GET /blogs or /blogs.json
   def index
     @featured = []
-    @blogs = Blog.paginate(page: params['page'], per_page: 8)
+    @blogs = Blog.all.shuffle.paginate(page: params['page'], per_page: 8)
     @blogs.map{|blog| blog['tags'].split(',').reject(&:blank?).include?('featured') ? @featured << blog : nil}
     ahoy.track "Blog Page Results", previousPage: request.referrer, currentPage: params['page']
   end
@@ -105,8 +105,8 @@ class BlogsController < ApplicationController
     end
     def checkAccess
       unless current_user&.admin? || (current_user&.present? && current_user&.checkMembership[:membershipType] == 'business' && current_user&.checkMembership[:membershipDetails][:active] == true) || (current_user&.present? && current_user&.checkMembership[:membershipType] == 'automation'&& current_user&.checkMembership[:membershipDetails][:active] == true)
-        flash[:error] = "No Access"
-        redirect_to root_path
+        flash[:error] = "Business or Automation Plan Required"
+        redirect_to membership_path
       end
     end
 end

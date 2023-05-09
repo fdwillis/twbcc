@@ -1,8 +1,8 @@
 <div class="header-clear-medium">
     <div class="card card-style">
       <div class="content text-center">
-        <h1 class="text-center">Trending Products From<br><%= User::ACCEPTEDcountries[params[:country]][:country] %></h1>
-        <p class="boxed-text-l font-14"><i class="fa fa-amazon font-14"></i> Products Selling Fast On Amazon!</p>
+        <h1 class="font-700 font-20 opacity-50 text-center mt-4">Recommended Products</h1>
+        <h1 class="font-700 font-15 opacity-50 text-center"><%= User::ACCEPTEDcountries[params[:country]][:country] %> Amazon</h1>
         <span class="flag-icon flag-icon-<%= params[:country].downcase %> display-1"></span>
        
       </div>
