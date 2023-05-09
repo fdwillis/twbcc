@@ -6,7 +6,8 @@ class ApplicationController < ActionController::Base
 	end
 
 	def split_session
-		redirect_to "#{request.referrer}?&referredBy=#{params[:splitSession]}"
+		ahoy.track "Split Session", uuid: @userFound.uuid, previousPage: request.referrer
+		redirect_to "#{request.fullpath.split("?")[0]}?&referredBy=#{params[:splitSession]}"
 	end
 
 	def home

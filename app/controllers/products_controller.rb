@@ -13,6 +13,7 @@ class ProductsController < ApplicationController
   end
 
   def explore
+    @blogs = Blog.all.where(country: params['country']).paginate(page: params['page'], per_page: 8)
     @products = Product.all.where(country: params['country']).shuffle.paginate(page: params['page'], per_page: 8)
     ahoy.track "Product Page Results", previousPage: request.referrer, currentPage: params['page']
   end
