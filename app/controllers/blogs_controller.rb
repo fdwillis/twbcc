@@ -6,7 +6,7 @@ class BlogsController < ApplicationController
   # GET /blogs or /blogs.json
   def index
     @featured = []
-    @blogs = Blog.all.shuffle.paginate(page: params['page'], per_page: 8)
+    @blogs = Blog.paginate(page: params['page'], per_page: 8)
     @blogs.map{|blog| blog['tags'].split(',').reject(&:blank?).include?('featured') ? @featured << blog : nil}
     ahoy.track "Blog Page Results", previousPage: request.referrer, currentPage: params['page']
   end
@@ -14,7 +14,7 @@ class BlogsController < ApplicationController
   # GET /blogs/1 or /blogs/1.json
   def show
     #analytics
-    ahoy.track "Blog Page Visit", previousPage: request.referrer, title: @blog.title, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user&.present? ? current_user&.uuid : 'admin', uuid: @blog&.user&.uuid
+    ahoy.track "Blog Page Visit", previousPage: request.referrer, title: @blog.title, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user&.present? ? current_user&.uuid : ENV['usAmazonTag'], uuid: @blog&.user&.uuid
   end
 
   # GET /blogs/new
