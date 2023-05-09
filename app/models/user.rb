@@ -119,12 +119,12 @@ class User < ApplicationRecord
     embed(@url, options)
   end
 
-  def self.rainforestProduct(asin = nil, country)
-    @data = []
+  def self.rainforestProduct(asin = nil, country, created_at)
+    @validResponse = []
     if asin.present?
       res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=product&amazon_domain=#{ACCEPTEDcountries[country][:site]}&asin=#{asin}")
       loadedData = Oj.load(res.body)['product']
-      @data << {product: asin, data: loadedData}
+      @validResponse << {product: asin, data: loadedData}
     else
       #auto load
       autoSearchProducts.each do |product|
@@ -133,7 +133,8 @@ class User < ApplicationRecord
         asin = categoriesLoaded[(rand(0..(categoriesLoaded.count-1)))][:data][0..14][0]['asin']
         res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=product&amazon_domain=#{ACCEPTEDcountries[country][:site]}&asin=#{asin}")
         loadedData = Oj.load(res.body)['product']
-        @data << {product: product, data: loadedData}
+
+        @validResponse << {product: product, data: loadedData}
         # asin = loadedData['search_results'][rand(1..10)]['asin']
         # link = ENV['amazonUS']
 
@@ -141,8 +142,21 @@ class User < ApplicationRecord
       end
     end
 
-    @data
-    {'asin'=> asin, 'country'=> 'US', 'tags'=> 'RAINFOREST CALL'}
+    response = @validResponse.first[:data]
+
+    {
+      'asin'=> asin,
+      # 'description'=> response['description'],
+      'country'=> country.upcase,
+      'tags'=> response['keywords_list'][0..2].join(','),
+      'title' => response['variants'][0]['title'],
+      'keywords' => response['keywords_list'][0..9].shuffle,
+      'rating' => response['rating'],
+      'reviews' => response['top_reviews'].shuffle,
+      'brand' => response['brand'], 
+      'images' => response['variants'].map{|d| d['main_image']}.join(","),
+      'created_at' => created_at
+    }
   end
 
   def self.rainforestSearch(term = nil, country)

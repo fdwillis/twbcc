@@ -14,7 +14,14 @@ class ProductsController < ApplicationController
 
   def explore
     @blogs = Blog.all.where(country: params['country']).paginate(page: params['page'], per_page: 8)
-    @products = Product.all.where(country: params['country']).shuffle.paginate(page: params['page'], per_page: 8)
+    @products = Product.all.where(country: params['country']).paginate(page: params['page'], per_page: 8)
+    @callToRain = []
+
+    @products.each do |prod|
+      callToRain = User.rainforestProduct(prod&.asin, prod&.country, prod&.created_at)
+      @callToRain << callToRain
+    end
+
     ahoy.track "Product Page Results", previousPage: request.referrer, currentPage: params['page']
   end
 
@@ -29,7 +36,8 @@ class ProductsController < ApplicationController
 
     @posts = Blog.where("asins like ?", "%#{params['id'].upcase}%")
     @profileMetadata = current_user.present? ? Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata'] : []
-   
+    @callToRain = User.rainforestProduct(@product&.asin, @product&.country, @product&.created_at)
+
    if params['recommended'].present?
       #analytics
       ahoy.track "Recommended Product Visit", previousPage: request.referrer, asin: params['id'], referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
@@ -89,7 +97,7 @@ class ProductsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_product
-      @product = Product.find_by(asin: params['id']).present? ? Product.friendly.find_by(asin: params['id']) : User.rainforestProduct(params['id'])
+      @product = Product.friendly.find_by(asin: params['id'].upcase)
     end
 
     # Only allow a list of trusted parameters through.

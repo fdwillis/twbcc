@@ -3,35 +3,15 @@
   <div class="splide double-slider slider-no-dots" id="double-slider-12">
     <div class="splide__track">
         <div class="splide__list">
+          <% @callToRain['images'].split(',').each do |img| %>
             <div class="splide__slide">
-                <div class="card rounded-m shadow-l mx-3 bg-13" data-card-height="300">
+                <div class="card rounded-m shadow-l mx-3 bg-13" data-card-height="300" style="background-image:url('<%= img %>')">
                     <div class="card-bottom text-center mb-0">
-                        <h1 class="color-white font-700 mb-0">StickyMobile
-
-                        </h1>
-                        <p class="color-white">The Menu Everyone Requested.</p>
                     </div>
                     <div class="card-overlay bg-gradient"></div>
                 </div>
             </div>
-            <div class="splide__slide">
-                <div class="card rounded-m shadow-l mx-3 bg-29" data-card-height="300">
-                    <div class="card-bottom text-center mb-0">
-                        <h1 class="color-white font-700 mb-0">Carefuly Built</h1>
-                        <p class="color-white">Flexibility, Speed, Ease of Use.</p>
-                    </div>
-                    <div class="card-overlay bg-gradient"></div>
-                </div>
-            </div>
-            <div class="splide__slide">
-                <div class="card rounded-m shadow-l mx-3 bg-29" data-card-height="300">
-                    <div class="card-bottom text-center mb-0">
-                        <h1 class="color-white font-700 mb-0">Elite Quality</h1>
-                        <p class="color-white">Mobile Website, App or PWA Ready.</p>
-                    </div>
-                    <div class="card-overlay bg-gradient"></div>
-                </div>
-            </div>
+          <% end %>
         </div>
     </div>
   </div>
@@ -40,12 +20,11 @@
     <div class="content">
         <div class="d-flex">
             <div class="flex-grow-1">
-                <h1 class="font-20">
-                  Product Title You Clicked<br>
+                <h1 class="font-20"><%= @callToRain['title'] %><br>
                   <i class="font-20 px-1 fa fa-eye"></i> <%= Ahoy::Event.where_event("Product Visit", product: params[:id]).size %>
                 </h1>
                 <div class="me-auto"> 
-                  <% @product['tags'].split(',').each do |tag| %> 
+                  <% @callToRain['tags'].split(',').each do |tag| %> 
                       <% if tag.present? %>
                         <span class="badge no-click bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s mb-3"><%= tag %></span>
                       <% end %>
@@ -62,21 +41,21 @@
               <div class="flex-shrink-1 m-1">
                 <% if current_user %>
 
-                    <% if @profileMetadata.present? && @profileMetadata['tracking'].present? && @profileMetadata['tracking'].split(',').include?("#{@product['asin']}-#{@product['country']}") %>
-                      <a href="<%= list_path(id: @product['asin'], remove: true)  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs rounded-pill color-white"><i class="fa fa-list color-highlight"></i></a>
+                    <% if @profileMetadata.present? && @profileMetadata['tracking'].present? && @profileMetadata['tracking'].split(',').include?("#{@callToRain['asin']}-#{@callToRain['country']}") %>
+                      <a href="<%= list_path(id: @callToRain['asin'], remove: true)  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs rounded-pill color-white"><i class="fa fa-list color-highlight"></i></a>
                     <% else %>
-                      <a href="<%= list_path(id: @product['asin'], country: @product['country'])  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-list"></i></a>
+                      <a href="<%= list_path(id: @callToRain['asin'], country: @callToRain['country'])  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-list"></i></a>
                     <% end %>
-                    <% if @profileMetadata.present? && @profileMetadata['wishlist'].present? && @profileMetadata['wishlist'].split(',').include?("#{@product['asin']}-#{@product['country']}") %>
-                      <a href="<%= loved_path(id: @product['asin'], remove: true)  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs rounded-pill color-white"><i class="fa fa-heart color-highlight"></i></a>
+                    <% if @profileMetadata.present? && @profileMetadata['wishlist'].present? && @profileMetadata['wishlist'].split(',').include?("#{@callToRain['asin']}-#{@callToRain['country']}") %>
+                      <a href="<%= loved_path(id: @callToRain['asin'], remove: true)  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs rounded-pill color-white"><i class="fa fa-heart color-highlight"></i></a>
                     <% else %>
-                      <a href="<%= loved_path(id: @product['asin'], country: @product['country'])  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-heart"></i></a>
+                      <a href="<%= loved_path(id: @callToRain['asin'], country: @callToRain['country'])  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-heart"></i></a>
 
                     <% end %>
                 <% else %>
 
-                  <a href="<%= list_path(id: @product['asin'])  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" data-confirm="Add this to your loved list?" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-heart"></i></a>
-                  <a href="<%= list_path(id: @product['asin'])  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" data-confirm="Add this to your public list?" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-list"></i></a>
+                  <a href="<%= list_path(id: @callToRain['asin'])  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" data-confirm="Add this to your loved list?" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-heart"></i></a>
+                  <a href="<%= list_path(id: @callToRain['asin'])  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" data-confirm="Add this to your public list?" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-list"></i></a>
                 <% end %>
               </div>
         </div>
@@ -84,10 +63,7 @@
         <div class="divider"></div>
           
         
-        <p>
-            The best selling Mobile Progressive Web App on the Envato Marketplaces just got even better now, with 3.0 introducing
-            Boostrap 4.x compatibility and a tone of new gorgeous features!
-        </p>
+<!--         <p><%= @callToRain['description'] %></p> -->
         
         <div class="row">
             <div class="col-4">
@@ -132,7 +108,7 @@
             <div class="flex-grow-1">
                 <span class="font-11">Ratings & Reviews </span>
                 <p class="mt-n2">
-                    <strong class="color-theme">4.9</strong>
+                    <strong class="color-theme"><%= @callToRain['rating'] %></strong>
                     <i class="fa fa-star color-yellow-dark ps-2"></i>
                     <i class="fa fa-star color-yellow-dark"></i>
                     <i class="fa fa-star color-yellow-dark"></i>
@@ -141,7 +117,7 @@
                 </p>
             </div>
             <div class="flex-shrink-1 mt-2">
-                <a href="#">98 Reviews</a>
+                <a href="#"><%= @callToRain['reviews'].size %> Reviews</a>
             </div>
         </div>
         
@@ -149,7 +125,7 @@
         
         <div class="divider mt-4"></div>
         
-        <a href="<%= amazon_path(asin: @product['asin'], country: @product['country']) %>/?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %> " target='_blank'>
+        <a href="<%= amazon_path(asin: @callToRain['asin'], country: @callToRain['country']) %>/?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %> " target='_blank'>
           <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
             <i class="fa fa-amazon font-20 color-white"></i> Purchase On Amazon
           <% end %>
@@ -161,7 +137,7 @@
               </div>
             </div>
         </div>
-        <!-- <%= Ahoy::Event.where_event("Product Purchase Intent", product: @product['asin'].upcase).count %> -->
+        <!-- <%= Ahoy::Event.where_event("Product Purchase Intent", product: @callToRain['asin'].upcase).count %> -->
         <div class="card card-style">
               <div class="content mb-0">
                   <h2>Product Gallery</h2>
@@ -300,7 +276,7 @@
       <div class="text-center">
         <span class="flag-icon flag-icon-<%= @product.country.downcase %> font-40"></span>
       </div>
-      <h5 class="text-center">This Icon Means The Amazon Affiliate Links Originate From <%= User::ACCEPTEDcountries[@product.country.upcase][:country] %>. </a>
+      <h5 class="text-center">This Icon Means The Amazon Affiliate Links Originate From <%= User::ACCEPTEDcountries[@product.country.downcase][:country] %>. </a>
       </h5>
       <small>Affiliates From Other Countries May Be Eligible. Check With Amazon Or Contact Us To Help. These Products May Not Be Available For Purchase In All Countries.</small>
    
