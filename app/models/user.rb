@@ -159,7 +159,8 @@ class User < ApplicationRecord
     }
   end
 
-  def self.rainforestSearch(term = nil, country)
+  def self.rainforestSearch(term = nil, country = 'us')
+    sampleSize = 1
     @data = []
     if term.present?
       res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=search&amazon_domain=#{ACCEPTEDcountries[country][:site]}&search_term=#{term.split.join('+')}")
@@ -167,8 +168,8 @@ class User < ApplicationRecord
       @data << {category: term, data: loadedData}
     else
       #auto load
-      autoSearchCategories.each do |category|
-        res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=search&amazon_domain=#{ACCEPTEDcountries[country][:site]}&search_term=#{category.split.join('+')}")
+      autoSearchCategories.to_a.sample[sampleSize].each do |category|
+        res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=search&amazon_domain=#{ACCEPTEDcountries[country][:site]}&search_term=#{category[:category].split.join('+')}")
         loadedData = Oj.load(res.body)['search_results']
         @data << {category: category, data: loadedData}
         # return country in response to display flag
@@ -178,43 +179,131 @@ class User < ApplicationRecord
   end
 
   def self.autoSearchCategories
-    approvedCategories = ['Amazon Games',
-      'Luxury Beauty',
-      'Amazon Explore',
-      'Digital Music',
-      'Vinyl',
-      'Handmade',
-      'Digital Videos',
-      'cosmetics',
-      'luxury kitchen',
-      'pet accessories',
-      'pet food',
-      'baby accessories',
-      'garden',
-      'home gadgets',
-      'oral care',
-      'amd',
-      'nvidia',
-      'fire stick',
-      'Amazon Fresh',
-      'books',
-      'jewelry',
-      'hair care',
-      'luxury office',
-      'silk and satin',
-      'luxury bamboo',
-      'luxury candles',
-      'decorations',
-      'landscaping',
-      'custom computer',
-      'luxury products',
-      'car wash',
-      'car care',
-      'Man cave',
-      'birthday',
-      'phone protection',
-      'luxury bathroom',].shuffle.take(1)
-      approvedCategories.map(&:titleize)
+    approvedCategories = {
+      0 => {
+        category: 'Amazon Games',
+        description: 'amazon games',
+        featured: true,
+        image: [
+          'https://pbs.twimg.com/profile_images/1542913048926556162/ptySop9e_400x400.jpg',
+          'https://pbs.twimg.com/profile_images/1542913048926556162/ptySop9e_400x400.jpg',
+        ],
+        # products: [
+        #   {
+        #     title: ,
+        #     tags: ,
+        #     country: ,
+        #     asin: ,
+        #     rating: ,
+        #     images: [
+        #     ],
+        #     brand: ,
+        #   }
+        # ],
+
+      },
+      1 => {
+        category: 'Luxury Beauty',
+        description: 'Luxury Brands Like Mario Badescu, Tatcha, Pureology & More',
+        image: [
+          'https://images.squarespace-cdn.com/content/v1/5b11542985ede1725e58d543/1645560337277-1Z86HHV2CS7WXFDMH4CF/Pureology-Smooth+Perfection-Shampoo.jpg?format=300w',
+          'https://img.grouponcdn.com/stores/3ff1nFbyHFWqg981Ekfns8mLRJRf/storespi29979734-5939x3563/v1/sc600x600.jpg',
+          'https://www.pureology.com/on/demandware.static/-/Sites-ppd-pureology-master-catalog/default/dwf0393240/pdp/PPDPURHydrateDuo/Pureology-Hydrate-Shampoo-Conditioner-Duo-Retail.png',
+          'https://pyxis.nymag.com/v1/imgs/32e/7be/632c500b7d59f478f5892606d333b2147c-mario-badescu-lede.rsocial.w1200.jpg',
+          'https://m.media-amazon.com/images/I/81KBMk-i+FL._AC_SL1500_.jpg',
+          'https://m.media-amazon.com/images/I/81EG0Mqv6mL._AC_UF1000,1000_QL80_.jpg',
+          'https://m.media-amazon.com/images/I/81i7HXhZSmL._AC_UF1000,1000_QL80_.jpg',
+        ],
+        # products: [
+        #   {
+        #     title: ,
+        #     tags: ,
+        #     country: ,
+        #     asin: ,
+        #     rating: ,
+        #     images: [
+        #     ],
+        #     brand: ,
+        #   }
+        # ],
+
+      },
+      # Mario Badescu
+      # Tatcha
+      # Pureology
+
+
+
+
+
+      # 'Luxury Beauty' => {
+      #   description: '',
+      #   image: '',
+
+      # },
+      # 'Amazon Explore' => {
+      #   description: '',
+      #   image: '',
+
+      # },
+      # 'Digital Music' => {
+      #   description: '',
+      #   image: '',
+
+      # },
+      # 'Vinyl' => {
+      #   description: '',
+      #   image: '',
+
+      # },
+      # 'Handmade' => {
+      #   description: '',
+      #   image: '',
+
+      # },
+      # 'Digital Videos' => {
+      #   description: '',
+      #   image: '',
+
+      # },
+      # 'cosmetics' => {
+      #   description: '',
+      #   image: '',
+
+      # },
+      # 'luxury kitchen' => {
+      #   description: '',
+      #   image: '',
+
+      # },
+      # 'pet accessories',
+      # 'pet food',
+      # 'baby accessories',
+      # 'garden',
+      # 'home gadgets',
+      # 'oral care',
+      # 'amd',
+      # 'nvidia',
+      # 'fire stick',
+      # 'Amazon Fresh',
+      # 'jewelry',
+      # 'hair care',
+      # 'luxury office',
+      # 'silk and satin',
+      # 'luxury bamboo',
+      # 'luxury candles',
+      # 'decorations',
+      # 'landscaping',
+      # 'custom computer',
+      # 'luxury products',
+      # 'car care',
+      # 'Man cave',
+      # 'birthday',
+      # 'phone protection',
+      # 'luxury bathroom',
+      # 'For Her',
+      # 'For Him',
+    }
     # ['valentines day','independence day', 'halloween', 'easter', 'thanksgiving', 'christmas']
     # save a users last search term
   end

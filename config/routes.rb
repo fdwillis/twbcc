@@ -19,6 +19,7 @@ Rails.application.routes.draw do
     get code, :to => "errors#show", :code => code
   end
   
+  get "/profile/:kyndalmac", to: 'application#profile', as: 'kyndalmac' # sprint2
   get "/discounts", to: 'application#discounts', as: 'discounts' # sprint2
   get "/membership", to: 'application#membership', as: 'membership'
   get "/view-on-amazon/:asin/:country", to: 'products#amazon', as: 'amazon'

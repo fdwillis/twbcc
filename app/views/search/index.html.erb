@@ -1,4 +1,40 @@
 <div class="page-content header-clear-medium">
+    <p>
+        <% @searchCategories[0] %>
+        <%= image_tag "icons8-game-50" %>
+        <%= image_tag @searchCategories[0][:image].sample %>
+    </p>
+    <p>
+        <% @searchCategories[1] %>
+        <%= image_tag "icons8-lipstick-50.png" %>
+        <%= image_tag @searchCategories[1][:image].sample %>
+    </p>
+
+
+
+
+
+
+
+    <div class="splide double-slider slider-no-dots visible-slider splide--loop splide--ltr splide--draggable is-active" id="double-slider-1a" style="visibility: visible;">
+            <div class="splide__track" id="double-slider-1a-track">
+                <div class="splide__list" id="double-slider-1a-list" style="transform: translateX(-630px);">
+                    <%= @searchResults.each do |result| %>
+                        <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 157.5px;">
+                            <a href="#" class="mx-3">
+                                <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/fitness/3m.jpg&quot;); height: 250px;" data-card-height="250">
+                                    <div class="card-bottom p-2 px-3">
+                                        <h3 class="color-white line-height-s"><%= result %></h3>
+                                    </div>
+                                    <div class="card-overlay bg-gradient"></div>
+                                </div>
+                            </a>
+                        </div>
+                    <% end %>
+                </div>
+            </div>
+        <ul class="splide__pagination"><li><button class="splide__pagination__page is-active" type="button" aria-controls="double-slider-1a-slide01 double-slider-1a-slide02" aria-label="Go to page 1" aria-current="true"></button></li><li><button class="splide__pagination__page" type="button" aria-controls="double-slider-1a-slide02 double-slider-1a-slide03" aria-label="Go to page 2"></button></li></ul>
+    </div>
 
     <div class="splide single-slider slider-no-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="single-slider-1" style="visibility: visible;">
         <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button" aria-controls="single-slider-1-track" aria-label="Previous slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button><button class="splide__arrow splide__arrow--next" type="button" aria-controls="single-slider-1-track" aria-label="Next slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button></div><div class="splide__track" id="single-slider-1-track">
@@ -99,7 +135,8 @@
                     </a>
                 </div></div>
         </div>
-    <ul class="splide__pagination"><li><button class="splide__pagination__page" type="button" aria-controls="single-slider-1-slide01" aria-label="Go to slide 1"></button></li><li><button class="splide__pagination__page is-active" type="button" aria-controls="single-slider-1-slide02" aria-label="Go to slide 2" aria-current="true"></button></li><li><button class="splide__pagination__page" type="button" aria-controls="single-slider-1-slide03" aria-label="Go to slide 3"></button></li></ul></div>
+        <ul class="splide__pagination"><li><button class="splide__pagination__page" type="button" aria-controls="single-slider-1-slide01" aria-label="Go to slide 1"></button></li><li><button class="splide__pagination__page is-active" type="button" aria-controls="single-slider-1-slide02" aria-label="Go to slide 2" aria-current="true"></button></li><li><button class="splide__pagination__page" type="button" aria-controls="single-slider-1-slide03" aria-label="Go to slide 3"></button></li></ul>
+    </div>
     
     <div class="row mb-0">
         <div class="col-6 pe-0">
