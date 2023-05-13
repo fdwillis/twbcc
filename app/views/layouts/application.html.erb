@@ -271,6 +271,12 @@
               <h1 class="font-700 font-10 opacity-50 text-center mt-5 mb-n5">
                 "<%= Stripe::Customer.retrieve(User.find_by(uuid: params['referredBy'])&.stripeCustomerID)['name'].titleize %>" GOT YOU HERE</h1>
             <% end %>
+            <% if session['coupon'].present? %>
+              <div class="align-self-center">
+                <h1 class="font-700 font-20 opacity-50 text-center mt-5"><%= Stripe::Coupon.retrieve(session['coupon'])['percent_off'].to_i %>% Off With Code <u><%= session['coupon'] %></u>!</h1>
+                <p class="mt-2 text-center">Act now, This offer will refresh every 48 hours</p>
+              </div>
+            <% end %>
             <%= yield %>
           </div>
         </div>

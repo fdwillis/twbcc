@@ -34,6 +34,7 @@ Rails.application.routes.draw do
   get "/explore/:country", to: 'products#explore'
   get "/explore/", to: 'products#index'
   get "/split-session", to: 'application#split_session', as: 'split_session'
+  get "/display-discount", to: 'application#display_discount', as: 'display_discount'
 
   post "/search", to: 'search#index'
   post "/cancel", to: 'application#cancel', as: 'cancel'

@@ -5,6 +5,20 @@ class ApplicationController < ActionController::Base
 		
 	end
 
+	def display_discount
+		# setcoupon code in header
+		if session['coupon'].nil?
+			codes = Stripe::Coupon.list({limit: 100})['data']
+			session['coupon'] = codes.reject{|c| c['percent_off'] > 10}.sample['id']
+			redirect_to "#{request.referrer}?&discount=true"
+			return
+		end
+
+		redirect_to "#{request.referrer}"
+
+
+	end
+
 	def split_session
 		ahoy.track "Split Session", uuid: @userFound.uuid, previousPage: request.referrer
 		redirect_to "#{request.fullpath.split("?")[0]}?&referredBy=#{params[:splitSession]}"
