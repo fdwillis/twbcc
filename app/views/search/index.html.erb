@@ -1,4 +1,255 @@
 <div class="page-content header-clear-medium">
+  <div class="content mt-n1">
+    <div class="search-box bg-theme color-theme rounded-m shadow-l">
+      <i class="fa fa-search"></i>
+      <%= form_for :newSearch, url: search_path do |f| %>
+        <%= f.text_field :for, class: 'border-0' %>
+      <% end %>
+
+      <!-- <input type="text" class="border-0" placeholder="Search.. - try Milk " data-search=""> -->
+      <!-- <a href="#" class="clear-search disabled mt-0"><i class="fa fa-times color-red-dark"></i></a> -->
+    </div>
+
+    <div class="search-results disabled-search-list mt-3">
+        <div class="card card-style mx-0 px-2 p-0 mb-0">
+            <a href="#" class="d-flex py-2" data-filter-item="" data-filter-name="all coffee milk fresh dairy taste">
+                <div>
+                    <img src="images/grocery/6s.jpg" class="rounded-sm me-3" width="50" alt="img">
+                </div>
+                <div>
+                    <span class="color-highlight font-400 d-block pt-0 text-uppercase font-10">Local Farm</span>
+                    <strong class="color-theme font-16 d-block mt-n2">Fresh Milk</strong>
+                </div>
+                <div class="ms-auto text-center align-self-center pe-2">
+                    <h5 class="line-height-xs font-18 pt-3">$4.<sup class="font-14">50</sup></h5>
+                    <span class="font-9 d-block mt-n2">Price per Gallon</span>
+                </div>
+            </a>
+            <a href="#" class="d-flex py-2" data-filter-item="" data-filter-name="all fruit orange europe">
+                <div>
+                    <img src="images/grocery/7s.jpg" class="rounded-sm me-3" width="50" alt="img">
+                </div>
+                <div>
+                    <span class="color-highlight font-400 d-block pt-0 text-uppercase font-10">European Import</span>
+                    <strong class="color-theme font-16 d-block mt-n2">Oranges</strong>
+                </div>
+                <div class="ms-auto text-center align-self-center pe-2">
+                    <h5 class="line-height-xs font-18 pt-3">$6.<sup class="font-14">50</sup></h5>
+                    <span class="font-9 d-block mt-n2">Price per 12 Pcs</span>
+                </div>
+            </a>
+            <a href="#" class="d-flex py-2" data-filter-item="" data-filter-name="all fruit peach carolina usa">
+                <div>
+                    <img src="images/grocery/5s.jpg" class="rounded-sm me-3" width="50" alt="img">
+                </div>
+                <div>
+                    <span class="color-highlight font-400 d-block pt-0 text-uppercase font-10">From Carolina</span>
+                    <strong class="color-theme font-16 d-block mt-n2">Peaches</strong>
+                </div>
+                <div class="ms-auto text-center align-self-center pe-2">
+                    <h5 class="line-height-xs font-18 pt-3">$8.<sup class="font-14">50</sup></h5>
+                    <span class="font-9 d-block mt-n2">Price per 6 Pcs</span>
+                </div>
+            </a>
+            <a href="#" class="d-flex py-2" data-filter-item="" data-filter-name="all fruit tomato legume europe">
+                <div>
+                    <img src="images/grocery/12s.jpg" class="rounded-sm me-3" width="50" alt="img">
+                </div>
+                <div>
+                    <span class="color-highlight font-400 d-block pt-0 text-uppercase font-10">Asian Import</span>
+                    <strong class="color-theme font-16 d-block mt-n2">Tomatos</strong>
+                </div>
+                <div class="ms-auto text-center align-self-center pe-2">
+                    <h5 class="line-height-xs font-18 pt-3">$4.<sup class="font-14">50</sup></h5>
+                    <span class="font-9 d-block mt-n2">Price per 8 Pcs</span>
+                </div>
+            </a>
+            <a href="#" class="d-flex py-2" data-filter-item="" data-filter-name="all cucumber pickle legume europe">
+                <div>
+                    <img src="images/grocery/4s.jpg" class="rounded-sm me-3" width="50" alt="img">
+                </div>
+                <div>
+                    <span class="color-highlight font-400 d-block pt-0 text-uppercase font-10">Australian Import</span>
+                    <strong class="color-theme font-16 d-block mt-n2">Cucumber</strong>
+                </div>
+                <div class="ms-auto text-center align-self-center pe-2">
+                    <h5 class="line-height-xs font-18 pt-3">$4.<sup class="font-14">50</sup></h5>
+                    <span class="font-9 d-block mt-n2">Price per 12 Pcs</span>
+                </div>
+            </a>
+            <a href="#" class="d-flex py-2" data-filter-item="" data-filter-name="all salad cabbage legume europe">
+                <div>
+                    <img src="images/grocery/11s.jpg" class="rounded-sm me-3" width="50" alt="img">
+                </div>
+                <div>
+                    <span class="color-highlight font-400 d-block pt-0 text-uppercase font-10">Local Farm</span>
+                    <strong class="color-theme font-16 d-block mt-n2">Cabbage</strong>
+                </div>
+                <div class="ms-auto text-center align-self-center pe-2">
+                    <h5 class="line-height-xs font-18 pt-3">$1.<sup class="font-14">50</sup></h5>
+                    <span class="font-9 d-block mt-n2">Price per 10 Pcs</span>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="d-flex px-3 mb-n3 mt-5">
+        <div class="align-self-center">
+            <h4 class="mb-0 color-highlight text-uppercase">Recommended Categories</h4>
+        </div>
+        <div class="align-self-center ms-auto">
+            <a href="#" class="font-12 btn btn-m btn-full mb-3 rounded-sm text-uppercase font-900 color-highlight bg-theme">View All</a>
+        </div>
+    </div>
+    <div class="splide double-slider slider-no-dots text-center visible-slider splide--loop splide--ltr splide--draggable is-active" id="double-slider-1a" style="visibility: visible;">
+          <div class="splide__track" id="double-slider-1a-track">
+              <div class="splide__list" id="double-slider-1a-list" style="transform: translateX(-1540px);">
+                  <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 220px;">
+                      <a href="#" class="mx-3">
+                          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/grocery/7m.jpg&quot;); height: 150px;" data-card-height="150">
+                              <div class="card-bottom p-2 px-3">
+                                  <h4 class="color-white">Fruit</h4>
+                              </div>
+                              <div class="card-overlay bg-gradient opacity-80"></div>
+                          </div>
+                      </a>
+                  </div><div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 220px;">
+                      <a href="#" class="mx-3">
+                          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/grocery/9m.jpg&quot;); height: 150px;" data-card-height="150">
+                              <div class="card-bottom p-2 px-3">
+                                  <h4 class="color-white">Veggies</h4>
+                              </div>
+                              <div class="card-overlay bg-gradient opacity-80"></div>
+                          </div>
+                      </a>
+                  </div><div class="splide__slide splide__slide--clone" style="width: 220px;">
+                      <a href="#" class="mx-3">
+                          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/grocery/2m.jpg&quot;); height: 150px;" data-card-height="150">
+                              <div class="card-bottom p-2 px-3">
+                                  <h4 class="color-white">Grains</h4>
+                              </div>
+                              <div class="card-overlay bg-gradient opacity-80"></div>
+                          </div>
+                      </a>
+                  </div><div class="splide__slide splide__slide--clone" style="width: 220px;">
+                      <a href="#" class="mx-3">
+                          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/grocery/6m.jpg&quot;); height: 150px;" data-card-height="150">
+                              <div class="card-bottom p-2 px-3">
+                                  <h4 class="color-white">Dariy</h4>
+                              </div>
+                              <div class="card-overlay bg-gradient opacity-80"></div>
+                          </div>
+                      </a>
+                  </div><div class="splide__slide" id="double-slider-1a-slide01" aria-hidden="true" tabindex="-1" style="width: 220px;">
+                      <a href="#" class="mx-3">
+                          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/grocery/10m.jpg&quot;); height: 150px;" data-card-height="150">
+                              <div class="card-bottom p-2 px-3">
+                                  <h4 class="color-white">Specials</h4>
+                              </div>
+                              <div class="card-overlay bg-gradient opacity-80"></div>
+                          </div>
+                      </a>
+                  </div>
+                  <div class="splide__slide" id="double-slider-1a-slide02" aria-hidden="true" tabindex="-1" style="width: 220px;">
+                      <a href="#" class="mx-3">
+                          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/grocery/7m.jpg&quot;); height: 150px;" data-card-height="150">
+                              <div class="card-bottom p-2 px-3">
+                                  <h4 class="color-white">Fruit</h4>
+                              </div>
+                              <div class="card-overlay bg-gradient opacity-80"></div>
+                          </div>
+                      </a>
+                  </div>
+                  <div class="splide__slide" id="double-slider-1a-slide03" style="width: 220px;" aria-hidden="true" tabindex="-1">
+                      <a href="#" class="mx-3">
+                          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/grocery/9m.jpg&quot;); height: 150px;" data-card-height="150">
+                              <div class="card-bottom p-2 px-3">
+                                  <h4 class="color-white">Veggies</h4>
+                              </div>
+                              <div class="card-overlay bg-gradient opacity-80"></div>
+                          </div>
+                      </a>
+                  </div>
+                  <div class="splide__slide is-visible is-active" id="double-slider-1a-slide04" style="width: 220px;" aria-hidden="false" tabindex="0">
+                      <a href="#" class="mx-3">
+                          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/grocery/2m.jpg&quot;); height: 150px;" data-card-height="150">
+                              <div class="card-bottom p-2 px-3">
+                                  <h4 class="color-white">Grains</h4>
+                              </div>
+                              <div class="card-overlay bg-gradient opacity-80"></div>
+                          </div>
+                      </a>
+                  </div>
+                  <div class="splide__slide is-visible" id="double-slider-1a-slide05" style="width: 220px;" aria-hidden="false" tabindex="0">
+                      <a href="#" class="mx-3">
+                          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/grocery/6m.jpg&quot;); height: 150px;" data-card-height="150">
+                              <div class="card-bottom p-2 px-3">
+                                  <h4 class="color-white">Dariy</h4>
+                              </div>
+                              <div class="card-overlay bg-gradient opacity-80"></div>
+                          </div>
+                      </a>
+                  </div>
+              <div class="splide__slide splide__slide--clone" style="width: 220px;">
+                      <a href="#" class="mx-3">
+                          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/grocery/10m.jpg&quot;); height: 150px;" data-card-height="150">
+                              <div class="card-bottom p-2 px-3">
+                                  <h4 class="color-white">Specials</h4>
+                              </div>
+                              <div class="card-overlay bg-gradient opacity-80"></div>
+                          </div>
+                      </a>
+                  </div><div class="splide__slide splide__slide--clone" style="width: 220px;">
+                      <a href="#" class="mx-3">
+                          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/grocery/7m.jpg&quot;); height: 150px;" data-card-height="150">
+                              <div class="card-bottom p-2 px-3">
+                                  <h4 class="color-white">Fruit</h4>
+                              </div>
+                              <div class="card-overlay bg-gradient opacity-80"></div>
+                          </div>
+                      </a>
+                  </div><div class="splide__slide splide__slide--clone" style="width: 220px;">
+                      <a href="#" class="mx-3">
+                          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/grocery/9m.jpg&quot;); height: 150px;" data-card-height="150">
+                              <div class="card-bottom p-2 px-3">
+                                  <h4 class="color-white">Veggies</h4>
+                              </div>
+                              <div class="card-overlay bg-gradient opacity-80"></div>
+                          </div>
+                      </a>
+                  </div><div class="splide__slide splide__slide--clone" style="width: 220px;">
+                      <a href="#" class="mx-3">
+                          <div class="card card-style me-0 mb-0" style="background-image: url(&quot;images/grocery/2m.jpg&quot;); height: 150px;" data-card-height="150">
+                              <div class="card-bottom p-2 px-3">
+                                  <h4 class="color-white">Grains</h4>
+                              </div>
+                              <div class="card-overlay bg-gradient opacity-80"></div>
+                          </div>
+                      </a>
+                  </div></div>
+          </div>
+      <ul class="splide__pagination"><li><button class="splide__pagination__page" type="button" aria-controls="double-slider-1a-slide01 double-slider-1a-slide02" aria-label="Go to page 1"></button></li><li><button class="splide__pagination__page" type="button" aria-controls="double-slider-1a-slide03 double-slider-1a-slide04" aria-label="Go to page 2"></button></li><li><button class="splide__pagination__page is-active" type="button" aria-controls="double-slider-1a-slide04 double-slider-1a-slide05" aria-label="Go to page 3" aria-current="true"></button></li></ul>
+    </div>
+
+    <!-- #partial -->
+    <div class="d-flex px-3 mb-2">
+        <div class="align-self-center">
+            <h4 class="mb-0 color-highlight text-uppercase">Daily Discount</h4>
+            <small class="text-uppercase">Act now, This offer will refresh every 48 hours</small>
+        </div>
+    </div>
+    <div class="card card-style" style="background-image: url(&quot;images/grocery/5.jpg&quot;); height: 170px;" data-card-height="170">
+        <div class="card-top p-3">
+            <a href="#" data-menu="menu-offer" class="btn rounded-s scale-box font-700 text-uppercase float-end font-12 btn btn-m mb-3 rounded-sm text-uppercase font-900 color-highlight bg-theme">SEE CODE</a>
+        </div>
+        <div class="card-center">
+            <div class="bg-white d-inline-block px-4 py-3 ms-n3 rounded-m">
+                <h1 class="ps-2 color-highlight font-24 font-800 mb-n1">10% Off</h1>
+                <p class="ps-2 color-highlight font-12 mb-0">Paid Membership Plans</p>
+            </div>
+        </div>
+        <div class="card-overlay bg-black opacity-40"></div>
+    </div>
+  </div>
     <p>
         <% @searchCategories[0] %>
         <%= image_tag "icons8-game-50" %>

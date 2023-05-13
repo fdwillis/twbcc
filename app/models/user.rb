@@ -8,6 +8,7 @@ class User < ApplicationRecord
   include MediaEmbed::Handler
 
   ACCEPTEDcountries = {
+    #sprint2 check magic team from these countries
     'au' => {
       site: 'amazon.com.au',
       currency: 'aud',
@@ -179,25 +180,24 @@ class User < ApplicationRecord
   end
 
   def self.autoSearchCategories
+    # eps gem for text predictions #sprint2
     approvedCategories = {
       0 => {
         category: 'Amazon Games',
         description: 'amazon games',
         featured: true,
+        published: true,
         image: [
           'https://pbs.twimg.com/profile_images/1542913048926556162/ptySop9e_400x400.jpg',
           'https://pbs.twimg.com/profile_images/1542913048926556162/ptySop9e_400x400.jpg',
         ],
-        # products: [
+        # brand: [
         #   {
         #     title: ,
         #     tags: ,
-        #     country: ,
-        #     asin: ,
-        #     rating: ,
+        #     countries: magic assistant will swap ending URL to find where products are available -> checkbox field,
         #     images: [
         #     ],
-        #     brand: ,
         #   }
         # ],
 
@@ -205,6 +205,8 @@ class User < ApplicationRecord
       1 => {
         category: 'Luxury Beauty',
         description: 'Luxury Brands Like Mario Badescu, Tatcha, Pureology & More',
+        featured: true,
+        published: true,
         image: [
           'https://images.squarespace-cdn.com/content/v1/5b11542985ede1725e58d543/1645560337277-1Z86HHV2CS7WXFDMH4CF/Pureology-Smooth+Perfection-Shampoo.jpg?format=300w',
           'https://img.grouponcdn.com/stores/3ff1nFbyHFWqg981Ekfns8mLRJRf/storespi29979734-5939x3563/v1/sc600x600.jpg',
@@ -214,21 +216,19 @@ class User < ApplicationRecord
           'https://m.media-amazon.com/images/I/81EG0Mqv6mL._AC_UF1000,1000_QL80_.jpg',
           'https://m.media-amazon.com/images/I/81i7HXhZSmL._AC_UF1000,1000_QL80_.jpg',
         ],
-        # products: [
+        # brand: [
         #   {
-        #     title: ,
-        #     tags: ,
-        #     country: ,
-        #     asin: ,
-        #     rating: ,
+        #     title: Mario Badescu,
+        #     tags: ['self care', 'self love', 'facial', 'beauty', 'cosmetics'],
+        #     countries: ['us', 'es', 'de'],
         #     images: [
+                # 'asd.com/'
         #     ],
-        #     brand: ,
         #   }
         # ],
 
       },
-      # Mario Badescu
+      # 
       # Tatcha
       # Pureology
 

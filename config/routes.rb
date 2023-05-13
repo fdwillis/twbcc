@@ -35,6 +35,7 @@ Rails.application.routes.draw do
   get "/explore/", to: 'products#index'
   get "/split-session", to: 'application#split_session', as: 'split_session'
 
+  post "/search", to: 'search#index'
   post "/cancel", to: 'application#cancel', as: 'cancel'
   post "/new-password-set", to: 'registrations#new_password'
   post "/loved", to: 'application#loved'

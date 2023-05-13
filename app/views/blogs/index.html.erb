@@ -158,7 +158,7 @@
         <% end %>
         <% if params['page'].to_i < @blogs.total_pages %>
           <li class="page-item">
-              <a class="page-link rounded-xs bg-highlight color-white py-2 border-0" href="/blog?page=<%= params['page'].to_i + 1 %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>"><i class="fa fa-angle-right"></i></a>
+              <a class="page-link rounded-xs bg-highlight color-white py-2 border-0" href="/blog?page=<%= params['page'].present? ? params['page'].to_i + 1 : 2 %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>"><i class="fa fa-angle-right"></i></a>
           </li>
         <% end %>
     </ul>

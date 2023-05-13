@@ -13,6 +13,7 @@ gem 'coffee-rails'
 gem 'jquery-rails'
 gem 'jquery'
 gem 'pwa'
+# bitly predict clicks, ratios, and income #sprint2
 gem 'social-share-button'
 gem 'flag-icons-rails'
 gem "ahoy_matey"

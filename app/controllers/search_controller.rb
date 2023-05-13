@@ -1,7 +1,6 @@
 #/discover
 class SearchController < ApplicationController
 	def index
-
 		if params[:for].present?
 			#analytics
 			debugger
@@ -11,4 +10,11 @@ class SearchController < ApplicationController
 			@searchCategories = User.autoSearchCategories
 		end 
 	end
+
+
+	
+	def newSearchParams
+    paramsClean = params.require(:newSearch).permit(:for, :page)
+    return paramsClean.reject{|_, v| v.blank?}
+  end
 end
