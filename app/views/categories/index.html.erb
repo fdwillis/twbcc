@@ -12,14 +12,16 @@
       <% @categories.each do |category| %>
         <tr>
           <%= category.title %>
-          <% unless category.published %>
-            make active button
+          <td>
+            <% unless category.published %>
+              make active button
 
-            <%= form_for :activate, url: activate_path(id: category) do |f| %>
-              <%= f.submit "Activate" %>
+              <%= form_for :activate, url: activate_path(id: category) do |f| %>
+                <%= f.submit "Activate" %>
+              <% end %>
+
             <% end %>
-
-          <% end %>
+          </td>
           <td><%= link_to 'Show', category %></td>
           <td><%= link_to 'Edit', edit_category_path(category) %></td>
           <td><%= link_to 'Destroy', category, method: :delete, data: { confirm: 'Are you sure?' } %></td>

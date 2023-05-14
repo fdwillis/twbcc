@@ -3,7 +3,6 @@ class CategoriesController < ApplicationController
   before_action :checkAdmin, except: %i[show]
 
   def activate
-    debugger
     @category.update(published: true)
     flash[:success] = "Activated"
     redirect_to categories_path
@@ -16,6 +15,7 @@ class CategoriesController < ApplicationController
 
   # GET /categories/1 or /categories/1.json
   def show
+    @brands = Brand.where("categories like ?", @category.title).paginate(page: params['page'], per_page: 8)
     ahoy.track "Recommended Category Visited", category: @category.title, previousPage: request.referrer
   end
 
@@ -46,7 +46,7 @@ class CategoriesController < ApplicationController
   # PATCH/PUT /categories/1 or /categories/1.json
   def update
     respond_to do |format|
-      if @category.update(category_params)
+      if @category.update(category_params.merge(slug: category_params[:title].parameterize(separator: '-')))
         format.html { redirect_to category_url(@category), notice: "Category was successfully updated." }
         format.json { render :show, status: :ok, location: @category }
       else
