@@ -104,7 +104,7 @@ class BlogsController < ApplicationController
       params.require(:blog).permit(:title, :body, :asins, :user_id, :images, :tags, :country).reject{|_, v| v.blank?}
     end
     def checkAccess
-      unless current_user&.admin? || (current_user&.present? && current_user&.checkMembership[:membershipType] == 'business' && current_user&.checkMembership[:membershipDetails][:active] == true) || (current_user&.present? && current_user&.checkMembership[:membershipType] == 'automation'&& current_user&.checkMembership[:membershipDetails][:active] == true)
+      unless current_user&.admin? || (current_user&.present? && current_user&.checkMembership[:membershipType] == 'business' && current_user&.checkMembership[:membershipDetails][0]['status'] == 'active') || (current_user&.present? && current_user&.checkMembership[:membershipType] == 'automation'&& current_user&.checkMembership[:membershipDetails][0]['status'] == 'active')
         flash[:error] = "Business or Automation Plan Required"
         redirect_to membership_path
       end

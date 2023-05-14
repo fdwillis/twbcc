@@ -54,14 +54,14 @@
 		          <h5 class="font-600 opacity-80">Cost</h5>
 		      </div>
 		      <div class="col-5">
-		          <h5 class="font-600 opacity-80"><%= number_to_currency(currentMembersip[:membershipDetails]['amount'].to_i * 0.01, precision: 2)%></h5>
+		          <h5 class="font-600 opacity-80"><%= number_to_currency(currentMembersip[:membershipDetails][0][:items][:data][0][:price][:unit_amount].to_i * 0.01, precision: 2)%></h5>
 		      </div>
 		      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
 		      <div class="col-7">
 		          <h5 class="font-600 opacity-80">Interval</h5>
 		      </div>
 		      <div class="col-5">
-		          <h5>Every <%= currentMembersip[:membershipDetails]['interval'].titleize %></h5>
+		          <h5>Every <%= currentMembersip[:membershipDetails][0][:items][:data][0][:price][:recurring][:interval].titleize %></h5>
 		      </div>
 		      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
 		      <% if currentMembersip[:membershipType] != 'free' %>
@@ -118,7 +118,7 @@
 		                </div>
 		            </a>
 		            <div class="col-12">
-		              <a href="<%= amazon_path(id: itm) %>/?&referredBy=<%= @userFound&.uuid  %>">
+		              <a href="<%= amazon_path(id: itm, country: itm.split('-')[1],asin: itm.split('-')[0]) %>/?&referredBy=<%= @userFound&.uuid  %>">
 		                <%= button_tag( :class => "btn btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
 		                  <i class="fa fa-amazon font-20 color-white"></i>
 		                <% end %>

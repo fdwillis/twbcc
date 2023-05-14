@@ -1,10 +1,11 @@
 #/discover
 class SearchController < ApplicationController
 	def index
-		if params[:for].present?
+		if params['newSearch'].present? && newSearchParams[:for].present?
 			#analytics
-			debugger
-			ahoy.track "Search Terms", previousPage: request.referrer, query: params[:for], referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
+			ahoy.track "Search Terms", previousPage: request.referrer, query: newSearchParams[:for], referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
+			@searchResults = User.autoSearchCategories
+			@searchCategories = User.autoSearchCategories
 		else
 			@searchResults = User.autoSearchCategories
 			@searchCategories = User.autoSearchCategories
@@ -14,7 +15,7 @@ class SearchController < ApplicationController
 
 	
 	def newSearchParams
-    paramsClean = params.require(:newSearch).permit(:for, :page)
+    paramsClean = params.require(:newSearch).permit(:for, :page, :country)
     return paramsClean.reject{|_, v| v.blank?}
   end
 end

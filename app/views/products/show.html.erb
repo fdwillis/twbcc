@@ -125,7 +125,7 @@
         
         <div class="divider mt-4"></div>
         
-        <a href="<%= amazon_path(asin: @callToRain['asin'], country: @callToRain['country']) %>/?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %> " target='_blank'>
+        <a href="<%= amazon_path(asin: @callToRain['asin'], country: @callToRain['country'].downcase) %>/?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %> " target='_blank'>
           <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
             <i class="fa fa-amazon font-20 color-white"></i> Purchase On Amazon
           <% end %>

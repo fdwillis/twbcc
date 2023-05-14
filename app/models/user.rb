@@ -96,20 +96,17 @@ class User < ApplicationRecord
   BUSINESSmembership = [ENV['businessMonthly'], ENV['businessAnnual']] 
   AUTOMATIONmembership = [ENV['automationMonthly'], ENV['automationAnnual']] 
 
-  def self.renderLink(referredBy, country, asin, affiliateOrAdmin)
+  def self.renderLink(referredBy, country, asin)
     @userFound = referredBy.present? ? User.find_by(uuid: referredBy) : nil
     @profile = @userFound.present? ? Stripe::Customer.retrieve(@userFound.stripeCustomerID) : nil
     @membershipDetails = @userFound.present? ? @userFound.checkMembership : nil
 
-    affiliteLink = "https://www.#{ACCEPTEDcountries[country][:site]}/dp/product/#{asin}?&tag=#{@userFound&.amazonUUID}"
-    adminLink =  "https://www.#{ACCEPTEDcountries[country][:site]}/dp/product/#{asin}?&tag=netwerthcard-20"
-
+    affiliteLink = "https://www.#{ACCEPTEDcountries[country.downcase][:site]}/dp/product/#{asin}?&tag=#{@userFound&.amazonUUID}"
+    adminLink =  "https://www.#{ACCEPTEDcountries[country.downcase][:site]}/dp/product/#{asin}?&tag=#{ENV['usAmazonTag']}"
     #split traffic 95/5
-    if affiliateOrAdmin == false
-      @loadedLink = adminLink
-    elsif affiliateOrAdmin == true
+    if @membershipDetails.present? && @membershipDetails[:membershipDetails][0]['status'] == 'active'
       @loadedLink = affiliteLink
-    else
+    else 
       @loadedLink = adminLink
     end
 
@@ -183,8 +180,10 @@ class User < ApplicationRecord
     # eps gem for text predictions #sprint2
     approvedCategories = {
       0 => {
+        # category: 'His & Her Night Out',
         category: 'Amazon Games',
         description: 'amazon games',
+        tags: ['self care', 'self love', 'facial', 'beauty', 'cosmetics'],
         featured: true,
         published: true,
         image: [
@@ -205,6 +204,7 @@ class User < ApplicationRecord
       1 => {
         category: 'Luxury Beauty',
         description: 'Luxury Brands Like Mario Badescu, Tatcha, Pureology & More',
+        tags: ['self care', 'self love', 'facial', 'beauty', 'cosmetics'],
         featured: true,
         published: true,
         image: [
@@ -333,13 +333,12 @@ class User < ApplicationRecord
     membershipValid = []
     membershipPlans = [ENV['affiliateMonthly'], ENV['affiliateAnnual'], ENV['businessMonthly'], ENV['businessAnnual'], ENV['automationMonthly'], ENV['automationAnnual']]
     allSubscriptions = Stripe::Subscription.list({customer: stripeCustomerID})['data'].map(&:plan).map(&:id)
-    
     membershipPlans.each do |planID|
       case true
       when allSubscriptions.include?(planID)
-        membershipPlan = Stripe::Subscription.list({customer: stripeCustomerID, price: planID})
+        membershipPlan = Stripe::Subscription.list({customer: stripeCustomerID, price: planID})['data']
         membershipType = AFFILIATEmembership.include?(planID) ? 'affiliate' : BUSINESSmembership.include?(planID) ? 'business': AUTOMATIONmembership.include?(planID) ? 'automation': FREEmembership.include?(planID) ? 'free' : 'free'
-        membershipValid << {membershipDetails: membershipPlan['data'][0]['items']['data'][0]['plan']}.merge({membershipType: membershipType})
+        membershipValid << {membershipDetails: membershipPlan}.merge({membershipType: membershipType})
       end
     end
 

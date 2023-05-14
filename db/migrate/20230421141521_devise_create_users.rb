@@ -8,6 +8,7 @@ class DeviseCreateUsers < ActiveRecord::Migration[6.0]
       t.string :amazonCountry
       t.string :amazonUUID
       t.string :calendlyUUID
+      t.string :shortLink
       t.string :accessPin, default: 'free'
 
       t.boolean :twilioPhoneVerify, default: nil

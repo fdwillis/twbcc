@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_05_05_044515) do
+ActiveRecord::Schema.define(version: 2023_05_14_151010) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -70,6 +70,31 @@ ActiveRecord::Schema.define(version: 2023_05_05_044515) do
     t.string "country"
     t.index ["slug"], name: "index_blogs_on_slug", unique: true
     t.index ["user_id"], name: "index_blogs_on_user_id"
+  end
+
+  create_table "brands", force: :cascade do |t|
+    t.string "title"
+    t.string "tags"
+    t.string "countries"
+    t.string "images"
+    t.string "categories"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "slug"
+    t.index ["slug"], name: "index_brands_on_slug", unique: true
+  end
+
+  create_table "categories", force: :cascade do |t|
+    t.string "title"
+    t.string "description"
+    t.string "tags"
+    t.string "images"
+    t.boolean "featured"
+    t.boolean "published"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "slug"
+    t.index ["slug"], name: "index_categories_on_slug", unique: true
   end
 
   create_table "friendly_id_slugs", force: :cascade do |t|
