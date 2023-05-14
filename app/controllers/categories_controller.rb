@@ -1,6 +1,13 @@
 class CategoriesController < ApplicationController
-  before_action :set_category, only: %i[ show edit update destroy ]
+  before_action :set_category, only: %i[ show edit update destroy activate ]
   before_action :checkAdmin, except: %i[show]
+
+  def activate
+    debugger
+    @category.update(published: true)
+    flash[:success] = "Activated"
+    redirect_to categories_path
+  end
 
   # GET /categories or /categories.json
   def index
@@ -9,6 +16,7 @@ class CategoriesController < ApplicationController
 
   # GET /categories/1 or /categories/1.json
   def show
+    ahoy.track "Recommended Category Visited", category: @category.title, previousPage: request.referrer
   end
 
   # GET /categories/new

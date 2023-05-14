@@ -10,6 +10,8 @@ class SearchController < ApplicationController
 			@searchResults = User.autoSearchCategories
 			@searchCategories = User.autoSearchCategories
 		end 
+		@categories = Category.where(published: true).paginate(page: params['page'], per_page: 8)
+		@limitedPublished = Category.where(featured: true, published: true).limit(10)
 	end
 
 
