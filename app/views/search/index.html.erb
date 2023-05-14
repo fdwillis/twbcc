@@ -3,7 +3,7 @@
     <div class="search-box bg-theme color-theme rounded-m shadow-l mb-2">
       <i class="fa fa-search"></i>
       <%= form_for :newSearch, url: search_path do |f| %>
-        <%= f.text_field :for, class: 'border-0' %>
+        <%= f.text_field :for, class: 'border-0', value: params[:for] %>
         <div class="input-style has-borders no-icon mb-4">
             <label for="form5" class="color-highlight">Country</label>
             <%= f.select :country, [
@@ -33,88 +33,108 @@
       <!-- <a href="#" class="clear-search disabled mt-0"><i class="fa fa-times color-red-dark"></i></a> -->
     </div>
 
-    <div class="search-results disabled-search-list mt-3">
-        <div class="card card-style mx-0 px-2 p-0 mb-0">
-            <a href="#" class="d-flex py-2" data-filter-item="" data-filter-name="all coffee milk fresh dairy taste">
-                <div>
-                    <img src="images/grocery/6s.jpg" class="rounded-sm me-3" width="50" alt="img">
-                </div>
-                <div>
-                    <span class="color-highlight font-400 d-block pt-0 text-uppercase font-10">Local Farm</span>
-                    <strong class="color-theme font-16 d-block mt-n2">Fresh Milk</strong>
-                </div>
-                <div class="ms-auto text-center align-self-center pe-2">
-                    <h5 class="line-height-xs font-18 pt-3">$4.<sup class="font-14">50</sup></h5>
-                    <span class="font-9 d-block mt-n2">Price per Gallon</span>
-                </div>
-            </a>
-            <a href="#" class="d-flex py-2" data-filter-item="" data-filter-name="all fruit orange europe">
-                <div>
-                    <img src="images/grocery/7s.jpg" class="rounded-sm me-3" width="50" alt="img">
-                </div>
-                <div>
-                    <span class="color-highlight font-400 d-block pt-0 text-uppercase font-10">European Import</span>
-                    <strong class="color-theme font-16 d-block mt-n2">Oranges</strong>
-                </div>
-                <div class="ms-auto text-center align-self-center pe-2">
-                    <h5 class="line-height-xs font-18 pt-3">$6.<sup class="font-14">50</sup></h5>
-                    <span class="font-9 d-block mt-n2">Price per 12 Pcs</span>
-                </div>
-            </a>
-            <a href="#" class="d-flex py-2" data-filter-item="" data-filter-name="all fruit peach carolina usa">
-                <div>
-                    <img src="images/grocery/5s.jpg" class="rounded-sm me-3" width="50" alt="img">
-                </div>
-                <div>
-                    <span class="color-highlight font-400 d-block pt-0 text-uppercase font-10">From Carolina</span>
-                    <strong class="color-theme font-16 d-block mt-n2">Peaches</strong>
-                </div>
-                <div class="ms-auto text-center align-self-center pe-2">
-                    <h5 class="line-height-xs font-18 pt-3">$8.<sup class="font-14">50</sup></h5>
-                    <span class="font-9 d-block mt-n2">Price per 6 Pcs</span>
-                </div>
-            </a>
-            <a href="#" class="d-flex py-2" data-filter-item="" data-filter-name="all fruit tomato legume europe">
-                <div>
-                    <img src="images/grocery/12s.jpg" class="rounded-sm me-3" width="50" alt="img">
-                </div>
-                <div>
-                    <span class="color-highlight font-400 d-block pt-0 text-uppercase font-10">Asian Import</span>
-                    <strong class="color-theme font-16 d-block mt-n2">Tomatos</strong>
-                </div>
-                <div class="ms-auto text-center align-self-center pe-2">
-                    <h5 class="line-height-xs font-18 pt-3">$4.<sup class="font-14">50</sup></h5>
-                    <span class="font-9 d-block mt-n2">Price per 8 Pcs</span>
-                </div>
-            </a>
-            <a href="#" class="d-flex py-2" data-filter-item="" data-filter-name="all cucumber pickle legume europe">
-                <div>
-                    <img src="images/grocery/4s.jpg" class="rounded-sm me-3" width="50" alt="img">
-                </div>
-                <div>
-                    <span class="color-highlight font-400 d-block pt-0 text-uppercase font-10">Australian Import</span>
-                    <strong class="color-theme font-16 d-block mt-n2">Cucumber</strong>
-                </div>
-                <div class="ms-auto text-center align-self-center pe-2">
-                    <h5 class="line-height-xs font-18 pt-3">$4.<sup class="font-14">50</sup></h5>
-                    <span class="font-9 d-block mt-n2">Price per 12 Pcs</span>
-                </div>
-            </a>
-            <a href="#" class="d-flex py-2" data-filter-item="" data-filter-name="all salad cabbage legume europe">
-                <div>
-                    <img src="images/grocery/11s.jpg" class="rounded-sm me-3" width="50" alt="img">
-                </div>
-                <div>
-                    <span class="color-highlight font-400 d-block pt-0 text-uppercase font-10">Local Farm</span>
-                    <strong class="color-theme font-16 d-block mt-n2">Cabbage</strong>
-                </div>
-                <div class="ms-auto text-center align-self-center pe-2">
-                    <h5 class="line-height-xs font-18 pt-3">$1.<sup class="font-14">50</sup></h5>
-                    <span class="font-9 d-block mt-n2">Price per 10 Pcs</span>
-                </div>
-            </a>
-        </div>
-    </div>
+    
+  </div>
+  <%= render 'search/dailydiscount' %>
+  <% if @searchResults.present? %>
+    <% if @searchResults.present? %>
+      <div class="row mb-0">
+          <div class="col-6 pe-0">
+            <% if @searchResults[0].present? %>
+              <a href="/searchResults/<%= @searchResults[0].title.parameterize(separator: '-')%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="card card-style mb-2" style='background-image: url("<%=  @searchResults[0].images.split(',').shuffle.first %>");height: 135px;' data-card-height="135">
+                  <div class="card-top text-center">
+                    <% Brand.where("searchResults like ?", @searchResults[0].title).present? && Brand.where("searchResults like ?", @searchResults[0].title).map(&:tags)[0].split(',').shuffle.take(1).each do |tag| %>
+                      <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                    <% end %>
+                  </div>
+
+
+                  <div class="card-bottom p-3">
+                      <h5 class="color-white font-500 font-14 mb-n1">
+                          <%= @searchResults[0].title %>
+                      </h5>
+                  </div>
+                  <div class="card-overlay bg-black opacity-70"></div>
+              </a>
+            <% end %>
+            <% if @searchResults[1].present? %>
+              <a href="/searchResults/<%= @searchResults[1].title.parameterize(separator: '-')%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="card card-style mb-2" data-card-height="135" style='background-image: url("<%=  @searchResults[1].images.split(',').shuffle.first %>");height: 135px;'>
+                  <div class="card-top text-center">
+                    <% Brand.where("searchResults like ?", @searchResults[1].title).present? && Brand.where("searchResults like ?", @searchResults[1].title).map(&:tags)[0].split(',').shuffle.take(1).each do |tag| %>
+                      <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                    <% end %>
+                  </div>
+                  <div class="card-bottom p-3">
+                      <h5 class="color-white font-500 font-14 mb-n1"><%= @searchResults[1].title %></h5>
+                  </div>
+                  <div class="card-overlay bg-black opacity-70"></div>
+              </a>
+            <% end %>
+          </div>
+          <div class="col-6 ps-0">
+            <% if @searchResults[2].present? %>
+              <a href="/searchResults/<%= @searchResults[2].title.parameterize(separator: '-')%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="card card-style ms-0" style='background-image: url("<%=  @searchResults[2].images.split(',').shuffle.first %>")' data-card-height="280" style="height: 280px;">
+                  <div class="card-top text-center">
+                    <% Brand.where("searchResults like ?", @searchResults[2].title).present? && Brand.where("searchResults like ?", @searchResults[2].title).map(&:tags)[0].split(',').shuffle.take(1).each do |tag| %>
+                      <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                    <% end %>
+                  </div>
+                  <div class="card-bottom p-3">
+                      <h5 class="color-white font-500"><%= @searchResults[2].title %></h5>
+                  </div>
+                  <div class="card-overlay bg-black opacity-70"></div>
+              </a>
+            <% end %>
+          </div>
+      </div>
+
+      <div class="row mb-0 mt-n3">
+          <div class="col-6 pe-0">
+            <% if @searchResults[3].present? %>
+              <a href="/searchResults/<%= @searchResults[3].title.parameterize(separator: '-')%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="card card-style" style="background-image: url('<%=  @searchResults[3].images.split(',').shuffle.first %>');height: 280px;" data-card-height="280" style="">
+                  <div class="card-top text-center">
+                    <% Brand.where("searchResults like ?", @searchResults[3].title).present? && Brand.where("searchResults like ?", @searchResults[3].title).map(&:tags)[0].split(',').shuffle.take(1).each do |tag| %>
+                      <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                    <% end %>
+                  </div>
+                  <div class="card-bottom p-3">
+                      <h5 class="color-white font-500"><%= @searchResults[3].title %></h5>
+                  </div>
+                  <div class="card-overlay bg-black opacity-80"></div>
+              </a>
+            <% end %>
+          </div>
+          <div class="col-6 ps-0">
+            <% if @searchResults[4].present? %>
+              <a href="/searchResults/<%= @searchResults[4].title.parameterize(separator: '-')%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="card ms-0 card-style mb-2" data-card-height="135" style="background-image: url('<%=  @searchResults[4].images.split(',').shuffle.first %>');height: 135px;">
+                  <div class="card-top text-center">
+                      <% Brand.where("searchResults like ?", @searchResults[4].title).present? && Brand.where("searchResults like ?", @searchResults[4].title).map(&:tags)[0].split(',').shuffle.take(1).each do |tag| %>
+                        <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                      <% end %>
+                  </div>
+                  <div class="card-bottom p-3">
+                      <h5 class="color-white font-500 font-14 mb-n1"><%= @searchResults[4].title %></h5>
+                  </div>
+                  <div class="card-overlay bg-black opacity-70"></div>
+              </a>
+            <% end %>
+            <% if @searchResults[5].present? %>
+              <a href="/searchResults/<%= @searchResults[5].title.parameterize(separator: '-')%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="card ms-0 card-style mb-2" data-card-height="135" style="background-image: url('<%=  @searchResults[5].images.split(',').shuffle.first %>');height: 135px;">
+                  <div class="card-top text-center">
+                      <% Brand.where("searchResults like ?", @searchResults[5].title).present? && Brand.where("searchResults like ?", @searchResults[5].title).map(&:tags)[0].split(',').shuffle.take(1).each do |tag| %>
+                        <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                      <% end %>
+                  </div>
+                  <div class="card-bottom p-3">
+                      <h5 class="color-white font-500 font-14 mb-n1"><%= @searchResults[5].title %></h5>
+                  </div>
+                  <div class="card-overlay bg-black opacity-70"></div>
+              </a>
+            <% end %>
+          </div>
+      </div>
+    <% end %>
+  <% else %>
     <% if @limitedPublished.present? && @limitedPublished.size > 0 %>
       <div class="d-flex px-3 mb-n3 mt-5">
           <div class="align-self-center">
@@ -129,10 +149,12 @@
                           <a href="/categories/<%=cat.title.parameterize(separator: '-')%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="mx-3">
                               <div class="card card-style me-0 mb-0" style="background-image: url(<%= cat.images.split(',').sample %>); height: 150px;" data-card-height="150">
                                   <div class="card-top">
-                                    <% cat&.tags.present? && cat&.tags&.split(',').shuffle.take(1).each do |tag| %>
+
+                                    <% Brand.where("categories like ?", cat.title).present? && Brand.where("categories like ?", cat.title).map(&:tags)[0].split(',').shuffle.take(1).each do |tag| %>
                                       <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
                                     <% end %>
                                   </div>
+                                  
                                   <div class="card-bottom p-2 px-3">
                                       <h4 class="color-white"><%= cat.title %></h4>
                                   </div>
@@ -148,15 +170,13 @@
     <% end %>
     <!-- #partial -->
     
-  </div>
-    <%= render 'search/dailydiscount' %>
     <% if @categories.present? %>
       <div class="row mb-0">
           <div class="col-6 pe-0">
             <% if @categories[0].present? %>
               <a href="/categories/<%= @categories[0].title.parameterize(separator: '-')%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="card card-style mb-2" style='background-image: url("<%=  @categories[0].images.split(',').shuffle.first %>");height: 135px;' data-card-height="135">
                   <div class="card-top text-center">
-                    <% @categories[0]&.tags.present? && @categories[0]&.tags&.split(',').shuffle.take(1).each do |tag| %>
+                    <% Brand.where("categories like ?", @categories[0].title).present? && Brand.where("categories like ?", @categories[0].title).map(&:tags)[0].split(',').shuffle.take(1).each do |tag| %>
                       <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
                     <% end %>
                   </div>
@@ -173,7 +193,7 @@
             <% if @categories[1].present? %>
               <a href="/categories/<%= @categories[1].title.parameterize(separator: '-')%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="card card-style mb-2" data-card-height="135" style='background-image: url("<%=  @categories[1].images.split(',').shuffle.first %>");height: 135px;'>
                   <div class="card-top text-center">
-                    <% @categories[1]&.tags.present? && @categories[1]&.tags&.split(',').shuffle.take(1).each do |tag| %>
+                    <% Brand.where("categories like ?", @categories[1].title).present? && Brand.where("categories like ?", @categories[1].title).map(&:tags)[0].split(',').shuffle.take(1).each do |tag| %>
                       <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
                     <% end %>
                   </div>
@@ -188,7 +208,7 @@
             <% if @categories[2].present? %>
               <a href="/categories/<%= @categories[2].title.parameterize(separator: '-')%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="card card-style ms-0" style='background-image: url("<%=  @categories[2].images.split(',').shuffle.first %>")' data-card-height="280" style="height: 280px;">
                   <div class="card-top text-center">
-                    <% @categories[2]&.tags.present? && @categories[2]&.tags&.split(',').shuffle.take(1).each do |tag| %>
+                    <% Brand.where("categories like ?", @categories[2].title).present? && Brand.where("categories like ?", @categories[2].title).map(&:tags)[0].split(',').shuffle.take(1).each do |tag| %>
                       <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
                     <% end %>
                   </div>
@@ -206,7 +226,7 @@
             <% if @categories[3].present? %>
               <a href="/categories/<%= @categories[3].title.parameterize(separator: '-')%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="card card-style" style="background-image: url('<%=  @categories[3].images.split(',').shuffle.first %>');height: 280px;" data-card-height="280" style="">
                   <div class="card-top text-center">
-                    <% @categories[3]&.tags.present? && @categories[3]&.tags&.split(',').shuffle.take(1).each do |tag| %>
+                    <% Brand.where("categories like ?", @categories[3].title).present? && Brand.where("categories like ?", @categories[3].title).map(&:tags)[0].split(',').shuffle.take(1).each do |tag| %>
                       <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
                     <% end %>
                   </div>
@@ -221,7 +241,7 @@
             <% if @categories[4].present? %>
               <a href="/categories/<%= @categories[4].title.parameterize(separator: '-')%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="card ms-0 card-style mb-2" data-card-height="135" style="background-image: url('<%=  @categories[4].images.split(',').shuffle.first %>');height: 135px;">
                   <div class="card-top text-center">
-                      <% @categories[4]&.tags.present? && @categories[4]&.tags&.split(',').shuffle.take(1).each do |tag| %>
+                      <% Brand.where("categories like ?", @categories[4].title).present? && Brand.where("categories like ?", @categories[4].title).map(&:tags)[0].split(',').shuffle.take(1).each do |tag| %>
                         <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
                       <% end %>
                   </div>
@@ -234,7 +254,7 @@
             <% if @categories[5].present? %>
               <a href="/categories/<%= @categories[5].title.parameterize(separator: '-')%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="card ms-0 card-style mb-2" data-card-height="135" style="background-image: url('<%=  @categories[5].images.split(',').shuffle.first %>');height: 135px;">
                   <div class="card-top text-center">
-                      <% @categories[5]&.tags.present? && @categories[5]&.tags&.split(',').shuffle.take(1).each do |tag| %>
+                      <% Brand.where("categories like ?", @categories[5].title).present? && Brand.where("categories like ?", @categories[5].title).map(&:tags)[0].split(',').shuffle.take(1).each do |tag| %>
                         <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
                       <% end %>
                   </div>
@@ -247,4 +267,31 @@
           </div>
       </div>
     <% end %>
+  <% end %>
+
 </div>
+<br>
+
+<% if params['for'] %>
+<% else %>
+  <% if @categories.total_pages > 1 %>
+    <nav aria-label="pagination-demo">
+        <ul class="pagination justify-content-center">
+            <% if params['page'].to_i > 1 %>
+              <li class="page-item">
+                  <a class="page-link rounded-xs bg-highlight color-white py-2 border-0" href="/search?page=<%= params['page'].to_i - 1 %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" tabindex="-1" aria-disabled="true"><i class="fa fa-angle-left"></i></a>
+              </li>
+            <% end %>
+            <% @categories.total_pages.times do |pageNum|%>
+
+              <li class="page-item"><a class="page-link rounded-xs py-2 bg-highlight color-white border-0" disabled='true' href="/search?page=<%= pageNum + 1 %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>"><%= pageNum + 1 %></a></li>
+            <% end %>
+            <% if params['page'].to_i < @categories.total_pages %>
+              <li class="page-item">
+                  <a class="page-link rounded-xs bg-highlight color-white py-2 border-0" href="/search?page=<%= params['page'].present? ? params['page'].to_i + 1 : 2 %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>"><i class="fa fa-angle-right"></i></a>
+              </li>
+            <% end %>
+        </ul>
+    </nav>
+  <% end %>
+<% end %>

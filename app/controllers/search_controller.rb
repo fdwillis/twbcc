@@ -4,14 +4,12 @@ class SearchController < ApplicationController
 		if params['newSearch'].present? && newSearchParams[:for].present?
 			#analytics
 			ahoy.track "Search Terms", previousPage: request.referrer, query: newSearchParams[:for], referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
-			@searchResults = User.autoSearchCategories
-			@searchCategories = User.autoSearchCategories
+
+			@searchResults = 9
 		else
-			@searchResults = User.autoSearchCategories
-			@searchCategories = User.autoSearchCategories
+			@limitedPublished = Category.where(featured: true, published: true).limit(10)
+			@categories = (Category.where(published: true) - @limitedPublished).paginate(page: params['page'], per_page: 8)
 		end 
-		@categories = Category.where(published: true).paginate(page: params['page'], per_page: 8)
-		@limitedPublished = Category.where(featured: true, published: true).limit(10)
 	end
 
 

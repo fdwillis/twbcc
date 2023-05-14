@@ -117,10 +117,10 @@ class User < ApplicationRecord
     embed(@url, options)
   end
 
-  def self.rainforestProduct(asin = nil, country, created_at)
+  def self.rainforestProduct(asin = nil,search_alias = nil, country, created_at )
     @validResponse = []
     if asin.present?
-      res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=product&amazon_domain=#{ACCEPTEDcountries[country][:site]}&asin=#{asin}")
+      res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=product&amazon_domain=#{ACCEPTEDcountries[country][:site]}&asin=#{asin}&search_alias=#{search_alias}")
       loadedData = Oj.load(res.body)['product']
       @validResponse << {product: asin, data: loadedData}
     else
@@ -129,7 +129,7 @@ class User < ApplicationRecord
         categoriesLoaded = rainforestSearch(product, country)
         categoriesLoaded[(rand(0..(categoriesLoaded.count-1)))][:data][0..14]
         asin = categoriesLoaded[(rand(0..(categoriesLoaded.count-1)))][:data][0..14][0]['asin']
-        res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=product&amazon_domain=#{ACCEPTEDcountries[country][:site]}&asin=#{asin}")
+        res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=product&amazon_domain=#{ACCEPTEDcountries[country][:site]}&asin=#{asin}&search_alias=#{search_alias}")
         loadedData = Oj.load(res.body)['product']
 
         @validResponse << {product: product, data: loadedData}

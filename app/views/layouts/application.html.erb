@@ -30,10 +30,10 @@
       </div>
 
       <div id="footer-bar" class="footer-bar-1" data-no-turbolink>
-        <% if request.fullpath.include?('/explore')|| request.fullpath.include?('/product') || request.fullpath == "/?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" %>
-          <a href="/explore?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" class="active-nav" data-no-turbolink><i class="font-25 fa fa-globe"></i><span>Explore</span></a>
+        <% if request.fullpath.include?('/how-it-works')|| request.fullpath.include?('/product') || request.fullpath == "/?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" %>
+          <a href="/how-it-works?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" class="active-nav" data-no-turbolink><i class="font-25 fa fa-question"></i><span>How It Works</span></a>
         <% else %>
-          <a href="/explore?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" data-no-turbolink><i class="opacity-40 font-25 fa fa-globe"></i><span class="opacity-40">Explore</span></a>
+          <a href="/how-it-works?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" data-no-turbolink><i class="opacity-40 font-25 fa fa-question"></i><span class="opacity-40">How It Works</span></a>
         <% end %>
 
         <% if request.fullpath.include?('/search') || request.fullpath.include?('/brand') || request.fullpath.include?('/categories') %>
@@ -43,9 +43,9 @@
         <% end %>
 
         <% if request.fullpath.include?('/blog') %>
-          <a href="/blog?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" class="active-nav" data-no-turbolink><i class="font-25 fa fa-forumbee"></i><span>The Hive</span></a>
+          <a href="/blog?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" class="active-nav" data-no-turbolink><i class="font-25 fa fa-comments"></i><span>The Hive</span></a>
         <% else %>
-          <a href="/blog?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" data-no-turbolink><i class="opacity-40 font-25 fa fa-forumbee"></i><span class="opacity-40">The Hive</span></a>
+          <a href="/blog?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" data-no-turbolink><i class="opacity-40 font-25 fa fa-comments"></i><span class="opacity-40">The Hive</span></a>
         <% end %>
       </div>
 

@@ -30,7 +30,7 @@ class CategoriesController < ApplicationController
 
   # POST /categories or /categories.json
   def create
-    @category = Category.new(category_params)
+    @category = Category.new(category_params.merge(slug: category_params[:title].parameterize(separator: '-')))
 
     respond_to do |format|
       if @category.save
@@ -69,6 +69,7 @@ class CategoriesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
   def set_category
+    debugger
     @category = Category.friendly.find(params[:id])
   end
 
@@ -78,7 +79,7 @@ class CategoriesController < ApplicationController
   end
 
   def checkAdmin
-    unless current_user&.admin?
+    unless current_user&.admin? || current_user&.trustee?
       flash[:error] = "Admin Only"
       ahoy.track "Admin Restricted", previousPage: request.referrer
       redirect_to root_path

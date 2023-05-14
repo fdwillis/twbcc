@@ -3,6 +3,10 @@ class ProductsController < ApplicationController
   before_action :set_product, only: %i[ show edit update destroy ]
   before_action :checkAdmin, only: %i[ new ]
 
+  def brand
+    #rainforest search by brand using the country from the url -> display here with pagination and friendly brand ID
+  end
+
   # GET /products or /products.json
   def index
     @products = Product.all
@@ -17,10 +21,10 @@ class ProductsController < ApplicationController
     @products = Product.all.where(country: params['country']).paginate(page: params['page'], per_page: 8)
     @callToRain = []
 
-    @products.each do |prod|
-      callToRain = User.rainforestProduct(prod&.asin, prod&.country, prod&.created_at)
-      @callToRain << callToRain
-    end
+    # @products.each do |prod|
+    #   callToRain = User.rainforestProduct(prod&.asin, prod&.country, prod&.created_at)
+    #   @callToRain << callToRain
+    # end
 
     ahoy.track "Product Page Results", previousPage: request.referrer, currentPage: params['page']
   end
@@ -106,7 +110,7 @@ class ProductsController < ApplicationController
     end
 
     def checkAdmin
-      unless current_user&.admin?
+      unless current_user&.admin? || current_user&.trustee?
         flash[:error] = "No Access"
         redirect_to root_path
       end

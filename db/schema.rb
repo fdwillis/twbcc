@@ -78,6 +78,7 @@ ActiveRecord::Schema.define(version: 2023_05_14_151010) do
     t.string "countries"
     t.string "images"
     t.string "categories"
+    t.string "amazonCategory"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "slug"

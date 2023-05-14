@@ -68,11 +68,11 @@ class BrandsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def brand_params
-    params.require(:brand).permit(:title, :tags, :countries, :images, :categories).reject{|_, v| v.blank?}
+    params.require(:brand).permit(:amazonCategory, :title, :tags, :countries, :images, :categories).reject{|_, v| v.blank?}
   end
 
   def checkAdmin
-    unless current_user&.admin?
+    unless current_user&.admin? || current_user&.trustee?
       flash[:error] = "Admin Only"
       ahoy.track "Admin Restricted", previousPage: request.referrer
       redirect_to root_path

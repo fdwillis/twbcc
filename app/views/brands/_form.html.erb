@@ -19,6 +19,28 @@
     <%= form.label :tags %>
     <%= form.text_field :tags, required: true %>
   </div>
+  <div class="field">
+    <%= form.label :amazonCategory %>
+    <%= form.select :amazonCategory, [
+      ['Australia', 'au'],
+      ['Belgium', 'be'],
+      ['Brazil', 'br'],
+      ['Canada', 'ca'],
+      ['France', 'fr'],
+      ['Germany', 'de'],
+      ['Italy', 'it'],
+      ['Japan', 'jp'],
+      ['Mexico', 'mx'],
+      ['Netherlands', 'nl'],
+      ['Poland', 'pl'],
+      ['Singapore', 'sg'],
+      ['Spain', 'es'],
+      ['Sweden', 'se'],
+      ['United Arab Emirates', 'ae'],
+      ['United Kingdom', 'gb'],
+      ['United States', 'us']
+    ], required: true, class: 'lp-pom-form-field', style: 'background-color: #1b6a62;' %>
+  </div>
 
   <div class="field">
     <%= form.label :images %>

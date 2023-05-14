@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::Base
-	before_action :authenticate_user!, only: [:loved, :discounts] 
+	before_action :authenticate_user!, only: [:loved] 
 	def update_discount
 		begin
 			membershipDetails = current_user&.checkMembership
@@ -27,9 +27,9 @@ class ApplicationController < ActionController::Base
 
 	def discounts #sprint2
 		if session['coupon'].nil?
-			@discountsFor = current_user&.checkMembership
+			@discountsFor = current_user.present? ? current_user&.checkMembership : nil
 			@discountList = Stripe::Coupon.list({limit: 100})['data']
-			if @discountsFor[:membershipType] == 'free'
+			if @discountsFor.nil? || @discountsFor[:membershipType] == 'free'
 				@newList = @discountList.reject{|c| c['percent_off'] > 10}.sample['id']
 			elsif @discountsFor[:membershipType] == 'affiliate'
 				@newList = @discountList.reject{|c| c['percent_off'] > 20 || c['percent_off'] < 10}.sample['id']
@@ -50,20 +50,16 @@ class ApplicationController < ActionController::Base
 		# setcoupon code in header
 		if session['coupon'].nil?
 			codes = Stripe::Coupon.list({limit: 100})['data']
-			session['coupon'] = codes.reject{|c| c['percent_off'] > 10}.sample['id']
+			session['coupon'] = codes.reject{|c| c['percent_off'] > 10 || c['valid'] == false}.sample['id']
+			flash[:success] = "Coupon Applied"
 			ahoy.track "Coupon Clicked", previousPage: request.referrer, coupon: session['coupon']
 		end
-		redirect_to root_path
+		redirect_to request.referrer
 	end
 
 	def split_session
 		ahoy.track "Split Session", uuid: @userFound.uuid, previousPage: request.referrer
 		redirect_to "#{request.fullpath.split("?")[0]}?&referredBy=#{params[:splitSession]}"
-	end
-
-	def home
-		@products = User.rainforestProduct
-		@categories = User.rainforestSearch
 	end
 
 	def cancel
@@ -408,6 +404,7 @@ class ApplicationController < ActionController::Base
 	    }) 
 			# custom -> build on page, 
 		end
+		ahoy.track "Membership Visited", previousPage: request.referrer
 	end
 
 
@@ -529,6 +526,8 @@ class ApplicationController < ActionController::Base
 			{'Oarlin - Join The Hive' => 20},
 			{'Supercharged Automation For Affiliates' => 20},
 		)
+
+		ahoy.track "How It Works Visited", previousPage: request.referrer, title: @headlines
 		# ab_finished(:howItWorksHeadline, reset: true)
 	end
 end

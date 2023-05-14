@@ -6,6 +6,7 @@ class CreateBrands < ActiveRecord::Migration[6.0]
       t.string :countries
       t.string :images
       t.string :categories
+      t.string :amazonCategory
 
       t.timestamps
     end
