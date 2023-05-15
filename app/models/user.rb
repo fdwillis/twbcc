@@ -117,7 +117,7 @@ class User < ApplicationRecord
     embed(@url, options)
   end
 
-  def self.rainforestProduct(asin = nil,search_alias = nil, country, created_at )
+  def self.rainforestProduct(asin = nil,search_alias = nil, country = 'us' )
     @validResponse = []
     if asin.present?
       res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=product&amazon_domain=#{ACCEPTEDcountries[country][:site]}&asin=#{asin}&search_alias=#{search_alias}")
@@ -153,7 +153,6 @@ class User < ApplicationRecord
       'reviews' => response['top_reviews'].shuffle,
       'brand' => response['brand'], 
       'images' => response['variants'].map{|d| d['main_image']}.join(","),
-      'created_at' => created_at
     }
   end
 
@@ -342,7 +341,7 @@ class User < ApplicationRecord
       end
     end
 
-    membershipValid.present? ? membershipValid[0] : {membershipDetails: {active: true, 'interval' => 'N/A'},membershipType: 'free'}
+    membershipValid.present? ? membershipValid[0] : {membershipDetails: {0=>{'status' => 'active', 'interval' => 'N/A'}},membershipType: 'free'}
   end
 
   def customer?

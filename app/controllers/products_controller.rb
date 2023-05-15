@@ -21,11 +21,6 @@ class ProductsController < ApplicationController
     @products = Product.all.where(country: params['country']).paginate(page: params['page'], per_page: 8)
     @callToRain = []
 
-    # @products.each do |prod|
-    #   callToRain = User.rainforestProduct(prod&.asin, prod&.country, prod&.created_at)
-    #   @callToRain << callToRain
-    # end
-
     ahoy.track "Product Page Results", previousPage: request.referrer, currentPage: params['page']
   end
 
@@ -38,9 +33,10 @@ class ProductsController < ApplicationController
   # GET /products/1 or /products/1.json
   def show
 
-    @posts = Blog.where("asins like ?", "%#{params['id'].upcase}%")
+    @posts = Blog.where("asins like ?", "%#{params['asin'].upcase}%")
     @profileMetadata = current_user.present? ? Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata'] : []
-    @callToRain = User.rainforestProduct(@product&.asin, @product&.country, @product&.created_at)
+    @callToRain = User.rainforestProduct(@product&.asin, 'us') #.rainforestProduct(asin = nil,search_alias = nil, country = 'us' )
+
 
    if params['recommended'].present?
       #analytics

@@ -21,6 +21,10 @@
               <h6 class="font-14 font-700">Monthly<span class="float-end color-highlight-dark"><%= number_to_currency((@combinedCommissions/12) * 0.01, precision: 2) %></span></h6>
               <div class="divider mb-2 mt-1"></div>
               <h6 class="font-14 font-700">Last Deposit<span class="float-end color-highlight-dark"><%= @payouts.present? ? Time.at( @payouts.first['arrival_date']).to_date.strftime("%B #{Time.at( @payouts.first['arrival_date']).to_date.day}") : Time.at(Time.now).to_date.strftime("%B #{Time.at(Time.now).to_date.day}") %></span></h6>
+              <% if @accountItemsDue.count > 0 && current_user.present? %>
+                <div class="divider mb-2 mt-1"></div>
+                <h6 class="font-14 font-700 color-red-dark">Commissions Not Being Paid<span class="float-end color-red-dark"><u><em><%= link_to "Complete Your Account", profile_path, class: 'color-red-dark'  %></em></u></span></h6>
+              <% end %>
           </div>
       </div>      
       <div class="divider mt-2 mb-3"></div>

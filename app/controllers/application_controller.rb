@@ -4,57 +4,71 @@ class ApplicationController < ActionController::Base
 		begin
 			membershipDetails = current_user&.checkMembership
 			if membershipDetails[:membershipDetails][0]['status'] == 'active'
-				subscription = Stripe::Subscription.list({customer: current_user&.stripeCustomerID ,price: membershipDetails[:membershipDetails][0][:id]}).first
-				Stripe::Subscription.update(
-				  subscription['id'],
-				  {coupon: session['coupon']},
-				)
-				flash[:success] = "Coupon Applied"
-		    redirect_to discounts_path
+				subscriptions = Stripe::Subscription.list({limit: 100, customer: current_user&.stripeCustomerID})
+				subscriptions.each do |subs|
+					Stripe::Subscription.update(
+					  subs['id'],
+					  {coupon: session['coupon']},
+					)
+				end
+				flash[:success] = "Coupon Claimed"
+		    redirect_to profile_path
 			else
 				flash[:error] = "Please Update Your Membership Before Using This Feature"
 		    redirect_to membership_path
 			end
 		rescue Stripe::StripeError => e
-      flash[:error] = "Something is wrong. \n #{e}"
+      flash[:error] = "#{e.error.message}"
       redirect_to request.referrer
     rescue Exception => e
-      flash[:error] = "Something is wrong. \n #{e}"
+      flash[:error] = "#{e}"
       redirect_to request.referrer
     end
-
 	end
 
 	def discounts #sprint2
-		if session['coupon'].nil?
+		if session['coupon'].nil? 
 			@discountsFor = current_user.present? ? current_user&.checkMembership : nil
-			@discountList = Stripe::Coupon.list({limit: 100})['data']
+			@discountList = Stripe::Coupon.list({limit: 100})['data'].reject{|c| c['valid'] == false}
 			if @discountsFor.nil? || @discountsFor[:membershipType] == 'free'
-				@newList = @discountList.reject{|c| c['percent_off'] > 10}.sample['id']
+				@newList = @discountList.reject{|c| c['percent_off'] > 10}.reject{|c| c['percent_off'] > 90}.size > 0 ? @discountList.reject{|c| c['percent_off'] > 10}.reject{|c| c['percent_off'] > 90}.sample['id'] : 0
 			elsif @discountsFor[:membershipType] == 'affiliate'
-				@newList = @discountList.reject{|c| c['percent_off'] > 20 || c['percent_off'] < 10}.sample['id']
+				@newList = @discountList.reject{|c| c['percent_off'] > 20 || c['percent_off'] < 10}.reject{|c| c['percent_off'] > 90}.size > 0 ? @discountList.reject{|c| c['percent_off'] > 20 || c['percent_off'] < 10}.reject{|c| c['percent_off'] > 90}.sample['id'] : 0
 			elsif @discountsFor[:membershipType] == 'business'
-				@newList = @discountList.reject{|c| c['percent_off'] > 30 || c['percent_off'] < 20}.sample['id']
+				@newList = @discountList.reject{|c| c['percent_off'] > 30 || c['percent_off'] < 20}.reject{|c| c['percent_off'] > 90}.size > 0 ? @discountList.reject{|c| c['percent_off'] > 30 || c['percent_off'] < 20}.reject{|c| c['percent_off'] > 90}.sample['id'] : 0
 			elsif @discountsFor[:membershipType] == 'automation'
-				@newList = @discountList.reject{|c| c['percent_off'] > 40 || c['percent_off'] < 30}.sample['id']
+				@newList = @discountList.reject{|c| c['percent_off'] > 40 || c['percent_off'] < 30}.reject{|c| c['percent_off'] > 90}.size > 0 ? @discountList.reject{|c| c['percent_off'] > 40 || c['percent_off'] < 30}.reject{|c| c['percent_off'] > 90}.sample['id'] : 0
 			elsif @discountsFor[:membershipType] == 'custom'
-				@newList = @discountList.reject{|c| c['percent_off'] > 50 || c['percent_off'] < 40}.sample['id']
+				@newList = @discountList.reject{|c| c['percent_off'] > 50 || c['percent_off'] < 40}.reject{|c| c['percent_off'] > 90}.size > 0 ? @discountList.reject{|c| c['percent_off'] > 50 || c['percent_off'] < 40}.reject{|c| c['percent_off'] > 90}.sample['id'] : 0
 			end
+
 			session['coupon'] = @newList 
 		else
-			@newList = session['coupon']
+			if Stripe::Coupon.list({limit: 100}).map(&:id).include?(session['coupon']) == true
+				@newList = session['coupon']
+			else
+				session['coupon'] = nil
+				@newList = session['coupon']
+			end
 		end
 	end
 
 	def display_discount
 		# setcoupon code in header
 		if session['coupon'].nil?
-			codes = Stripe::Coupon.list({limit: 100})['data']
-			session['coupon'] = codes.reject{|c| c['percent_off'] > 10 || c['valid'] == false}.sample['id']
-			flash[:success] = "Coupon Applied"
-			ahoy.track "Coupon Clicked", previousPage: request.referrer, coupon: session['coupon']
+			codes = Stripe::Coupon.list({limit: 100})['data'].reject{|c| c['percent_off'] > 10 || c['valid'] == false}.reject{|c| c['percent_off'] > 90}
+			if codes.size > 0
+				session['coupon'] = codes.sample['id']
+				flash[:success] = "Coupon Assigned"
+				ahoy.track "Coupon Clicked", previousPage: request.referrer, coupon: session['coupon']
+				redirect_to request.referrer
+				return
+			else
+				flash[:notice] = "Waiting For New Coupons"
+				redirect_to discounts_path
+				return
+			end
 		end
-		redirect_to request.referrer
 	end
 
 	def split_session
@@ -81,11 +95,13 @@ class ApplicationController < ActionController::Base
 
 	def commissions
 		begin
-				@pulledAffiliate = Stripe::Customer.retrieve(User.find_by(uuid: params[:id])&.stripeCustomerID)
+				affiliateFromId = User.find_by(uuid: params[:id])
+				@pulledAffiliate = Stripe::Customer.retrieve(affiliateFromId&.stripeCustomerID)
 				@pulledCommissions = Stripe::Customer.list(limit: 100)
 				@accountsFromAffiliate = @pulledCommissions['data'].reject{|e| e['metadata']['referredBy'] != params[:id]}
 				@activeSubs = []
 				@inactiveSubs = []
+				@accountItemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(affiliateFromId&.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due']
 				@accountsFromAffiliate.each do |cusID|
 			  	listofSubscriptionsFromCusID = Stripe::Subscription.list(limit: 100, customer: cusID)['data']
 			    if listofSubscriptionsFromCusID.size > 0 
@@ -119,10 +135,10 @@ class ApplicationController < ActionController::Base
 
 				@payouts = Stripe::Payout.list({limit: 3},{stripe_account: @pulledAffiliate['metadata']['connectAccount']})['data']
 		rescue Stripe::StripeError => e
-      flash[:error] = "Something is wrong. \n #{e}"
+      flash[:error] = "#{e.error.message}"
       redirect_to request.referrer
     rescue Exception => e
-      flash[:error] = "Something is wrong. \n #{e}"
+      flash[:error] = "#{e}"
       redirect_to request.referrer
     end
 	end
@@ -151,6 +167,8 @@ class ApplicationController < ActionController::Base
 	end
 
 	def membership
+		@codes = Stripe::Coupon.list({limit: 100}).reject{|c| c['valid'] == false}
+
 		customFields = [{
 			key: 'type',
 			label: {custom: 'Account Type', type: 'custom'},
@@ -292,117 +310,124 @@ class ApplicationController < ActionController::Base
 	    }) 
 			# custom -> build on page, 
 		else
-			# free -> build on page, 
-			# affiliate, 
-			@freeMembership = Stripe::Checkout::Session.create({
-	      success_url: successURL,
-	      custom_fields: customFields,
-	      phone_number_collection: {
-		      enabled: true
-		    },
-			  discounts: [
-			  	coupon: session['coupon']
-			  ],
-	      shipping_address_collection: {allowed_countries: allowedCountries},
-	      line_items: [
-	        {price: ENV['freeMembership'], quantity: 1},
-	      ],
-	      mode: 'subscription',
-	    })
+			if @codes.map(&:id).include?(session['coupon']) == true && Stripe::Coupon.retrieve(session['coupon']).valid == true
+				# free -> build on page, 
+				# affiliate, 
+				@freeMembership = Stripe::Checkout::Session.create({
+		      success_url: successURL,
+		      custom_fields: customFields,
+		      phone_number_collection: {
+			      enabled: true
+			    },
+				  discounts: [
+				  	coupon: session['coupon']
+				  ],
+		      shipping_address_collection: {allowed_countries: allowedCountries},
+		      line_items: [
+		        {price: ENV['freeMembership'], quantity: 1},
+		      ],
+		      mode: 'subscription',
+		    })
 
-	    @affiliateMonthly = Stripe::Checkout::Session.create({
-	      success_url: successURL,
-	      custom_fields: customFields,
-	      phone_number_collection: {
-		      enabled: true
-		    },
-			  discounts: [
-			  	coupon: session['coupon']
-			  ],
-	      shipping_address_collection: {allowed_countries: allowedCountries},
-	      line_items: [
-	        {price: ENV['affiliateMonthly'], quantity: 1},
-	      ],
-	      mode: 'subscription',
-	    })
-	    @affiliateAnnual = Stripe::Checkout::Session.create({
-	      success_url: successURL,
-	      custom_fields: customFields,
-	      phone_number_collection: {
-		      enabled: true
-		    },
-			  discounts: [
-			  	coupon: session['coupon']
-			  ],
-	      shipping_address_collection: {allowed_countries: allowedCountries},
-	      line_items: [
-	        {price: ENV['affiliateAnnual'], quantity: 1},
-	      ],
-	      mode: 'subscription',
-	    })
-			# business,
-			@businessMonthly = Stripe::Checkout::Session.create({
-	      success_url: successURL,
-	      custom_fields: customFields,
-	      phone_number_collection: {
-		      enabled: true
-		    },
-			  discounts: [
-			  	coupon: session['coupon']
-			  ],
-	      shipping_address_collection: {allowed_countries: allowedCountries},
-	      line_items: [
-	        {price: ENV['businessMonthly'], quantity: 1},
-	      ],
-	      mode: 'subscription',
-	    })
-	    @businessAnnual = Stripe::Checkout::Session.create({
-	      success_url: successURL,
-	      custom_fields: customFields,
-	      phone_number_collection: {
-		      enabled: true
-		    },
-			  discounts: [
-			  	coupon: session['coupon']
-			  ],
-	      shipping_address_collection: {allowed_countries: allowedCountries},
-	      line_items: [
-	        {price: ENV['businessAnnual'], quantity: 1},
-	      ],
-	      mode: 'subscription',
-	    }) 
+		    @affiliateMonthly = Stripe::Checkout::Session.create({
+		      success_url: successURL,
+		      custom_fields: customFields,
+		      phone_number_collection: {
+			      enabled: true
+			    },
+				  discounts: [
+				  	coupon: session['coupon']
+				  ],
+		      shipping_address_collection: {allowed_countries: allowedCountries},
+		      line_items: [
+		        {price: ENV['affiliateMonthly'], quantity: 1},
+		      ],
+		      mode: 'subscription',
+		    })
+		    @affiliateAnnual = Stripe::Checkout::Session.create({
+		      success_url: successURL,
+		      custom_fields: customFields,
+		      phone_number_collection: {
+			      enabled: true
+			    },
+				  discounts: [
+				  	coupon: session['coupon']
+				  ],
+		      shipping_address_collection: {allowed_countries: allowedCountries},
+		      line_items: [
+		        {price: ENV['affiliateAnnual'], quantity: 1},
+		      ],
+		      mode: 'subscription',
+		    })
+				# business,
+				@businessMonthly = Stripe::Checkout::Session.create({
+		      success_url: successURL,
+		      custom_fields: customFields,
+		      phone_number_collection: {
+			      enabled: true
+			    },
+				  discounts: [
+				  	coupon: session['coupon']
+				  ],
+		      shipping_address_collection: {allowed_countries: allowedCountries},
+		      line_items: [
+		        {price: ENV['businessMonthly'], quantity: 1},
+		      ],
+		      mode: 'subscription',
+		    })
+		    @businessAnnual = Stripe::Checkout::Session.create({
+		      success_url: successURL,
+		      custom_fields: customFields,
+		      phone_number_collection: {
+			      enabled: true
+			    },
+				  discounts: [
+				  	coupon: session['coupon']
+				  ],
+		      shipping_address_collection: {allowed_countries: allowedCountries},
+		      line_items: [
+		        {price: ENV['businessAnnual'], quantity: 1},
+		      ],
+		      mode: 'subscription',
+		    }) 
 
-	    @automationMonthly = Stripe::Checkout::Session.create({
-	      success_url: successURL,
-	      custom_fields: customFields,
-	      phone_number_collection: {
-		      enabled: true
-		    },
-			  discounts: [
-			  	coupon: session['coupon']
-			  ],
-	      shipping_address_collection: {allowed_countries: allowedCountries},
-	      line_items: [
-	        {price: ENV['automationMonthly'], quantity: 1},
-	      ],
-	      mode: 'subscription',
-	    }) 
-	    @automationAnnual = Stripe::Checkout::Session.create({
-	      success_url: successURL,
-	      custom_fields: customFields,
-	      phone_number_collection: {
-		      enabled: true
-		    },
-			  discounts: [
-			  	coupon: session['coupon']
-			  ],
-	      shipping_address_collection: {allowed_countries: allowedCountries},
-	      line_items: [
-	        {price: ENV['automationAnnual'], quantity: 1},
-	      ],
-	      mode: 'subscription',
-	    }) 
-			# custom -> build on page, 
+		    @automationMonthly = Stripe::Checkout::Session.create({
+		      success_url: successURL,
+		      custom_fields: customFields,
+		      phone_number_collection: {
+			      enabled: true
+			    },
+				  discounts: [
+				  	coupon: session['coupon']
+				  ],
+		      shipping_address_collection: {allowed_countries: allowedCountries},
+		      line_items: [
+		        {price: ENV['automationMonthly'], quantity: 1},
+		      ],
+		      mode: 'subscription',
+		    }) 
+		    @automationAnnual = Stripe::Checkout::Session.create({
+		      success_url: successURL,
+		      custom_fields: customFields,
+		      phone_number_collection: {
+			      enabled: true
+			    },
+				  discounts: [
+				  	coupon: session['coupon']
+				  ],
+		      shipping_address_collection: {allowed_countries: allowedCountries},
+		      line_items: [
+		        {price: ENV['automationAnnual'], quantity: 1},
+		      ],
+		      mode: 'subscription',
+		    }) 
+				# custom -> build on page, 
+			else
+				session['coupon'] = nil
+				flash[:notice] = "Coupon Expired"
+				redirect_to request.referrer
+				return
+			end
 		end
 		ahoy.track "Membership Visited", previousPage: request.referrer
 	end
@@ -441,7 +466,7 @@ class ApplicationController < ActionController::Base
 			#analytics
 			ahoy.track "Profile Visit", uuid: @userFound.uuid, previousPage: request.referrer
 		end
-
+		
 		if @membershipDetails.present? && @membershipDetails[:membershipDetails][0]['status']	== 'active'
 		  #custom profile if active
 		  if @membershipDetails[:membershipType] == 'automation' && !current_user

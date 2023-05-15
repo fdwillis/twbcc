@@ -40,7 +40,7 @@ class BrandsController < ApplicationController
   # PATCH/PUT /brands/1 or /brands/1.json
   def update
     respond_to do |format|
-      if @brand.update(slug: brand_params[:title].parameterize(separator: '-'), title: brand_params[:title], tags: brand_params[:tags], images: brand_params[:images], countries: params['brand']['countries'].join(','), categories: params['brand']['categories'].join(','))
+      if @brand.update(amazonCategory: brand_params[:amazonCategory], slug: brand_params[:title].parameterize(separator: '-'), title: brand_params[:title], tags: brand_params[:tags], images: brand_params[:images], countries: params['brand']['countries'].join(','), categories: params['brand']['categories'].join(','))
         format.html { redirect_to brand_url(@brand), notice: "Brand was successfully updated." }
         format.json { render :show, status: :ok, location: @brand }
       else

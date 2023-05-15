@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   end
 
   unauthenticated :user do
-    root 'products#index'
+    root 'search#index'
   end
 
   %w( 404 422 500 503 ).each do |code|
@@ -32,6 +32,7 @@ Rails.application.routes.draw do
   get "/checkout/:price/:account", to: 'application#checkout'
   get "/explore/:country", to: 'products#explore'
   get "/explore/:country/:brand", to: 'products#brand'
+  get "/product/:asin", to: 'products#show'
   get "/explore/", to: 'products#index'
   get "/split-session", to: 'application#split_session', as: 'split_session'
   get "/display-discount", to: 'application#display_discount', as: 'display_discount'

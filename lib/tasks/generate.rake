@@ -28,8 +28,10 @@ namespace :generate do
     freePercentages.each do |num|
       coupon = Stripe::Coupon.create({
         percent_off: num,
-        duration: 'once',
-        max_redemptions: 50,
+        duration: 'repeating',
+        duration_in_months: 2,
+        max_redemptions: 1,
+        # max_redemptions: 50,
         redeem_by: (Date.today + 2.days).to_time.to_i
       })
     end
@@ -42,7 +44,8 @@ namespace :generate do
         percent_off: num,
         duration: 'repeating',
         duration_in_months: 3,
-        max_redemptions: 250,
+        max_redemptions: 1,
+        # max_redemptions: 250,
         redeem_by: (Date.today + 2.days).to_time.to_i
       })
     end
@@ -56,7 +59,8 @@ namespace :generate do
         percent_off: num,
         duration: 'repeating',
         duration_in_months: 6,
-        max_redemptions: 500,
+        max_redemptions: 1,
+        # max_redemptions: 500,
         redeem_by: (Date.today + 2.days).to_time.to_i
       })
     end
@@ -68,7 +72,8 @@ namespace :generate do
         percent_off: num,
         duration: 'repeating',
         duration_in_months: 9,
-        max_redemptions: 1000,
+        max_redemptions: 1,
+        # max_redemptions: 1000,
         redeem_by: (Date.today + 2.days).to_time.to_i
       })
     end
@@ -79,10 +84,24 @@ namespace :generate do
         percent_off: num,
         duration: 'repeating',
         duration_in_months: 12,
-        max_redemptions: 2500,
+        max_redemptions: 1,
+        # max_redemptions: 2500,
         redeem_by: (Date.today + 2.days).to_time.to_i
       })
     end
+
+    #sprint2 one winner every 3 months, must participate in lotery up to date for eligibility
+    # lifeTimePercentages = []
+    # lifeTimePercentages.each do |num|
+    #   Stripe::Coupon.create({
+    #     percent_off: num,
+    #     duration: 'repeating',
+    #     duration_in_months: 12,
+    #     max_redemptions: 1,
+    #     # max_redemptions: 2500,
+    #     redeem_by: (Date.today + 2.days).to_time.to_i
+    #   })
+    # end
   end
 
   # task lifetime: :environment do

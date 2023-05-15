@@ -18,26 +18,35 @@
 			</div>
 			<div class="card-bottom m-3">
 		    <h5 class="color-white float-start">Seller Progress</h5>
-			<% if @accountItemsDue.size > 0 %>
-				<h5 class="color-white float-end">65% Complete</h5>
+				<% if @accountItemsDue.size > 0 %>
+					<h5 class="color-white float-end">65% Complete</h5>
 			    <div class="clearfix"></div>
 			    <div class="progress mt-2" style="height:2px;">
 			        <div class="progress-bar border-0 bg-green-dark text-start ps-2" role="progressbar" style="width: 65%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
 			        </div>
 			    </div>
-			<% end %>
-			<% if @accountItemsDue.size == 0 %>
-				<h5 class="color-white float-end">100% Complete</h5>
-			    <div class="clearfix"></div>
-			    <div class="progress mt-2" style="height:2px;">
-			        <div class="progress-bar border-0 bg-green-dark text-start ps-2" role="progressbar" style="width: 100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
-			        </div>
-			    </div>
-			<% end %>
+				<% end %>
+				<% if @accountItemsDue.size == 0 %>
+					<h5 class="color-white float-end">100% Complete</h5>
+				    <div class="clearfix"></div>
+				    <div class="progress mt-2" style="height:2px;">
+				        <div class="progress-bar border-0 bg-green-dark text-start ps-2" role="progressbar" style="width: 100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
+				        </div>
+				    </div>
+				<% end %>
 			    
 			</div>
 			<div class="card-overlay bg-black opacity-70"></div>
 		</div>
+		<% if @accountItemsDue.count > 0 %>
+			<div class="content row">
+			  <a href="<%= @stripeAccountUpdate['url'] %>" class='p-2'>
+	        <%= button_tag( :class => 'btn btn-full btn-m font-900 text-uppercase rounded-sm bg-green-dark form-control') do %>
+	          <i class="fa fa-check-circle font-20 color-white"></i> COMPLETE SELLER ACCOUNT
+	        <% end %>
+	      </a>
+	    </div>
+		<% end %>
 	  <% if @membershipDetails.present? %>
 		  
 			<div class="card card-style">
@@ -49,35 +58,40 @@
 		      <div class="col-5">
 		          <h5><%= currentMembersip[:membershipType].titleize %></h5>
 		      </div>
-		      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
-		      <div class="col-7">
-		          <h5 class="font-600 opacity-80">Cost</h5>
-		      </div>
-		      <div class="col-5">
-		          <h5 class="font-600 opacity-80"><%= number_to_currency(currentMembersip[:membershipDetails][0][:items][:data][0][:price][:unit_amount].to_i * 0.01, precision: 2)%></h5>
-		      </div>
-		      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
-		      <div class="col-7">
-		          <h5 class="font-600 opacity-80">Interval</h5>
-		      </div>
-		      <div class="col-5">
-		          <h5>Every <%= currentMembersip[:membershipDetails][0][:items][:data][0][:price][:recurring][:interval].titleize %></h5>
-		      </div>
-		      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
-		      <% if currentMembersip[:membershipType] != 'free' %>
-			      <a href="<%= cancel_path %>" class='p-2'>
-			        <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
-			          <i class="fa fa-minus-circle font-20 color-white"></i> Cancel Membership
-			        <% end %>
-			      </a>
-		      <% end %>
-		      <% if @accountItemsDue.count > 0 && (currentMembersip[:membershipType] == 'business' || currentMembersip[:membershipType] == 'automation') %>
-						  <a href="<%= @stripeAccountUpdate['url'] %>" class='p-2'>
-				        <%= button_tag( :class => 'btn btn-full btn-m font-900 text-uppercase rounded-sm bg-green-dark form-control') do %>
-				          <i class="fa fa-check-circle font-20 color-white"></i> COMPLETE SELLER ACCOUNT
+		      <% unless currentMembersip[:membershipType] == 'free' %>
+			      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
+			      <div class="col-7">
+			          <h5 class="font-600 opacity-80">Cost</h5>
+			      </div>
+			      <div class="col-5">
+			          <h5 class="font-600 opacity-80"><%= number_to_currency(currentMembersip[:membershipDetails][0][:items][:data][0][:price][:unit_amount].to_i * 0.01, precision: 2)%></h5>
+			      </div>
+			      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
+			      <div class="col-7">
+			          <h5 class="font-600 opacity-80">Interval</h5>
+			      </div>
+			      <div class="col-5">
+			          <h5>Every <%= currentMembersip[:membershipDetails][0][:items][:data][0][:price][:recurring][:interval].titleize %></h5>
+			      </div>
+			      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
+			      <% if currentMembersip[:membershipDetails][0]['discount'].present? %>
+				      <div class="col-7">
+				          <h5 class="font-600 opacity-80">Discount</h5>
+				      </div>
+				      <div class="col-5">
+				          <h5><%= currentMembersip[:membershipDetails][0]['discount']['coupon']['percent_off'].to_i %>% Off <%= pluralize(currentMembersip[:membershipDetails][0]['discount']['coupon']['duration_in_months'], "Month") %></h5>
+				      </div>
+				      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
+				    <% end %>
+			      <% if currentMembersip[:membershipType] != 'free' %>
+				      <a href="<%= cancel_path %>" class='p-2'>
+				        <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
+				          <i class="fa fa-minus-circle font-20 color-white"></i> Cancel Membership
 				        <% end %>
 				      </a>
-					<% end %>
+			      <% end %>
+		      <% end %>
+		      
 			  </div>
 				<small class="text-center">SELLER ID: <%= Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'][5..Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'].size] %></small>
 			</div>
@@ -85,13 +99,7 @@
 		  Upgrade Your Free Membership
 		<% end %>
 
-		
-		<!-- 	<% if @recipientAccountItemsDue.present? && @recipientAccountItemsDue.count > 0 && (currentMembersip[:membershipType] == 'business' || currentMembersip[:membershipType] == 'automation') %>
-				<div class="align-self-center ms-auto">
-					Finish Payout Setup (Currently Due Items: <%= @recipientAccountItemsDue.count %>)
-				  <a href="<%= @recipientAccountUpdate['url'] %>" target='_blank' class="btn btn-full btn-m font-900 text-uppercase rounded-sm shadow-l bg-green-dark">Complete Setup</a>
-				</div>
-		<% end %> -->
+
 	<% else%>
 
 		<div class="d-flex pt-2">

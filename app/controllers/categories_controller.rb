@@ -69,7 +69,6 @@ class CategoriesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
   def set_category
-    debugger
     @category = Category.friendly.find(params[:id])
   end
 

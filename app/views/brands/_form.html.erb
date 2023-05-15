@@ -21,25 +21,36 @@
   </div>
   <div class="field">
     <%= form.label :amazonCategory %>
-    <%= form.select :amazonCategory, [
-      ['Australia', 'au'],
-      ['Belgium', 'be'],
-      ['Brazil', 'br'],
-      ['Canada', 'ca'],
-      ['France', 'fr'],
-      ['Germany', 'de'],
-      ['Italy', 'it'],
-      ['Japan', 'jp'],
-      ['Mexico', 'mx'],
-      ['Netherlands', 'nl'],
-      ['Poland', 'pl'],
-      ['Singapore', 'sg'],
-      ['Spain', 'es'],
-      ['Sweden', 'se'],
-      ['United Arab Emirates', 'ae'],
-      ['United Kingdom', 'gb'],
-      ['United States', 'us']
-    ], required: true, class: 'lp-pom-form-field', style: 'background-color: #1b6a62;' %>
+    <select aria-describedby="searchDropdownDescription" class="nav-search-dropdown searchSelect nav-progressive-attrubute nav-progressive-search-dropdown" data-nav-digest="6omiEflM3+SmAFicBtCvlB/enV0=" data-nav-selected="" id="searchDropdownBox" name="brand[amazonCategory]" style="display: block; top: 2.5px;" tabindex="0" title="Search in">
+          <option value="aps">All Categories</option>
+          <option value="amazon-devices">Amazon Devices</option>
+          <option value="fashion">Amazon Fashion</option>
+          <option value="amazon-global-store">Amazon Global Store</option>
+          <option value="warehouse-deals">Amazon Warehouse</option>
+          <option value="appliances">Appliances</option>
+          <option value="automotive">Automotive Parts &amp; Accessories</option>
+          <option value="baby">Baby</option>
+          <option value="beauty">Beauty &amp; Personal Care</option>
+          <option value="stripbooks">Books</option>
+          <option value="computers">Computer &amp; Accessories</option>
+          <option value="electronics">Electronics</option>
+          <option value="gift-cards">Gift Cards</option>
+          <option value="grocery">Grocery &amp; Gourmet Food</option>
+          <option value="hpc">Health, Household &amp; Baby Care</option>
+          <option value="local-services">Home &amp; Business Services</option>
+          <option value="garden">Home &amp; Garden</option>
+          <option value="kitchen">Kitchen &amp; Dining</option>
+          <option value="fashion-luggage">Luggage &amp; Travel Gear</option>
+          <option value="mi">Musical Instruments</option>
+          <option value="office-products">Office Products</option>
+          <option value="pets">Pet Supplies</option>
+          <option value="instant-video">Prime Video</option>
+          <option value="sports">Sports</option>
+          <option value="specialty-aps-sns">Subscribe &amp; Save</option>
+          <option value="tools">Tools &amp; Home Improvement</option>
+          <option value="toys">Toys &amp; Games</option>
+          <option value="videogames">Video Games</option>
+    </select>
   </div>
 
   <div class="field">
