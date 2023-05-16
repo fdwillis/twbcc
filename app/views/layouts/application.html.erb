@@ -37,14 +37,14 @@
           <a href="/commissions/<%= current_user&.uuid %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" data-no-turbolink><i class="opacity-40 font-25 fa fa-money"></i><span class="opacity-40">Commissions</span></a>
         <% end %>
       <% else %>
-        <% if request.fullpath.include?('/how-it-works')|| request.fullpath.include?('/product') || request.fullpath == "/?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" %>
+        <% if request.fullpath.include?('/how-it-works') %>
           <a href="/how-it-works?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" class="active-nav" data-no-turbolink><i class="font-25 fa fa-question"></i><span>How It Works</span></a>
         <% else %>
           <a href="/how-it-works?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" data-no-turbolink><i class="opacity-40 font-25 fa fa-question"></i><span class="opacity-40">How It Works</span></a>
         <% end %>
       <% end %>
 
-        <% if request.fullpath.include?('/search') || request.fullpath.include?('/brand') || request.fullpath.include?('/categories') %>
+        <% if request.fullpath.include?('/search') || request.fullpath.include?('/brand') || request.fullpath.include?('/categories') || request.fullpath.include?('/product') %>
           <a href="/search?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" class="active-nav" data-no-turbolink><i class="font-25 fa fa-search"></i><span>Search</span></a>
         <% else %>
           <a href="/search?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" data-no-turbolink><i class="opacity-40 font-25 fa fa-search"></i><span class="opacity-40">Search</span></a>

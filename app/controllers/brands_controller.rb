@@ -11,6 +11,36 @@ class BrandsController < ApplicationController
   def show
     ahoy.track "Recommended Brand Visited", brand: @brand.title, previousPage: request.referrer
     #call to rain for product with search_alias / amazonCategory
+    @query = @brand.title
+    @country = @brand.countries.split(',').sample
+    
+    thisAmazonCat = @brand.amazonCategory
+
+    if session['search'].present?
+      if session['search'].map{|d| d[:query]}.include?(@query) && session['search'].map{|d| d[:amazonCategory]}.include?(thisAmazonCat) && session['search'].map{|d| d[:country]}.include?(@country)
+        session['search'].each do |info|
+          
+          if info[:query] == @query && info[:data].present?
+            # show cache data to paginate
+            ahoy.track "Cache Search Term", pageNumber: params['page'], previousPage: request.referrer, query: @query, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
+            @searchResults = info[:data].shuffle.paginate(page: params['page'], per_page: 6)
+          end
+        end
+      else
+        #paginate
+
+        ahoy.track "New Search Term",pageNumber: params['page'], previousPage: request.referrer, query: @query, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
+        @searchResults = User.rainforestSearch(@query, thisAmazonCat, @country)[0][:data].paginate(page: params['page'], per_page: 6)
+        session['search'] |= [{amazonCategory: thisAmazonCat, query: @query, data: @searchResults, country: @country}]
+      end
+
+    else
+      session['search'] = []
+      #paginate
+      ahoy.track "New Search Term",pageNumber: params['page'], previousPage: request.referrer, query: @query, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
+      @searchResults = User.rainforestSearch(@query, thisAmazonCat, @country)[0][:data].paginate(page: params['page'], per_page: 6)
+      session['search'] |= [{amazonCategory: thisAmazonCat, query: @query, data: @searchResults, country: @country}]
+    end
   end
 
   # GET /brands/new

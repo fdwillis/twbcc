@@ -40,8 +40,7 @@
     <% if @searchResults.present? %>
       <div class="row mb-0">
           <div class="col-6 pe-0">
-            <%= @searchResults[0] %>
-            <%=  cl_image_tag(@searchResults[0]['image'], :crop => :fill) %>
+            
             <% if @searchResults[0].present? %>
               <a href="/product/<%= @searchResults[0]['asin']%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>&product[country]=<%= @country %>" class="card card-style mb-2" style='background-image: url("<%=  @searchResults[0]['image'] %>");height: 135px;' data-card-height="135">
                   <div class="card-top text-center">

@@ -33,6 +33,6 @@
           <p class="text-center mt-n2 boxed-text-s opacity-50 font-16 pb-4">Oarlin will create the perfect page for your business and content! Your audience will enjoy a unique experience tailored just to you &amp; your voice, so that you can convert with authenticity! Our developers are ready to work with you every step of the way.  Customize your followers experience &amp; business process while converting more customers &amp; enjoying all of the features we have to offer. Make your business truly unique from the rest! </p>
       </div>
   </div>
-  <a href="<%= membership_path %>/?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class='p-2 btn btn-full btn-m font-900 text-uppercase rounded-sm bg-highlight-dark form-control'>Join Oarlin Today</a>
+  <a href="<%= membership_path %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class='p-2 btn btn-full btn-m font-900 text-uppercase rounded-sm bg-highlight-dark form-control'>Join Oarlin Today</a>
 </div>
 

@@ -1,252 +1,167 @@
 
 <div class="header-clear-medium"> 
-<%= @callToRain %> 
-  <div class="splide double-slider slider-no-dots" id="double-slider-12">
-    <div class="splide__track">
-        <div class="splide__list">
-          <% @callToRain['images'].split(',').reject(&:blank?).each do |img| %>
-            <div class="splide__slide">
-                <div class="card rounded-m shadow-l mx-3 bg-13" data-card-height="300" style="background-image:url('<%= img %>')">
-                    <div class="card-bottom text-center mb-0">
+ <!-- <%= @callToRain %>  -->
+  <% if request.user_agent.include?('Mobile') %>
+      <div class="splide single-slider slider-no-arrows slider-no-dots" id="single-slider-12">
+        <div class="splide__track">
+            <div class="splide__list">
+              <% @callToRain['images'].split(',').reject(&:blank?).each do |img| %>
+                <div class="splide__slide">
+                    <div class="card rounded-m shadow-l mx-1" data-card-height="300">
+                      <%= cl_image_tag(img, :gravity=>"auto", :crop => :crop, height: 300) %>
                     </div>
-                    <div class="card-overlay bg-gradient"></div>
                 </div>
+              <% end %>
             </div>
-          <% end %>
         </div>
-    </div>
+      </div>
+  <% else %>
+      <div class="splide tripple-slider slider-no-arrows slider-no-dots" id="tripple-slider-12423">
+        <div class="splide__track">
+            <div class="splide__list">
+              <% @callToRain['images'].split(',').reject(&:blank?).each do |img| %>
+                <div class="splide__slide">
+                    <div class="card rounded-m shadow-l mx-1" data-card-height="300">
+                      <%= cl_image_tag(img, :gravity=>"auto", :crop => :crop, height: 300) %>
+                    </div>
+                </div>
+              <% end %>
+            </div>
+        </div>
+      </div>
+  <% end %>
+
+  <div class="d-flex mt-4 mb-4">
+      <div class="flex-grow-1">
+        <div class="font-20 text-center">
+          Share With The World <%= social_share_button_tag("Title", :url => "https://#{request.env['HTTP_HOST']}&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}", :image =>  "https://images.mktw.net/im-720056?width=700&height=466", desc: truncate("Body", length: 50)) %>
+        </div>
+      </div>
   </div>
           
-  <div class="card card-overflow card-style">
-    <div class="content">
-        <div class="d-flex">
-            <div class="flex-grow-1">
-                <h1 class="font-20">
-                  <%= @callToRain['brand'] %><br>
-                  <i class="font-20 px-1 fa fa-eye"></i> <%= Ahoy::Event.where_event("Product Visit", product: @callToRain['asin']).size %>
-                </h1>
-                <div class="me-auto"> 
-                  <% @callToRain['tags'].split(',').each do |tag| %> 
-                      <% if tag.present? %>
-                        <span class="badge no-click bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s mb-3"><%= tag %></span>
-                      <% end %>
-                  <% end %>
-                </div>
-                
+  
 
-                <p class="mt-n1 font-12 color-highlight mb-4"></p>
-                <!-- User::ACCEPTEDcountries.values.detect {|item| item[:site] == rainforestResponseLinkForThisProduct.split("://www.")[1].split("/")[0] } -->
-            </div>
-              <div class="flex-shrink-1 m-1">
-                <a href="#" data-menu="flag-country-explained" class="btn btn-s text-uppercase font-900 bg-highlight mb-4 rounded-sm"><i class="font-20 color-white px-1 fa fa-amazon"></i><span class="flag-icon flag-icon-<%= @country %> font-20"></span></a>
-              </div>
-              <div class="flex-shrink-1 m-1">
-                <% if current_user %>
-
-                    <% if @profileMetadata.present? && @profileMetadata['tracking'].present? && @profileMetadata['tracking'].split(',').include?("#{@callToRain['asin']}-#{@callToRain['country']}") %>
-                      <a href="<%= list_path(id: @callToRain['asin'], remove: true)  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs rounded-pill color-white"><i class="fa fa-list color-highlight"></i></a>
-                    <% else %>
-                      <a href="<%= list_path(id: @callToRain['asin'], country: @callToRain['country'])  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-list"></i></a>
-                    <% end %>
-                    <% if @profileMetadata.present? && @profileMetadata['wishlist'].present? && @profileMetadata['wishlist'].split(',').include?("#{@callToRain['asin']}-#{@callToRain['country']}") %>
-                      <a href="<%= loved_path(id: @callToRain['asin'], remove: true)  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs rounded-pill color-white"><i class="fa fa-heart color-highlight"></i></a>
-                    <% else %>
-                      <a href="<%= loved_path(id: @callToRain['asin'], country: @callToRain['country'])  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-heart"></i></a>
-
-                    <% end %>
-                <% else %>
-
-                  <a href="<%= list_path(id: @callToRain['asin'])  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" data-confirm="Add this to your loved list?" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-heart"></i></a>
-                  <a href="<%= list_path(id: @callToRain['asin'])  %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" data-confirm="Add this to your public list?" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-list"></i></a>
-                <% end %>
-              </div>
-        </div>
-        <!-- add renderforest Keywords via response 'keywords_list' -->
-        <div class="divider"></div>
-          
-        
-<!--         <p><%= @callToRain['description'] %></p> -->
-        
-        <div class="row">
-            <div class="col-4">
-                <span class="font-11">PWA</span>
-                <p class="mt-n2 mb-1">
-                    <strong class="color-theme">Yes</strong>
-                </p>
-            </div>
-            <div class="col-4">
-                <span class="font-11">Boostrap</span>
-                <p class="mt-n2 mb-1">
-                    <strong class="color-theme">4.4+</strong>
-                </p>
-            </div>
-            <div class="col-4">
-                <span class="font-11">Dark Mode</span>
-                <p class="mt-n2 mb-1">
-                    <strong class="color-theme">Yes</strong>
-                </p>
-            </div>
-            <div class="col-4">
-                <span class="font-11">Cordova</span>
-                <p class="mt-n2 mb-1">
-                    <strong class="color-theme">Compatible</strong>
-                </p>
-            </div>
-            <div class="col-4">
-                <span class="font-11">Components</span>
-                <p class="mt-n2 mb-1">
-                    <strong class="color-theme">100+</strong>
-                </p>
-            </div>
-            <div class="col-4">
-                <span class="font-11">Total Pages</span>
-                <p class="mt-n2 mb-1">
-                    <strong class="color-theme">150+</strong>
-                </p>
-            </div>
-        </div>
-        
-        <div class="d-flex mt-3">
-            <div class="flex-grow-1">
-                <span class="font-11">Ratings & Reviews </span>
-                <p class="mt-n2">
-                    <strong class="color-theme"><%= @callToRain['rating'] %></strong>
-                    <i class="fa fa-star color-yellow-dark ps-2"></i>
-                    <i class="fa fa-star color-yellow-dark"></i>
-                    <i class="fa fa-star color-yellow-dark"></i>
-                    <i class="fa fa-star color-yellow-dark"></i>
-                    <i class="fa fa-star color-yellow-dark"></i>
-                </p>
-            </div>
-            <div class="flex-shrink-1 mt-2">
-                <a href="#"><%= @callToRain['reviews'].size %> Reviews</a>
-            </div>
-        </div>
-        
-        
-        
-        <div class="divider mt-4"></div>
-        <% @callToRain['country'].split(',').each do |country| %>
-          <a href="<%= amazon_path(asin: @callToRain['asin'], country: country) %>/?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %> " target='_blank'>
-            <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
-              <i class="fa fa-amazon font-20 color-white"></i> 
-              <i class="flag-icon flag-icon-<%= country.downcase %> font-20 color-white"></i>
-              Purchase On Amazon
+  <% if @callToRain['reviews'].present? %>
+    <div class="content row">
+      <a href="#" data-menu="flag-country-explained" class="btn btn-s text-uppercase font-900 bg-highlight mb-4 rounded-sm"><i class="font-20 color-white px-1 fa fa-amazon"></i><span class="flag-icon flag-icon-<%= @country %> font-20"></span></a>
+      <div class="me-auto"> 
+        <% @callToRain['tags'].split(',').each do |tag| %> 
+            <% if tag.present? %>
+              <span class="badge no-click bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s mb-3"><%= tag %></span>
             <% end %>
-          </a>
-
         <% end %>
-        <div class="d-flex mt-4">
-            <div class="flex-grow-1">
-              <div class="font-20 text-center">
-                Share With The World <%= social_share_button_tag("Title", :url => "https://#{request.env['HTTP_HOST']}?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}", :image =>  "https://images.mktw.net/im-720056?width=700&height=466", desc: truncate("Body", length: 50)) %>
-              </div>
-            </div>
+      </div>
+        
+      </div>
+    <div class="card card-style">
+
+      <% @callToRain['reviews'].shuffle.reject{|review| review['verified_purchase'] == false}.reject{|review| review['rating'] <= 3}.sample(3).each do |review| %>
+        <div class="content">
+            <h2>Verified Reviews</h2>
+            <p>
+                Awesome feedback from customers that we wanted to share with you!
+            </p>
         </div>
-        <!-- <%= Ahoy::Event.where_event("Product Purchase Intent", product: @callToRain['asin'].upcase).count %> -->
-        <div class="card card-style">
-              <div class="content mb-0">
-                  <h2>Product Gallery</h2>
-                  <p>
-                      Here are the best and most beautiful features our product has to offer. Just tap and move through the images.
-                  </p>
-                  <div class="row text-center row-cols-3 mb-0">
-                      <a class="col mb-4" data-gallery="gallery-1" href="images/pictures/1t.jpg" title="Vynil and Typerwritter">
-                          <img src="images/pictures/1s.jpg" data-src="images/pictures/1s.jpg" class="img-fluid rounded-m preload-img entered loaded" alt="img" data-ll-status="loaded">
+
+        <div class="content mt-4">
+            <div class="d-flex">
+                <div class="flex-grow-1">
+                    <h1 class="float-start fa-4x font-900 me-3"><%= review['rating'] %>/5</h1>
+                    <h5 class="font-11 font-500 mb-n2">From <%= User::ACCEPTEDcountries[review['review_country']][:country] %></h5>
+                    <span>
+                      <% review['rating'].times do  %>
+                        <i class="fa fa-star color-yellow-dark"></i>
+                      <% end %>
+                      <% (5-review['rating']).times do  %>
+                        <i class="fa fa-star color-grey-dark"></i>
+                      <% end %>
+                    </span>
+                </div>
+                <div>
+                    <h6 class="text-end"><%= review['profile']['name'] %></h6>
+                </div>
+            </div>
+            <p class="mt-3"><%= review['body'].split('Read more')[0] %></p>
+        </div>
+      <% end %>
+      <div class="splide single-slider slider-no-dots slider-no-arrows splide--loop splide--ltr splide--draggable is-active" id="single-slider-3" style="visibility: visible;">
+        <div class="splide__track" id="single-slider-3-track">
+            <div class="splide__list" id="single-slider-3-list" style="transform: translateX(-975px);">
+              <% User::ACCEPTEDcountries.keys.each do |country| %>
+                <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
+                    <div class="content text-center mb-4">
+                      <a href="<%= amazon_path(asin: params['asin'].downcase, country: country) %>/&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class='btn btn-full btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control'>
+                        <%= button_tag( :class => "") do %>
+                          <i class="fa fa-amazon font-20 color-white"></i><i class="flag-icon flag-icon-<%= country %> font-20"></i><p class="font-15 color-white"> CHECK AMAZON <%= country.upcase %></p>
+                        <% end %>
                       </a>
-                      
-                  </div>
-
-              </div>
-          </div>
-    </div>
-  </div>
-         
-
-  <div class="card card-style">
-    <div class="content">
-        <h2>Product Reviews</h2>
-        <p>
-            Awesome feedback from our customers that we wanted to share with you! These made our days better!
-        </p>
-    </div>
-        
-    <div class="content">
-        <div class="d-flex">
-            <div class="flex-grow-1">
-                <h1 class="float-start fa-4x font-900 me-3">5.00</h1>
-                <h5 class="font-11 font-500 mb-n2">average rating</h5>
-                <span>
-                    <i class="fa fa-star color-yellow-dark"></i>
-                    <i class="fa fa-star color-yellow-dark"></i>
-                    <i class="fa fa-star color-yellow-dark"></i>
-                    <i class="fa fa-star color-yellow-dark"></i>
-                    <i class="fa fa-star color-yellow-dark"></i>
-                </span>
-            </div>
-            <div>
-                <h6 class="text-end">John Doe</h6>
-                <p class="font-10 mb-0 mt-n2 opacity-40 text-end">21th March 2025</p>
+                    </div>
+                </div>
+              <% end %>
             </div>
         </div>
-        <p class="mt-3">
-            It's a very complete HTML template and it's really fast as well. I like the way it's setup, did had to do some research before I got to know how it works though. I hope they will keep the support they deliver, because for me that's the most important part of buying a template.
-        </p>
+        
+         <p class="text-center">SLIDE BUTTON TO VIEW MORE OPTIONS</p>
+      </div>
+
+
+          
+      <div class="divider divider-margins mb-3"></div>
+          
     </div>
+  <% end %>
 
 
-        
-    <div class="divider divider-margins mb-3"></div>
-        
-    <div class="content">
-        <div class="d-flex">
-            <div class="flex-grow-1">
-                <h1 class="float-start fa-4x font-900 me-3">4.98</h1>
-                <h5 class="font-11 font-500 mb-n2">average rating</h5>
-                <span>
-                    <i class="fa fa-star color-yellow-dark"></i>
-                    <i class="fa fa-star color-yellow-dark"></i>
-                    <i class="fa fa-star color-yellow-dark"></i>
-                    <i class="fa fa-star color-yellow-dark"></i>
-                    <i class="fa fa-star color-yellow-dark"></i>
-                </span>
-            </div>
-            <div>
-                <h6 class="text-end">John Doe</h6>
-                <p class="font-10 mb-0 mt-n2 opacity-40 text-end">21th March 2025</p>
-            </div>
+  <%= render 'application/getpaidaffiliates', message: ['Get paid to share products like this one!'.titleize, 'Share this page for a chance to earn commission!'.titleize].sample, title: ['You could earn commission'.titleize, 'explore, share, earn'.titleize].sample %>   
+  
+  
+  <% if current_user %>
+      <div class="card card-overflow card-style">
+        <div class="content">
+                      <div class="row">
+                        <h1 class="opacity-50 text-center mb-4"><i class="fa fa-list"></i> Start Promoting</h1>
+                        <h1 class="opacity-50 text-center mb-4"><i class="fa fa-heart"></i> Save For You</h1>
+                        <% if @profileMetadata.present? && @profileMetadata['tracking'].present? && @profileMetadata['tracking'].split(',').include?("#{params['asin'].downcase}-#{@callToRain['country']}") %>
+                          <a href="<%= list_path(id: params['asin'].downcase, remove: true)  %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs rounded-pill color-white"><i class="fa fa-list color-highlight"></i></a>
+                        <% else %>
+                          <a href="<%= list_path(id: params['asin'].downcase, country: @callToRain['country'])  %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-list"></i></a>
+                        <% end %>
+                      </div>
+                      <div class="row">
+
+                        <% if @profileMetadata.present? && @profileMetadata['wishlist'].present? && @profileMetadata['wishlist'].split(',').include?("#{params['asin'].downcase}-#{@callToRain['country']}") %>
+                          <a href="<%= loved_path(id: params['asin'].downcase, remove: true)  %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs rounded-pill color-white"><i class="fa fa-heart color-highlight"></i></a>
+                        <% else %>
+                          <a href="<%= loved_path(id: params['asin'].downcase, country: @callToRain['country'])  %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs rounded-pill bg-highlight"><i class="fa fa-heart"></i></a>
+
+                        <% end %>
+                      </div>
+            <!-- add renderforest Keywords via response 'keywords_list' -->
+
+            <div class="divider mt-4"></div>
+
+            
+
         </div>
-        <p class="mt-3">
-            It's a very complete HTML template and it's really fast as well. I like the way it's setup, did had to do some research before I got to know how it works though. I hope they will keep the support they deliver, because for me that's the most important part of buying a template.
-        </p>
-    </div>
+      </div>
+  <% end %>
 
-  </div>
-  <%= render 'application/getpaidaffiliates', message: ['Get paid to share products like this one!'.titleize, 'Share this page for a chance to earn commission!'.titleize].sample, title: ['You could earn commission'.titleize, 'explore, share, earn'.titleize].sample %>
   <% if @posts.present? %>
     <div class="card card-style">
       <div class="content mb-4">
-          <h2>Posts With These Products</h2>
-          <p>Products you may also like based on what you're currently looking at.
+          <h2>Read about this product!</h2>
       </div>
-      <div class="splide double-slider slider-no-arrows slider-no-dots" id="double-slider-1">
+      <div class="splide single-slider slider-no-arrows slider-no-dots" id="single-slider-1">
           <div class="splide__track">
               <div class="splide__list">
                 <% @posts.each do |post| %>
                   <div class="splide__slide">
                       <div data-card-height="230" class="card mx-3 rounded-m shadow-l bg-13">
                           <div class="card-bottom text-center">
-                              <h2 class="color-white font-900 mb-0"><%= post.title %></h2>
-                              <p class="text-center mb-3">
-                                  <i class="fa fa-star color-yellow-dark"></i>
-                                  <i class="fa fa-star color-yellow-dark"></i>
-                                  <i class="fa fa-star color-yellow-dark"></i>
-                                  <i class="fa fa-star color-yellow-dark"></i>
-                                  <i class="fa fa-star color-yellow-dark"></i>
-                              </p>
-                              <a href="<%= blog_path(id: post) %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class='btn btn-m font-900 text-uppercase rounded-sm bg-highlight btn-full me-2 ms-2 mb-2'>
+                              <h2 class="color-white font-900 mb-4"><%= post.title %></h2>
+                              <a href="<%= blog_path(id: post) %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class='btn btn-m font-900 text-uppercase rounded-sm bg-highlight btn-full me-2 ms-2 mb-2'>
                                 <%= button_tag( :class => "") do %>
-                                  <i class="fa fa-info-circle font-20 color-white text-center"></i>
+                                  <i class="fa fa-book font-20 color-white text-center"></i> Read
                                 <% end %>
                               </a>
                           </div>
@@ -259,6 +174,7 @@
       </div>
     </div>
   <% end %>
+  
 
 
   <div id="flag-country-explained" class="menu menu-box-modal rounded-m" data-menu-width="330" style="display: block; width: 330px;">

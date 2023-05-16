@@ -34,7 +34,7 @@ class ProductsController < ApplicationController
   def show
     @product = params['asin']
     @country = product_params['country']
-    
+
     if session['products'].present?
       if session['products'].map{|d| d[:product]}.include?(@product)
         session['products'].each do |info|
@@ -42,19 +42,20 @@ class ProductsController < ApplicationController
             # show cache data to paginate
             ahoy.track "Cache Product Visit", pageNumber: params['page'], previousPage: request.referrer, product: @product, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
             ahoy.track "Product Visit",pageNumber: params['page'], previousPage: request.referrer, product: @product, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
+            
             @callToRain = info[:data]
           end
         end
       else
         ahoy.track "Product Visit",pageNumber: params['page'], previousPage: request.referrer, product: @product, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
-        @callToRain = User.rainforestProduct(params['asin'], nil, product_params['country'])
-        session['search'] |= [{product: @product, data: @searchResults, country: @country}]
+        @callToRain = User.rainforestProduct(params['asin'], nil, @country)
+        session['products'] |= [{product: @product, data: @callToRain, country: @country}]
       end
     else
       session['products'] = []
       #paginate
       ahoy.track "Product Visit",pageNumber: params['page'], previousPage: request.referrer, product: @product, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
-      @callToRain = User.rainforestProduct(params['asin'], nil, product_params['country']) #.rainforestProduct(asin = nil,search_alias = nil, country = 'us' )
+      @callToRain = User.rainforestProduct(params['asin'], nil, @country)
       session['products'] |= [{product: params['asin'], data: @callToRain, country: @country}]
     end
 

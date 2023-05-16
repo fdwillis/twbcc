@@ -18,7 +18,7 @@
                     <h5 class="color-white font-500 font-20">
                       <%= @brands[0].title %>
                     </h5>
-                    <small class="color-white">Available In <%= @brands[0].countries.split(',').count %> Countries</small>
+                    <small class="color-white"><%= @brands[0].countries.split(',').count %> Countries</small>
                     <% @brands[0].countries.split(',').shuffle.each do |country| %>
                       <span class="flag-icon flag-icon-<%= country %> d-none d-sm-table-cell"></span>
                     <% end %>

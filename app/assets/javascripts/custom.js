@@ -163,13 +163,9 @@ document.addEventListener('DOMContentLoaded', () => {
                      var tripple = new Splide( '#'+e.id, {
                         type:'loop',
                         autoplay:true,
-                        padding: {
-                            left   :'0px',
-                            right: '80px',
-                        },
                         interval:4000,
                         arrows:false,
-                        perPage: 2,
+                        perPage: 3,
                         perMove: 1,
                     }).mount();
                 });

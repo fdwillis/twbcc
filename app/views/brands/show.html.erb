@@ -1,6 +1,23 @@
 
 <div class="header-clear-medium">
-	<%= @brand.title %>
-	<%= link_to 'Edit', edit_brand_path(@brand) %> |
-	<%= link_to 'Back', brands_path %>
+	<% if @searchResults.present? %>
+    <div class="row mb-0">
+        
+        <h1 class="font-700 font-30 opacity-50 mb-4 text-center mt-4"><%= @brand.title %></h1>
+        <div class="col-6 pe-0">
+          <% if @searchResults[0].present? %>
+            <a href="/product/<%= @searchResults[0]['asin']%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>&product[country]=<%= @country %>" class="card card-style mb-2" style='background-image: url("<%=  @searchResults[0]['image'] %>");height: 135px;' data-card-height="135">
+                <div class="card-top text-center">
+                  <% Brand.where("categories like ?", @searchResults[0]['title']).present? && Brand.where("categories like ?", @searchResults[0]['title']).map(&:tags)[0].split(',').shuffle.take(1).each do |tag| %>
+                    <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                  <% end %>
+                </div>
+                <div class="card-overlay bg-black opacity-25"></div>
+            </a>
+          <% end %>
+          
+        </div>
+    </div>
+
+  <% end %>
 </div>

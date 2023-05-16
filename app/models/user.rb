@@ -101,8 +101,8 @@ class User < ApplicationRecord
     @profile = @userFound.present? ? Stripe::Customer.retrieve(@userFound.stripeCustomerID) : nil
     @membershipDetails = @userFound.present? ? @userFound.checkMembership : nil
 
-    affiliteLink = "https://www.#{ACCEPTEDcountries[country.downcase][:site]}/dp/product/#{asin}?&tag=#{@userFound&.amazonUUID}"
-    adminLink =  "https://www.#{ACCEPTEDcountries[country.downcase][:site]}/dp/product/#{asin}?&tag=#{ENV['usAmazonTag']}"
+    affiliteLink = "https://www.#{ACCEPTEDcountries[country.downcase][:site]}/dp/product/#{asin}&tag=#{@userFound&.amazonUUID}"
+    adminLink =  "https://www.#{ACCEPTEDcountries[country.downcase][:site]}/dp/product/#{asin}&tag=#{ENV['usAmazonTag']}"
     #split traffic 95/5
     if @membershipDetails.present? && @membershipDetails[:membershipDetails][0]['status'] == 'active'
       @loadedLink = affiliteLink
@@ -117,61 +117,43 @@ class User < ApplicationRecord
     embed(@url, options)
   end
 
-  def self.rainforestProduct(asin = nil, search_alias = nil, country = 'us' )
+  def self.rainforestProduct(asin = nil, search_alias = nil, country = nil )
     @validResponse = []
     if asin.present?
-      res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=product&amazon_domain=#{ACCEPTEDcountries[country][:site]}&asin=#{asin}&search_alias=#{search_alias}")
-      loadedData = Oj.load(res.body)['product']
-      @validResponse << {product: asin, data: loadedData}
+      res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=product&amazon_domain=#{ACCEPTEDcountries[country][:site]}&asin=#{asin}")
     else
       #auto load
-      autoSearchProducts.each do |product|
-        categoriesLoaded = rainforestSearch(product, country)
-        categoriesLoaded[(rand(0..(categoriesLoaded.count-1)))][:data][0..14]
-        asin = categoriesLoaded[(rand(0..(categoriesLoaded.count-1)))][:data][0..14][0]['asin']
-        res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=product&amazon_domain=#{ACCEPTEDcountries[country][:site]}&asin=#{asin}&search_alias=#{search_alias}")
-        loadedData = Oj.load(res.body)['product']
-
-        @validResponse << {product: product, data: loadedData}
-        # asin = loadedData['search_results'][rand(1..10)]['asin']
-        # link = ENV['amazonUS']
-
-        # "https://www.amazon.com/dp/#{loadedData['search_results'][rand(1..10)]['asin']}&tag=#{ENV['usAmazonTag']}"
-      end
+      res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=product&amazon_domain=#{ACCEPTEDcountries[country][:site]}&asin=#{asin}&search_alias=#{search_alias}")
     end
+    loadedData = Oj.load(res.body)['product']
+    @validResponse << {product: asin, data: loadedData}
 
     response = @validResponse.first[:data]
-
     {
       'asin'=> asin,
       # 'description'=> response['description'],
       'country'=> country.upcase,
-      'tags'=> response['keywords_list'][0..2].join(','),
-      'title' => response['variants'][0]['title'],
-      'keywords' => response['keywords_list'][0..9].shuffle,
-      'rating' => response['rating'],
-      'reviews' => response['top_reviews'].shuffle,
-      'brand' => response['brand'], 
-      'images' => response['variants'].map{|d| d['main_image']}.join(","),
+      'tags'=> response['keywords_list'].present? ? response['keywords_list'][0..response['keywords_list'].size].join(',') : nil,
+      'keywords' => response['keywords_list'].present? ? response['keywords_list'][0..9].shuffle : nil,
+      'rating' => response['rating'].present? ? response['rating'] : nil ,
+      'reviews' => response['top_reviews'].present? ? response['top_reviews'].shuffle : nil,
+      'brand' => response['brand'].present? ? response['brand'] : nil , 
+      'images' => response['variants'].present? ? response['variants'].map{|d| d['main_image']}.join(",") : response['main_image']['link'],
     }
   end
 
-  def self.rainforestSearch(term = nil, country = 'us')
+  def self.rainforestSearch(term = nil, category = nil, country = nil)
     sampleSize = 1
     @data = []
-    if term.present?
-      res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=search&amazon_domain=#{ACCEPTEDcountries[country][:site]}&search_term=#{term.split.join('+')}")
-      loadedData = Oj.load(res.body)['search_results']
-      @data << {category: term, data: loadedData}
+
+    if category&.present?
+      res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=search&amazon_domain=#{ACCEPTEDcountries[country][:site]}&search_term=#{term.split.join('+')}&categories=#{category}")
     else
-      #auto load
-      autoSearchCategories.to_a.sample[sampleSize].each do |category|
-        res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=search&amazon_domain=#{ACCEPTEDcountries[country][:site]}&search_term=#{category[:category].split.join('+')}")
-        loadedData = Oj.load(res.body)['search_results']
-        @data << {category: category, data: loadedData}
-        # return country in response to display flag
-      end
+      res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=search&amazon_domain=#{ACCEPTEDcountries[country][:site]}&search_term=#{term.split.join('+')}")
     end
+      
+    loadedData = Oj.load(res.body)['search_results']
+    @data << {category: term, data: loadedData}
     @data
   end
 
