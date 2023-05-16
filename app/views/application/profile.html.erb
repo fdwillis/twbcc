@@ -5,9 +5,9 @@
 		<div class="card card-style" data-card-height="300" style="height: 300px;">
 			<!-- 		<%= @profileMetadata %> -->
 			<div class="card-center p-3">
-			    <h1 class="color-white"><%= @profile['name'].titleize %>#<%= current_user&.uuid %></h1>
-			    
-			    <span class="flag-icon flag-icon-<%= current_user&.amazonCountry.downcase %> font-40"></span>
+		    <h1 class="color-white"><%= @profile['name'].titleize %>#<%= current_user&.uuid %></h1>
+		    
+		    <span class="flag-icon flag-icon-<%= current_user&.amazonCountry.downcase %> font-40"></span>
 			</div>
 			<div class="card-top p-3">
 			    <span class="badge bg-highlight color-white p-2 float-end m-2 rounded-s"><%= currentMembersip[:membershipType].titleize %></span>
