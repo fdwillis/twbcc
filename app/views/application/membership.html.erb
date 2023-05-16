@@ -22,9 +22,9 @@
           <h1 class="font-700 font-30 opacity-50 mb-4 text-center mt-4">Pick Your Plan</h1>
           <div class="content row">
               <div class="col-6 text-center">
-                <h1 class="color-highlight">Feature List</h1>
+                <h1 class="color-highlight">Features</h1>
                 <h4 class="font-12 opacity-50 text-center">
-                  <i class="fa fa-info-circle color-yellow-dark "></i> Explains This Feature
+                  <i class="fa fa-info-circle color-yellow-dark "></i> Explanation
                 </h4>
                   
                   <% automationAnnual['metadata'].each do |point| %>
@@ -36,9 +36,12 @@
                   <% end %>
               </div>
               <div class="col-6 text-center">
-                  <h1>Free Member</h1>
-                  <p class=" font-12 color-highlight mb-n2">Card Required</p>
+                  <p class=" font-12 color-highlight m-n2">Try For Free</p>
+                  <h1 class="font-12 opacity-50 text-cente">Free Member</h1>
                   <div class="list-group list-custom-small">
+                  <h1 class="m-n2 p-2">
+                    <%= number_to_currency(freeMembership['unit_amount'] * 0.01, precision: 2) %>
+                  </h1>
                     <% freeMembership['metadata'].each do |point| %>
                         
                       <span href="#" class="text-center font-15">
