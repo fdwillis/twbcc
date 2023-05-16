@@ -201,7 +201,7 @@ class RegistrationsController < ApplicationController
 						end
 		      end
 		      
-	      	ahoy.track "Membership Signup", previousPage: request.referrer, uuid: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).uuid, referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : 'admin'
+	      	ahoy.track "Membership Signup", headline: session['howITWOrks'], previousPage: request.referrer, uuid: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).uuid, referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : 'admin'
 		      
 		      if session['coupon'].present?
 			      ahoy.track "Membership Coupon Applied", coupon: session['coupon'], membershipType: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).checkMembership[:membershipType]
