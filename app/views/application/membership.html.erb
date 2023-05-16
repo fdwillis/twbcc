@@ -6,7 +6,6 @@
 <% businessAnnual = Stripe::Price.retrieve(ENV['businessAnnual']) %>
 <% automationMonthly = Stripe::Price.retrieve(ENV['automationMonthly']) %>
 <% automationAnnual = Stripe::Price.retrieve(ENV['automationAnnual']) %>
-
 <div class="header-clear-medium">     
   <%= render 'search/dailydiscount', codes: @codes %>
   <% if current_user %>
