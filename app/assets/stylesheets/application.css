@@ -16,7 +16,7 @@
  *= require flag-icon
  *= require_self
  */
- @import "social-share-button";
+ /*@import "social-share-button";*/
  @media all and (display-mode: standalone) {
 	.alert {
 	  margin-top: 50px;
