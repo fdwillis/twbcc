@@ -101,8 +101,8 @@ class User < ApplicationRecord
     @profile = @userFound.present? ? Stripe::Customer.retrieve(@userFound.stripeCustomerID) : nil
     @membershipDetails = @userFound.present? ? @userFound.checkMembership : nil
 
-    affiliteLink = "https://www.#{ACCEPTEDcountries[country.downcase][:site]}/dp/product/#{asin}&tag=#{@userFound&.amazonUUID}"
-    adminLink =  "https://www.#{ACCEPTEDcountries[country.downcase][:site]}/dp/product/#{asin}&tag=#{ENV['usAmazonTag']}"
+    affiliteLink = "https://www.#{ACCEPTEDcountries[country.downcase][:site]}/dp/product/#{asin.upcase}&tag=#{@userFound&.amazonUUID}"
+    adminLink =  "https://www.#{ACCEPTEDcountries[country.downcase][:site]}/dp/product/#{asin.upcase}&tag=#{ENV['usAmazonTag']}"
     #split traffic 95/5
     if @membershipDetails.present? && @membershipDetails[:membershipDetails][0]['status'] == 'active'
       @loadedLink = affiliteLink
