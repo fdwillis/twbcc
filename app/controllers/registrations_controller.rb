@@ -201,8 +201,6 @@ class RegistrationsController < ApplicationController
 						end
 		      end
 		      
-		    	ab_finished(:howItWorksHeadline, reset: true)
-
 	      	ahoy.track "Membership Signup", previousPage: request.referrer, uuid: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).uuid, referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : 'admin'
 		      
 		      if session['coupon'].present?

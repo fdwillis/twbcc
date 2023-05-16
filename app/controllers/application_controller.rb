@@ -542,16 +542,13 @@ class ApplicationController < ActionController::Base
 	end
 
 	def how_it_works
-		@headlines = ab_test(:howItWorksHeadline, 
-			{'Signup - Share - Earn' => 20}, 
-			{'Integrate Directly With Amazon Associates' => 20}, 
-			{'Customizable Automation For Affiliates' => 20},
-			{'Oarlin - Join The Hive' => 20},
-			{'Supercharged Automation For Affiliates' => 20},
-		)
+		if session['howITWOrks'].present?
+		else
+			@headlines = ['Signup - Share - Earn','Integrate Directly With Amazon Associates','Customizable Automation For Affiliates','Oarlin - Join The Hive','Supercharged Automation For Affiliates']
 
-		ahoy.track "How It Works Visited", previousPage: request.referrer, title: @headlines
-		# ab_finished(:howItWorksHeadline, reset: true)
+			session['howITWOrks'] = @headlines.sample
+		end
+		ahoy.track "How It Works Visited", previousPage: request.referrer, title: session['howITWOrks']
 	end
 end
 
