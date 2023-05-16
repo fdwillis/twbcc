@@ -1,4 +1,3 @@
-
 <div class="header-clear-medium"> 
  <!-- <%= @callToRain %>  -->
   <% if request.user_agent.include?('Mobile') %>
@@ -90,7 +89,7 @@
               <% User::ACCEPTEDcountries.keys.each do |country| %>
                 <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
                     <div class="content text-center mb-4">
-                      <a href="<%= amazon_path(asin: params['asin'].downcase, country: country) %>/&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class='btn btn-full btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control'>
+                      <a href="<%= amazon_path(asin: params['asin'].downcase, country: country) %>/?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class='btn btn-full btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control'>
                         <%= button_tag( :class => "") do %>
                           <i class="fa fa-amazon font-20 color-white"></i><i class="flag-icon flag-icon-<%= country %> font-20"></i><p class="font-15 color-white"> CHECK AMAZON <%= country.upcase %></p>
                         <% end %>
