@@ -6,9 +6,9 @@
             <div class="splide__list">
               <% @callToRain['images'].split(',').reject(&:blank?).each do |img| %>
                 <div class="splide__slide">
-                    <div class="card rounded-m shadow-l mx-1" data-card-height="300">
-                      <%= cl_image_tag(img, :gravity=>"auto", :crop => :crop, height: 300) %>
-                    </div>
+                    <div class="card rounded-m shadow-l mx-1" data-card-height="300" style="height:96vh; background-image:url(<%= img %>)">
+<!--                       <%= cl_image_tag(img, :gravity=>"auto", :crop => :fit, height: 300) %>
+ -->                    </div>
                 </div>
               <% end %>
             </div>
@@ -20,9 +20,9 @@
             <div class="splide__list">
               <% @callToRain['images'].split(',').reject(&:blank?).each do |img| %>
                 <div class="splide__slide">
-                    <div class="card rounded-m shadow-l mx-1" data-card-height="300">
-                      <%= cl_image_tag(img, :gravity=>"auto", :crop => :crop, height: 300) %>
-                    </div>
+                    <div class="card rounded-m shadow-l mx-1" data-card-height="300" style="height:96vh; background-image:url(<%= img %>)">
+<!--                       <%= cl_image_tag(img, :gravity=>"auto", :crop => :fit, height: 300) %>
+ -->                    </div>
                 </div>
               <% end %>
             </div>
