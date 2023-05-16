@@ -7,8 +7,7 @@
               <% @callToRain['images'].split(',').reject(&:blank?).each do |img| %>
                 <div class="splide__slide">
                     <div class="card rounded-m shadow-l mx-1" data-card-height="300" style="height:96vh; background-image:url(<%= img %>)">
-<!--                       <%= cl_image_tag(img, :gravity=>"auto", :crop => :fit, height: 300) %>
- -->                    </div>
+                    </div>
                 </div>
               <% end %>
             </div>
@@ -21,8 +20,7 @@
               <% @callToRain['images'].split(',').reject(&:blank?).each do |img| %>
                 <div class="splide__slide">
                     <div class="card rounded-m shadow-l mx-1" data-card-height="300" style="height:96vh; background-image:url(<%= img %>)">
-<!--                       <%= cl_image_tag(img, :gravity=>"auto", :crop => :fit, height: 300) %>
- -->                    </div>
+                    </div>
                 </div>
               <% end %>
             </div>
@@ -54,13 +52,13 @@
       </div>
     <div class="card card-style">
 
+      <div class="content">
+          <h2>Verified Reviews</h2>
+          <p>
+              Awesome feedback from customers that we wanted to share with you!
+          </p>
+      </div>
       <% @callToRain['reviews'].shuffle.reject{|review| review['verified_purchase'] == false}.reject{|review| review['rating'] <= 3}.sample(3).each do |review| %>
-        <div class="content">
-            <h2>Verified Reviews</h2>
-            <p>
-                Awesome feedback from customers that we wanted to share with you!
-            </p>
-        </div>
 
         <div class="content mt-4">
             <div class="d-flex">
