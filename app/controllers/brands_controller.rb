@@ -9,6 +9,8 @@ class BrandsController < ApplicationController
 
   # GET /brands/1 or /brands/1.json
   def show
+    ahoy.track "Recommended Brand Visited", brand: @brand.title, previousPage: request.referrer
+    #call to rain for product with search_alias / amazonCategory
   end
 
   # GET /brands/new

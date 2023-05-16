@@ -1,6 +1,6 @@
 #/trending
 class ProductsController < ApplicationController
-  before_action :set_product, only: %i[ show edit update destroy ]
+  before_action :set_product, only: %i[ edit update destroy ]
   before_action :checkAdmin, only: %i[ new ]
 
   def brand
@@ -17,8 +17,8 @@ class ProductsController < ApplicationController
   end
 
   def explore
-    @blogs = Blog.all.where(country: params['country']).paginate(page: params['page'], per_page: 8)
-    @products = Product.all.where(country: params['country']).paginate(page: params['page'], per_page: 8)
+    @blogs = Blog.all.where(country: params['country']).paginate(page: params['page'], per_page: 6)
+    @products = Product.all.where(country: params['country']).paginate(page: params['page'], per_page: 6)
     @callToRain = []
 
     ahoy.track "Product Page Results", previousPage: request.referrer, currentPage: params['page']
@@ -32,18 +32,41 @@ class ProductsController < ApplicationController
 
   # GET /products/1 or /products/1.json
   def show
+    @product = params['asin']
+    @country = product_params['country']
+    
+    if session['products'].present?
+      if session['products'].map{|d| d[:product]}.include?(@product)
+        session['products'].each do |info|
+          if info[:product] == @product && info[:data].present?
+            # show cache data to paginate
+            ahoy.track "Cache Product Visit", pageNumber: params['page'], previousPage: request.referrer, product: @product, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
+            ahoy.track "Product Visit",pageNumber: params['page'], previousPage: request.referrer, product: @product, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
+            @callToRain = info[:data]
+          end
+        end
+      else
+        ahoy.track "Product Visit",pageNumber: params['page'], previousPage: request.referrer, product: @product, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
+        @callToRain = User.rainforestProduct(params['asin'], nil, product_params['country'])
+        session['search'] |= [{product: @product, data: @searchResults, country: @country}]
+      end
+    else
+      session['products'] = []
+      #paginate
+      ahoy.track "Product Visit",pageNumber: params['page'], previousPage: request.referrer, product: @product, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
+      @callToRain = User.rainforestProduct(params['asin'], nil, product_params['country']) #.rainforestProduct(asin = nil,search_alias = nil, country = 'us' )
+      session['products'] |= [{product: params['asin'], data: @callToRain, country: @country}]
+    end
 
-    @posts = Blog.where("asins like ?", "%#{params['asin'].upcase}%")
+    @posts = Blog.where("asins like ?", "%#{params['asin']}%")
     @profileMetadata = current_user.present? ? Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata'] : []
-    @callToRain = User.rainforestProduct(@product&.asin, 'us') #.rainforestProduct(asin = nil,search_alias = nil, country = 'us' )
-
 
    if params['recommended'].present?
       #analytics
-      ahoy.track "Recommended Product Visit", previousPage: request.referrer, asin: params['id'], referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
+      ahoy.track "Recommended Product Found", previousPage: request.referrer, asin: params['id'], referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
     else
       #analytics
-      ahoy.track "Product Visit", previousPage: request.referrer, asin: params['id'], referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
+      ahoy.track "Searched For Product", previousPage: request.referrer, asin: params['id'], referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
     end
   end
 
@@ -97,7 +120,7 @@ class ProductsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_product
-      @product = Product.friendly.find_by(asin: params['id'].upcase)
+      @product = Product.friendly.find_by(asin: params['id'])
     end
 
     # Only allow a list of trusted parameters through.

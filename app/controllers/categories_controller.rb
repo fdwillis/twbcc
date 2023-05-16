@@ -15,7 +15,7 @@ class CategoriesController < ApplicationController
 
   # GET /categories/1 or /categories/1.json
   def show
-    @brands = Brand.where("categories like ?", @category.title).paginate(page: params['page'], per_page: 8)
+    @brands = Brand.where("categories like ?", @category.title).paginate(page: params['page'], per_page: 6)
     ahoy.track "Recommended Category Visited", category: @category.title, previousPage: request.referrer
   end
 

@@ -117,7 +117,7 @@ class User < ApplicationRecord
     embed(@url, options)
   end
 
-  def self.rainforestProduct(asin = nil,search_alias = nil, country = 'us' )
+  def self.rainforestProduct(asin = nil, search_alias = nil, country = 'us' )
     @validResponse = []
     if asin.present?
       res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=product&amazon_domain=#{ACCEPTEDcountries[country][:site]}&asin=#{asin}&search_alias=#{search_alias}")
