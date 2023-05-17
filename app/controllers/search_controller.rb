@@ -1,6 +1,8 @@
 #/discover
 class SearchController < ApplicationController
 	def index
+		loadMemberships
+		
 		@codes = current_user.present? ? Stripe::Coupon.list({limit: 100}).reject{|c| c['valid'] == false}.reject{|c| c['percent_off'] > 90} : Stripe::Coupon.list({limit: 100}).reject{|c| c['valid'] == false}.reject{|c| c['percent_off'] > 10}.reject{|c| c['percent_off'] > 90}
 		
 		if params['newSearch'].present? && newSearchParams[:for].present?

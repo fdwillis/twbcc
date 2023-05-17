@@ -1,5 +1,7 @@
 class ApplicationController < ActionController::Base
 	before_action :authenticate_user!, only: [:loved, :list] 
+	before_action :loadMemberships
+	
 	def update_discount
 		begin
 			membershipDetails = current_user&.checkMembership
@@ -218,6 +220,7 @@ class ApplicationController < ActionController::Base
 	      	'US',
 	      ]
 	  successURL = "http://#{request.env['HTTP_HOST']}/new-password-set?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}"
+		
 		if session['coupon'].nil?	
 			# free -> build on page, 
 			# affiliate, 
@@ -549,6 +552,10 @@ class ApplicationController < ActionController::Base
 			session['howITWOrks'] = @headlines.sample
 		end
 		ahoy.track "How It Works Visited", previousPage: request.referrer, title: session['howITWOrks']
+	end
+
+	def loadMemberships
+		
 	end
 end
 
