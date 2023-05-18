@@ -11,28 +11,33 @@ class SearchController < ApplicationController
 
 			if session['search'].present?
 				if session['search'].map{|d| d[:query]}.include?(@query)
-					session['search'].each do |info|
+					session['search'].each do |infox|
 						
-						if info[:query] == @query && info[:data].present?
+						if infox[:query] == @query && infox[:data].present?
 							# show cache data to paginate
 							ahoy.track "Cache Search Term", pageNumber: params['page'], previousPage: request.referrer, query: @query, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
-							@searchResults = info[:data].paginate(page: params['page'], per_page: 6)
+							@searchResults = infox[:data].paginate(page: params['page'], per_page: 6)
 						end
 					end
 				else
 					#paginate
 
 					ahoy.track "New Search Term",pageNumber: params['page'], previousPage: request.referrer, query: @query, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
-					@searchResults = User.rainforestSearch(@query, nil, @country)[0][:data].paginate(page: params['page'], per_page: 6)
-					session['search'] |= [{query: @query, data: @searchResults, country: @country}]
+					
+					searchResults = User.rainforestSearch(@query, nil, @country)
+					@searchResults = searchResults.paginate(page: params['page'], per_page: 6)
+					session['search'] |= [{query: @query, data: searchResults, country: @country}]
 				end
 
 			else
 				session['search'] = []
 				#paginate
 				ahoy.track "New Search Term",pageNumber: params['page'], previousPage: request.referrer, query: @query, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
-				@searchResults = User.rainforestSearch(@query, nil, @country)[0][:data].paginate(page: params['page'], per_page: 6)
-				session['search'] |= [{query: @query, data: @searchResults, country: @country}]
+				
+				searchResults = User.rainforestSearch(@query, nil, @country)
+				@searchResults = searchResults.paginate(page: params['page'], per_page: 6)
+
+				session['search'] |= [{query: @query, data: searchResults, country: @country}]
 			end
 
 

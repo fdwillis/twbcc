@@ -151,7 +151,6 @@ class User < ApplicationRecord
   end
 
   def self.rainforestSearch(term = nil, category = nil, country = nil)
-    sampleSize = 1
     @data = []
 
     if category&.present?
@@ -162,7 +161,7 @@ class User < ApplicationRecord
       
     loadedData = Oj.load(res.body)['search_results']
     @data << {category: term, data: loadedData}
-    @data
+    @data[0][:data]
   end
 
   def self.autoSearchCategories
