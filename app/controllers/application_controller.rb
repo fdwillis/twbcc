@@ -1,6 +1,28 @@
 class ApplicationController < ActionController::Base
 	before_action :authenticate_user!, only: [:loved, :list] 
 	before_action :loadMemberships
+
+	def inquiry
+		begin
+			if params['newInquiry'].present?
+				customMade = Custominquiry.create(email: params['newInquiry']['email'], phone: params['newInquiry']['phone'])
+
+				if customMade.present? 
+					flash[:success] = "Inquiry Submitted"
+					redirect_to membership_path
+				else
+					flash[:error] = "Something Happened"
+					redirect_to membership_path
+				end
+			else
+				flash[:error] = "Something Happened"
+				redirect_to membership_path
+			end
+		rescue Exception => e
+      flash[:error] = "#{e}"
+      redirect_to membership_path
+    end
+	end
 	
 	def update_discount
 		begin

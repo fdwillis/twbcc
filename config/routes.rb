@@ -36,6 +36,7 @@ Rails.application.routes.draw do
   get "/display-discount", to: 'application#display_discount', as: 'display_discount'
   get "/update-discount", to: 'application#update_discount', as: 'update_discount'
 
+  post "/inquiry", to: 'application#inquiry', as: 'inquiry' # sprint2
   post "/activate", to: 'categories#activate'
   post "/search", to: 'search#index'
   post "/cancel", to: 'application#cancel', as: 'cancel'

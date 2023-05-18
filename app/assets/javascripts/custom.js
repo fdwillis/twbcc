@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     var single = new Splide( '#'+e.id, {
                         type:'loop',
                         autoplay:true,
-                        interval:5000,
+                        interval:10000,
                         perPage: 1,
                     }).mount();
                     var sliderNext = document.querySelectorAll('.slider-next');
