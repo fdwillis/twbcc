@@ -43,11 +43,14 @@ Rails.application.routes.draw do
   post "/new-password-set", to: 'registrations#new_password'
   post "/loved", to: 'application#loved'
   post "/list", to: 'application#list'
+  post '/stripe-webhooks' => "stripe_webhooks#update", as: :stripeWebhooks
 
   resources :blogs, path: '/blog'
   resources :products, path: '/product'
   resources :categories, path: '/categories'
   resources :brands, path: '/brands'
   resources :search, path: '/search'
+
+
 
 end

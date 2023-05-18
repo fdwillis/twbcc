@@ -1,5 +1,6 @@
 class StripeWebhooksController < ApplicationController
-
+  protect_from_forgery with: :null_session
+  
   def update
     event = params['stripe_webhook']['type']
     stripeObject = params['data']['object']
