@@ -26,7 +26,7 @@ module Shortz
     config.exceptions_app = self.routes
     config.exceptions_app = ->(env) { ErrorsController.action(:show).call(env) }
     config.consider_all_requests_local  = false # true
-
+    config.assets.initialize_on_precompile = false
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded after loading
