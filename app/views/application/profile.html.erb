@@ -126,7 +126,7 @@
 		                </div>
 		            </a>
 		            <div class="col-12">
-		              <a href="<%= amazon_path(id: itm, country: itm.split('-')[1],asin: itm.split('-')[0]) %>/?&referredBy=<%= @userFound&.uuid  %>">
+		              <a href="<%= amazon_path(id: itm, country: itm.split('-')[1],asin: itm.split('-')[0]) %>/?&referredBy=<%= @userFound&.uuid  %>" target='_blank'>
 		                <%= button_tag( :class => "btn btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
 		                  <i class="fa fa-amazon font-20 color-white"></i>
 		                <% end %>

@@ -547,7 +547,7 @@ class ApplicationController < ActionController::Base
 	def how_it_works
 		if session['howITWOrks'].present?
 		else
-			@headlines = ['Signup - Share - Earn','Integrate Directly With Amazon Associates','Customizable Automation For Affiliates','Oarlin - Join The Hive','Supercharged Automation For Affiliates']
+			@headlines = ['Signup - Share - Earn','Made Exclusively For Amazon Associates','Customizable Automation For Amazon Associates','Oarlin - Join The Hive','Supercharged Automation For Amazon Associates']
 
 			session['howITWOrks'] = @headlines.sample
 		end
