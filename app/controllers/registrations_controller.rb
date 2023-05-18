@@ -210,7 +210,7 @@ class RegistrationsController < ApplicationController
 		      	generateLink = @bitlyClient.shorten(long_url: "https://app.oarlin.com/profile/#{loadedCustomer&.uuid}")
 		      	
 		      	generateLink.update(title: "Profile #{loadedCustomer&.uuid}")
-		      	
+		      
 		      	Stripe::Customer.update(
 			        stripeSessionInfo['customer'],{
 			        	metadata: {

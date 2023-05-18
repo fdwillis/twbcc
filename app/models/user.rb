@@ -7,15 +7,6 @@ class User < ApplicationRecord
   has_many :blogs
   include MediaEmbed::Handler
 
-  def self.bitly
-    data = {
-        "custom_bitlink"=>"chauncey.ly/documentation",
-        "bitlink_id"=>"chauncey.ly/1234abcd"
-      }.to_json
-    curlCall = `curl -H "Authorization: Bearer #{ENV['bitlyToken']}" -H "Content-Type: application/json" -d "#{data}" -X POST https://api-ssl.bitly.com/v4/custom_bitlinks`
-
-  end
-
   ACCEPTEDcountries = {
     #sprint2 check magic team from these countries
     'au' => {

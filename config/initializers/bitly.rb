@@ -4,4 +4,3 @@ oauth = Bitly::OAuth.new(client_id: ENV['bitlyClient'], client_secret: ENV['bitl
 @bitlyClient = Bitly::API::Client.new(
   token: ENV['bitlyToken']
 )
-
