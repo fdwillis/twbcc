@@ -22,23 +22,25 @@ class BrandsController < ApplicationController
           
           if info[:query] == @query && info[:data].present?
             # show cache data to paginate
-            ahoy.track "Cache Search Term", pageNumber: params['page'], previousPage: request.referrer, query: @query, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
+            ahoy.track "Recommended Cache Term", pageNumber: params['page'], previousPage: request.referrer, query: @query, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
             @searchResults = info[:data].shuffle.paginate(page: params['page'], per_page: 6)
           end
         end
       else
         #paginate
 
-        ahoy.track "New Search Term",pageNumber: params['page'], previousPage: request.referrer, query: @query, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
-        @searchResults = User.rainforestSearch(@query, thisAmazonCat, @country)[0][:data].paginate(page: params['page'], per_page: 6)
-        session['search'] |= [{amazonCategory: thisAmazonCat, query: @query, data: @searchResults, country: @country}]
+        ahoy.track "Recommended Search Term",pageNumber: params['page'], previousPage: request.referrer, query: @query, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
+        searchResults = User.rainforestSearch(@query, thisAmazonCat, @country)
+        @searchResults = searchResults.paginate(page: params['page'], per_page: 6)
+        session['search'] |= [{amazonCategory: thisAmazonCat, query: @query, data: searchResults, country: @country}]
       end
 
     else
       session['search'] = []
       #paginate
-      ahoy.track "New Search Term",pageNumber: params['page'], previousPage: request.referrer, query: @query, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
-      @searchResults = User.rainforestSearch(@query, thisAmazonCat, @country)[0][:data].paginate(page: params['page'], per_page: 6)
+      ahoy.track "Recommended Search Term",pageNumber: params['page'], previousPage: request.referrer, query: @query, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
+      searchResults = User.rainforestSearch(@query, thisAmazonCat, @country)
+      @searchResults = searchResults.paginate(page: params['page'], per_page: 6)
       session['search'] |= [{amazonCategory: thisAmazonCat, query: @query, data: @searchResults, country: @country}]
     end
   end

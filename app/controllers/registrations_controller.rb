@@ -14,7 +14,7 @@ class RegistrationsController < ApplicationController
 		      stripePlan = Stripe::Subscription.list({customer: stripeSessionInfo['customer']})['data'][0]['items']['data'][0]['plan']['id']
 		      
 		      if stripeSessionInfo['custom_fields'][1]['dropdown']['value'] == 'US'
-			      #make cardholder -> usa and uk
+			      #make cardholder -> usa
 			      if stripeSessionInfo['custom_fields'][0]['dropdown']['value'] == 'company'
 			        cardHolderNew = Stripe::Issuing::Cardholder.create({
 			          type: stripeSessionInfo['custom_fields'][0]['dropdown']['value'],
