@@ -42,6 +42,7 @@
           <div class="col-6 pe-0">
             
             <% if @searchResults[0].present? %>
+
               <a href="/product/<%= @searchResults[0]['asin']%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>&product[country]=<%= @country %>" class="card card-style mb-2" style='background-image: url("<%=  @searchResults[0]['image'] %>");height: 135px;' data-card-height="135">
                   <div class="card-top text-center">
                     <% Brand.where("categories like ?", @searchResults[0]['title']).present? && Brand.where("categories like ?", @searchResults[0]['title']).map(&:tags)[0].split(',').shuffle.take(1).each do |tag| %>
@@ -52,13 +53,92 @@
 
                   <div class="card-bottom p-3">
                       <h5 class="color-white font-500 font-14 mb-n1">
-                          <%= @searchResults[0]['title'] %>
+                          <%= number_to_currency(@searchResults[0]['price']['value'], precision: 2) %>
                       </h5>
                   </div>
-                  <div class="card-overlay bg-black opacity-70"></div>
+                  <div class="card-overlay bg-black opacity-25"></div>
               </a>
             <% end %>
             
+            <% if @searchResults[1].present? %>
+              <a href="/product/<%= @searchResults[1]['asin']%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>&product[country]=<%= @country %>" class="card card-style mb-2" style='background-image: url("<%=  @searchResults[1]['image'] %>");height: 135px;' data-card-height="135">
+                  <div class="card-top text-center">
+                    <% Brand.where("categories like ?", @searchResults[1]['title']).present? && Brand.where("categories like ?", @searchResults[1]['title']).map(&:tags)[0].split(',').shuffle.take(1).each do |tag| %>
+                      <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                    <% end %>
+                  </div>
+
+
+                  <div class="card-bottom p-3">
+                      <h5 class="color-white font-500 font-14 mb-n1">
+                          <%= number_to_currency(@searchResults[1]['price']['value'], precision: 2) %>
+                      </h5>
+                  </div>
+                  <div class="card-overlay bg-black opacity-25"></div>
+              </a>
+            <% end %>
+            
+          </div>
+          <div class="col-6 ps-0">
+            <% if @searchResults[2].present? %>
+              <a href="/product/<%= @searchResults[2]['asin']%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>&product[country]=<%= @country %>" class="card card-style ms-0" style='background-image: url("<%=  @searchResults[2]['image'] %>")' data-card-height="280" style="height: 280px;">
+                  <div class="card-top text-center">
+                    <% Brand.where("categories like ?", @searchResults[2]['title']).present? && Brand.where("categories like ?", @searchResults[2]['title']).map(&:tags)[0].split(',').shuffle.take(1).each do |tag| %>
+                      <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                    <% end %>
+                  </div>
+                  <div class="card-bottom p-3">
+                      <h5 class="color-white font-500"><%= number_to_currency(@searchResults[2]['price']['value'], precision: 2) %></h5>
+                  </div>
+                  <div class="card-overlay bg-black opacity-25"></div>
+              </a>
+            <% end %>
+          </div>
+      </div>
+
+      <div class="row mb-0 mt-n3">
+          <div class="col-6 pe-0">
+            <% if @searchResults[3].present? %>
+              <a href="/product/<%= @searchResults[3]['asin']%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>&product[country]=<%= @country %>" class="card card-style" style='background-image: url("<%=  @searchResults[3]['image'] %>");height: 280px;' data-card-height="280" style="">
+                  <div class="card-top text-center">
+                    <% Brand.where("categories like ?", @searchResults[3]['title']).present? && Brand.where("categories like ?", @searchResults[3]['title']).map(&:tags)[0].split(',').shuffle.take(1).each do |tag| %>
+                      <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                    <% end %>
+                  </div>
+                  <div class="card-bottom p-3">
+                      <h5 class="color-white font-500"><%= number_to_currency(@searchResults[3]['price']['value'], precision: 2) %></h5>
+                  </div>
+                  <div class="card-overlay bg-black opacity-25"></div>
+              </a>
+            <% end %>
+          </div>
+          <div class="col-6 ps-0">
+            <% if @searchResults[4].present? %>
+              <a href="/product/<%= @searchResults[4]['asin']%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>&product[country]=<%= @country %>" class="card ms-0 card-style mb-2" data-card-height="135" style='background-image: url("<%=  @searchResults[4]['image'] %>");height: 135px;'>
+                  <div class="card-top text-center">
+                      <% Brand.where("categories like ?", @searchResults[4]['title']).present? && Brand.where("categories like ?", @searchResults[4]['title']).map(&:tags)[0].split(',').shuffle.take(1).each do |tag| %>
+                        <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                      <% end %>
+                  </div>
+                  <div class="card-bottom p-3">
+                      <h5 class="color-white font-500 font-14 mb-n1"><%= number_to_currency(@searchResults[4]['price']['value'], precision: 2) %></h5>
+                  </div>
+                  <div class="card-overlay bg-black opacity-25"></div>
+              </a>
+            <% end %>
+            <% if @searchResults[5].present? %>
+              <a href="/product/<%= @searchResults[5]['asin']%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>&product[country]=<%= @country %>" class="card ms-0 card-style mb-2" data-card-height="135" style='background-image: url("<%=  @searchResults[5]['image'] %>");height: 135px;'>
+                  <div class="card-top text-center">
+                      <% Brand.where("categories like ?", @searchResults[5]['title']).present? && Brand.where("categories like ?", @searchResults[5]['title']).map(&:tags)[0].split(',').shuffle.take(1).each do |tag| %>
+                        <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
+                      <% end %>
+                  </div>
+                  <div class="card-bottom p-3">
+                      <h5 class="color-white font-500 font-14 mb-n1"><%= number_to_currency(@searchResults[5]['price']['value'], precision: 2) %></h5>
+                  </div>
+                  <div class="card-overlay bg-black opacity-25"></div>
+              </a>
+            <% end %>
           </div>
       </div>
 
@@ -116,7 +196,7 @@
                           <%= @categories[0].title %>
                       </h5>
                   </div>
-                  <div class="card-overlay bg-black opacity-70"></div>
+                  <div class="card-overlay bg-black opacity-25"></div>
               </a>
             <% end %>
             <% if @categories[1].present? %>
@@ -129,7 +209,7 @@
                   <div class="card-bottom p-3">
                       <h5 class="color-white font-500 font-14 mb-n1"><%= @categories[1].title %></h5>
                   </div>
-                  <div class="card-overlay bg-black opacity-70"></div>
+                  <div class="card-overlay bg-black opacity-25"></div>
               </a>
             <% end %>
           </div>
@@ -144,7 +224,7 @@
                   <div class="card-bottom p-3">
                       <h5 class="color-white font-500"><%= @categories[2].title %></h5>
                   </div>
-                  <div class="card-overlay bg-black opacity-70"></div>
+                  <div class="card-overlay bg-black opacity-25"></div>
               </a>
             <% end %>
           </div>
@@ -177,7 +257,7 @@
                   <div class="card-bottom p-3">
                       <h5 class="color-white font-500 font-14 mb-n1"><%= @categories[4].title %></h5>
                   </div>
-                  <div class="card-overlay bg-black opacity-70"></div>
+                  <div class="card-overlay bg-black opacity-25"></div>
               </a>
             <% end %>
             <% if @categories[5].present? %>
@@ -190,7 +270,7 @@
                   <div class="card-bottom p-3">
                       <h5 class="color-white font-500 font-14 mb-n1"><%= @categories[5].title %></h5>
                   </div>
-                  <div class="card-overlay bg-black opacity-70"></div>
+                  <div class="card-overlay bg-black opacity-25"></div>
               </a>
             <% end %>
           </div>
@@ -209,10 +289,7 @@
             <a class="page-link rounded-xs bg-highlight color-white py-2 border-0" href="/search?&newSearch[country]=<%= @country %>&newSearch[for]=<%= @query %>&page=<%= params['page'].to_i - 1 %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" tabindex="-1" aria-disabled="true"><i class="fa fa-angle-left"></i></a>
           </li>
         <% end %>
-        <% @searchResults.total_pages.times do |pageNum|%>
-
-          <li class="page-item"><a class="page-link rounded-xs py-2 bg-highlight color-white border-0" disabled='true' href="/search?&newSearch[country]=<%= @country %>&newSearch[for]=<%= @query %>&page=<%= pageNum + 1 %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>"><%= pageNum + 1 %></a></li>
-        <% end %>
+        
         <% if params['page'].to_i < @searchResults.total_pages %>
           <li class="page-item">
             <a class="page-link rounded-xs bg-highlight color-white py-2 border-0" href="/search?&newSearch[country]=<%= @country %>&newSearch[for]=<%= @query %>&page=<%= params['page'].present? ? params['page'].to_i + 1 : 2 %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>"><i class="fa fa-angle-right"></i></a>
@@ -232,10 +309,7 @@
                   <a class="page-link rounded-xs bg-highlight color-white py-2 border-0" href="/search?page=<%= params['page'].to_i - 1 %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" tabindex="-1" aria-disabled="true"><i class="fa fa-angle-left"></i></a>
               </li>
             <% end %>
-            <% @categories.total_pages.times do |pageNum|%>
-
-              <li class="page-item"><a class="page-link rounded-xs py-2 bg-highlight color-white border-0" disabled='true' href="/search?page=<%= pageNum + 1 %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>"><%= pageNum + 1 %></a></li>
-            <% end %>
+            
             <% if params['page'].to_i < @categories.total_pages %>
               <li class="page-item">
                   <a class="page-link rounded-xs bg-highlight color-white py-2 border-0" href="/search?page=<%= params['page'].present? ? params['page'].to_i + 1 : 2 %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>"><i class="fa fa-angle-right"></i></a>
