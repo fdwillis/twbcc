@@ -28,9 +28,8 @@ namespace :generate do
     freePercentages.each do |num|
       coupon = Stripe::Coupon.create({
         percent_off: num,
-        duration: 'repeating',
-        duration_in_months: 2,
-        max_redemptions: 1,
+        duration: 'once',
+        max_redemptions: 2500,
         # max_redemptions: 50,
         redeem_by: (Date.today + 2.days).to_time.to_i
       })
@@ -42,9 +41,8 @@ namespace :generate do
     affiliatePercentages.each do |num|
       coupon = Stripe::Coupon.create({
         percent_off: num,
-        duration: 'repeating',
-        duration_in_months: 3,
-        max_redemptions: 1,
+        duration: 'once',
+        max_redemptions: 1000,
         # max_redemptions: 250,
         redeem_by: (Date.today + 2.days).to_time.to_i
       })
@@ -57,9 +55,8 @@ namespace :generate do
     businessPercentages.each do |num|
       Stripe::Coupon.create({
         percent_off: num,
-        duration: 'repeating',
-        duration_in_months: 6,
-        max_redemptions: 1,
+        duration: 'once',
+        max_redemptions: 500,
         # max_redemptions: 500,
         redeem_by: (Date.today + 2.days).to_time.to_i
       })
@@ -70,9 +67,8 @@ namespace :generate do
     automationPercentages.each do |num|
       Stripe::Coupon.create({
         percent_off: num,
-        duration: 'repeating',
-        duration_in_months: 9,
-        max_redemptions: 1,
+        duration: 'once',
+        max_redemptions: 250,
         # max_redemptions: 1000,
         redeem_by: (Date.today + 2.days).to_time.to_i
       })
@@ -82,9 +78,8 @@ namespace :generate do
     customPercentages.each do |num|
       Stripe::Coupon.create({
         percent_off: num,
-        duration: 'repeating',
-        duration_in_months: 12,
-        max_redemptions: 1,
+        duration: 'once',
+        max_redemptions: 100,
         # max_redemptions: 2500,
         redeem_by: (Date.today + 2.days).to_time.to_i
       })
