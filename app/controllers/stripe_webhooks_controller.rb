@@ -18,11 +18,11 @@ class StripeWebhooksController < ApplicationController
         subscriptionList.each do |subscription|
           if validMemberships.include?(subscription['id']) && subscription['active'] == true && loadedAffililate&.amazonCountry == 'US'
             Stripe::Transfer.create({
-              amount: (subscription['amount']*(stripeAffiliate['metadata']['commissionRate']/100)).to_i,
+              amount: (subscription['amount']*(stripeAffiliate['metadata']['commissionRate'].to_f/100)).to_i,
               currency: 'usd',
               destination: affiliateConnectAccount,
               description: "Membership Commission",
-              source_transaction: subscription['charge']
+              source_transaction: stripeObject['charge']
             })
           end
         end
