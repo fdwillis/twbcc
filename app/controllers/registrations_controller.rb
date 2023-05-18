@@ -207,7 +207,7 @@ class RegistrationsController < ApplicationController
 
 		      # btly
 		      if loadedCustomer&.checkMembership[:membershipType] != 'free'
-		      	generateLink = @bitlyClient.shorten(long_url: "https://app.oarlin.com/profile/#{loadedCustomer&.uuid}")
+		      	generateLink = @bitlyClient.shorten(long_url: "https://app.oarlin.com/profile/#{loadedCustomer&.uuid}?&referredBy=#{loadedCustomer&.uuid}")
 		      	
 		      	generateLink.update(title: "Profile #{loadedCustomer&.uuid}")
 		      
