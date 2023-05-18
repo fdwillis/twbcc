@@ -7,8 +7,12 @@ class RegistrationsController < ApplicationController
 		        setSessionVarParams['stripeSession'],
 		      )
 		      stripeCustomer = Stripe::Customer.retrieve(stripeSessionInfo['customer'])
+
+		      loadedCustomer = User.find_by(stripeCustomerID: stripeSessionInfo['customer'])
 		      loadedAffililate = User.find_by(uuid: setSessionVarParams['referredBy'])
+
 		      stripePlan = Stripe::Subscription.list({customer: stripeSessionInfo['customer']})['data'][0]['items']['data'][0]['plan']['id']
+		      
 		      if stripeSessionInfo['custom_fields'][1]['dropdown']['value'] == 'US'
 			      #make cardholder -> usa and uk
 			      if stripeSessionInfo['custom_fields'][0]['dropdown']['value'] == 'company'
@@ -199,6 +203,22 @@ class RegistrationsController < ApplicationController
 						    source_transaction: firstCustomerCharge['id']
 						  })
 						end
+		      end
+
+		      # btly
+		      if loadedCustomer&.checkMembership[:membershipType] != 'free'
+		      	generateLink = @bitlyClient.shorten(long_url: "https://app.oarlin.com/profile/#{loadedCustomer&.uuid}")
+		      	
+		      	generateLink.update(title: "Profile #{loadedCustomer&.uuid}")
+		      	
+		      	Stripe::Customer.update(
+			        stripeSessionInfo['customer'],{
+			        	metadata: {
+				          shortLink: generateLink.link,
+				          # recipientAccount: recipientAccount['id'],
+				        }
+				      },
+			      )
 		      end
 		      
 	      	ahoy.track "Membership Signup", headline: session['howITWOrks'], previousPage: request.referrer, uuid: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).uuid, referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : 'admin'
