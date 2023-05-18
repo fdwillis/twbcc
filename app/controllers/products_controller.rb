@@ -27,7 +27,12 @@ class ProductsController < ApplicationController
   def amazon
     #analytics
     ahoy.track "Product Purchase Intent", previousPage: request.referrer, asin: params['asin'], referredBy: params['referredBy'].present? ? params['referredBy'] : current_user&.present? ? current_user&.uuid : ENV['usAmazonTag']
-    redirect_to User.renderLink(params['referredBy'], params['country'], params['asin'])
+    
+    if params['fromProfile'].present?
+      redirect_to User.renderLink(params['referredBy'].present? ? params['referredBy'] : nil, params['country'], params['asin'], current_user&.present? ? current_user : nil)
+    else
+      redirect_to User.renderLink(params['referredBy'].present? ? params['referredBy'] : nil, params['country'], params['asin'], current_user&.present? ? current_user : nil)
+    end
   end
 
   # GET /products/1 or /products/1.json

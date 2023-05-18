@@ -96,16 +96,24 @@ class User < ApplicationRecord
   BUSINESSmembership = [ENV['businessMonthly'], ENV['businessAnnual']] 
   AUTOMATIONmembership = [ENV['automationMonthly'], ENV['automationAnnual']] 
 
-  def self.renderLink(referredBy, country, asin)
+  def self.renderLink(referredBy, country, asin, current_user = nil)
     @userFound = referredBy.present? ? User.find_by(uuid: referredBy) : nil
     @profile = @userFound.present? ? Stripe::Customer.retrieve(@userFound.stripeCustomerID) : nil
     @membershipDetails = @userFound.present? ? @userFound.checkMembership : nil
-
+    #account for current user
     affiliteLink = "https://www.#{ACCEPTEDcountries[country.downcase][:site]}/dp/product/#{asin.upcase}?&tag=#{@userFound&.amazonUUID}"
     adminLink =  "https://www.#{ACCEPTEDcountries[country.downcase][:site]}/dp/product/#{asin.upcase}?&tag=#{ENV['usAmazonTag']}"
     #split traffic 95/5
     if @membershipDetails.present? && @membershipDetails[:membershipDetails][0]['status'] == 'active'
-      @loadedLink = affiliteLink
+      if current_user&.referredBy&.split(',').present? && current_user&.referredBy&.split(',').reject(&:blank?).present?
+        affiliteLink = "https://www.#{ACCEPTEDcountries[country.downcase][:site]}/dp/product/#{asin.upcase}?&tag=#{User.find_by(uuid: current_user&.referredBy)&.amazonUUID}"
+        @loadedLink = affiliteLink
+      elsif current_user.nil?
+        @loadedLink = affiliteLink
+      else
+        @loadedLink = adminLink
+      end
+
     else 
       @loadedLink = adminLink
     end

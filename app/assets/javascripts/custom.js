@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     var single = new Splide( '#'+e.id, {
                         type:'loop',
                         autoplay:true,
-                        interval:4000,
+                        interval:5000,
                         perPage: 1,
                     }).mount();
                     var sliderNext = document.querySelectorAll('.slider-next');
@@ -150,9 +150,9 @@ document.addEventListener('DOMContentLoaded', () => {
                      var double = new Splide( '#'+e.id, {
                         type:'loop',
                         autoplay:true,
-                        interval:4000,
+                        interval:5000,
                         arrows:false,
-                        perPage: 2,
+                        perPage: 1,
                     }).mount();
                 });
             }
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
                      var tripple = new Splide( '#'+e.id, {
                         type:'loop',
                         autoplay:true,
-                        interval:4000,
+                        interval:5000,
                         arrows:false,
                         perPage: 3,
                         perMove: 1,
