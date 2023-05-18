@@ -279,10 +279,7 @@
                   <p class=" font-12 color-highlight m-n2">Built From Scratch</p>
                   <h1 class="font-12 opacity-50 text-cente">Custom Member</h1>
                   <div class="list-group list-custom-small">
-                  <h1 class="m-n2 p-2">
-                    <%= number_to_currency(freeMembership['unit_amount'] * 0.01, precision: 2) %>
-                  </h1>
-                    <% freeMembership['metadata'].each do |point| %>
+                    <% automationAnnual['metadata'].each do |point| %>
                         
                       <span href="#" class="text-center font-15">
                         <%= point[0] %> 
