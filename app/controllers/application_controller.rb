@@ -16,11 +16,11 @@ class ApplicationController < ActionController::Base
 				end
 			else
 				flash[:error] = "Something Happened"
-				redirect_to membership_path
+				redirect_to request.referrer
 			end
 		rescue Exception => e
       flash[:error] = "#{e}"
-      redirect_to membership_path
+      redirect_to request.referrer
     end
 	end
 	
