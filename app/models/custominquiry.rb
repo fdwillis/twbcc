@@ -1,0 +1,2 @@
+class Custominquiry < ApplicationRecord
+end

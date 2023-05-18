@@ -12,6 +12,7 @@ gem 'uglifier'
 gem 'coffee-rails'
 gem 'jquery-rails'
 gem 'jquery'
+gem 'twilio-ruby'
 gem 'pwa'
 # bitly predict clicks, ratios, and income #sprint2
 gem 'social-share-button'
