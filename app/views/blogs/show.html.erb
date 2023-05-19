@@ -132,13 +132,6 @@
       <%= image_tag @blog.images.split(",").shuffle[0], style:"height: 100%;width: 100%;" %>
     <% end %>
       <div class="card-center text-center">
-        <div class="rounded-xl text-center pb-3">
-            <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
-            <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
-            <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
-            <i class="font-20 color-yellow-dark px-1 fa fa-star"></i>
-            <i class="font-20 color-gray-dark px-1 fa fa-star"></i>
-        </div>
           <h1 class="color-white p-2">"Versatile and Easy to Use"</h1>
           <a href="/view-on-amazon/<%= @blog&.asins.split(',').shuffle[0] %>/<%= @blog&.country&.downcase %>/?&referredBy=<%=  !@blog&.user.admin? ? @blog&.user&.uuid: nil %>" class="btn btn-m mb-3 rounded-xs text-uppercase font-900 shadow-s bg-yellow-dark" target='_blank'><i class="fa fa-amazon font-20 color-white"></i> Secret Item</a>
       </div>
