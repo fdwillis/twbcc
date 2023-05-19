@@ -39,7 +39,6 @@ gem 'awesome_print'
 gem 'clockwork'
 gem 'faker'
 gem 'oj'
-gem 'curb'
 gem 'byebug'
 gem 'rails_12factor', group: :production
 
