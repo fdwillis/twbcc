@@ -1,6 +1,6 @@
 <div class="header-clear-medium">
 <!--   <%= current_user&.checkMembership %> -->
-  <% if current_user&.admin? || (current_user&.present? && current_user&.checkMembership[:membershipType] == 'business' && current_user.blogs.size <= 9 && current_user&.checkMembership[:membershipDetails][:active] == true) || (current_user&.present? && current_user&.checkMembership[:membershipType] == 'automation'&& current_user&.checkMembership[:membershipDetails][:active] == true) %>  
+  <% if current_user&.admin? %>  
     <%= link_to 'New Post', "/blog/new?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}", class: 'btn btn-m btn-full mb-3 rounded-sm text-uppercase font-900 color-highlight bg-theme' %>
   <% end %>
 
