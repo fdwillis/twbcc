@@ -174,7 +174,7 @@ class ApplicationController < ActionController::Base
 	def checkout
 		applicationFeeAmount = Stripe::Price.retrieve(params['price'],{stripe_account: params['account']})['unit_amount'] * 0.02
 		@session = Stripe::Checkout::Session.create({
-			success_url: "http://#{request.env['HTTP_HOST']}",
+			success_url: "https://oarlin.com/?&referredBy=#{params['referredBy']}",
       phone_number_collection: {
 	      enabled: true
 	    },
@@ -241,7 +241,7 @@ class ApplicationController < ActionController::Base
 	      	'GB',
 	      	'US',
 	      ]
-	  successURL = "https://#{request.env['HTTP_HOST']}/new-password-set?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}"
+	  successURL = "https://oarlin.com/new-password-set?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}"
 		
 		if session['coupon'].nil?	
 			# free -> build on page, 
@@ -468,9 +468,9 @@ class ApplicationController < ActionController::Base
 			validMembership = current_user.checkMembership
 			@stripeAccountUpdate = Stripe::AccountLink.create(
 			  {
-			    account: Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['connectAccount'],
-			    refresh_url: "https://#{request.env['HTTP_HOST']}",
-			    return_url: "https://#{request.env['HTTP_HOST']}",
+			    account: Stripe::Customer.retrieve(current_user.&stripeCustomerID)['metadata']['connectAccount'],
+			    refresh_url: "https://oarlin.com/?&referredBy=#{current_user&.uuid}",
+			    return_url: "https://oarlin.com/?&referredBy=#{current_user&.uuid}",
 			    type: 'account_onboarding',
 			  },
 			)
@@ -480,8 +480,8 @@ class ApplicationController < ActionController::Base
 			# 	@recipientAccountUpdate = Stripe::AccountLink.create(
 			# 	  {
 			# 	    account: Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['connectAccount'],
-			# 	    refresh_url: "http://#{request.env['HTTP_HOST']}",
-			# 	    return_url: "http://#{request.env['HTTP_HOST']}",
+			# 	    refresh_url: "http://oarlin.com",
+			# 	    return_url: "http://oarlin.com",
 			# 	    type: 'account_onboarding',
 			# 	  },
 			# 	)
