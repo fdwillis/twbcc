@@ -463,7 +463,7 @@ class ApplicationController < ActionController::Base
 		@profile = Stripe::Customer.retrieve(@userFound.stripeCustomerID)
 		@membershipDetails = @userFound.checkMembership
 		@profileMetadata = @profile['metadata']
-		debugger
+
 		if current_user
 			validMembership = current_user&.checkMembership
 			@stripeAccountUpdate = Stripe::AccountLink.create(
