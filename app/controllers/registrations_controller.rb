@@ -236,7 +236,7 @@ class RegistrationsController < ApplicationController
 
 		      flash[:success] = "Your Account Setup Is Complete!"
 
-		      redirect_to request.referrer
+		      redirect_to new_password_path
 		    else
 		    	flash[:alert] = 'Password Must Match'
 		    	redirect_to request.referrer
