@@ -31,7 +31,7 @@
   <div class="d-flex mt-4 mb-4">
       <div class="flex-grow-1">
         <div class="font-20 text-center">
-          Share With The World <%= social_share_button_tag("Title", :url => "https://#{request.env['HTTP_HOST']}&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}", :image =>  "https://images.mktw.net/im-720056?width=700&height=466", desc: truncate("Body", length: 50)) %>
+          Share With The World <%= social_share_button_tag("Title", :url => "https://oarlin.com/?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}", :image =>  "https://images.mktw.net/im-720056?width=700&height=466", desc: truncate("Body", length: 50)) %>
         </div>
       </div>
   </div>

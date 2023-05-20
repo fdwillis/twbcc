@@ -19,14 +19,14 @@
 <div class="header-clear-medium">
 
   <div class="card card-style over-card mb-4">
-        <% if @blog.images.present? %>
+        <% if @blog&.images.present? %>
           <div class="splide double-slider slider-no-dots slider-no-arrows splide--loop splide--ltr splide--draggable is-active" id="double-slider-334" style="visibility: visible;">
             <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button" aria-controls="double-slider-334-track" aria-label="Go to last slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-146.-14.6z"></path></svg></button><button class="splide__arrow splide__arrow--next" type="button" aria-controls="double-slider-334-track" aria-label="Next slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button></div><div class="splide__track" id="double-slider-334-track">
                     <div class="splide__list" id="double-slider-334-list" style="transform: translateX(-3024px);">
                       
-                        <% @blog.images.split(',').each_with_index do |img, indx| %>
+                        <% @blog&.images&.split(',').each_with_index do |img, indx| %>
                           <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 1512px;">
-                              <div data-card-height="300" class="card mx-3 bg-14 rounded-m shadow-l" style='background-image: url("<%=  "https://res.cloudinary.com/dulizdfij/image/upload/c_fill,g_auto/blog/#{current_user.uuid}/#{@blog.title.parameterize(separator: "-")}-#{indx}.jpg" %>");height: 300px;'>
+                              <div data-card-height="300" class="card mx-3 bg-14 rounded-m shadow-l" style='background-image: url("<%=  "https://res.cloudinary.com/dulizdfij/image/upload/c_fill,g_auto/blog/#{@blog&.user&.uuid}/#{@blog.title.parameterize(separator: "-")}-#{indx}.jpg" %>");height: 300px;'>
                                   <!-- <div class="card-bottom text-center mb-3">
                                       <h2 class="color-white text-uppercase font-900 mb-0">Top Notch Quality</h2>
                                       <p class="under-heading color-white">Flexibility, Speed, Ease of Use.</p>
@@ -69,20 +69,20 @@
               <% end %>
             </div>
             <div class="flex-shrink-1 p-1">
-              <a href="#" data-menu="flag-country-explained" class="btn btn-sm text-uppercase font-900 bg-highlight mb-4 rounded-sm"><i class="font-20 color-white px-1 fa fa-amazon"></i><span class="flag-icon flag-icon-<%= @blog.country.downcase %> font-20"></span></a></a>
+              <a href="#" data-menu="flag-country-explained" class="btn btn-sm text-uppercase font-900 bg-highlight mb-4 rounded-sm"><i class="font-20 color-white px-1 fa fa-amazon"></i><span class="flag-icon flag-icon-<%= @blog&.country&.downcase %> font-20"></span></a></a>
             </div>
           </div>
           
           <div class="divider mt-2 mb-3"></div>
           <p class="pt-2"><%= simple_format(@blog.body) %></p>
           <div class="font-20 text-center">
-            Share With The World <%= social_share_button_tag(@blog.title, :url => "https://#{request.env['HTTP_HOST']}", :image =>  @blog.images.split(',').shuffle.take(1)[0], desc: truncate(@blog.body, length: 50)) %>
+            Share With The World <%= social_share_button_tag(@blog.title, :url => "https://oarlin.com/?&referredBy=#{params['referredBy']}", :image => 'Oarlin_free-file.png', desc: truncate(@blog.body, length: 50)) %>
           </div>
       </div>
       <div class="row row-cols-3">
-        <% @blog.images.split(',').each_with_index do |img,indx| %>
-          <a data-gallery="gallery-1" href="<%= "https://res.cloudinary.com/dulizdfij/image/upload/c_fill,g_auto/blog/#{current_user.uuid}/#{@blog.title.parameterize(separator: "-")}-#{indx}.jpg" %>" title="<%= @blog.title %>">
-              <img src="<%=  "https://res.cloudinary.com/dulizdfij/image/upload/c_fill,g_auto/blog/#{current_user.uuid}/#{@blog.title.parameterize(separator: "-")}-#{indx}.jpg" %>" data-src="<%= "https://res.cloudinary.com/dulizdfij/image/upload/c_fill,g_auto/blog/#{current_user.uuid}/#{@blog.title.parameterize(separator: "-")}-#{indx}.jpg"%>" class="img-fluid rounded-m preload-img entered loaded" alt="img" data-ll-status="loaded" style="height: 200;">
+        <% @blog&.images&.split(',').each_with_index do |img,indx| %>
+          <a data-gallery="gallery-1" href="<%= "https://res.cloudinary.com/dulizdfij/image/upload/c_fill,g_auto/blog/#{@blog&.user&.uuid}/#{@blog.title.parameterize(separator: "-")}-#{indx}.jpg" %>" title="<%= @blog.title %>">
+              <img src="<%=  "https://res.cloudinary.com/dulizdfij/image/upload/c_fill,g_auto/blog/#{@blog&.user&.uuid}/#{@blog.title.parameterize(separator: "-")}-#{indx}.jpg" %>" data-src="<%= "https://res.cloudinary.com/dulizdfij/image/upload/c_fill,g_auto/blog/#{@blog&.user&.uuid}/#{@blog.title.parameterize(separator: "-")}-#{indx}.jpg"%>" class="img-fluid rounded-m preload-img entered loaded" alt="img" data-ll-status="loaded" style="height: 200;">
           </a>
         <% end %>
       </div>
@@ -128,8 +128,8 @@
   
 
   <div class="card bg-17 under-card" data-card-height="300">
-    <% if @blog.images.present? %>
-      <%= image_tag @blog.images.split(",").shuffle[0], style:"height: 100%;width: 100%;" %>
+    <% if @blog&.images.present? %>
+      <%= image_tag @blog&.images&.split(",").shuffle[0], style:"height: 100%;width: 100%;" %>
     <% end %>
       <div class="card-center text-center">
           <h1 class="color-white p-2">"Versatile and Easy to Use"</h1>
@@ -150,7 +150,7 @@
     <small>This Page Contains Amazon Affiliate Links That Will Earn That Affiliate Commission If Purchased. We Automate This Process For All Amazon Associates &amp; Pay Commission On Our Memberships As Well (Available In USA)</small>
     <a data-menu="modal-wizard-step-2">
       <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-highlight form-control mt-4 mb-4") do %>
-        <span class="flag-icon flag-icon-<%= @blog.country.downcase %> font-20"></span> What Does This Icon Mean?
+        <span class="flag-icon flag-icon-<%= @blog&.country&.downcase %> font-20"></span> What Does This Icon Mean?
       <% end %>
     </a>  
   </div>
@@ -159,9 +159,9 @@
 <div id="modal-wizard-step-2" class="menu menu-box-modal rounded-m" data-menu-width="330" style="display: block; width: 330px;">
   <div class="content mb-2">
     <div class="text-center">
-      <span class="flag-icon flag-icon-<%= @blog.country.downcase %> font-40"></span>
+      <span class="flag-icon flag-icon-<%= @blog&.country&.downcase %> font-40"></span>
     </div>
-    <h5 class="text-center">This Icon Means The Amazon Affiliate Links Originate From <%= User::ACCEPTEDcountries[@blog.country.downcase][:country] %>. </a>
+    <h5 class="text-center">This Icon Means The Amazon Affiliate Links Originate From <%= User::ACCEPTEDcountries[@blog&.country&.downcase][:country] %>. </a>
     </h5>
     <small>Affiliates From Other Countries May Be Eligible. Check With Amazon Or Contact Us To Help. These Products May Not Be Available For Purchase In All Countries.</small>
  
