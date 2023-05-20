@@ -241,7 +241,7 @@ class ApplicationController < ActionController::Base
 	      	'GB',
 	      	'US',
 	      ]
-	  successURL = "http://#{request.env['HTTP_HOST']}/new-password-set?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}"
+	  successURL = "https://#{request.env['HTTP_HOST']}/new-password-set?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}"
 		
 		if session['coupon'].nil?	
 			# free -> build on page, 
@@ -469,8 +469,8 @@ class ApplicationController < ActionController::Base
 			@stripeAccountUpdate = Stripe::AccountLink.create(
 			  {
 			    account: Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['connectAccount'],
-			    refresh_url: "http://#{request.env['HTTP_HOST']}",
-			    return_url: "http://#{request.env['HTTP_HOST']}",
+			    refresh_url: "https://#{request.env['HTTP_HOST']}",
+			    return_url: "https://#{request.env['HTTP_HOST']}",
 			    type: 'account_onboarding',
 			  },
 			)
