@@ -8,7 +8,7 @@ class RegistrationsController < ApplicationController
 		      )
 		      stripeCustomer = Stripe::Customer.retrieve(stripeSessionInfo['customer'])
 
-		      loadedCustomer = User.find_by(stripeCustomerID: stripeSessionInfo['customer'])
+		      
 		      loadedAffililate = User.find_by(uuid: setSessionVarParams['referredBy'])
 
 		      stripePlan = Stripe::Subscription.list({customer: stripeSessionInfo['customer']})['data'][0]['items']['data'][0]['plan']['id']
@@ -176,7 +176,7 @@ class RegistrationsController < ApplicationController
 			    end
 		      #make user with password passed
 		      
-		      User.create(
+		      loadedCustomer = User.create(
 		        referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : ',',
 		        email: stripeCustomer['email'], 
 		        password: setSessionVarParams['password'], 
@@ -206,7 +206,14 @@ class RegistrationsController < ApplicationController
 		      end
 
 		      # btly
+		      
 		      if loadedCustomer&.checkMembership[:membershipType] != 'free'
+		      	oauth = Bitly::OAuth.new(client_id: ENV['bitlyClient'], client_secret: ENV['bitlySecret'])
+						@bitlyToken = oauth.access_token(username: 'team@oarlin.com', password: ENV['bitlyPass'])
+
+						@bitlyClient = Bitly::API::Client.new(
+						  token: ENV['bitlyToken']
+						)
 		      	generateLink = @bitlyClient.shorten(long_url: "https://app.oarlin.com/profile/#{loadedCustomer&.uuid}?&referredBy=#{loadedCustomer&.uuid}")
 		      	
 		      	generateLink.update(title: "Profile #{loadedCustomer&.uuid}")
