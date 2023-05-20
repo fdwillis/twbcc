@@ -174,7 +174,7 @@ class ApplicationController < ActionController::Base
 	def checkout
 		applicationFeeAmount = Stripe::Price.retrieve(params['price'],{stripe_account: params['account']})['unit_amount'] * 0.02
 		@session = Stripe::Checkout::Session.create({
-			success_url: "https://oarlin.com/?&referredBy=#{params['referredBy']}",
+			success_url: "https://app.oarlin.com/?&referredBy=#{params['referredBy']}",
       phone_number_collection: {
 	      enabled: true
 	    },
@@ -241,7 +241,7 @@ class ApplicationController < ActionController::Base
 	      	'GB',
 	      	'US',
 	      ]
-	  successURL = "https://oarlin.com/new-password-set?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}"
+	  successURL = "https://app.oarlin.com/new-password-set?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}"
 		
 		if session['coupon'].nil?	
 			# free -> build on page, 
@@ -469,8 +469,8 @@ class ApplicationController < ActionController::Base
 			@stripeAccountUpdate = Stripe::AccountLink.create(
 			  {
 			    account: Stripe::Customer.retrieve(current_user.&stripeCustomerID)['metadata']['connectAccount'],
-			    refresh_url: "https://oarlin.com/?&referredBy=#{current_user&.uuid}",
-			    return_url: "https://oarlin.com/?&referredBy=#{current_user&.uuid}",
+			    refresh_url: "https://app.oarlin.com/?&referredBy=#{current_user&.uuid}",
+			    return_url: "https://app.oarlin.com/?&referredBy=#{current_user&.uuid}",
 			    type: 'account_onboarding',
 			  },
 			)
@@ -480,8 +480,8 @@ class ApplicationController < ActionController::Base
 			# 	@recipientAccountUpdate = Stripe::AccountLink.create(
 			# 	  {
 			# 	    account: Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['connectAccount'],
-			# 	    refresh_url: "http://oarlin.com",
-			# 	    return_url: "http://oarlin.com",
+			# 	    refresh_url: "http://app.oarlin.com",
+			# 	    return_url: "http://app.oarlin.com",
 			# 	    type: 'account_onboarding',
 			# 	  },
 			# 	)

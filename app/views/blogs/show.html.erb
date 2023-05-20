@@ -76,7 +76,7 @@
           <div class="divider mt-2 mb-3"></div>
           <p class="pt-2"><%= simple_format(@blog.body) %></p>
           <div class="font-20 text-center">
-            Share With The World <%= social_share_button_tag(@blog.title, :url => "https://oarlin.com/?&referredBy=#{params['referredBy']}", :image => 'Oarlin_free-file.png', desc: truncate(@blog.body, length: 50)) %>
+            Share With The World <%= social_share_button_tag(@blog.title, :url => "https://app.oarlin.com/?&referredBy=#{params['referredBy']}", :image => 'Oarlin_free-file.png', desc: truncate(@blog.body, length: 50)) %>
           </div>
       </div>
       <div class="row row-cols-3">
