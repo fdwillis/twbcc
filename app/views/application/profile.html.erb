@@ -83,11 +83,12 @@
 			          <h5>Every <%= currentMembersip[:membershipDetails][0][:items][:data][0][:price][:recurring][:interval].titleize %></h5>
 			      </div>
 			      <% if currentMembersip[:membershipDetails][0]['discount'].present? %>
+				      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
 				      <div class="col-7">
 				          <h5 class="font-600 opacity-80">Discount</h5>
 				      </div>
 				      <div class="col-5">
-				          <h5><%= currentMembersip[:membershipDetails][0]['discount']['coupon']['percent_off'].to_i %>% Off <%= pluralize(currentMembersip[:membershipDetails][0]['discount']['coupon']['duration_in_months'], "Month") %></h5>
+				          <h5><%= currentMembersip[:membershipDetails][0]['discount']['coupon']['percent_off'].to_i %>% Off Next Month</h5>
 				      </div>
 				      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
 				    <% end %>
