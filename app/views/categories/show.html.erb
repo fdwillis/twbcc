@@ -6,7 +6,7 @@
     <div class="row mb-0">
         <div class="col-6 pe-0">
           <% if @brands[0].present? %>
-            <a href="/brands/<%= @brands[0].title.parameterize(separator: '-')%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="card card-style mb-2" style='background-image: url("<%=  @brands[0].images.split(',').shuffle.first %>");height: 135px;' data-card-height="135">
+            <a href="/brands/<%= @brands[0].title.parameterize(separator: '-')%>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="card card-style mb-2" style='background-image: url(<%=  @brands[0].images.split(",").shuffle.first %>);height: 135px;' data-card-height="135">
                 <div class="card-top text-center">
                   <% @brands[0]&.tags.present? && @brands[0]&.tags&.split(',').shuffle.take(1).each do |tag| %>
                     <span class="badge float-end bg-<%= ['pink','yellow','orange','red','aqua','blue','teal','magenta','sunny','mint', 'pink2','gray', 'grass'].sample %>-dark p-2 text-uppercase rounded-s m-2"><%= tag %></span>
