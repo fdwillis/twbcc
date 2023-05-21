@@ -137,17 +137,22 @@ class User < ApplicationRecord
     @validResponse << {product: asin, data: loadedData}
 
     response = @validResponse.first[:data]
-    {
-      'asin'=> asin,
-      # 'description'=> response['description'],
-      'country'=> country.upcase,
-      'tags'=> response['keywords_list'].present? ? response['keywords_list'][0..response['keywords_list'].size].join(',') : nil,
-      'keywords' => response['keywords_list'].present? ? response['keywords_list'][0..9].shuffle : nil,
-      'rating' => response['rating'].present? ? response['rating'] : nil ,
-      'reviews' => response['top_reviews'].present? ? response['top_reviews'].shuffle : nil,
-      'brand' => response['brand'].present? ? response['brand'] : nil , 
-      'images' => response['variants'].present? ? response['variants'].map{|d| d['main_image']}.join(",") : response['main_image']['link'],
-    }
+
+    if response&.present?
+      {
+        'asin'=> asin,
+        # 'description'=> response['description'],
+        'country'=> country.upcase,
+        'tags'=> response['keywords_list'].present? ? response['keywords_list'][0..response['keywords_list'].size].join(',') : nil,
+        'keywords' => response['keywords_list'].present? ? response['keywords_list'][0..9].shuffle : nil,
+        'rating' => response['rating'].present? ? response['rating'] : nil ,
+        'reviews' => response['top_reviews'].present? ? response['top_reviews'].shuffle : nil,
+        'brand' => response['brand'].present? ? response['brand'] : nil , 
+        'images' => response['variants'].present? ? response['variants'].map{|d| d['main_image']}.join(",") : response['main_image']['link'],
+      }
+    else
+      {}
+    end
   end
 
   def self.rainforestSearch(term = nil, category = nil, country = nil)

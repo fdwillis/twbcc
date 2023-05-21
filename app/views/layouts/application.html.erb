@@ -10,6 +10,7 @@
     <link rel="stylesheet" type="text/css" href="/assets/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="/assets/glightbox.css">
     <link rel="stylesheet" type="text/css" href="/assets/style.css">
+    <link class="gallery-s" rel="stylesheet" type="text/css" href="/assets/glightbox.css">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
     <script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=64443874b4717c0019327d62&product=inline-share-buttons&source=platform" async="async"></script>
@@ -113,7 +114,7 @@
               <div class="list-group list-custom-small list-icon-0">
                 <a href="/list?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
                   <i class="fa font-12 fa-list bg-orange-dark rounded-sm color-white"></i>
-                  <span>List <%= current_user&.present? && Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].split(',').reject(&:blank?).uniq.size})" : nil %></span>
+                  <span>List <%= current_user&.present? && Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].split('*').reject(&:blank?).uniq.size})" : nil %></span>
                   <i class="fa fa-angle-right"></i>
                 </a>
               </div>
@@ -438,6 +439,7 @@
 
     <script type="text/javascript" src="/assets/jquery.js"></script>
     <script type="text/javascript" src="/assets/bootstrap.min.js"></script>
+    <script type="text/javascript" class="gallery-views-c" src="/assets/gallery-views.js"></script>
     <script type="text/javascript" src="/assets/custom.js"></script>
     <script type="text/javascript" src="/assets/glightbox-call.js"></script>
     <script type="text/javascript" src="/assets/glightbox.js"></script>

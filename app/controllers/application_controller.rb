@@ -459,66 +459,71 @@ class ApplicationController < ActionController::Base
 
 
 	def profile
-		@userFound = current_user&.present? ? current_user : User.find_by(uuid: params['id'])
-		@profile = Stripe::Customer.retrieve(@userFound.stripeCustomerID)
-		@membershipDetails = @userFound.checkMembership
-		@profileMetadata = @profile['metadata']
+		@userFound = params['id'].present? ? User.find_by(uuid: params['id']) : current_user
+		@profile = @userFound.present? ? Stripe::Customer.retrieve(@userFound&.stripeCustomerID) : nil
+		@membershipDetails = @userFound.present? ? @userFound&.checkMembership : nil
+		@profileMetadata = @profile.present? ? @profile['metadata'] : nil
+		@accountItemsDue = @userFound.present? ? Stripe::Account.retrieve(Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due'] : nil
 
-		if current_user
-			validMembership = current_user&.checkMembership
+		if @userFound.present?
 			@stripeAccountUpdate = Stripe::AccountLink.create(
 			  {
-			    account: Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'],
-			    refresh_url: "https://app.oarlin.com/?&referredBy=#{current_user&.uuid}",
-			    return_url: "https://app.oarlin.com/?&referredBy=#{current_user&.uuid}",
+			    account: Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'],
+			    refresh_url: "https://app.oarlin.com/?&referredBy=#{@userFound&.uuid}",
+			    return_url: "https://app.oarlin.com/?&referredBy=#{@userFound&.uuid}",
 			    type: 'account_onboarding',
 			  },
 			)
 
-			@accountItemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due']
+
+			
+			if @accountItemsDue.count == 0 
+				@loginLink = Stripe::Account.create_login_link(
+				  Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'],
+				)
+			end
 			
 			# 	@recipientAccountUpdate = Stripe::AccountLink.create(
 			# 	  {
-			# 	    account: Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'],
+			# 	    account: Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'],
 			# 	    refresh_url: "http://app.oarlin.com",
 			# 	    return_url: "http://app.oarlin.com",
 			# 	    type: 'account_onboarding',
 			# 	  },
 			# 	)
 
-			# 	@recipientAccountItemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['recipientAccount'])['requirements']['currently_due']
-		else
+			# 	@recipientAccountItemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['recipientAccount'])['requirements']['currently_due']
 			#analytics
 			ahoy.track "Profile Visit", uuid: @userFound.uuid, previousPage: request.referrer
-		end
-		
-		if @membershipDetails.present? && @membershipDetails[:membershipDetails][0]['status']	== 'active'
-		  #custom profile if active
-		  if @membershipDetails[:membershipType] == 'automation' && !current_user
-		  	fileToFind = ("app/views/automation/#{@userFound.uuid}.html.erb")
-		  	
-		  	if customFile = File.exist?(fileToFind)
-		  		render "automation/#{@userFound.uuid}"
-		  	end
-		  end
-		else
-			@loadedLink = 'admin'
+			
+			if @membershipDetails.present? && @membershipDetails[:membershipDetails][0]['status']	== 'active'
+			  #custom profile if active
+			  if @membershipDetails[:membershipType] == 'automation' && !@userFound
+			  	fileToFind = ("app/views/automation/#{@userFound.uuid}.html.erb")
+			  	
+			  	if customFile = File.exist?(fileToFind)
+			  		render "automation/#{@userFound.uuid}"
+			  	end
+			  end
+			else
+				@loadedLink = 'admin'
+			end
 		end
 	end
 
 	def list
 		if current_user&.present?
 			customerToUpdate = Stripe::Customer.retrieve(current_user&.stripeCustomerID)
-			@tracking = (customerToUpdate['metadata']['tracking'].present? ? customerToUpdate['metadata']['tracking'].split(',').uniq : []).reject(&:blank?)
+			@tracking = (customerToUpdate['metadata']['tracking'].present? ? customerToUpdate['metadata']['tracking'].split('*').uniq : []).reject(&:blank?)
 			@profileMetadata = customerToUpdate['metadata']
 			
 		end
 		
 		if params[:remove] == 'true'
-			@newMeta = (@profileMetadata['tracking'].split(',') - [params[:id]]).reject(&:blank?).join(",")
+			@newMeta = @profileMetadata['tracking'].split('*').reject{|i| i == "#{params[:id]}~#{params[:country]}~#{params[:images]}"}.join('*')
 			customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID,{
 				metadata: {
-					tracking: @newMeta.nil? ? "," : @newMeta.blank? ? "," : @newMeta
+					tracking: @newMeta.nil? ? "*" : @newMeta.blank? ? "*" : @newMeta
 				}
 			})
 			
@@ -527,7 +532,7 @@ class ApplicationController < ActionController::Base
 		elsif params[:id].present?
 			customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID,{
 				metadata: {
-					tracking: customerToUpdate['metadata']['tracking'].present? ? (customerToUpdate['metadata']['tracking']+"#{params[:id]}-#{params[:country]},") : "#{params[:id]}-#{params[:country]},"
+					tracking: customerToUpdate['metadata']['tracking'].split('*').reject(&:blank?).present? ? (customerToUpdate['metadata']['tracking']+"*#{params[:id]}~#{params[:country]}~#{params[:images]}*") : "*#{params[:id]}~#{params[:country]}~#{params[:images]}*"
 				}
 			})
 			flash[:success] = 'Added To Your Public List'
@@ -538,16 +543,16 @@ class ApplicationController < ActionController::Base
 	def loved
 		if current_user&.present?
 			customerToUpdate = Stripe::Customer.retrieve(current_user&.stripeCustomerID)
-			@wishlist = (customerToUpdate['metadata']['wishlist'].present? ? customerToUpdate['metadata']['wishlist'].split(',').uniq : []).reject(&:blank?)
+			@wishlist = (customerToUpdate['metadata']['wishlist'].present? ? customerToUpdate['metadata']['wishlist'].split('*').uniq : []).reject(&:blank?)
 			@profileMetadata = customerToUpdate['metadata']
 			ahoy.track "Added To Loved List", asin: params[:id], uuid: current_user&.uuid, previousPage: request.referrer
 		end
-		
 		if params[:remove] == 'true'
-			@newMeta = (@profileMetadata['wishlist'].split(',') - [params[:id]]).reject(&:blank?).join(",")
+
+			@newMeta = @profileMetadata['wishlist'].split('*').reject{|i| i == "#{params[:id]}~#{params[:country]}~#{params[:images]}"}.join('*')
 			customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID,{
 				metadata: {
-					wishlist: @newMeta.nil? ? "," : @newMeta.blank? ? "," : @newMeta
+					wishlist: @newMeta.nil? ? "*" : @newMeta.blank? ? "*" : @newMeta
 				}
 			})
 			
@@ -557,7 +562,7 @@ class ApplicationController < ActionController::Base
 			
 			customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID,{
 				metadata: {
-					wishlist: customerToUpdate['metadata']['wishlist'].present? ? (customerToUpdate['metadata']['wishlist']+"#{params[:id]}-#{params[:country]},") : "#{params[:id]}-#{params[:country]},"
+					wishlist: customerToUpdate['metadata']['wishlist'].split('*').reject(&:blank?).present? ? (customerToUpdate['metadata']['wishlist']+"*#{params[:id]}~#{params[:country]}~#{params[:images]}*") : "*#{params[:id]}~#{params[:country]}~#{params[:images]}*"
 				}
 			})
 			#analytics

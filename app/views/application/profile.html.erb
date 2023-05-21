@@ -1,54 +1,8 @@
 <div class="header-clear-medium">
-	<% if current_user %>
-		<% currentMembersip = @current_user.checkMembership %>
 
-		<div class="card card-style" data-card-height="300" style="height: 300px;">
-			<!-- 		<%= @profileMetadata %> -->
-			<div class="card-center p-3">
-		    <h1 class="color-white"><%= @profile['name'].titleize %>#<%= current_user&.uuid %></h1>
-		    
-		    <span class="flag-icon flag-icon-<%= current_user&.amazonCountry.downcase %> font-40"></span>
-			</div>
-			<div class="card-top p-3">
-			    <span class="badge bg-highlight color-white p-2 float-end m-2 rounded-s"><%= currentMembersip[:membershipType].titleize %></span>
-			    <span class="badge bg-aqua-dark color-white p-2 float-end m-2 rounded-s">Member</span>
-			    <% if @accountItemsDue.count == 0 %>
-				    <span class="badge bg-blue-dark color-white p-2 float-end m-2 rounded-s"></span>
-				<% end %>
-			</div>
-			<div class="card-bottom m-3">
-		    <h5 class="color-white float-start">Seller Progress</h5>
-				<% if @accountItemsDue.size > 0 %>
-					<h5 class="color-white float-end">65% Complete</h5>
-			    <div class="clearfix"></div>
-			    <div class="progress mt-2" style="height:2px;">
-			        <div class="progress-bar border-0 bg-green-dark text-start ps-2" role="progressbar" style="width: 65%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
-			        </div>
-			    </div>
-				<% end %>
-				<% if @accountItemsDue.size == 0 %>
-					<h5 class="color-white float-end">100% Complete</h5>
-				    <div class="clearfix"></div>
-				    <div class="progress mt-2" style="height:2px;">
-				        <div class="progress-bar border-0 bg-green-dark text-start ps-2" role="progressbar" style="width: 100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
-				        </div>
-				    </div>
-				<% end %>
-			    
-			</div>
-			<div class="card-overlay bg-black opacity-70"></div>
-		</div>
-		<% if @accountItemsDue.count > 0 %>
-			<div class="content row">
-			  <a href="<%= @stripeAccountUpdate['url'] %>" class='p-2'>
-	        <%= button_tag( :class => 'btn btn-full btn-m font-900 text-uppercase rounded-sm bg-green-dark form-control') do %>
-	          <i class="fa fa-check-circle font-20 color-white"></i> COMPLETE SELLER ACCOUNT
-	        <% end %>
-	      </a>
-	    </div>
-		<% end %>
-	  <% if @membershipDetails.present? %>
-		  
+	<% if current_user == @userFound %>
+		<% currentMembersip = @userFound.checkMembership %>
+		<% if @membershipDetails.present? %>
 			<div class="card card-style">
 		    <h1 class="p-3">Membership</h1>
 				<div class="content row">
@@ -104,59 +58,183 @@
 			  </div>
 				<small class="text-center">SELLER ID: <%= Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'][5..Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'].size] %></small>
 			</div>
+			
 	  <% else %>
 		  Upgrade Your Free Membership
 		<% end %>
 
-
-	<% else%>
-
-		<div class="d-flex pt-2">
-	      <div class="align-self-center me-auto">
-	          <strong class="text-uppercase opacity-60 font-12">Oarlin Welcomes You</strong>
-	          <h1 class=" font-27"><%=@profile['name'].titleize%></h1>
-	          <span class="flag-icon flag-icon-<%= @userFound.amazonCountry.downcase %> font-40"></span>
-	      </div>
-	  </div>
-		<div class="content mt-2 mb-n3">
-	    <div class="row">
-	    	<% if @profile['metadata'].present?  %>
-		    	<% if @profile['metadata']['tracking'].present? && @profile['metadata']['tracking'].split(',').size > 0  %>
-		    		<% @profile['metadata']['tracking'].split(',').reject(&:blank?).each do |itm| %>
-			        <div class="col-6 pe-2">
-
-		                <div class="d-flex">
-		                </div>
-		            <a href="#" class="card card-style mx-0 mb-3" data-menu="menu-product">
-		                <img src="images/grocery/isolated/11.png" alt="img" width="100" class="mx-auto">
-		                <div class="p-2">
-		                    <h4 class="mb-0"><%= itm %></h4>
-		                    <p class="mb-0 font-12 mt-n1"><%= User::ACCEPTEDcountries[itm.split('-')[1]].present? ? "From #{User::ACCEPTEDcountries[itm.split('-')[1]][:country]}" : nil %></p>
-		                </div>
-		            </a>
-		            <div class="col-12">
-		              <a href="<%= amazon_path(id: itm, country: itm.split('-')[1],asin: itm.split('-')[0]) %>/?&referredBy=<%= @userFound&.uuid  %>" target='_blank'>
-		                <%= button_tag( :class => "btn btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
-		                  <i class="fa fa-amazon font-20 color-white"></i>
-		                <% end %>
-		              </a>
-		            </div>
-		            <div class="col-12">
-		              <a href="<%= product_path(id: itm) %>">
-		                <%= button_tag( :class => "btn btn-m font-900 text-uppercase rounded-sm bg-highlight form-control") do %>
-		                  <i class="fa fa-info-circle font-20 color-white"></i>
-		                <% end %>
-		              </a>
-		            </div>
-	              <div class="divider mb-4"></div>
-			        </div>
-			      <% end %>
-		      <% end %>
-	      <% end %>
+		<% if @accountItemsDue.count > 0 %>
+			<div class="content row">
+			  <a href="<%= @stripeAccountUpdate['url'] %>" class='p-2'>
+	        <%= button_tag( :class => 'btn btn-full btn-m font-900 text-uppercase rounded-sm bg-green-dark form-control') do %>
+	          <i class="fa fa-check-circle font-20 color-white"></i> COMPLETE SELLER ACCOUNT
+	        <% end %>
+	      </a>
 	    </div>
-		</div>
+		<% end %>
+	  
 
 
 	<% end %>
+
+		<div class="card card-style">
+
+      <div class="d-flex content mb-1">
+          <!-- left side of profile -->
+          <div class="flex-grow-1">
+              <h1 class="font-700"><%=@profile['name'].titleize%></h1>
+              <p class="mb-2"><%= (@profile['metadata'].present? && @profile['metadata']['bio'].present?) ? @profile['metadata']['bio'] : nil %></p>
+              <p class="font-10">
+                  <strong class="color-theme pe-1"><i class="fa fa-location-arrow"></i></strong><%= User::ACCEPTEDcountries[@userFound.amazonCountry.downcase][:country] %>&nbsp;
+                  <!-- <strong class="color-theme pe-1">1k</strong>Followers -->
+              </p>
+          </div>
+          <!-- right side of profile. increase image width to increase column size-->
+          <% if @profile['metadata'].present? && @profile['metadata']['profileImage'].present? %>
+	          <img src="<%= @profile['metadata']['profileImage'] %>" data-src="<%= @profile['metadata']['profileImage'] %>" width="115" height="115" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
+	        <% end %>
+      </div>
+      <!-- follow buttons-->
+      <% unless current_user == @userFound %>
+	      <div class="content mb-0">
+		      <div class="row">
+	              <div class="col-12">
+	                <a href="#">
+						        <%= button_tag( :class => "btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark form-control", 'data-menu'=>"flag-country-explained") do %>
+						          <i class="fa fa-amazon color-highlight"></i>
+						        <% end %>
+						      </a>
+	              </div>
+	              <!-- <div class="col-6">
+	                  <a href="#" class="btn btn-full btn-m rounded-s text-uppercase font-700 bg-highlight-dark border-highlight-dark" data-menu="follow-profile-and-cache">Follow</a>
+	              </div>
+	              <div class="col-6">
+	                <a href="#">
+						        <%= button_tag( :class => "btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark form-control", 'data-menu'=>"flag-country-explained") do %>
+						          <i class="fa fa-amazon color-highlight"></i>
+						        <% end %>
+						      </a>
+	              </div> -->
+		      </div>
+	      </div>
+	    <% end %>
+
+
+      <!-- <div class="content" id="tab-group-3">
+          <div class="tab-controls tabs-small tabs-rounded" data-highlight="bg-highlight-dark">
+              <a href="#" class="no-effect bg-highlight-dark no-click" data-active="" data-bs-toggle="collapse" data-bs-target="#tab-8" aria-expanded="true"><i class="fa fa-amazon"></i></a>
+              <a href="#" class="no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#tab-9" aria-expanded="false"><i class="fa fa-comments"></i></a>
+              <% if @accountItemsDue.count == 0 %>
+              	<% if current_user == @userFound %>
+		              <a href="#" class="no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#tab-9" aria-expanded="false"><i class="fa fa-money"></i></a>
+		            <% end %>
+	            <% end %>
+              <% if current_user == @userFound %>
+                <a href="#" class="no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#tab-91" aria-expanded="false"><i class="fa fa-cogs"></i></a>
+              <% else %>
+                <a href="#" class="no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#tab-91" aria-expanded="false"><i class="fa fa-film"></i></a>
+              <% end %>
+          </div>
+          <div class="clearfix mb-3"></div>
+          <div data-bs-parent="#tab-group-3" class="collapse show" id="tab-8" style="">
+            <div class="content mb-0 mt-n1">  
+
+              <div class="gallery-views gallery-view-1">
+	              <% if @profile['metadata'].present?  %>
+						    	<% if @profile['metadata']['tracking'].present? && @profile['metadata']['tracking'].split('*').size > 0  %>
+						    		<% @profile['metadata']['tracking'].split('*').reject(&:blank?).each do |itm| %>
+								      <% if itm.split('-')[1].present? %>  
+								      	<a data-gallery="gallery-1" href="<%= amazon_path(country: itm.split('~')[1],asin: itm.split('~')[0]) %>/?&referredBy=<%= @userFound&.uuid  %>" target='_blank'>
+								      			<span class="flag-icon flag-icon-<%= itm.split('~')[1].downcase %> font-20"></span>
+			                      <img src="<%= itm.split('~')[2].split(',').sample(1)[0] %>" data-src="<%= itm.split('~')[2].split(',').sample(1)[0] %>" class="rounded-m preload-img img-fluid entered loaded" alt="img" data-ll-status="loaded">
+			                  </a>
+								      <% end %>
+							      <% end %>
+						      <% end %>
+					      <% end %>
+                  
+                  
+              </div>
+            </div>
+          </div>
+          <div data-bs-parent="#tab-group-3" class="collapse" id="tab-9" style="">
+              <div class="accordion" id="accordion-3">
+                  <div class="mb-0">
+                      <% if current_user == @userFound %>
+	                      <% if @accountItemsDue.count == 0 && @loginLink.present? && @loginLink['url'].present? %>
+	                      	
+		                      <a href="<%= @loginLink['url'] %>" target='_blank' class="btn btn-m font-900 text-uppercase rounded-sm bg-blue-dark form-control">
+						                Stripe Payments Dashboard
+						              </a>
+	                      <% else %>
+	                      	<h1 class="font-700 font-30 opacity-50 mb-4 text-center mt-4">Complete Your Seller Account</h1>
+	                      <% end %>
+                      <% else %>
+                      	<% if @accountItemsDue.count == 0 %>
+	                      	display liked posts
+	                      <% end %>
+                      <% end %>
+                  </div>
+              </div>
+          </div>
+
+          <div data-bs-parent="#tab-group-3" class="collapse" id="tab-91" style="">
+              <div class="accordion" id="accordion-3">
+                  <div class="mb-0">
+                      display videos
+                  </div>
+              </div>
+          </div>
+      </div> -->
+      <div class="content mb-0 mt-n1">  
+
+              <div class="gallery-views gallery-view-1">
+	              <% if @profile['metadata'].present?  %>
+						    	<% if @profile['metadata']['tracking'].present? && @profile['metadata']['tracking'].split('*').size > 0  %>
+						    		<% @profile['metadata']['tracking'].split('*').reject(&:blank?).each do |itm| %>
+								      <% if itm.split('-')[1].present? %>  
+								      	<a data-gallery="gallery-1" href="<%= amazon_path(country: itm.split('~')[1],asin: itm.split('~')[0]) %>/?&referredBy=<%= @userFound&.uuid  %>" target='_blank'>
+								      			<span class="flag-icon flag-icon-<%= itm.split('~')[1].downcase %> font-20"></span>
+			                      <img src="<%= itm.split('~')[2].split(',').sample(1)[0] %>" data-src="<%= itm.split('~')[2].split(',').sample(1)[0] %>" class="rounded-m preload-img img-fluid entered loaded" alt="img" data-ll-status="loaded">
+			                  </a>
+								      <% end %>
+							      <% end %>
+						      <% end %>
+					      <% end %>
+                  
+                  
+              </div>
+            </div>
+	  </div>
+
+
+
+	
 </div>
 
+
+
+
+
+
+<div id="flag-country-explained" class="menu menu-box-modal rounded-m" data-menu-width="330" style="display: block; width: 330px;">
+  <div class="content">
+    <div class="text-center">
+      <span class="font-40 icon icon-xxl fa fa-amazon"></span>
+    </div>
+    <h5 class="text-center">This Icon Means There Are Amazon Affiliate Links Present</a>
+    </h5>
+    <small class="pb-4">This Page Contains Amazon Affiliate Links That Will Earn That Affiliate Commission If Purchased. We Automate This Process For All Amazon Associates &amp; Pay Commission On Oarlin Memberships As Well (Available In USA)</small>
+  </div>
+</div>
+
+<div id="follow-profile-and-cache" class="menu menu-box-modal rounded-m" data-menu-width="330" style="display: block; width: 330px;">
+  <div class="content">
+    <div class="text-center">
+      <span class="font-40 icon icon-xxl fa fa-comments"></span>
+    </div>
+    <h5 class="text-center">Get Notified when <%= @profile['name'] %> updates their list</a>
+    </h5>
+    <small class="pb-4">This Page Contains Amazon Affiliate Links That Will Earn That Affiliate Commission If Purchased. We Automate This Process For All Amazon Associates &amp; Pay Commission On Oarlin Memberships As Well (Available In USA)</small>
+  </div>
+</div>
