@@ -77,8 +77,6 @@
 
 	<% end %>
 
-		<div class="card card-style">
-
       <div class="d-flex content mb-1">
           <!-- left side of profile -->
           <div class="flex-grow-1">
@@ -94,6 +92,8 @@
 	          <img data-card-height="272" src="<%= @profile['metadata']['profileImage'] %>" data-src="<%= @profile['metadata']['profileImage'] %>" width="115" height="115" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
 	        <% end %>
       </div>
+		<div class="card card-style">
+
       <!-- follow buttons-->
       <% unless current_user == @userFound %>
 	      <div class="content mb-0">
@@ -120,8 +120,8 @@
 						    		<% @profile['metadata']['tracking'].split('*').reject(&:blank?).each do |itm| %>
 								      <% if itm.split('-')[1].present? %>  
 								      	<a data-gallery="gallery-1" href="/view-on-amazon/<%= itm.split('~')[0] %>/<%= itm.split('~')[1] %>/?&referredBy=<%= @userFound&.uuid  %>" target='_blank'>
-
-			                      <%= image_tag itm.split('~')[2].split(',').sample(1)[0], :height=>272, :width=>272, class: 'rounded-m preload-img shadow-xl img-fluid entered loaded' %>
+		                      
+		                      <%= image_tag itm.split('~')[2].split(',').sample(1)[0], :height=>272, :width=>272, class: 'rounded-m preload-img shadow-xl img-fluid entered loaded', 'src' => itm.split('~')[2].split(',').sample(1)[0] , 'data-src' => itm.split('~')[2].split(',').sample(1)[0]  %>
 			                  </a>
 								      <% end %>
 							      <% end %>
