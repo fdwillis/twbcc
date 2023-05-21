@@ -118,6 +118,7 @@ GEM
     coffee-script-source (1.12.2)
     concurrent-ruby (1.2.2)
     crass (1.0.6)
+    curb (1.0.5)
     date (3.3.3)
     device_detector (1.1.0)
     devise (4.9.2)
@@ -430,6 +431,7 @@ DEPENDENCIES
   clockwork
   cloudinary
   coffee-rails
+  curb
   devise
   email_spec
   factory_bot_rails
