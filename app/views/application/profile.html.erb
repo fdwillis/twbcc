@@ -86,7 +86,7 @@
               <p class="mb-2"><%= (@profile['metadata'].present? && @profile['metadata']['bio'].present?) ? @profile['metadata']['bio'] : nil %></p>
               <p class="font-10">
                   <strong class="color-theme pe-1"><i class="fa fa-location-arrow"></i></strong><%= User::ACCEPTEDcountries[@userFound.amazonCountry.downcase][:country] %>&nbsp;
-                  <strong class="color-theme pe-1">1k</strong>Followers
+                  <!-- <strong class="color-theme pe-1">1k</strong>Followers -->
               </p>
           </div>
           <!-- right side of profile. increase image width to increase column size-->
@@ -98,7 +98,14 @@
       <% unless current_user == @userFound %>
 	      <div class="content mb-0">
 		      <div class="row">
-	              <div class="col-6">
+	              <div class="col-12">
+	                <a href="#">
+						        <%= button_tag( :class => "btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark form-control", 'data-menu'=>"flag-country-explained") do %>
+						          <i class="fa fa-amazon color-highlight"></i>
+						        <% end %>
+						      </a>
+	              </div>
+	              <!-- <div class="col-6">
 	                  <a href="#" class="btn btn-full btn-m rounded-s text-uppercase font-700 bg-highlight-dark border-highlight-dark" data-menu="follow-profile-and-cache">Follow</a>
 	              </div>
 	              <div class="col-6">
@@ -107,13 +114,13 @@
 						          <i class="fa fa-amazon color-highlight"></i>
 						        <% end %>
 						      </a>
-	              </div>
+	              </div> -->
 		      </div>
 	      </div>
 	    <% end %>
 
 
-      <div class="content" id="tab-group-3">
+      <!-- <div class="content" id="tab-group-3">
           <div class="tab-controls tabs-small tabs-rounded" data-highlight="bg-highlight-dark">
               <a href="#" class="no-effect bg-highlight-dark no-click" data-active="" data-bs-toggle="collapse" data-bs-target="#tab-8" aria-expanded="true"><i class="fa fa-amazon"></i></a>
               <a href="#" class="no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#tab-9" aria-expanded="false"><i class="fa fa-comments"></i></a>
@@ -130,34 +137,25 @@
           </div>
           <div class="clearfix mb-3"></div>
           <div data-bs-parent="#tab-group-3" class="collapse show" id="tab-8" style="">
-              <% if @profile['metadata'].present?  %>
-					    	<% if @profile['metadata']['tracking'].present? && @profile['metadata']['tracking'].split('*').size > 0  %>
-					    		<% @profile['metadata']['tracking'].split('*').reject(&:blank?).each do |itm| %>
-							      <% if itm.split('-')[1].present? %>  
-							        <div class="col-6 pe-2">
+            <div class="content mb-0 mt-n1">  
 
-						                <div class="d-flex">
-						                </div>
-						            <a href="#" class="card card-style mx-0 mb-3" data-menu="menu-product">
-						                <img src="images/grocery/isolated/11.png" alt="img" width="100" class="mx-auto">
-						                <div class="p-2">
-						                    <h4 class="mb-0"><%= itm %></h4>
-						                    <p class="mb-0 font-12 mt-n1"><%= User::ACCEPTEDcountries[itm.split('-')[1]].present? ? "From #{User::ACCEPTEDcountries[itm.split('-')[1]][:country]}" : nil %></p>
-						                </div>
-						            </a>
-						            <div class="col-12">
-						              <a href="<%= amazon_path(id: itm, country: itm.split('-')[1],asin: itm.split('-')[0]) %>/?&referredBy=<%= @userFound&.uuid  %>" target='_blank'>
-						                <%= button_tag( :class => "btn btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
-						                  <i class="fa fa-amazon font-20 color-white"></i>
-						                <% end %>
-						              </a>
-						            </div>
-					              <div class="divider mb-4"></div>
-							        </div>
+              <div class="gallery-views gallery-view-1">
+	              <% if @profile['metadata'].present?  %>
+						    	<% if @profile['metadata']['tracking'].present? && @profile['metadata']['tracking'].split('*').size > 0  %>
+						    		<% @profile['metadata']['tracking'].split('*').reject(&:blank?).each do |itm| %>
+								      <% if itm.split('-')[1].present? %>  
+								      	<a data-gallery="gallery-1" href="<%= amazon_path(country: itm.split('~')[1],asin: itm.split('~')[0]) %>/?&referredBy=<%= @userFound&.uuid  %>" target='_blank'>
+								      			<span class="flag-icon flag-icon-<%= itm.split('~')[1].downcase %> font-20"></span>
+			                      <img src="<%= itm.split('~')[2].split(',').sample(1)[0] %>" data-src="<%= itm.split('~')[2].split(',').sample(1)[0] %>" class="rounded-m preload-img img-fluid entered loaded" alt="img" data-ll-status="loaded">
+			                  </a>
+								      <% end %>
 							      <% end %>
 						      <% end %>
 					      <% end %>
-				      <% end %>
+                  
+                  
+              </div>
+            </div>
           </div>
           <div data-bs-parent="#tab-group-3" class="collapse" id="tab-9" style="">
               <div class="accordion" id="accordion-3">
@@ -187,7 +185,26 @@
                   </div>
               </div>
           </div>
-      </div>
+      </div> -->
+      <div class="content mb-0 mt-n1">  
+
+              <div class="gallery-views gallery-view-1">
+	              <% if @profile['metadata'].present?  %>
+						    	<% if @profile['metadata']['tracking'].present? && @profile['metadata']['tracking'].split('*').size > 0  %>
+						    		<% @profile['metadata']['tracking'].split('*').reject(&:blank?).each do |itm| %>
+								      <% if itm.split('-')[1].present? %>  
+								      	<a data-gallery="gallery-1" href="<%= amazon_path(country: itm.split('~')[1],asin: itm.split('~')[0]) %>/?&referredBy=<%= @userFound&.uuid  %>" target='_blank'>
+								      			<span class="flag-icon flag-icon-<%= itm.split('~')[1].downcase %> font-20"></span>
+			                      <img src="<%= itm.split('~')[2].split(',').sample(1)[0] %>" data-src="<%= itm.split('~')[2].split(',').sample(1)[0] %>" class="rounded-m preload-img img-fluid entered loaded" alt="img" data-ll-status="loaded">
+			                  </a>
+								      <% end %>
+							      <% end %>
+						      <% end %>
+					      <% end %>
+                  
+                  
+              </div>
+            </div>
 	  </div>
 
 
