@@ -50,6 +50,7 @@ class SearchController < ApplicationController
 		else
 			@limitedPublished = Category.where(featured: true, published: true).limit(10)
 			@categories = (Category.where(published: true) - @limitedPublished).paginate(page: params['page'], per_page: 6)
+			return
 		end 
 	end
 
