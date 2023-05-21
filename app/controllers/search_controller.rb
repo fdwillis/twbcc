@@ -25,8 +25,8 @@ class SearchController < ApplicationController
 					ahoy.track "New Search Term",pageNumber: params['page'], previousPage: request.referrer, query: @query, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
 					
 					searchResults = User.rainforestSearch(@query, nil, @country)
-					@searchResults = searchResults.paginate(page: params['page'], per_page: 6)
 					session['search'] |= [{query: @query, data: searchResults, country: @country}]
+					@searchResults = searchResults.paginate(page: params['page'], per_page: 6)
 				end
 
 			else
@@ -35,9 +35,9 @@ class SearchController < ApplicationController
 				ahoy.track "New Search Term",pageNumber: params['page'], previousPage: request.referrer, query: @query, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
 				
 				searchResults = User.rainforestSearch(@query, nil, @country)
-				@searchResults = searchResults.paginate(page: params['page'], per_page: 6)
 
 				session['search'] |= [{query: @query, data: searchResults, country: @country}]
+				@searchResults = searchResults.paginate(page: params['page'], per_page: 6)
 			end
 
 
