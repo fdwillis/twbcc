@@ -91,7 +91,7 @@
           </div>
           <!-- right side of profile. increase image width to increase column size-->
           <% if @profile['metadata'].present? && @profile['metadata']['profileImage'].present? %>
-	          <img src="<%= @profile['metadata']['profileImage'] %>" data-src="<%= @profile['metadata']['profileImage'] %>" width="115" height="115" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
+	          <img data-card-height="272" src="<%= @profile['metadata']['profileImage'] %>" data-src="<%= @profile['metadata']['profileImage'] %>" width="115" height="115" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
 	        <% end %>
       </div>
       <!-- follow buttons-->
@@ -120,8 +120,7 @@
 						    		<% @profile['metadata']['tracking'].split('*').reject(&:blank?).each do |itm| %>
 								      <% if itm.split('-')[1].present? %>  
 								      	<a data-gallery="gallery-1" href="/view-on-amazon/<%= itm.split('~')[0] %>/<%= itm.split('~')[1] %>/?&referredBy=<%= @userFound&.uuid  %>" target='_blank'>
-								      			<span class="flag-icon flag-icon-<%= itm.split('~')[1].downcase %> font-20"></span>
-			                      <img src="<%= itm.split('~')[2].split(',').sample(1)[0] %>" data-src="<%= itm.split('~')[2].split(',').sample(1)[0] %>" class="rounded-m preload-img img-fluid entered loaded" alt="img" data-ll-status="loaded">
+			                      <%= cl_image_tag(itm.split('~')[2].split(',').sample(1)[0], :height=>272, :width=>272, :crop=>"fill", :background => 'white', :aspect_ratio=> '1.0', class: 'rounded-m preload-img shadow-xl img-fluid entered loaded') %>
 			                  </a>
 								      <% end %>
 							      <% end %>
@@ -130,7 +129,7 @@
                   
                   
               </div>
-            </div>
+      </div>
 	  </div>
 
 
