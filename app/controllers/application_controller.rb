@@ -463,6 +463,7 @@ class ApplicationController < ActionController::Base
 		@profile = Stripe::Customer.retrieve(@userFound.stripeCustomerID)
 		@membershipDetails = @userFound.checkMembership
 		@profileMetadata = @profile['metadata']
+		@accountItemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due']
 
 		if current_user
 			validMembership = current_user&.checkMembership
@@ -475,7 +476,13 @@ class ApplicationController < ActionController::Base
 			  },
 			)
 
-			@accountItemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due']
+
+			
+			if @accountItemsDue.count == 0 
+				@loginLink = Stripe::Account.create_login_link(
+				  Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'],
+				)
+			end
 			
 			# 	@recipientAccountUpdate = Stripe::AccountLink.create(
 			# 	  {
