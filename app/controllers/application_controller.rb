@@ -459,49 +459,45 @@ class ApplicationController < ActionController::Base
 
 
 	def profile
-		@userFound = current_user&.present? ? current_user : User.find_by(uuid: params['id'])
+		@userFound = User.find_by(uuid: params['id'])
 		@profile = Stripe::Customer.retrieve(@userFound.stripeCustomerID)
 		@membershipDetails = @userFound.checkMembership
 		@profileMetadata = @profile['metadata']
 		@accountItemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due']
 
-		if current_user
-			validMembership = current_user&.checkMembership
-			@stripeAccountUpdate = Stripe::AccountLink.create(
-			  {
-			    account: Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'],
-			    refresh_url: "https://app.oarlin.com/?&referredBy=#{current_user&.uuid}",
-			    return_url: "https://app.oarlin.com/?&referredBy=#{current_user&.uuid}",
-			    type: 'account_onboarding',
-			  },
+		@stripeAccountUpdate = Stripe::AccountLink.create(
+		  {
+		    account: Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'],
+		    refresh_url: "https://app.oarlin.com/?&referredBy=#{@userFound&.uuid}",
+		    return_url: "https://app.oarlin.com/?&referredBy=#{@userFound&.uuid}",
+		    type: 'account_onboarding',
+		  },
+		)
+
+
+		
+		if @accountItemsDue.count == 0 
+			@loginLink = Stripe::Account.create_login_link(
+			  Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'],
 			)
-
-
-			
-			if @accountItemsDue.count == 0 
-				@loginLink = Stripe::Account.create_login_link(
-				  Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'],
-				)
-			end
-			
-			# 	@recipientAccountUpdate = Stripe::AccountLink.create(
-			# 	  {
-			# 	    account: Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'],
-			# 	    refresh_url: "http://app.oarlin.com",
-			# 	    return_url: "http://app.oarlin.com",
-			# 	    type: 'account_onboarding',
-			# 	  },
-			# 	)
-
-			# 	@recipientAccountItemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['recipientAccount'])['requirements']['currently_due']
-		else
-			#analytics
-			ahoy.track "Profile Visit", uuid: @userFound.uuid, previousPage: request.referrer
 		end
+		
+		# 	@recipientAccountUpdate = Stripe::AccountLink.create(
+		# 	  {
+		# 	    account: Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'],
+		# 	    refresh_url: "http://app.oarlin.com",
+		# 	    return_url: "http://app.oarlin.com",
+		# 	    type: 'account_onboarding',
+		# 	  },
+		# 	)
+
+		# 	@recipientAccountItemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['recipientAccount'])['requirements']['currently_due']
+		#analytics
+		ahoy.track "Profile Visit", uuid: @userFound.uuid, previousPage: request.referrer
 		
 		if @membershipDetails.present? && @membershipDetails[:membershipDetails][0]['status']	== 'active'
 		  #custom profile if active
-		  if @membershipDetails[:membershipType] == 'automation' && !current_user
+		  if @membershipDetails[:membershipType] == 'automation' && !@userFound
 		  	fileToFind = ("app/views/automation/#{@userFound.uuid}.html.erb")
 		  	
 		  	if customFile = File.exist?(fileToFind)
