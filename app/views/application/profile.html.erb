@@ -105,87 +105,13 @@
 						        <% end %>
 						      </a>
 	              </div>
-	              <!-- <div class="col-6">
-	                  <a href="#" class="btn btn-full btn-m rounded-s text-uppercase font-700 bg-highlight-dark border-highlight-dark" data-menu="follow-profile-and-cache">Follow</a>
-	              </div>
-	              <div class="col-6">
-	                <a href="#">
-						        <%= button_tag( :class => "btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark form-control", 'data-menu'=>"flag-country-explained") do %>
-						          <i class="fa fa-amazon color-highlight"></i>
-						        <% end %>
-						      </a>
-	              </div> -->
+
 		      </div>
 	      </div>
 	    <% end %>
 
 
-      <!-- <div class="content" id="tab-group-3">
-          <div class="tab-controls tabs-small tabs-rounded" data-highlight="bg-highlight-dark">
-              <a href="#" class="no-effect bg-highlight-dark no-click" data-active="" data-bs-toggle="collapse" data-bs-target="#tab-8" aria-expanded="true"><i class="fa fa-amazon"></i></a>
-              <a href="#" class="no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#tab-9" aria-expanded="false"><i class="fa fa-comments"></i></a>
-              <% if @accountItemsDue.count == 0 %>
-              	<% if current_user == @userFound %>
-		              <a href="#" class="no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#tab-9" aria-expanded="false"><i class="fa fa-money"></i></a>
-		            <% end %>
-	            <% end %>
-              <% if current_user == @userFound %>
-                <a href="#" class="no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#tab-91" aria-expanded="false"><i class="fa fa-cogs"></i></a>
-              <% else %>
-                <a href="#" class="no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#tab-91" aria-expanded="false"><i class="fa fa-film"></i></a>
-              <% end %>
-          </div>
-          <div class="clearfix mb-3"></div>
-          <div data-bs-parent="#tab-group-3" class="collapse show" id="tab-8" style="">
-            <div class="content mb-0 mt-n1">  
 
-              <div class="gallery-views gallery-view-1">
-	              <% if @profile['metadata'].present?  %>
-						    	<% if @profile['metadata']['tracking'].present? && @profile['metadata']['tracking'].split('*').size > 0  %>
-						    		<% @profile['metadata']['tracking'].split('*').reject(&:blank?).each do |itm| %>
-								      <% if itm.split('-')[1].present? %>  
-								      	<a data-gallery="gallery-1" href="<%= amazon_path(country: itm.split('~')[1],asin: itm.split('~')[0]) %>/?&referredBy=<%= @userFound&.uuid  %>" target='_blank'>
-								      			<span class="flag-icon flag-icon-<%= itm.split('~')[1].downcase %> font-20"></span>
-			                      <img src="<%= itm.split('~')[2].split(',').sample(1)[0] %>" data-src="<%= itm.split('~')[2].split(',').sample(1)[0] %>" class="rounded-m preload-img img-fluid entered loaded" alt="img" data-ll-status="loaded">
-			                  </a>
-								      <% end %>
-							      <% end %>
-						      <% end %>
-					      <% end %>
-                  
-                  
-              </div>
-            </div>
-          </div>
-          <div data-bs-parent="#tab-group-3" class="collapse" id="tab-9" style="">
-              <div class="accordion" id="accordion-3">
-                  <div class="mb-0">
-                      <% if current_user == @userFound %>
-	                      <% if @accountItemsDue.count == 0 && @loginLink.present? && @loginLink['url'].present? %>
-	                      	
-		                      <a href="<%= @loginLink['url'] %>" target='_blank' class="btn btn-m font-900 text-uppercase rounded-sm bg-blue-dark form-control">
-						                Stripe Payments Dashboard
-						              </a>
-	                      <% else %>
-	                      	<h1 class="font-700 font-30 opacity-50 mb-4 text-center mt-4">Complete Your Seller Account</h1>
-	                      <% end %>
-                      <% else %>
-                      	<% if @accountItemsDue.count == 0 %>
-	                      	display liked posts
-	                      <% end %>
-                      <% end %>
-                  </div>
-              </div>
-          </div>
-
-          <div data-bs-parent="#tab-group-3" class="collapse" id="tab-91" style="">
-              <div class="accordion" id="accordion-3">
-                  <div class="mb-0">
-                      display videos
-                  </div>
-              </div>
-          </div>
-      </div> -->
       <div class="content mb-0 mt-n1">  
 
               <div class="gallery-views gallery-view-1">
