@@ -120,7 +120,8 @@
 						    		<% @profile['metadata']['tracking'].split('*').reject(&:blank?).each do |itm| %>
 								      <% if itm.split('-')[1].present? %>  
 								      	<a data-gallery="gallery-1" href="/view-on-amazon/<%= itm.split('~')[0] %>/<%= itm.split('~')[1] %>/?&referredBy=<%= @userFound&.uuid  %>" target='_blank'>
-			                      <%= cl_image_tag(itm.split('~')[2].split(',').sample(1)[0], :height=>272, :width=>272, :crop=>"fill", :background => 'white', :aspect_ratio=> '1.0', class: 'rounded-m preload-img shadow-xl img-fluid entered loaded') %>
+
+			                      <%= image_tag itm.split('~')[2].split(',').sample(1)[0], :height=>272, :width=>272, class: 'rounded-m preload-img shadow-xl img-fluid entered loaded' %>
 			                  </a>
 								      <% end %>
 							      <% end %>
