@@ -466,9 +466,10 @@ class ApplicationController < ActionController::Base
 
 		if current_user
 			validMembership = current_user.checkMembership
+			debugger
 			@stripeAccountUpdate = Stripe::AccountLink.create(
 			  {
-			    account: Stripe::Customer.retrieve(current_user.&stripeCustomerID)['metadata']['connectAccount'],
+			    account: Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'],
 			    refresh_url: "https://app.oarlin.com/?&referredBy=#{current_user&.uuid}",
 			    return_url: "https://app.oarlin.com/?&referredBy=#{current_user&.uuid}",
 			    type: 'account_onboarding',
