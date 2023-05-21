@@ -99,11 +99,11 @@
 	      <div class="content mb-0">
 		      <div class="row">
 	              <div class="col-6">
-	                  <a href="#" class="btn btn-full btn-m rounded-s text-uppercase font-700 bg-highlight-dark border-highlight-dark">Follow</a>
+	                  <a href="#" class="btn btn-full btn-m rounded-s text-uppercase font-700 bg-highlight-dark border-highlight-dark" data-menu="follow-profile-and-cache">Follow</a>
 	              </div>
 	              <div class="col-6">
 	                <a href="#">
-						        <%= button_tag( :class => "btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark form-control") do %>
+						        <%= button_tag( :class => "btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark form-control", 'data-menu'=>"flag-country-explained") do %>
 						          <i class="fa fa-amazon color-highlight"></i>
 						        <% end %>
 						      </a>
@@ -116,14 +116,13 @@
       <div class="content" id="tab-group-3">
           <div class="tab-controls tabs-small tabs-rounded" data-highlight="bg-highlight-dark">
               <a href="#" class="no-effect bg-highlight-dark no-click" data-active="" data-bs-toggle="collapse" data-bs-target="#tab-8" aria-expanded="true"><i class="fa fa-amazon"></i></a>
+              <a href="#" class="no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#tab-9" aria-expanded="false"><i class="fa fa-comments"></i></a>
               <% if @accountItemsDue.count == 0 %>
-              	<% if current_user %>
+              	<% if current_user == @userFound %>
 		              <a href="#" class="no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#tab-9" aria-expanded="false"><i class="fa fa-money"></i></a>
-		            <% else %>
-		              <a href="#" class="no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#tab-9" aria-expanded="false"><i class="fa fa-book"></i></a>
 		            <% end %>
 	            <% end %>
-              <% if current_user %>
+              <% if current_user == @userFound %>
                 <a href="#" class="no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#tab-91" aria-expanded="false"><i class="fa fa-cogs"></i></a>
               <% else %>
                 <a href="#" class="no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#tab-91" aria-expanded="false"><i class="fa fa-film"></i></a>
@@ -132,8 +131,8 @@
           <div class="clearfix mb-3"></div>
           <div data-bs-parent="#tab-group-3" class="collapse show" id="tab-8" style="">
               <% if @profile['metadata'].present?  %>
-					    	<% if @profile['metadata']['tracking'].present? && @profile['metadata']['tracking'].split(',').size > 0  %>
-					    		<% @profile['metadata']['tracking'].split(',').reject(&:blank?).each do |itm| %>
+					    	<% if @profile['metadata']['tracking'].present? && @profile['metadata']['tracking'].split('*').size > 0  %>
+					    		<% @profile['metadata']['tracking'].split('*').reject(&:blank?).each do |itm| %>
 							      <% if itm.split('-')[1].present? %>  
 							        <div class="col-6 pe-2">
 
@@ -163,7 +162,7 @@
           <div data-bs-parent="#tab-group-3" class="collapse" id="tab-9" style="">
               <div class="accordion" id="accordion-3">
                   <div class="mb-0">
-                      <% if current_user %>
+                      <% if current_user == @userFound %>
 	                      <% if @accountItemsDue.count == 0 && @loginLink.present? && @loginLink['url'].present? %>
 	                      	
 		                      <a href="<%= @loginLink['url'] %>" target='_blank' class="btn btn-m font-900 text-uppercase rounded-sm bg-blue-dark form-control">
@@ -196,3 +195,29 @@
 	
 </div>
 
+
+
+
+
+
+<div id="flag-country-explained" class="menu menu-box-modal rounded-m" data-menu-width="330" style="display: block; width: 330px;">
+  <div class="content">
+    <div class="text-center">
+      <span class="font-40 icon icon-xxl fa fa-amazon"></span>
+    </div>
+    <h5 class="text-center">This Icon Means There Are Amazon Affiliate Links Present</a>
+    </h5>
+    <small class="pb-4">This Page Contains Amazon Affiliate Links That Will Earn That Affiliate Commission If Purchased. We Automate This Process For All Amazon Associates &amp; Pay Commission On Oarlin Memberships As Well (Available In USA)</small>
+  </div>
+</div>
+
+<div id="follow-profile-and-cache" class="menu menu-box-modal rounded-m" data-menu-width="330" style="display: block; width: 330px;">
+  <div class="content">
+    <div class="text-center">
+      <span class="font-40 icon icon-xxl fa fa-comments"></span>
+    </div>
+    <h5 class="text-center">Get Notified when <%= @profile['name'] %> updates their list</a>
+    </h5>
+    <small class="pb-4">This Page Contains Amazon Affiliate Links That Will Earn That Affiliate Commission If Purchased. We Automate This Process For All Amazon Associates &amp; Pay Commission On Oarlin Memberships As Well (Available In USA)</small>
+  </div>
+</div>
