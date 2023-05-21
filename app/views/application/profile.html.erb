@@ -119,7 +119,7 @@
 						    	<% if @profile['metadata']['tracking'].present? && @profile['metadata']['tracking'].split('*').size > 0  %>
 						    		<% @profile['metadata']['tracking'].split('*').reject(&:blank?).each do |itm| %>
 								      <% if itm.split('-')[1].present? %>  
-								      	<a data-gallery="gallery-1" href="<%= amazon_path(country: itm.split('~')[1],asin: itm.split('~')[0]) %>/?&referredBy=<%= @userFound&.uuid  %>" target='_blank'>
+								      	<a data-gallery="gallery-1" href="<%= amazon_path(id: itm, country: itm.split('~')[1],asin: itm.split('~')[0]) %>/?&referredBy=<%= @userFound&.uuid  %>" target='_blank'>
 								      			<span class="flag-icon flag-icon-<%= itm.split('~')[1].downcase %> font-20"></span>
 			                      <img src="<%= itm.split('~')[2].split(',').sample(1)[0] %>" data-src="<%= itm.split('~')[2].split(',').sample(1)[0] %>" class="rounded-m preload-img img-fluid entered loaded" alt="img" data-ll-status="loaded">
 			                  </a>
