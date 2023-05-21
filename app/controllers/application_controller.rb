@@ -543,16 +543,16 @@ class ApplicationController < ActionController::Base
 	def loved
 		if current_user&.present?
 			customerToUpdate = Stripe::Customer.retrieve(current_user&.stripeCustomerID)
-			@wishlist = (customerToUpdate['metadata']['wishlist'].present? ? customerToUpdate['metadata']['wishlist'].split(',').uniq : []).reject(&:blank?)
+			@wishlist = (customerToUpdate['metadata']['wishlist'].present? ? customerToUpdate['metadata']['wishlist'].split('*').uniq : []).reject(&:blank?)
 			@profileMetadata = customerToUpdate['metadata']
 			ahoy.track "Added To Loved List", asin: params[:id], uuid: current_user&.uuid, previousPage: request.referrer
 		end
-		
 		if params[:remove] == 'true'
-			@newMeta = (@profileMetadata['wishlist'].split(',') - [params[:id]]).reject(&:blank?).join(",")
+
+			@newMeta = @profileMetadata['wishlist'].split('*').reject{|i| i == "#{params[:id]}~#{params[:country]}~#{params[:images]}"}.join('*')
 			customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID,{
 				metadata: {
-					wishlist: @newMeta.nil? ? "," : @newMeta.blank? ? "," : @newMeta
+					wishlist: @newMeta.nil? ? "*" : @newMeta.blank? ? "*" : @newMeta
 				}
 			})
 			
@@ -562,7 +562,7 @@ class ApplicationController < ActionController::Base
 			
 			customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID,{
 				metadata: {
-					wishlist: customerToUpdate['metadata']['wishlist'].present? ? (customerToUpdate['metadata']['wishlist']+"#{params[:id]}-#{params[:country]},") : "#{params[:id]}-#{params[:country]},"
+					wishlist: customerToUpdate['metadata']['wishlist'].split('*').reject(&:blank?).present? ? (customerToUpdate['metadata']['wishlist']+"*#{params[:id]}~#{params[:country]}~#{params[:images]}*") : "*#{params[:id]}~#{params[:country]}~#{params[:images]}*"
 				}
 			})
 			#analytics
