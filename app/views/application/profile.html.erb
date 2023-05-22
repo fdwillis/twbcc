@@ -72,71 +72,56 @@
 	      </a>
 	    </div>
 		<% end %>
-	  
-
-
 	<% end %>
+  <div class="d-flex content mb-1">
+    <!-- left side of profile -->
+    <div class="flex-grow-1">
+        <h1 class="font-700"><%=@profile['name'].titleize%></h1>
+        <p class="mb-2"><%= (@profile['metadata'].present? && @profile['metadata']['bio'].present?) ? @profile['metadata']['bio'] : nil %></p>
+        <p class="font-10">
+            <strong class="color-theme pe-1"><i class="fa fa-location-arrow"></i></strong><%= User::ACCEPTEDcountries[@userFound.amazonCountry.downcase][:country] %>&nbsp;
+            <!-- <strong class="color-theme pe-1">1k</strong>Followers -->
+        </p>
+    </div>
+    <!-- right side of profile. increase image width to increase column size-->
+    <% if @profile['metadata'].present? && @profile['metadata']['profileImage'].present? %>
+      <img data-card-height="272" src="<%= @profile['metadata']['profileImage'] %>" data-src="<%= @profile['metadata']['profileImage'] %>" width="115" height="115" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
+    <% end %>
+  </div>
+	<div class="card card-style">
+    <!-- follow buttons-->
+    <% unless current_user == @userFound %>
+      <div class="content mb-0">
+	      <div class="row">
+              <div class="col-12">
+                <a href="#">
+					        <%= button_tag( :class => "btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark form-control", 'data-menu'=>"flag-country-explained") do %>
+					          <i class="fa fa-amazon color-highlight"></i>
+					        <% end %>
+					      </a>
+              </div>
 
-      <div class="d-flex content mb-1">
-          <!-- left side of profile -->
-          <div class="flex-grow-1">
-              <h1 class="font-700"><%=@profile['name'].titleize%></h1>
-              <p class="mb-2"><%= (@profile['metadata'].present? && @profile['metadata']['bio'].present?) ? @profile['metadata']['bio'] : nil %></p>
-              <p class="font-10">
-                  <strong class="color-theme pe-1"><i class="fa fa-location-arrow"></i></strong><%= User::ACCEPTEDcountries[@userFound.amazonCountry.downcase][:country] %>&nbsp;
-                  <!-- <strong class="color-theme pe-1">1k</strong>Followers -->
-              </p>
-          </div>
-          <!-- right side of profile. increase image width to increase column size-->
-          <% if @profile['metadata'].present? && @profile['metadata']['profileImage'].present? %>
-	          <img data-card-height="272" src="<%= @profile['metadata']['profileImage'] %>" data-src="<%= @profile['metadata']['profileImage'] %>" width="115" height="115" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
-	        <% end %>
-      </div>
-		<div class="card card-style">
-
-      <!-- follow buttons-->
-      <% unless current_user == @userFound %>
-	      <div class="content mb-0">
-		      <div class="row">
-	              <div class="col-12">
-	                <a href="#">
-						        <%= button_tag( :class => "btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark form-control", 'data-menu'=>"flag-country-explained") do %>
-						          <i class="fa fa-amazon color-highlight"></i>
-						        <% end %>
-						      </a>
-	              </div>
-
-		      </div>
 	      </div>
-	    <% end %>
-
-
-
-      <div class="content mb-0 mt-n1">  
-
-	              <% if @profile['metadata'].present?  %>
-						    	<% if @profile['metadata']['tracking'].present? && @profile['metadata']['tracking'].split('*').size > 0  %>
-						    	<div class="row">
-						    		
-						    		<% @profile['metadata']['tracking'].split('*').reject(&:blank?).each do |itm| %>
-								      <% if itm.split('-')[1].present? %>  
-								      	<a class="col-4 pe-0" href="#">
-								      		<div class="card rounded-m shadow-l mx-1" data-card-height="250" style="height:96vh; background-image:url(<%= itm.split('~')[2].split(',').sample(1)[0] %>)">
-			                    </div>
-			                  </a>
-								      <% end %>
-							      <% end %>
-						    	</div>
-						      <% end %>
-					      <% end %>
-                  
-                  
-            </div>
-	  </div>
-
-
-
-	
+      </div>
+    <% end %>
+    <div class="content mb-0 mt-n1">  
+      <% if @profile['metadata'].present?  %>
+	    	<% if @profile['metadata']['tracking'].present? && @profile['metadata']['tracking'].split('*').size > 0  %>
+	    	<div class="row">
+	    		
+	    		<% @profile['metadata']['tracking'].split('*').reject(&:blank?).each do |itm| %>
+			      <% if itm.split('-')[1].present? %>  
+			      	<a class="col-4 pe-0" href="#">
+			      		<div class="card rounded-m shadow-l mx-1" data-card-height="250" style="height:96vh; background-image:url(<%= itm.split('~')[2].split(',').sample(1)[0] %>)">
+                </div>
+              </a>
+			      <% end %>
+		      <% end %>
+	    	</div>
+	      <% end %>
+      <% end %>
+    </div>
+  </div>
 </div>
 
 
