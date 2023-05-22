@@ -121,7 +121,7 @@
                         <% if @profileMetadata.present? && @profileMetadata['tracking'].present? && @profileMetadata['tracking'].split('*').join.include?("#{params['asin'].downcase}~#{@callToRain['country']}") %>
                           <a href="<%= list_path(remove: true, id: params['asin'].downcase, country: @callToRain['country'], images: @profileMetadata['tracking'].split("#{params['asin'].downcase}~#{@callToRain['country']}~")[1].split('*')[0])  %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs form-control rounded-pill color-white"><i class="fa fa-list color-highlight"></i></a>
                         <% else %>
-                          <a href="<%= list_path(id: params['asin'].downcase, country: @callToRain['country'], images: @callToRain['images'].split(',').reject(&:blank?).sample(3).join(','))  %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs form-control rounded-pill bg-highlight"><i class="fa fa-list"></i></a>
+                          <a href="<%= list_path(id: params['asin'].downcase, country: @callToRain['country'], images: @callToRain['images'].split(',').reject(&:blank?).first)  %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs form-control rounded-pill bg-highlight"><i class="fa fa-list"></i></a>
                         <% end %>
                       </div>
                       <div class="col-6">
@@ -129,7 +129,7 @@
                         <% if @profileMetadata.present? && @profileMetadata['wishlist'].present? && @profileMetadata['wishlist'].split('*').join.include?("#{params['asin'].downcase}~#{@callToRain['country']}") %>
                           <a href="<%= loved_path(remove: true, id: params['asin'].downcase, country: @callToRain['country'], images: @profileMetadata['wishlist'].split("#{params['asin'].downcase}~#{@callToRain['country']}~")[1].split('*')[0])  %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs form-control rounded-pill color-white"><i class="fa fa-heart color-highlight"></i></a>
                         <% else %>
-                          <a href="<%= loved_path(id: params['asin'].downcase, country: @callToRain['country'], images: @callToRain['images'].split(',').reject(&:blank?).sample(3).join(','))  %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs form-control rounded-pill bg-highlight"><i class="fa fa-heart"></i></a>
+                          <a href="<%= loved_path(id: params['asin'].downcase, country: @callToRain['country'], images: @callToRain['images'].split(',').reject(&:blank?).first)  %>&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="icon icon-xs form-control rounded-pill bg-highlight"><i class="fa fa-heart"></i></a>
 
                         <% end %>
                       </div>

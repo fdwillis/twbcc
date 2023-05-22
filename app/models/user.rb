@@ -148,7 +148,7 @@ class User < ApplicationRecord
         'rating' => response['rating'].present? ? response['rating'] : nil ,
         'reviews' => response['top_reviews'].present? ? response['top_reviews'].shuffle : nil,
         'brand' => response['brand'].present? ? response['brand'] : nil , 
-        'images' => response['variants'].present? ? response['variants'].map{|d| d['main_image']}.join(",") : response['main_image']['link'],
+        'images' => response['main_image']['link'],
       }
     else
       {}
