@@ -112,13 +112,13 @@
 	    		<% @profile['metadata']['tracking'].split('*').reject(&:blank?).each do |itm| %>
 			      <% if itm.split('-')[1].present? %>  
 				      <% if request.user_agent.include?('Mobile') %>
-				      	<a class="col-12 pe-0" href="<%= amazon_path(country: itm.split('~')[1],asin: itm.split('~')[0]) %>/?&referredBy=<%= @userFound&.uuid  %>">
+				      	<a class="col-12 pe-0" href="/product/<%= itm.split('~')[0].upcase %>?&product[country]=<%= itm.split('~')[1].downcase %>&referredBy=<%= @userFound&.uuid  %>">
 				      		<div class="card rounded-m shadow-l mx-1" data-card-height="250" style="height:96vh; background-image:url(<%= itm.split('~')[2].split(',').sample(1)[0] %>)">
 	                </div>
 	              </a>
 
 				      <% else %>
-				      	<a class="col-4 pe-0" href="#">
+				      	<a class="col-4 pe-0" href="/product/<%= itm.split('~')[0].upcase %>?&product[country]=<%= itm.split('~')[1].downcase %>&referredBy=<%= @userFound&.uuid  %>">
 				      		<div class="card rounded-m shadow-l mx-1" data-card-height="250" style="height:96vh; background-image:url(<%= itm.split('~')[2].split(',').sample(1)[0] %>)">
 	                </div>
 	              </a>
