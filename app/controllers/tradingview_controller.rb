@@ -7,15 +7,13 @@ class TradingviewController < ApplicationController
 		when params['ticker'] == "BTCUSD"
 
 			case true
-			when params['type'] == 'buyStop'
-			when params['type'] == 'sellStop'
-			when params['type'] == 'newBuy'
-				Crypto.createMarketOrder(params)
-				# Crypto.createLimitOrder(params)
-			when params['type'] == 'newSell'
-			when params['type'] == 'profit1'
-			when params['type'] == 'profit2'
-			when params['type'] == 'profit3'
+			when params['type'] == 'sellStop' || params['type'] == 'buyStop'
+				trailOrStop = Crypto.createTrailOrStopOrder(params)
+				# debugger
+			when params['type'] == 'entry'
+				marketOrder = Crypto.createMarketOrder(params)
+				limitOrder = Crypto.createLimitOrder(params)
+			when params['type'].include?('profit')
 			end
 
 			render json: {success: true}
