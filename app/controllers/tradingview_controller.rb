@@ -7,12 +7,14 @@ class TradingviewController < ApplicationController
 		when params['ticker'] == "BTCUSD"
 
 			case true
-			when params['type'] == 'sellStop' || params['type'] == 'buyStop'
+			when params['type'].include?('Stop')
 				trailOrStop = Crypto.createTrailOrStopOrder(params)
 				# debugger
+				puts trailOrStop
 			when params['type'] == 'entry'
-				marketOrder = Crypto.createMarketOrder(params)
-				limitOrder = Crypto.createLimitOrder(params)
+				# marketOrder = Crypto.krakenMarketOrder(params)
+				limitOrder = Crypto.krakenLimitOrder(params)
+				puts limitOrder
 			when params['type'].include?('profit')
 			end
 
