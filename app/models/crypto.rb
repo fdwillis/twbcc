@@ -110,9 +110,14 @@ class Crypto
   	# if in profit by more than tvData['trail'] -> set to trail
   	# if not in profit -> hold
   	keysForTrades = krakenTrades['result']['trades'].keys
+  	# a third
+
+  	tradesToTrail = (keysForTrades.size / 3).ceil
+
   	tradesToUpdate = krakenTrades['result']['trades']
 
-  	keysForTrades.each do |keyID|
+
+  	keysForTrades[0..(tradesToTrail - 1)].each do |keyID|
   		keyInfoX = tradesToUpdate[keyID]
 
   		case true
