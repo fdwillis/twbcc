@@ -9,7 +9,6 @@ class TradingviewController < ApplicationController
 			case true
 			when params['type'].include?('Stop')
 				trailOrStop = Crypto.createTrailOrStopOrder(params)
-				# debugger
 				puts trailOrStop
 			when params['type'] == 'entry'
 				# marketOrder = Crypto.krakenMarketOrder(params)

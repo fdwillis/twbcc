@@ -101,7 +101,7 @@ class Crypto
 	    "volume" 		=> volumeString.to_f > 0.0001 ? ("%.5f" % volumeToTake) : "0.0001"
 	  }
 
-	  # remove all trailin
+	  # remove all trailing first
     krakenRequest(routeToKraken, orderParams)
   end
 
@@ -117,21 +117,19 @@ class Crypto
 
   		case true
   		when tvData['type'] == 'sellStop'
-		  		debugger
-	  		changeTillProfit = ((keyInfoX['price'].to_f - (keyInfoX['price'].to_f * (0.01 * tvData['trail'].to_f))) - tvData['currentPrice'].to_f).round(1)
-  			if changeTillProfit > 0
+	  		changeOverProfit = ((keyInfoX['price'].to_f - (keyInfoX['price'].to_f * (0.01 * tvData['trail'].to_f))) - tvData['currentPrice'].to_f).round(1)
+  			if changeOverProfit > 0
 		  		updatedTrade = krakenTrailOrStop(tvData,keyInfoX)
-		  		debugger
 		  	else
-		  		puts "\n\nProfit Below #{(keyInfoX['price'].to_f - (keyInfoX['price'].to_f * (0.01 * tvData['trail'].to_f))).round(1)}\nCurrently: #{tvData['currentPrice']}\nChange Till Profit: #{changeTillProfit.abs}\nOriginal Entry: #{keyInfoX['price'].to_f}\n\n"
+		  		puts "\n\nProfit Below #{(keyInfoX['price'].to_f - (keyInfoX['price'].to_f * (0.01 * tvData['trail'].to_f))).round(1)}\nCurrently: #{tvData['currentPrice']}\nChange Till Profit: #{changeOverProfit.abs}\nOriginal Entry: #{keyInfoX['price'].to_f}\n\n"
 		  		updatedTrade = :noProfit
   			end
   		when tvData['type'] == 'buyStop'
-  			changeTillProfit = (tvData['currentPrice'].to_f - (keyInfoX['price'].to_f + (keyInfoX['price'].to_f * (0.01 * tvData['trail'].to_f)))).round(1)
-  			if changeTillProfit > 0
+  			changeOverProfit = (tvData['currentPrice'].to_f - (keyInfoX['price'].to_f + (keyInfoX['price'].to_f * (0.01 * tvData['trail'].to_f)))).round(1)
+  			if changeOverProfit > 0
 		  		updatedTrade = krakenTrailOrStop(tvData,keyInfoX)
 		  	else
-		  		puts "\n\nProfit Above #{(keyInfoX['price'].to_f + (keyInfoX['price'].to_f * (0.01 * tvData['trail'].to_f))).round(1)}\nCurrently: #{tvData['currentPrice']}\nChange Till Profit: #{changeTillProfit.abs}\nOriginal Entry: #{keyInfoX['price'].to_f}\n\n"
+		  		puts "\n\nProfit Above #{(keyInfoX['price'].to_f + (keyInfoX['price'].to_f * (0.01 * tvData['trail'].to_f))).round(1)}\nCurrently: #{tvData['currentPrice']}\nChange Till Profit: #{changeOverProfit.abs}\nOriginal Entry: #{keyInfoX['price'].to_f}\n\n"
 		  		updatedTrade = :noProfit
   			end
   		end
@@ -154,10 +152,8 @@ class Crypto
 				# 	    "close[ordertype]" => "stop-loss-limit"
 				# 	  }
 						
-			 #  		debugger
 				# 	  # # Construct the request and print the result
 				# 	  request = krakenRequest('/0/private/AddOrder', orderParams)
-			 #  		debugger
 
 		  # 		when tvData['tickerType'] == 'forex'
 		  # 			# execute oanda
