@@ -2,6 +2,7 @@
 
 	<% if current_user == @userFound %>
 		<% currentMembersip = @userFound.checkMembership %>
+		<%= link_to @loginLink['url'] %>
 		<% if @membershipDetails.present? %>
 			<div class="card card-style">
 		    <h1 class="p-3">Membership</h1>
