@@ -78,7 +78,7 @@ class RegistrationsController < ApplicationController
 		      #make connect account
 		      if stripeSessionInfo['custom_fields'][1]['dropdown']['value'] == 'US'
 			      newStripeAccount = Stripe::Account.create({
-			        type: 'express',
+			        type: 'standard',
 			        country: stripeSessionInfo['custom_fields'][1]['dropdown']['value'],
 			        email: stripeCustomer['email'],
 			        capabilities: {
@@ -94,7 +94,7 @@ class RegistrationsController < ApplicationController
 			      })
 			    else
 			    	newStripeAccount = Stripe::Account.create({
-			        type: 'express',
+			        type: 'standard',
 			        country: stripeSessionInfo['custom_fields'][1]['dropdown']['value'],
 			        email: stripeCustomer['email'],
 			        capabilities: {

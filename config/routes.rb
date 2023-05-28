@@ -28,14 +28,12 @@ Rails.application.routes.draw do
   get "/how-it-works", to: 'application#how_it_works', as: 'how_it_works'
   get "/new-password-set", to: 'registrations#new_password', as: 'new-password-set'
   get "/checkout/:price/:account", to: 'application#checkout'
-  get "/explore/:country", to: 'products#explore'
-  get "/explore/:country/:brand", to: 'products#brand'
   get "/product/:asin", to: 'products#show'
-  get "/explore/", to: 'products#index'
   get "/split-session", to: 'application#split_session', as: 'split_session'
   get "/display-discount", to: 'application#display_discount', as: 'display_discount'
   get "/update-discount", to: 'application#update_discount', as: 'update_discount'
 
+  post "/signals", to: 'tradingview#signals', as: 'signals' # sprint2
   post "/inquiry", to: 'application#inquiry', as: 'inquiry' # sprint2
   post "/activate", to: 'categories#activate'
   post "/search", to: 'search#index'
