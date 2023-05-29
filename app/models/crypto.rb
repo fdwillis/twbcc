@@ -36,7 +36,7 @@ class Crypto
   end
 
   def self.krakenTrades
-    routeToKraken = "/0/private/TradesHistory"
+    routeToKraken = "/0/private/OpenOrders"
     krakenRequest(routeToKraken)
   end
 
@@ -109,12 +109,13 @@ class Crypto
   	# if in profit by less than tvData['trail'] -> set to break even
   	# if in profit by more than tvData['trail'] -> set to trail
   	# if not in profit -> hold
-  	keysForTrades = krakenTrades['result']['trades'].keys
+
+  	keysForTrades = krakenTrades['result']['open'].keys
   	# a third
 
-  	tradesToTrail = (keysForTrades.size / 3).ceil
+  	tradesToTrail = (keysForTrades&.size / 3)&.ceil
 
-  	tradesToUpdate = krakenTrades['result']['trades']
+  	tradesToUpdate = krakenTrades['result']['open']
 
 
   	keysForTrades[0..(tradesToTrail - 1)].each do |keyID|
