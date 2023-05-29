@@ -137,15 +137,6 @@ class Crypto
   	tradesToUpdate = krakenTrades['result']['open']
   	keysForTrades = krakenTrades['result']['open'].keys
 
-  	#delete stop losses
-  	keysForTrades.each do |keyX|
-  		tradesToUpdate[keyX]
-  	end
-
-
-
-
-
   	tradesToTrail = (keysForTrades&.size / 3)&.ceil
 
 
