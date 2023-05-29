@@ -105,17 +105,49 @@ class Crypto
     krakenRequest(routeToKraken, orderParams)
   end
 
+  def self.removePendingTrails
+  	# a third
+  	tradesToUpdate = krakenTrades['result']['open']
+  	keysForTrades = krakenTrades['result']['open'].keys
+
+  	#delete stop losses
+  	keysForTrades.each do |keyX|
+  		infoX = tradesToUpdate[keyX]
+	  	if infoX['descr']['ordertype'] == 'stop-loss'
+		  	orderParams = {
+			    "txid" 			=> keyX,
+			  }
+
+		  	routeToKraken = "/0/private/CancelOrder"
+		  	krakenRequest(routeToKraken, orderParams)
+	  	end
+  	end
+
+  	
+	end
+
   def self.createTrailOrStopOrder(tvData)
   	# if in profit by less than tvData['trail'] -> set to break even
   	# if in profit by more than tvData['trail'] -> set to trail
   	# if not in profit -> hold
 
-  	keysForTrades = krakenTrades['result']['open'].keys
+  	removePendingTrails
+
   	# a third
+  	tradesToUpdate = krakenTrades['result']['open']
+  	keysForTrades = krakenTrades['result']['open'].keys
+
+  	#delete stop losses
+  	keysForTrades.each do |keyX|
+  		tradesToUpdate[keyX]
+  	end
+
+
+
+
 
   	tradesToTrail = (keysForTrades&.size / 3)&.ceil
 
-  	tradesToUpdate = krakenTrades['result']['open']
 
 
   	keysForTrades[0..(tradesToTrail - 1)].each do |keyID|
