@@ -146,20 +146,24 @@ class Crypto
 
   		case true
   		when tvData['type'] == 'sellStop'
-	  		changeOverProfit = ((keyInfoX['price'].to_f - (keyInfoX['price'].to_f * (0.01 * tvData['trail'].to_f))) - tvData['currentPrice'].to_f).round(1)
-  			if changeOverProfit > 0
-		  		updatedTrade = krakenTrailOrStop(tvData,keyInfoX)
-		  	else
-		  		puts "\n\nProfit Below #{(keyInfoX['price'].to_f - (keyInfoX['price'].to_f * (0.01 * tvData['trail'].to_f))).round(1)}\nCurrently: #{tvData['currentPrice']}\nChange Till Profit: #{changeOverProfit.abs}\nOriginal Entry: #{keyInfoX['price'].to_f}\n\n"
-		  		updatedTrade = :noProfit
+	  		if keyInfoX['descr']['type'] == 'sell'	
+		  		changeOverProfit = ((keyInfoX['price'].to_f - (keyInfoX['price'].to_f * (0.01 * tvData['trail'].to_f))) - tvData['currentPrice'].to_f).round(1)
+	  			if changeOverProfit > 0
+			  		updatedTrade = krakenTrailOrStop(tvData,keyInfoX)
+			  	else
+			  		puts "\n\nProfit Below #{(keyInfoX['price'].to_f - (keyInfoX['price'].to_f * (0.01 * tvData['trail'].to_f))).round(1)}\nCurrently: #{tvData['currentPrice']}\nChange Till Profit: #{changeOverProfit.abs}\nOriginal Entry: #{keyInfoX['price'].to_f}\n\n"
+			  		updatedTrade = :noProfit
+	  			end
   			end
   		when tvData['type'] == 'buyStop'
-  			changeOverProfit = (tvData['currentPrice'].to_f - (keyInfoX['price'].to_f + (keyInfoX['price'].to_f * (0.01 * tvData['trail'].to_f)))).round(1)
-  			if changeOverProfit > 0
-		  		updatedTrade = krakenTrailOrStop(tvData,keyInfoX)
-		  	else
-		  		puts "\n\nProfit Above #{(keyInfoX['price'].to_f + (keyInfoX['price'].to_f * (0.01 * tvData['trail'].to_f))).round(1)}\nCurrently: #{tvData['currentPrice']}\nChange Till Profit: #{changeOverProfit.abs}\nOriginal Entry: #{keyInfoX['price'].to_f}\n\n"
-		  		updatedTrade = :noProfit
+	  		if keyInfoX['descr']['type'] == 'buy'	
+	  			changeOverProfit = (tvData['currentPrice'].to_f - (keyInfoX['price'].to_f + (keyInfoX['price'].to_f * (0.01 * tvData['trail'].to_f)))).round(1)
+	  			if changeOverProfit > 0
+			  		updatedTrade = krakenTrailOrStop(tvData,keyInfoX)
+			  	else
+			  		puts "\n\nProfit Above #{(keyInfoX['price'].to_f + (keyInfoX['price'].to_f * (0.01 * tvData['trail'].to_f))).round(1)}\nCurrently: #{tvData['currentPrice']}\nChange Till Profit: #{changeOverProfit.abs}\nOriginal Entry: #{keyInfoX['price'].to_f}\n\n"
+			  		updatedTrade = :noProfit
+	  			end
   			end
   		end
 
