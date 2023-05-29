@@ -94,7 +94,7 @@ class Crypto
     volumeString = ("%.5f" % volumeToTake)
     orderParams = {
 	    "pair" 			=> tvData['ticker'],
-	    "ordertype" => "stop-loss-limit",
+	    "ordertype" => "stop-loss",
 	    "type" 			=> tvData['direction'],
 	    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
 	    "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.005 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.005 * tvData['trail'].to_f))).round(1)).to_s,
