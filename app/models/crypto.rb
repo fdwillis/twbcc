@@ -63,7 +63,12 @@ class Crypto
 			  }	
 				
 			  # # Construct the request and print the result
-			  krakenRequest('/0/private/AddOrder', orderParams)
+			  requestK = krakenRequest('/0/private/AddOrder', orderParams)
+			  
+			  if requestK['error'][0].include?("Insufficient")
+			  	puts "\n-- MORE CASH FOR ENTRIES --\n"
+			  	return
+				end
 
   		when tvData['tickerType'] == 'forex'
   			# execute oanda
@@ -95,7 +100,12 @@ class Crypto
 			  }
 				
 			  # # Construct the request and print the result
-			  krakenRequest('/0/private/AddOrder', orderParams)
+			  requestK = krakenRequest('/0/private/AddOrder', orderParams)
+			  
+			  if requestK['error'][0].include?("Insufficient")
+			  	puts "\n-- MORE CASH FOR ENTRIES --\n"
+			  	return
+				end
 
   		when tvData['tickerType'] == 'forex'
   			# execute oanda
@@ -165,7 +175,8 @@ class Crypto
   	#delete stop losses
   	keysForTrades.each do |keyX|
   		infoX = tradesToUpdate[keyX]
-	  	if infoX['descr']['ordertype'] == 'stop-loss' && infoX['descr']['type'] == tvData['direction'] #and the same direction
+	  	if 	infoX['descr']['ordertype'] == 'stop-loss' &&
+	  			infoX['descr']['type'] == tvData['direction'] #and the same direction
 		  	orderParams = {
 			    "txid" 			=> keyX,
 			  }
@@ -180,7 +191,7 @@ class Crypto
   	# if in profit by more than tvData['trail'] -> set to trail
   	# if not in profit -> hold
 
-  	removePendingTrails(tvData)
+  	# removePendingTrails(tvData)
 
   	# a third
   	tradesToUpdate = krakenTrades['result']['open']
@@ -193,24 +204,64 @@ class Crypto
   	keysForTrades[0..(tradesToTrail - 1)].each do |keyID|
   		keyInfoX = tradesToUpdate[keyID]
 
+	  	if 	keyInfoX['descr']['ordertype'] == 'stop-loss' &&
+	  			keyInfoX['descr']['type'] == tvData['direction'] #and the same direction
+
+	  			if tvData['direction'] == 'sell'
+	  				@nextTakeProfit = (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1).to_f
+	  				if (@nextTakeProfit > keyInfoX['descr']['price'].to_f)
+	  					orderParams = {
+						    "txid" 			=> keyID,
+						  }
+						  puts "\n-- Repainting New Profit --\n"
+						else
+						  puts "\n-- Waiting For More Profit --\n"
+		  				next
+		  			end
+	  			end
+
+	  			if tvData['direction'] == 'buy'
+	  				@nextTakeProfit = (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1).to_f
+		  			if (@nextTakeProfit < keyInfoX['descr']['price'].to_f)
+		  				orderParams = {
+						    "txid" 			=> keyID,
+						  }
+						  puts "\n-- Repainting New Profit --\n"
+						else
+						  puts "\n-- Waiting For More Profit --\n"
+		  				next
+		  			end
+	  			end
+
+
+		  	if orderParams.present?
+			  	routeToKraken = "/0/private/CancelOrder"
+			  	krakenRequest(routeToKraken, orderParams)
+		  	end
+	  	end
+
   		case true
   		when tvData['type'] == 'sellStop'
-	  		if keyInfoX['descr']['type'] == 'sell'	
-		  		changeOverProfit = ((keyInfoX['price'].to_f - (keyInfoX['price'].to_f * (0.01 * tvData['trail'].to_f))) - tvData['currentPrice'].to_f).round(1)
+	  		if keyInfoX['descr']['type'] == 'buy'	
+		  		changeOverProfit = ((keyInfoX['descr']['price'].to_f - (keyInfoX['descr']['price'].to_f * (0.01 * tvData['trail'].to_f))) - tvData['currentPrice'].to_f).round(1)
+	  			
 	  			if changeOverProfit > 0
+	  				# if next stop loss proce is better then remove current trailings
 			  		updatedTrade = krakenTrailOrStop(tvData,keyInfoX)
 			  	else
-			  		puts "\n\nProfit Below #{(keyInfoX['price'].to_f - (keyInfoX['price'].to_f * (0.01 * tvData['trail'].to_f))).round(1)}\nCurrently: #{tvData['currentPrice']}\nChange Till Profit: #{changeOverProfit.abs}\nOriginal Entry: #{keyInfoX['price'].to_f}\n\n"
+			  		puts "\n\n-- Profit Below #{(keyInfoX['descr']['price'].to_f - (keyInfoX['descr']['price'].to_f * (0.01 * tvData['trail'].to_f))).round(1)}\nCurrently: #{tvData['currentPrice']}\nChange Till Profit: #{changeOverProfit.abs}\nOriginal Entry: #{keyInfoX['descr']['price'].to_f} --\n\n"
 			  		updatedTrade = :noProfit
 	  			end
   			end
   		when tvData['type'] == 'buyStop'
-	  		if keyInfoX['descr']['type'] == 'buy'	
-	  			changeOverProfit = (tvData['currentPrice'].to_f - (keyInfoX['price'].to_f + (keyInfoX['price'].to_f * (0.01 * tvData['trail'].to_f)))).round(1)
+	  		if keyInfoX['descr']['type'] == 'sell'	
+	  			changeOverProfit = (tvData['currentPrice'].to_f - (keyInfoX['descr']['price'].to_f + (keyInfoX['descr']['price'].to_f * (0.01 * tvData['trail'].to_f)))).round(1)
+	  			
 	  			if changeOverProfit > 0
+	  				# if next stop loss proce is better then remove current trailings
 			  		updatedTrade = krakenTrailOrStop(tvData,keyInfoX)
 			  	else
-			  		puts "\n\nProfit Above #{(keyInfoX['price'].to_f + (keyInfoX['price'].to_f * (0.01 * tvData['trail'].to_f))).round(1)}\nCurrently: #{tvData['currentPrice']}\nChange Till Profit: #{changeOverProfit.abs}\nOriginal Entry: #{keyInfoX['price'].to_f}\n\n"
+			  		puts "\n\n-- Profit Above #{(keyInfoX['descr']['price'].to_f + (keyInfoX['descr']['price'].to_f * (0.01 * tvData['trail'].to_f))).round(1)}\nCurrently: #{tvData['currentPrice']}\nChange Till Profit: #{changeOverProfit.abs}\nOriginal Entry: #{keyInfoX['descr']['price'].to_f} --\n\n"
 			  		updatedTrade = :noProfit
 	  			end
   			end
