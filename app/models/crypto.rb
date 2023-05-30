@@ -44,9 +44,17 @@ class Crypto
   	unitsToTrade = xpercentForTradeFromTimeframe(tvData)
 
   	if unitsToTrade > 0 
+  		# unitsWithScale
   		case true
   		when tvData['tickerType'] == 'crypto'
   			# execute kraken
+  			# remove oposit orders first
+  			if tvData['direction'] == 'buy'
+  				removePutOrders(tvData)
+  			else
+  				removeCallOrders(tvData)
+  			end
+
   			orderParams = {
 			    "pair" 			=> tvData['ticker'],
 			    "type" 			=> tvData['direction'],
@@ -67,9 +75,17 @@ class Crypto
   	unitsToTrade = xpercentForTradeFromTimeframe(tvData)
 
   	if unitsToTrade > 0 
+  		# unitsWithScale
   		case true
   		when tvData['tickerType'] == 'crypto'
   			# execute kraken
+  			# remove oposit orders first
+  			if tvData['direction'] == 'buy'
+  				removePutOrders(tvData)
+  			else
+  				removeCallOrders(tvData)
+  			end
+
   			orderParams = {
 			    "pair" 			=> tvData['ticker'],
 			    "type" 			=> tvData['direction'],
@@ -86,6 +102,42 @@ class Crypto
   		end
   	end
   end
+
+  def self.removeCallOrders(tvData)
+  	# a third
+  	tradesToUpdate = krakenTrades['result']['open']
+  	keysForTrades = krakenTrades['result']['open'].keys
+
+  	#delete stop losses
+  	keysForTrades.each do |keyX|
+  		infoX = tradesToUpdate[keyX]
+	  	if (infoX['descr']['ordertype'] == 'limit' || infoX['descr']['ordertype'] == 'market') && infoX['descr']['type'] != tvData['direction'] #and the same direction
+		  	orderParams = {
+			    "txid" 			=> keyX,
+			  }
+		  	routeToKraken = "/0/private/CancelOrder"
+		  	krakenRequest(routeToKraken, orderParams)
+	  	end
+  	end
+	end
+
+	def self.removePutOrders(tvData)
+  	# a third
+  	tradesToUpdate = krakenTrades['result']['open']
+  	keysForTrades = krakenTrades['result']['open'].keys
+
+  	#delete stop losses
+  	keysForTrades.each do |keyX|
+  		infoX = tradesToUpdate[keyX]
+	  	if (infoX['descr']['ordertype'] == 'limit' || infoX['descr']['ordertype'] == 'market') && infoX['descr']['type'] != tvData['direction'] #and the same direction
+		  	orderParams = {
+			    "txid" 			=> keyX,
+			  }
+		  	routeToKraken = "/0/private/CancelOrder"
+		  	krakenRequest(routeToKraken, orderParams)
+	  	end
+  	end
+	end
 
   def self.krakenTrailOrStop(tvData,tradeInfo)
     routeToKraken = "/0/private/AddOrder"
@@ -121,8 +173,6 @@ class Crypto
 		  	krakenRequest(routeToKraken, orderParams)
 	  	end
   	end
-
-  	
 	end
 
   def self.createTrailOrStopOrder(tvData)
@@ -165,33 +215,6 @@ class Crypto
 	  			end
   			end
   		end
-
-	  	
-	  	# if updatedTrade != :noProfit
-		  # 	unitsToTrade = xpercentForTradeFromTimeframe(tvData)
-		  # 	if unitsToTrade > 0 
-		  # 		case true
-		  # 		when tvData['tickerType'] == 'crypto'
-		  # 			# execute kraken
-		  # 			orderParams = {
-				# 	    "pair" => tvData['ticker'],
-				# 	    "type" => tvData['direction'],
-				# 	    "ordertype" => "limit",
-				# 	    "price" => tvData['direction'] == 'sell' ? tvData['lowPrice'].to_f + (tvData['lowPrice'].to_f * (0.01 * tvData['trail'].to_f)) : tvData['highPrice'].to_f - (tvData['highPrice'].to_f * (0.01 * tvData['trail'].to_f)),
-				# 	    "close[price]" => tvData['direction'] == 'sell' ? tvData['lowPrice'].to_f + (tvData['lowPrice'].to_f * (0.01 * tvData['trail'].to_f)) : tvData['highPrice'].to_f - (tvData['highPrice'].to_f * (0.01 * tvData['trail'].to_f)),
-				# 	    "close[price2]" => tvData['direction'] == 'sell' ? tvData['lowPrice'].to_f + (tvData['lowPrice'].to_f * (0.01 * tvData['trail'].to_f)) : tvData['highPrice'].to_f - (tvData['highPrice'].to_f * (0.01 * tvData['trail'].to_f)),
-				# 	    "volume" => "#{unitsToTrade}" ,
-				# 	    "close[ordertype]" => "stop-loss-limit"
-				# 	  }
-						
-				# 	  # # Construct the request and print the result
-				# 	  request = krakenRequest('/0/private/AddOrder', orderParams)
-
-		  # 		when tvData['tickerType'] == 'forex'
-		  # 			# execute oanda
-		  # 		end
-		  # 	end
-	  	# end
   	end
 
 
