@@ -68,6 +68,8 @@ class Crypto
 			  if requestK['error'][0].include?("Insufficient")
 			  	puts "\n-- MORE CASH FOR ENTRIES --\n"
 			  	return
+			  else
+			  	puts "\n-- Kraken Entry Submitted --\n"
 				end
 
   		when tvData['tickerType'] == 'forex'
@@ -105,6 +107,8 @@ class Crypto
 			  if requestK['error'][0].include?("Insufficient")
 			  	puts "\n-- MORE CASH FOR ENTRIES --\n"
 			  	return
+			  else
+			  	puts "\n-- Kraken Entry Submitted --\n"
 				end
 
   		when tvData['tickerType'] == 'forex'
@@ -267,9 +271,6 @@ class Crypto
   			end
   		end
   	end
-
-
-
   end
 
   def self.xpercentForTradeFromTimeframe(tvData)
@@ -302,7 +303,5 @@ class Crypto
   #   routeToKraken = "/0/private/Balance"
   #   krakenRequest(routeToKraken)
   # end
-
-
 
 end
