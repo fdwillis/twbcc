@@ -146,7 +146,7 @@ class Crypto
 					  requestK = krakenRequest('/0/private/AddOrder', orderParams)
 			  	end
 			  	
-				  if tvData['direction'] == 'sell' && (priceToSet > (pullPrices&.low - (pullPrices&.max.to_f * (0.01 * tvData['trail'].to_f))))
+				  if tvData['direction'] == 'sell' && (priceToSet > (pullPrices&.low - (pullPrices&.low.to_f * (0.01 * tvData['trail'].to_f))))
 					  requestK = krakenRequest('/0/private/AddOrder', orderParams)
 				  end
 			  else
