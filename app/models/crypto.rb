@@ -119,7 +119,7 @@ class Crypto
   				removeCallOrders(tvData)
   			end
 
-  			priceToSet = (tvData['direction'] == 'sell' ? tvData['lowPrice'].to_f + (tvData['lowPrice'].to_f * (0.01 * tvData['trail'].to_f)) : tvData['highPrice'].to_f - (tvData['highPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)
+  			priceToSet = (tvData['direction'] == 'sell' ? tvData['highPrice'].to_f + (tvData['highPrice'].to_f * (0.01 * tvData['trail'].to_f)) : tvData['lowPrice'].to_f - (tvData['lowPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)
 
   			orderParams = {
 			    "pair" 			=> tvData['ticker'],
