@@ -119,15 +119,6 @@ class Crypto
   				removeCallOrders(tvData)
   			end
 
-  			priceToSet = (tvData['direction'] == 'sell' ? tvData['highPrice'].to_f + (tvData['highPrice'].to_f * (0.01 * tvData['trail'].to_f)) : tvData['lowPrice'].to_f - (tvData['lowPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)
-
-  			orderParams = {
-			    "pair" 			=> tvData['ticker'],
-			    "type" 			=> tvData['direction'],
-			    "ordertype" => "limit",
-			    "price" 		=> priceToSet,
-			    "volume" 		=> "#{unitsToTrade}" 
-			  }
 
 			  tradesToUpdate = krakenTrades['result']['open']
 		  	keysForTrades = krakenTrades['result']['open'].keys
@@ -141,26 +132,40 @@ class Crypto
 		  	end
 				# averageOfPricesOpen = (pullPrices&.sum/pullPrices&.count)
 			  # # Construct the request and print the result
-			  if !keysForTrades.empty?
-			  	if tvData['direction'] == 'buy' && (priceToSet < (pullPrices&.max + (pullPrices&.max.to_f * (0.01 * tvData['trail'].to_f))))
-					  requestK = krakenRequest('/0/private/AddOrder', orderParams)
-			  	end
-			  	
-				  if tvData['direction'] == 'sell' && (priceToSet > (pullPrices&.low - (pullPrices&.low.to_f * (0.01 * tvData['trail'].to_f))))
+
+  			tvData['trail'].each do |trailPercent|
+
+	  			priceToSet = (tvData['direction'] == 'sell' ? tvData['highPrice'].to_f + (tvData['highPrice'].to_f * (0.01 * trailPercent.to_f)) : tvData['lowPrice'].to_f - (tvData['lowPrice'].to_f * (0.01 * trailPercent.to_f))).round(1)
+	  			# allow multiple ranges of set prices from tvData
+	  			orderParams = {
+				    "pair" 			=> tvData['ticker'],
+				    "type" 			=> tvData['direction'],
+				    "ordertype" => "limit",
+				    "price" 		=> priceToSet,
+				    "volume" 		=> "#{unitsToTrade}" 
+				  }
+				  if !keysForTrades.empty?
+				  	if tvData['direction'] == 'buy' && (priceToSet < (pullPrices&.max + (pullPrices&.max.to_f * (0.01 * trailPercent.to_f))))
+						  requestK = krakenRequest('/0/private/AddOrder', orderParams)
+				  	end
+				  	
+					  if tvData['direction'] == 'sell' && (priceToSet > (pullPrices&.low - (pullPrices&.low.to_f * (0.01 * trailPercent.to_f))))
+						  requestK = krakenRequest('/0/private/AddOrder', orderParams)
+					  end
+				  else
 					  requestK = krakenRequest('/0/private/AddOrder', orderParams)
 				  end
-			  else
-				  requestK = krakenRequest('/0/private/AddOrder', orderParams)
-			  end
 
-			  if requestK['error'][0].present? && requestK['error'][0].include?("Insufficient")
-			  	puts "\n-- MORE CASH FOR ENTRIES --\n"
-			  	return
-				end
+				  if requestK['error'][0].present? && requestK['error'][0].include?("Insufficient")
+				  	puts "\n-- MORE CASH FOR ENTRIES --\n"
+				  	next
+					end
 
-			  if requestK['result']['txid'].present?
-			  	puts "\n-- Kraken Entry Submitted --\n"
-			  end
+				  if requestK['result']['txid'].present?
+				  	puts "\n-- Kraken Entry Submitted --\n"
+				  	next
+				  end
+  			end
 
   		when tvData['tickerType'] == 'forex'
   			# execute oanda
