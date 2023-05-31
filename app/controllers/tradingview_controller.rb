@@ -9,8 +9,8 @@ class TradingviewController < ApplicationController
 			case true
 			when params['type'].include?('Stop')
 				trailOrStop = Crypto.createTrailOrStopOrder(params)
-			when params['type'] == 'entry' &&  params['direction'] == 'buy'
-				marketOrder = Crypto.krakenMarketOrder(params)
+			when params['type'] == 'entry'
+				# marketOrder = Crypto.krakenMarketOrder(params)
 				limitOrder = Crypto.krakenLimitOrder(params)
 			when params['type'].include?('profit')
 			end
