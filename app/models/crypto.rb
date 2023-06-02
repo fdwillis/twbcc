@@ -3,7 +3,6 @@ class Crypto
   # Generate the Kraken API signature
 
 	def self.get_kraken_signature(uri_path, api_nonce, api_sec, api_post)
-		sleep 0.1
 	  api_sha256 = OpenSSL::Digest.new('sha256').digest("#{api_nonce}#{api_post}")
 	  api_hmac = OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha512'), Base64.decode64(ENV['krakenTestSecret']), "#{uri_path}#{api_sha256}")
 	  Base64.strict_encode64(api_hmac)
@@ -11,7 +10,6 @@ class Crypto
 
 	# Attaches auth headers and returns results of a POST request
 	def self.krakenRequest(uri_path, orderParams = {})
-		sleep 0.1
 	  api_nonce = (Time.now.to_f * 1000).to_i.to_s
 	  post_data = orderParams.map { |key, value| "#{key}=#{value}" }.join('&')
     api_post = post_data.present? ? "nonce=#{api_nonce}&#{post_data}" : "nonce=#{api_nonce}"
