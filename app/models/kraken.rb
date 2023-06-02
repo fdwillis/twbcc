@@ -398,14 +398,19 @@ class Kraken < ApplicationRecord
 			  	end
 		  	end
 				# averageOfPricesOpen = (pullPrices&.sum/pullPrices&.count)
-			  if !keysForTrades.empty?
-			  	if tvData['direction'] == 'buy'
-					  @requestK = krakenRequest('/0/private/AddOrder', orderParams)
-			  	end
+		  	if tvData['direction'] == 'buy'
+				  @requestK = krakenRequest('/0/private/AddOrder', orderParams)
+		  	end
 
-				  if tvData['direction'] == 'sell'
-					  @requestK = krakenRequest('/0/private/AddOrder', orderParams)
+			  if tvData['direction'] == 'sell'
+				  @requestK = krakenRequest('/0/private/AddOrder', orderParams)
+			  end
+
+			  if @requestK.present?
+				  if @requestK['error'][0].present? && @requestK['error'][0].include?("Insufficient")
+				  	puts "\n-- MORE CASH FOR ENTRIES --\n"
 				  end
+<<<<<<< HEAD
 			  end
 <<<<<<< Updated upstream
 =======
@@ -415,17 +420,16 @@ class Kraken < ApplicationRecord
 				  	puts "\n-- MORE CASH FOR ENTRIES --\n"
 				  end
 >>>>>>> Stashed changes
+=======
+>>>>>>> 623d5eb (rollback and test)
 
-			  if @requestK['error'][0].present? && @requestK['error'][0].include?("Insufficient")
-			  	puts "\n-- MORE CASH FOR ENTRIES --\n"
-			  end
-
-				if @requestK['result']['txid'].present?
-				  firstMake = ClosedTrade.create(entry: @requestK['result']['txid'][0], entryStatus: 'open')
-				  getOrder = krakenOrder(@requestK['result']['txid'][0])['result']
-				  firstMake.update(entryStatus: getOrder[@requestK['result']['txid'][0]]['status'])
-			  	puts "\n-- Kraken Entry Submitted --\n"
-			  end
+					if @requestK['result']['txid'].present?
+					  firstMake = ClosedTrade.create(entry: @requestK['result']['txid'][0], entryStatus: 'open')
+					  getOrder = krakenOrder(@requestK['result']['txid'][0])['result']
+					  firstMake.update(entryStatus: getOrder[@requestK['result']['txid'][0]]['status'])
+				  	puts "\n-- Kraken Entry Submitted --\n"
+				  end
+				end
 
   		when tvData['tickerType'] == 'forex'
   			# execute oanda
