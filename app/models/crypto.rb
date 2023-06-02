@@ -33,19 +33,19 @@ class Crypto
 	end
 
 	def self.krakenBalance
-		sleep 0.1
+		
     routeToKraken = "/0/private/Balance"
     krakenRequest(routeToKraken)
   end
 
   def self.krakenPendingTrades
-  	sleep 0.1
+  	
     routeToKraken = "/0/private/OpenOrders"
     krakenRequest(routeToKraken)
   end
   
   def self.krakenTrades
-  	sleep 0.1
+  	
     routeToKraken = "/0/private/TradesHistory"
     orderParams = {
 	    "trades" 			=> true,
@@ -54,7 +54,7 @@ class Crypto
   end
 
   def self.krakenTrade(tradeID)
-  	sleep 0.1
+  	
     routeToKraken = "/0/private/QueryTrades"
     orderParams = {
 	    "txid" 			=> tradeID,
@@ -64,7 +64,7 @@ class Crypto
   end
 
   def self.krakenOrder(orderID)
-  	sleep 0.1
+  	
     routeToKraken = "/0/private/QueryOrders"
     orderParams = {
 	    "txid" 			=> orderID,
@@ -75,7 +75,7 @@ class Crypto
 
   def self.removeCallOrders(tvData)
   	# a third
-  	sleep 0.1
+  	
   	tradesToUpdate = krakenPendingTrades['result']['open']
   	keysForTrades = krakenPendingTrades['result']['open'].keys
 
@@ -94,7 +94,7 @@ class Crypto
 
 	def self.removePutOrders(tvData)
   	# a third
-  	sleep 0.1
+  	
   	tradesToUpdate = krakenPendingTrades['result']['open']
   	keysForTrades = krakenPendingTrades['result']['open'].keys
 
@@ -184,7 +184,7 @@ class Crypto
 							  puts "\n-- Waiting For More Profit --\n"
 			  			end
 		  			end
-	  				sleep 0.1
+	  				
 	  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
 	  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
 				  elsif makeorPull&.protectionStatus != 'closed'
@@ -215,7 +215,7 @@ class Crypto
 		  			#delete old order if not already canceled
 
 		  			if makeorPull&.protectionStatus.present? && makeorPull&.protectionStatus != 'canceled' && orderParams.present?
-			  			sleep 0.1
+			  			
 			  			routeToKraken = "/0/private/CancelOrder"
 					  	kcancel = krakenRequest(routeToKraken, orderParams)
 					  	protectTrade = krakenTrailOrStop(tvData,keyInfoX)
@@ -223,14 +223,14 @@ class Crypto
 		  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
 				  	elsif orderParams.present?
 					  	#repaint new order
-					  	sleep 0.1
+					  	
 					  	protectTrade = krakenTrailOrStop(tvData,keyInfoX)
 		  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
 		  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
 				  	end
 			  	elsif makeorPull&.protectionStatus == 'closed'
 			  		# calculate profit and display
-			  		sleep 0.1
+			  		
 			  		entryX = Crypto.krakenOrder(makeorPull&.entry)['result'][makeorPull&.entry]['descr']['price']
 			  		exitX = Crypto.krakenOrder(makeorPull&.protection)['result'][makeorPull&.protection]['descr']['price']
 
