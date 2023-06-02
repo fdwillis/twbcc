@@ -135,15 +135,126 @@ class Crypto
   	# if not in profit -> hold
   	sleep 1
   	#current pending stop-loss orders to repaint
-  	pendingTrades = krakenPendingTrades['result']
-  	firstPull = pendingTrades['orders']
-  	tradeHistory = firstPull.present? ? firstPull : krakenPendingTrades['result']['orders']
-  	keysFromTradeHistory = tradeHistory.keys
+  	# pendingTrades = krakenPendingTrades['result']
+  	# firstPull = pendingTrades['orders']
+  	# tradeHistory = firstPull.present? ? firstPull : krakenPendingTrades['result']['orders']
+  	# keysFromTradeHistory = tradeHistory.keys
 
-  	keysFromTradeHistory.each do |tradeID|
+  	# keysFromTradeHistory.each do |tradeID|
 
-  		keyInfoX = Crypto.krakenOrder(tradeHistory[tradeID]['ordertxid'])['result']
-  		keyForInfo = keyInfoX&.keys&.first
+  	# 	keyInfoX = Crypto.krakenOrder(tradeHistory[tradeID]['ordertxid'])['result']
+  	# 	keyForInfo = keyInfoX&.keys&.first
+
+  	# 	if keyForInfo.present?
+  	# 		if (keyInfoX[keyForInfo]['descr']['ordertype'] == 'limit' || keyInfoX[keyForInfo]['descr']['ordertype'] == 'market')
+			# 	  makeorPull = ClosedTrade.find_or_create_by(entry: keyForInfo)
+			# 	  makeorPull.update(entryStatus: keyInfoX[keyForInfo]['status'])
+			# 		#update protection
+
+			# 		if makeorPull&.protection.present?
+			# 			pullProtexStatus = Crypto.krakenOrder(makeorPull&.protection)
+			# 			makeorPull&.update(protectionStatus: pullProtexStatus['result'][makeorPull&.protection]['status'])
+			# 		end
+			# 	end
+
+			# 	case true
+			# 	when tvData['direction'] == 'sell'
+			# 		@nextTakeProfit = (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1).to_f
+			# 	when tvData['direction'] == 'buy'
+			# 		@nextTakeProfit = (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1).to_f
+			# 	end
+
+			# 	#repaint protection of orders with current stop-loss -> match in DB
+			# 	if makeorPull&.protectionStatus == 'open' || makeorPull&.protectionStatus.nil? #makeorPull&.protectionStatus == 'canceled' ||
+			# 			debugger
+
+		 #  			if tvData['direction'] == 'sell'
+		 #  				if (@nextTakeProfit > keyInfoX[keyForInfo]['descr']['price'].to_f)
+		 #  					orderParams = {
+			# 				    "txid" 			=> tradeID,
+			# 				  }
+			# 				  puts "\n-- Repainting New Profit --\n"
+			# 				else
+			# 				  puts "\n-- Waiting For More Profit --\n"
+			#   				next
+			#   			end
+		 #  			end
+
+		 #  			if tvData['direction'] == 'buy'
+			#   			if (@nextTakeProfit < keyInfoX[keyForInfo]['descr']['price'].to_f)
+			#   				orderParams = {
+			# 				    "txid" 			=> tradeID,
+			# 				  }
+			# 				  puts "\n-- Repainting New Profit --\n"
+			# 				else
+			# 				  puts "\n-- Waiting For More Profit --\n"
+			#   				next
+			#   			end
+		 #  			end
+
+
+			#   	if orderParams.present?
+			  		
+			# 	  	routeToKraken = "/0/private/CancelOrder"
+			# 	  	krakenRequest(routeToKraken, orderParams)
+			#   	end
+		 #  	end
+
+
+
+			# 	#filled limit or market order
+			# 	# if makeorPull&.protectionStatus != 'closed'
+			# 	# 	#continue protection of orders without stop-loss -> match in DB
+			# 	# 	case true
+		 #  # 		when tvData['type'] == 'sellStop'
+			#  #  		if keyInfoX[keyForInfo]['descr']['type'] == 'sell'	
+			# 	#   		changeOverProfit = (keyInfoX[keyForInfo]['descr']['price'].to_f - @nextTakeProfit).round(1) 
+			  			
+			#  #  			if changeOverProfit > 0
+			# 	# 	  		updatedTrade = krakenTrailOrStop(tvData,keyInfoX)
+			# 	# 	  	else
+			# 	# 	  		puts "\n\n-- Profit Below #{(keyInfoX[keyForInfo]['price'].to_f - (keyInfoX[keyForInfo]['price'].to_f * (0.01 * tvData['trail'].to_f))).round(1)}\nCurrently: #{tvData['currentPrice']}\nChange Till Profit: #{changeOverProfit.abs}\nOriginal Entry: #{keyInfoX[keyForInfo]['price'].to_f} --\n\n"
+			#  #  			end
+		 #  # 			end
+		 #  # 		when tvData['type'] == 'buyStop'
+			#  #  		if keyInfoX[keyForInfo]['descr']['type'] == 'buy'	
+			#  #  			changeOverProfit = (@nextTakeProfit - keyInfoX[keyForInfo]['descr']['price'].to_f).round(1)
+			#  #  			if changeOverProfit > 0
+			# 	# 	  		updatedTrade = krakenTrailOrStop(tvData,keyInfoX)
+			# 	# 	  	else
+			# 	# 	  		puts "\n\n-- Profit Above #{(keyInfoX[keyForInfo]['price'].to_f + (keyInfoX[keyForInfo]['price'].to_f * (0.01 * tvData['trail'].to_f))).round(1)}\nCurrently: #{tvData['currentPrice']}\nChange Till Profit: #{changeOverProfit.abs}\nOriginal Entry: #{keyInfoX[keyForInfo]['price'].to_f} --\n\n"
+			#  #  			end
+		 #  # 			end
+		 #  # 		end
+		  		
+		 #  # 		if updatedTrade.present?
+		  			
+		 #  # 			orderParams = {
+			# 	# 	    "txid" 			=> makeorPull&.protection,
+			# 	# 	  }
+		 #  # 			routeToKraken = "/0/private/CancelOrder"
+			# 	#   	krakenRequest(routeToKraken, orderParams)
+		 #  # 			debugger
+		 #  # 			return
+			#  #  		makeorPull&.update(protectionStatus: 'open', protection: updatedTrade['result']['txid'].first)
+			# 	# 	end
+			# 	# else
+			# 	# 	next
+			# 	# end
+	  # 	end
+	  # end
+
+
+
+  	# current open filled orders without protection
+  	currentPositions = ClosedTrade.all.map(&:entry)
+  	
+
+  	currentPositions.each do |tradeID|
+
+  		keyInfoX = Crypto.krakenOrder(tradeID)['result']
+  		keyForInfo = tradeID
+  		
 
   		if keyForInfo.present?
   			if (keyInfoX[keyForInfo]['descr']['ordertype'] == 'limit' || keyInfoX[keyForInfo]['descr']['ordertype'] == 'market')
@@ -165,9 +276,34 @@ class Crypto
 				end
 
 				#repaint protection of orders with current stop-loss -> match in DB
-				if makeorPull&.protectionStatus == 'open' || makeorPull&.protectionStatus.nil? #makeorPull&.protectionStatus == 'canceled' ||
-						debugger
 
+				if makeorPull&.entryStatus == 'closed'
+					if makeorPull&.protectionStatus.nil?
+						#set first time
+		  			if tvData['direction'] == 'sell'
+		  				if (@nextTakeProfit > keyInfoX[keyForInfo]['descr']['price'].to_f)
+		  					protectTrade = krakenTrailOrStop(tvData,keyInfoX)
+							  puts "\n-- Repainting New Profit --\n"
+							else
+							  puts "\n-- Waiting For More Profit --\n"
+			  				next
+			  			end
+		  			end
+
+		  			if tvData['direction'] == 'buy'
+			  			if (@nextTakeProfit < keyInfoX[keyForInfo]['descr']['price'].to_f)
+			  				protectTrade = krakenTrailOrStop(tvData,keyInfoX)
+							  puts "\n-- Repainting New Profit --\n"
+							else
+							  puts "\n-- Waiting For More Profit --\n"
+			  				next
+			  			end
+		  			end
+	  				
+	  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
+	  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
+				  else
+		  			#delete old order and repaint
 		  			if tvData['direction'] == 'sell'
 		  				if (@nextTakeProfit > keyInfoX[keyForInfo]['descr']['price'].to_f)
 		  					orderParams = {
@@ -191,12 +327,15 @@ class Crypto
 			  				next
 			  			end
 		  			end
-
-
-			  	if orderParams.present?
-			  		
-				  	routeToKraken = "/0/private/CancelOrder"
+		  			#delete old order
+		  			routeToKraken = "/0/private/CancelOrder"
 				  	krakenRequest(routeToKraken, orderParams)
+
+				  	#repaint new order
+				  	debugger
+				  	protectTrade = krakenTrailOrStop(tvData,keyInfoX)
+	  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
+	  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
 			  	end
 		  	end
 
@@ -243,14 +382,6 @@ class Crypto
 				# end
 	  	end
 	  end
-
-
-
-  	#current open filled orders without protection
-  	currentPositions = krakenTrades['result']
-  	secondPull = currentPositions['orders']
-  	closedTrades = secondPull.present? ? secondPull : krakenPendingTrades['result']['orders']
-  	keysFromclosedTrades = closedTrades.keys
 
   	
   end
@@ -323,9 +454,9 @@ class Crypto
 						end
 
 					  if requestK['result']['txid'].present?
-						  firstMake = ClosedTrade.create(entry: requestK['result']['txid'][0])
+						  firstMake = ClosedTrade.create(entry: requestK['result']['txid'][0], entryStatus: 'open')
 						  getOrder = krakenOrder(requestK['result']['txid'][0])['result']
-						  firstMake.update(entryStatus: getOrder['status'])
+						  firstMake.update(entryStatus: getOrder[requestK['result']['txid'][0]]['status'])
 					  	puts "\n-- Kraken Entry Submitted --\n"
 					  	next
 					  end
@@ -378,25 +509,28 @@ class Crypto
 		  	end
 				# averageOfPricesOpen = (pullPrices&.sum/pullPrices&.count)
 			  if !keysForTrades.empty?
-			  	if tvData['direction'] == 'buy' && (priceToSet < (pullPrices&.max + (pullPrices&.max.to_f * (0.01 * tvData['trail'].to_f))))
-					  requestK = krakenRequest('/0/private/AddOrder', orderParams)
+			  	if tvData['direction'] == 'buy'
+					  @requestK = krakenRequest('/0/private/AddOrder', orderParams)
 			  	end
 
-				  if tvData['direction'] == 'sell' && (priceToSet > (pullPrices&.low - (pullPrices&.max.to_f * (0.01 * tvData['trail'].to_f))))
-					  requestK = krakenRequest('/0/private/AddOrder', orderParams)
+				  if tvData['direction'] == 'sell'
+					  @requestK = krakenRequest('/0/private/AddOrder', orderParams)
 				  end
-			  else
-				  requestK = krakenRequest('/0/private/AddOrder', orderParams)
 			  end
 
-			  if requestK['error'][0].present? && requestK['error'][0].include?("Insufficient")
+			  if @requestK['error'][0].present? && @requestK['error'][0].include?("Insufficient")
 			  	puts "\n-- MORE CASH FOR ENTRIES --\n"
 			  	return
 			  end
 
-			  if requestK['result']['txid'].present?
+				debugger
+				if @requestK['result']['txid'].present?
+					debugger
+				  firstMake = ClosedTrade.create(entry: @requestK['result']['txid'][0], entryStatus: 'open')
+				  getOrder = krakenOrder(@requestK['result']['txid'][0])['result']
+				  firstMake.update(entryStatus: getOrder[@requestK['result']['txid'][0]]['status'])
 			  	puts "\n-- Kraken Entry Submitted --\n"
-				end
+			  end
 
   		when tvData['tickerType'] == 'forex'
   			# execute oanda
