@@ -1,0 +1,2 @@
+class ClosedTrade < ApplicationRecord
+end
