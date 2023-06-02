@@ -75,7 +75,7 @@ class Crypto
   	# a third
   	
   	tradesToUpdate = krakenPendingTrades['result']['open']
-  	keysForTrades = krakenPendingTrades['result']['open'].keys
+  	keysForTrades = tradesToUpdate.keys
 
   	#delete stop losses
   	keysForTrades.each do |keyX|
@@ -94,7 +94,7 @@ class Crypto
   	# a third
   	
   	tradesToUpdate = krakenPendingTrades['result']['open']
-  	keysForTrades = krakenPendingTrades['result']['open'].keys
+  	keysForTrades = tradesToUpdate.keys
 
   	#delete stop losses
   	keysForTrades.each do |keyX|
@@ -269,7 +269,7 @@ class Crypto
 
 
 			  tradesToUpdate = krakenPendingTrades['result']['open']
-		  	keysForTrades = krakenPendingTrades['result']['open'].keys
+		  	keysForTrades = tradesToUpdate.keys
 
 		  	pullPrices = []
 
@@ -359,7 +359,7 @@ class Crypto
 			  }	
 
 			  tradesToUpdate = krakenPendingTrades['result']['open']
-		  	keysForTrades = krakenPendingTrades['result']['open'].keys
+		  	keysForTrades = tradesToUpdate.keys
 
 		  	pullPrices = []
 		  	keysForTrades.each do |keyX|
