@@ -387,16 +387,6 @@ class Kraken < ApplicationRecord
 			    "volume" 		=> "#{unitsFiltered}" 
 			  }	
 
-			  tradesToUpdate = krakenPendingTrades
-		  	keysForTrades = tradesToUpdate.keys
-
-		  	pullPrices = []
-		  	keysForTrades.each do |keyX|
-		  		infoX = tradesToUpdate[keyX]
-			  	if infoX['descr']['type'] == tvData['direction'] #and the same direction
-				  	pullPrices << infoX['descr']['price'].to_f
-			  	end
-		  	end
 				# averageOfPricesOpen = (pullPrices&.sum/pullPrices&.count)
 		  	if tvData['direction'] == 'buy'
 				  @requestK = krakenRequest('/0/private/AddOrder', orderParams)
