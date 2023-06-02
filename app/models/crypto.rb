@@ -348,7 +348,6 @@ class Crypto
 				  end
 
 				  if requestK.present?
-					  debugger
 					  if requestK['error'][0].present? && requestK['error'][0].include?("Insufficient")
 					  	puts "\n-- MORE CASH FOR ENTRIES --\n"
 						end
@@ -465,3 +464,5 @@ class Crypto
   # end
 
 end
+
+
