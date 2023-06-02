@@ -2,6 +2,8 @@ class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
   # Generate the Kraken API signature
 
+  #kraken
+
   def self.get_kraken_signature(uri_path, api_nonce, api_sec, api_post)
     api_sha256 = OpenSSL::Digest.new('sha256').digest("#{api_nonce}#{api_post}")
     api_hmac = OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha512'), Base64.decode64(ENV['krakenTestSecret']), "#{uri_path}#{api_sha256}")
@@ -29,4 +31,6 @@ class ApplicationRecord < ActiveRecord::Base
     response = http.request(req)
     Oj.load(response.body)
   end
+
+  #oanda
 end

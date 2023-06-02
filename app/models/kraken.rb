@@ -1,7 +1,6 @@
 class Kraken < ApplicationRecord
 
 	def self.krakenBalance
-		
     routeToKraken = "/0/private/Balance"
     krakenRequest(routeToKraken)
   end
