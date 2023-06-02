@@ -195,7 +195,7 @@ class Crypto
 		  			if tvData['direction'] == 'sell'
 		  				if (@nextTakeProfit > keyInfoX[keyForInfo]['descr']['price'].to_f)
 		  					orderParams = {
-							    "txid" 			=> tradeID,
+							    "txid" 			=>  makeorPull&.protection,
 							  }
 							  puts "\n-- Repainting New Profit --\n"
 							else
@@ -207,7 +207,7 @@ class Crypto
 		  			if tvData['direction'] == 'buy'
 			  			if (@nextTakeProfit < keyInfoX[keyForInfo]['descr']['price'].to_f)
 			  				orderParams = {
-							    "txid" 			=> tradeID,
+							    "txid" 			=>  makeorPull&.protection,
 							  }
 							  puts "\n-- Repainting New Profit --\n"
 							else
@@ -215,16 +215,20 @@ class Crypto
 			  				next
 			  			end
 		  			end
-		  			#delete old order
-		  			sleep 0.5
-		  			routeToKraken = "/0/private/CancelOrder"
-				  	krakenRequest(routeToKraken, orderParams)
+		  			#delete old order if not already canceled
 
-				  	#repaint new order
-				  	sleep 0.5
-				  	protectTrade = krakenTrailOrStop(tvData,keyInfoX)
-	  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
-	  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
+		  			if makeorPull&.protectionStatus.present? && makeorPull&.protectionStatus != 'canceled' && orderParams.present?
+			  			routeToKraken = "/0/private/CancelOrder"
+					  	kcancel = krakenRequest(routeToKraken, orderParams)
+					  	protectTrade = krakenTrailOrStop(tvData,keyInfoX)
+		  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
+		  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
+				  	elsif orderParams.present?
+					  	#repaint new order
+					  	protectTrade = krakenTrailOrStop(tvData,keyInfoX)
+		  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
+		  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
+				  	end
 			  	else
 			  		puts "Tooke Profit At: "
 				  	next
@@ -373,9 +377,7 @@ class Crypto
 			  	return
 			  end
 
-				# debugger
 				if @requestK['result']['txid'].present?
-					# debugger
 				  firstMake = ClosedTrade.create(entry: @requestK['result']['txid'][0], entryStatus: 'open')
 				  getOrder = krakenOrder(@requestK['result']['txid'][0])['result']
 				  firstMake.update(entryStatus: getOrder[@requestK['result']['txid'][0]]['status'])
