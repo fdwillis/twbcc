@@ -324,7 +324,7 @@ class Crypto
 			    when tvData['ticker'] == 'BTCUSD'
 			    	unitsFiltered = (unitsToTrade > 0.0001 ? unitsToTrade : 0.0001)
 			    when tvData['ticker'] == 'PAXGUSD'
-			    	unitsFiltered = (unitsToTrade > 0.0003 ? unitsToTrade : 0.0003)
+			    	unitsFiltered = (unitsToTrade > 0.003 ? unitsToTrade : 0.003)
 			    end
 
 	  			orderParams = {
@@ -351,6 +351,7 @@ class Crypto
 					  if requestK['error'][0].present? && requestK['error'][0].include?("Insufficient")
 					  	puts "\n-- MORE CASH FOR ENTRIES --\n"
 						end
+						
 					  if requestK['result']['txid'].present?
 						  firstMake = ClosedTrade.create(entry: requestK['result']['txid'][0], entryStatus: 'open')
 						  getOrder = krakenOrder(requestK['result']['txid'][0])['result']
