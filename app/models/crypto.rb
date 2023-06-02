@@ -27,7 +27,7 @@ class Crypto
 	  http = Net::HTTP.new(uri.host, uri.port)
 	  http.use_ssl = true
 	  response = http.request(req)
-	  return Oj.load(response.body)
+	  Oj.load(response.body)
 	end
 
 	def self.krakenBalance
@@ -41,8 +41,6 @@ class Crypto
     routeToKraken = "/0/private/OpenOrders"
     orderParams = {}
     requestK = krakenRequest(routeToKraken)['result']['open']
-    
-
     createPayload = JsonDatum.create(params: orderParams, payload: requestK)
     createPayload[:payload]
   end
@@ -174,11 +172,7 @@ class Crypto
   	# paginate to get all results to create JsonDatum to pass to later methods
   	# delete in worker after [timeframe] delay
 
-
-
-
   	currentPositions = ClosedTrade.all.map(&:entry)
-
 
   	currentPositions.each do |tradeID|
   		keyInfoX = Crypto.krakenOrder(tradeID)['result']
@@ -288,10 +282,6 @@ class Crypto
 		  	end
 	  	end
 	  end
-
-
-
-  	
   end
 
   def self.krakenLimitOrder(tvData)
@@ -327,12 +317,22 @@ class Crypto
 
 	  			priceToSet = (tvData['direction'] == 'sell' ? tvData['highPrice'].to_f + (tvData['highPrice'].to_f * (0.01 * trailPercent.to_f)) : tvData['lowPrice'].to_f - (tvData['lowPrice'].to_f * (0.01 * trailPercent.to_f))).round(1)
 	  			# allow multiple ranges of set prices from tvData
+			    # ( unitsToTrade > 0.0001) : tvData['ticker'] == 'PAXGUSD' ? : unitsToTrade
+		    	unitsFiltered = unitsToTrade
+
+			    case true
+			    when tvData['ticker'] == 'BTCUSD'
+			    	unitsFiltered = (unitsToTrade > 0.0001 ? unitsToTrade : 0.0001)
+			    when tvData['ticker'] == 'PAXGUSD'
+			    	unitsFiltered = (unitsToTrade > 0.0003 ? unitsToTrade : 0.0003)
+			    end
+
 	  			orderParams = {
 				    "pair" 			=> tvData['ticker'],
 				    "type" 			=> tvData['direction'],
 				    "ordertype" => "limit",
 				    "price" 		=> priceToSet,
-				    "volume" 		=> "#{unitsToTrade}" 
+				    "volume" 		=> unitsFiltered
 				  }
 
 			  	pricePulled = pullPrices.flatten.map{|p| p[:price]}
@@ -348,6 +348,7 @@ class Crypto
 				  end
 
 				  if requestK.present?
+					  debugger
 					  if requestK['error'][0].present? && requestK['error'][0].include?("Insufficient")
 					  	puts "\n-- MORE CASH FOR ENTRIES --\n"
 						end
@@ -416,7 +417,6 @@ class Crypto
 
 			  if @requestK['error'][0].present? && @requestK['error'][0].include?("Insufficient")
 			  	puts "\n-- MORE CASH FOR ENTRIES --\n"
-			  	return
 			  end
 
 				if @requestK['result']['txid'].present?
