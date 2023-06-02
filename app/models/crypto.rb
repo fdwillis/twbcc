@@ -261,7 +261,6 @@ class Crypto
 				# 	  }
 		  # 			routeToKraken = "/0/private/CancelOrder"
 				#   	krakenRequest(routeToKraken, orderParams)
-		  			debugger
 		  # 			return
 			 #  		makeorPull&.update(protectionStatus: 'open', protection: updatedTrade['result']['txid'].first)
 				# 	end
