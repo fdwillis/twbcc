@@ -3,6 +3,7 @@ class Crypto
   # Generate the Kraken API signature
 
 	def self.get_kraken_signature(uri_path, api_nonce, api_sec, api_post)
+		sleep 0.1
 	  api_sha256 = OpenSSL::Digest.new('sha256').digest("#{api_nonce}#{api_post}")
 	  api_hmac = OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha512'), Base64.decode64(ENV['krakenTestSecret']), "#{uri_path}#{api_sha256}")
 	  Base64.strict_encode64(api_hmac)
@@ -10,6 +11,7 @@ class Crypto
 
 	# Attaches auth headers and returns results of a POST request
 	def self.krakenRequest(uri_path, orderParams = {})
+		sleep 0.1
 	  api_nonce = (Time.now.to_f * 1000).to_i.to_s
 	  post_data = orderParams.map { |key, value| "#{key}=#{value}" }.join('&')
     api_post = post_data.present? ? "nonce=#{api_nonce}&#{post_data}" : "nonce=#{api_nonce}"
@@ -31,19 +33,19 @@ class Crypto
 	end
 
 	def self.krakenBalance
-		
+		sleep 0.1
     routeToKraken = "/0/private/Balance"
     krakenRequest(routeToKraken)
   end
 
   def self.krakenPendingTrades
-  	
+  	sleep 0.1
     routeToKraken = "/0/private/OpenOrders"
     krakenRequest(routeToKraken)
   end
   
   def self.krakenTrades
-  	
+  	sleep 0.1
     routeToKraken = "/0/private/TradesHistory"
     orderParams = {
 	    "trades" 			=> true,
@@ -52,7 +54,7 @@ class Crypto
   end
 
   def self.krakenTrade(tradeID)
-  	
+  	sleep 0.1
     routeToKraken = "/0/private/QueryTrades"
     orderParams = {
 	    "txid" 			=> tradeID,
@@ -62,7 +64,7 @@ class Crypto
   end
 
   def self.krakenOrder(orderID)
-  	
+  	sleep 0.1
     routeToKraken = "/0/private/QueryOrders"
     orderParams = {
 	    "txid" 			=> orderID,
@@ -73,7 +75,7 @@ class Crypto
 
   def self.removeCallOrders(tvData)
   	# a third
-  	
+  	sleep 0.1
   	tradesToUpdate = krakenPendingTrades['result']['open']
   	keysForTrades = krakenPendingTrades['result']['open'].keys
 
@@ -92,7 +94,7 @@ class Crypto
 
 	def self.removePutOrders(tvData)
   	# a third
-  	
+  	sleep 0.1
   	tradesToUpdate = krakenPendingTrades['result']['open']
   	keysForTrades = krakenPendingTrades['result']['open'].keys
 
@@ -238,7 +240,7 @@ class Crypto
 						when tvData['direction'] == 'buy'
 							@profitMade = entryX - exitX
 						end
-						
+
 			  		puts "Took Profit Already at: #{@profitMade }"
 			  	end
 		  	end
