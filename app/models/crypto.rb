@@ -141,7 +141,7 @@ class Crypto
   		keyForInfo = tradeID
   		
   		if keyInfoX.present?
-	  		
+
   			if keyInfoX[keyForInfo]['status'] != 'canceled' && (keyInfoX[keyForInfo]['descr']['ordertype'] == 'limit' || keyInfoX[keyForInfo]['descr']['ordertype'] == 'market')
 				  makeorPull = ClosedTrade.find_by(entry: keyForInfo)
 				  makeorPull.update(entryStatus: keyInfoX[keyForInfo]['status'])
@@ -153,8 +153,6 @@ class Crypto
 						protectedOrNah = pullProtexStatus['result'][makeorPull&.protection]['status']
 						makeorPull&.update(protectionStatus: protectedOrNah)
 					end
-				else
-					next
 				end
 
 				case true
@@ -184,7 +182,7 @@ class Crypto
 							  puts "\n-- Waiting For More Profit --\n"
 			  			end
 		  			end
-	  				
+	  				sleep 0.1
 	  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
 	  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
 				  elsif makeorPull&.protectionStatus != 'closed'
@@ -215,6 +213,7 @@ class Crypto
 		  			#delete old order if not already canceled
 
 		  			if makeorPull&.protectionStatus.present? && makeorPull&.protectionStatus != 'canceled' && orderParams.present?
+			  			sleep 0.1
 			  			routeToKraken = "/0/private/CancelOrder"
 					  	kcancel = krakenRequest(routeToKraken, orderParams)
 					  	protectTrade = krakenTrailOrStop(tvData,keyInfoX)
@@ -222,13 +221,23 @@ class Crypto
 		  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
 				  	elsif orderParams.present?
 					  	#repaint new order
+					  	sleep 0.1
 					  	protectTrade = krakenTrailOrStop(tvData,keyInfoX)
 		  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
 		  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
 				  	end
 			  	elsif makeorPull&.protectionStatus == 'closed'
-			  		puts "Took Profit Already at: #{pullProtexStatus['result'][makeorPull&.protection]['descr']['price']}"
-			  		next
+			  		# calculate profit and display
+			  		sleep 0.1
+			  		entryX = Crypto.krakenOrder(makeorPull&.entry)['result'][makeorPull&.entry]['descr']['price']
+			  		exitX = Crypto.krakenOrder(makeorPull&.protection)['result'][makeorPull&.protection]['descr']['price']
+
+			  		when tvData['direction'] == 'sell'
+							@profitMade = exitX - entryX
+						when tvData['direction'] == 'buy'
+							@profitMade = entryX - exitX
+						end
+			  		puts "Took Profit Already at: #{@profitMade }"
 			  	end
 		  	end
 	  	end
