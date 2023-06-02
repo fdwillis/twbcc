@@ -134,6 +134,15 @@ class Crypto
   	# if in profit by more than tvData['trail'] -> set to trail
   	# if not in profit -> hold
 
+
+  	#remove current stop losses if next set is better or skip
+  	#pull open orders that are stop loss
+  	#if next set better delete current & create new stop loss
+
+
+
+
+
   	# current open filled orders without protection
   	currentPositions = ClosedTrade.all.map(&:entry)
   	
@@ -151,8 +160,15 @@ class Crypto
 					#update protection
 
 					if makeorPull&.protection.present?
-						pullProtexStatus = Crypto.krakenOrder(makeorPull&.protection)
-						makeorPull&.update(protectionStatus: pullProtexStatus['result'][makeorPull&.protection]['status'])
+						# krakenTrade(properTradeID)
+						pullProtexStatus = krakenOrder(makeorPull&.protection)
+						tradeorNah = pullProtexStatus['result'][makeorPull&.protection]['trades'].present? ? pullProtexStatus['result'][makeorPull&.protection]['trades'][0] : nil
+						
+						if tradeorNah.present?
+							makeorPull&.update(protectionStatus: 'closed')
+						else
+							makeorPull&.update(protectionStatus: nil)
+						end
 					end
 				end
 
@@ -233,6 +249,8 @@ class Crypto
 		  	end
 	  	end
 	  end
+
+
 
   	
   end
