@@ -174,7 +174,6 @@ class Crypto
 							  puts "\n-- Setting Take Profit --\n"
 							else
 							  puts "\n-- Waiting For More Profit --\n"
-			  				next
 			  			end
 		  			end
 
@@ -184,7 +183,6 @@ class Crypto
 							  puts "\n-- Setting Take Profit --\n"
 							else
 							  puts "\n-- Waiting For More Profit --\n"
-			  				next
 			  			end
 		  			end
 	  				
@@ -200,7 +198,7 @@ class Crypto
 							  puts "\n-- Repainting New Profit --\n"
 							else
 							  puts "\n-- Waiting For More Profit --\n"
-			  				next
+			  				
 			  			end
 		  			end
 
@@ -212,7 +210,7 @@ class Crypto
 							  puts "\n-- Repainting New Profit --\n"
 							else
 							  puts "\n-- Waiting For More Profit --\n"
-			  				next
+			  				
 			  			end
 		  			end
 		  			#delete old order if not already canceled
@@ -231,7 +229,6 @@ class Crypto
 				  	end
 			  	else
 			  		puts "Tooke Profit At: "
-				  	next
 			  	end
 		  	end
 	  	end
@@ -304,7 +301,6 @@ class Crypto
 
 					  if requestK['error'][0].present? && requestK['error'][0].include?("Insufficient")
 					  	puts "\n-- MORE CASH FOR ENTRIES --\n"
-					  	next
 						end
 
 					  if requestK['result']['txid'].present?
@@ -312,11 +308,9 @@ class Crypto
 						  getOrder = krakenOrder(requestK['result']['txid'][0])['result']
 						  firstMake.update(entryStatus: getOrder[requestK['result']['txid'][0]]['status'])
 					  	puts "\n-- Kraken Entry Submitted --\n"
-					  	next
 					  end
 				  else
 				  	puts "\n-- Waiting For Better Entry --\n"
-				  	next
 				  end
   			end
 
