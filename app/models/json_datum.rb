@@ -1,0 +1,2 @@
+class JsonDatum < ApplicationRecord
+end

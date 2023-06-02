@@ -39,16 +39,51 @@ class Crypto
   def self.krakenPendingTrades
   	
     routeToKraken = "/0/private/OpenOrders"
-    krakenRequest(routeToKraken)
+    orderParams = {}
+    requestK = krakenRequest(routeToKraken)['result']['open']
+    
+
+    createPayload = JsonDatum.create(params: orderParams, payload: requestK)
+    createPayload[:payload]
   end
   
-  def self.krakenTrades
-  	
+  def self.krakenTrades(filledOrNot = nil, page = nil)
+  	buildTrades = []
     routeToKraken = "/0/private/TradesHistory"
-    orderParams = {
-	    "trades" 			=> true,
-	  }	
-    krakenRequest(routeToKraken, orderParams)
+
+    if page.present? && page.to_i > 1
+    	orderParams = {
+		    "trades" 			=> true,
+		    "ofs" 			=> (page - 1) * 50,
+		  }
+	    requestK = krakenRequest(routeToKraken, orderParams)
+    else
+	    orderParams = {
+		    "trades" 			=> true,
+		  }	
+	    requestK = krakenRequest(routeToKraken, orderParams)
+		end
+
+    # kResult = requestK['result']
+    # kResultCount = kResult['count']
+
+    # pagesToParse = (kResultCount/50.to_f).to_s.split('.')
+
+    # pagesToParse[0].times do
+	   #  if filledOrNot == 'filled'
+	   #  	# grab closed orders with market or limit
+	   #  else
+	   #  	# grab orders not filled
+	   #  end
+
+    # end
+
+    # grab remainder (pages % 1) or something like that
+    # ".#{pagesToParse[1]}".round
+
+    # return as JsonDatum with all results in array to iterate
+    createPayload = JsonDatum.create(params: orderParams, payload: requestK['result']['trades'])
+  	createPayload[:payload]
   end
 
   def self.krakenTrade(tradeID)
@@ -74,7 +109,7 @@ class Crypto
   def self.removeCallOrders(tvData)
   	# a third
   	
-  	tradesToUpdate = krakenPendingTrades['result']['open']
+  	tradesToUpdate = krakenPendingTrades
   	keysForTrades = tradesToUpdate.keys
 
   	#delete stop losses
@@ -89,11 +124,11 @@ class Crypto
 	  	end
   	end
 	end
-
+ 
 	def self.removePutOrders(tvData)
   	# a third
   	
-  	tradesToUpdate = krakenPendingTrades['result']['open']
+  	tradesToUpdate = krakenPendingTrades
   	keysForTrades = tradesToUpdate.keys
 
   	#delete stop losses
@@ -134,7 +169,16 @@ class Crypto
   	# if in profit by more than tvData['trail'] -> set to trail
   	# if not in profit -> hold
 
+  	# find trades that are filled and opened 
+			krakenTrades('filled')
+  	# paginate to get all results to create JsonDatum to pass to later methods
+  	# delete in worker after [timeframe] delay
+
+
+
+
   	currentPositions = ClosedTrade.all.map(&:entry)
+
 
   	currentPositions.each do |tradeID|
   		keyInfoX = Crypto.krakenOrder(tradeID)['result']
@@ -267,8 +311,7 @@ class Crypto
   			# 	removeCallOrders(tvData)
   			# end
 
-
-			  tradesToUpdate = krakenPendingTrades['result']['open']
+			  tradesToUpdate = krakenPendingTrades
 		  	keysForTrades = tradesToUpdate.keys
 
 		  	pullPrices = []
@@ -279,8 +322,6 @@ class Crypto
 				  	pullPrices << [{price: infoX['descr']['price'].to_f, tradeID: keyX}]
 			  	end
 		  	end
-				# averageOfPricesOpen = (pullPrices&.sum/pullPrices&.count)
-			  # # Construct the request and print the result
 
   			tvData['trail'].each do |trailPercent|
 
@@ -294,28 +335,22 @@ class Crypto
 				    "volume" 		=> "#{unitsToTrade}" 
 				  }
 
-				  
-				  if !keysForTrades.empty?
-				  	pricePulled = pullPrices.flatten.map{|p| p[:price]}
-				  	if tvData['direction'] == 'buy' && (priceToSet < (pricePulled&.min + (pricePulled&.min.to_f * (0.01 * trailPercent.to_f))))
-						  #remove current pendingOrder in this position
-						  requestK = krakenRequest('/0/private/AddOrder', orderParams)
-				  	end
-				  	
-					  if tvData['direction'] == 'sell' && (priceToSet > (pricePulled&.max - (pricePulled&.max.to_f * (0.01 * trailPercent.to_f))))
-						  #remove current pendingOrder in this position
-						  requestK = krakenRequest('/0/private/AddOrder', orderParams)
-					  end
-					else
-						requestK = krakenRequest('/0/private/AddOrder', orderParams)
+			  	pricePulled = pullPrices.flatten.map{|p| p[:price]}
+
+			  	if tvData['direction'] == 'buy' && (priceToSet < (pricePulled&.min + (pricePulled&.min.to_f * (0.01 * trailPercent.to_f))))
+					  #remove current pendingOrder in this position
+					  requestK = krakenRequest('/0/private/AddOrder', orderParams)
+			  	end
+			  	
+				  if tvData['direction'] == 'sell' && (priceToSet > (pricePulled&.max - (pricePulled&.max.to_f * (0.01 * trailPercent.to_f))))
+					  #remove current pendingOrder in this position
+					  requestK = krakenRequest('/0/private/AddOrder', orderParams)
 				  end
 
 				  if requestK.present?
-
 					  if requestK['error'][0].present? && requestK['error'][0].include?("Insufficient")
 					  	puts "\n-- MORE CASH FOR ENTRIES --\n"
 						end
-
 					  if requestK['result']['txid'].present?
 						  firstMake = ClosedTrade.create(entry: requestK['result']['txid'][0], entryStatus: 'open')
 						  getOrder = krakenOrder(requestK['result']['txid'][0])['result']
@@ -358,7 +393,7 @@ class Crypto
 			    "volume" 		=> "#{unitsToTrade}" 
 			  }	
 
-			  tradesToUpdate = krakenPendingTrades['result']['open']
+			  tradesToUpdate = krakenPendingTrades
 		  	keysForTrades = tradesToUpdate.keys
 
 		  	pullPrices = []
@@ -403,7 +438,7 @@ class Crypto
 
   	currentPrice = tvData['currentPrice'].to_f
 
-  	if tvData['ticker'] == 'BTCUSD'
+  	if tvData['tickerType'] == 'crypto' && tvData['broker'] == 'kraken'
   		accountBalance = krakenBalance['ZUSD'].to_f
   	end
 

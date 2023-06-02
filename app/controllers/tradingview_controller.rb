@@ -4,7 +4,7 @@ class TradingviewController < ApplicationController
 	def signals
 
 		case true
-		when params['ticker'] == "BTCUSD"
+		when params['tickerType'] == "crypto"
 
 			case true
 			when params['type'].include?('Stop')
