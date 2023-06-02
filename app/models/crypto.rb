@@ -232,11 +232,13 @@ class Crypto
 			  		entryX = Crypto.krakenOrder(makeorPull&.entry)['result'][makeorPull&.entry]['descr']['price']
 			  		exitX = Crypto.krakenOrder(makeorPull&.protection)['result'][makeorPull&.protection]['descr']['price']
 
+			  		case true
 			  		when tvData['direction'] == 'sell'
 							@profitMade = exitX - entryX
 						when tvData['direction'] == 'buy'
 							@profitMade = entryX - exitX
 						end
+						
 			  		puts "Took Profit Already at: #{@profitMade }"
 			  	end
 		  	end
