@@ -220,7 +220,7 @@ class Crypto
 				  	krakenRequest(routeToKraken, orderParams)
 
 				  	#repaint new order
-				  	debugger
+				  	# debugger
 				  	protectTrade = krakenTrailOrStop(tvData,keyInfoX)
 	  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
 	  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
@@ -261,7 +261,7 @@ class Crypto
 				# 	  }
 		  # 			routeToKraken = "/0/private/CancelOrder"
 				#   	krakenRequest(routeToKraken, orderParams)
-		  # 			debugger
+		  			debugger
 		  # 			return
 			 #  		makeorPull&.update(protectionStatus: 'open', protection: updatedTrade['result']['txid'].first)
 				# 	end
@@ -411,9 +411,9 @@ class Crypto
 			  	return
 			  end
 
-				debugger
+				# debugger
 				if @requestK['result']['txid'].present?
-					debugger
+					# debugger
 				  firstMake = ClosedTrade.create(entry: @requestK['result']['txid'][0], entryStatus: 'open')
 				  getOrder = krakenOrder(@requestK['result']['txid'][0])['result']
 				  firstMake.update(entryStatus: getOrder[@requestK['result']['txid'][0]]['status'])
