@@ -4,6 +4,10 @@
 # and recreated between test runs. Don't rely on the data there!
 
 Rails.application.configure do
+  require "awesome_print"
+  AwesomePrint.irb!
+
+
   # Settings specified here will take precedence over those in config/application.rb.
 
   config.cache_classes = false

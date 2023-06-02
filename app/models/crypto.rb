@@ -134,42 +134,27 @@ class Crypto
   	# if in profit by more than tvData['trail'] -> set to trail
   	# if not in profit -> hold
 
-
-  	#remove current stop losses if next set is better or skip
-  	#pull open orders that are stop loss
-  	#if next set better delete current & create new stop loss
-
-
-
-
-
-  	# current open filled orders without protection
   	currentPositions = ClosedTrade.all.map(&:entry)
-  	
 
   	currentPositions.each do |tradeID|
-
   		keyInfoX = Crypto.krakenOrder(tradeID)['result']
   		keyForInfo = tradeID
   		
 
   		if keyForInfo.present?
-  			if (keyInfoX[keyForInfo]['descr']['ordertype'] == 'limit' || keyInfoX[keyForInfo]['descr']['ordertype'] == 'market')
-				  makeorPull = ClosedTrade.find_or_create_by(entry: keyForInfo)
+  			if keyInfoX[keyForInfo]['status'] != 'canceled' && (keyInfoX[keyForInfo]['descr']['ordertype'] == 'limit' || keyInfoX[keyForInfo]['descr']['ordertype'] == 'market')
+				  makeorPull = ClosedTrade.find_by(entry: keyForInfo)
 				  makeorPull.update(entryStatus: keyInfoX[keyForInfo]['status'])
 					#update protection
 
 					if makeorPull&.protection.present?
 						# krakenTrade(properTradeID)
-						pullProtexStatus = krakenOrder(makeorPull&.protection)
-						tradeorNah = pullProtexStatus['result'][makeorPull&.protection]['trades'].present? ? pullProtexStatus['result'][makeorPull&.protection]['trades'][0] : nil
-						
-						if tradeorNah.present?
-							makeorPull&.update(protectionStatus: 'closed')
-						else
-							makeorPull&.update(protectionStatus: nil)
-						end
+						pullProtexStatus = Crypto.krakenOrder(makeorPull&.protection)
+						protectedOrNah = pullProtexStatus['result'][makeorPull&.protection]['status']
+						makeorPull&.update(protectionStatus: protectedOrNah)
 					end
+				else
+					next
 				end
 
 				case true
@@ -178,8 +163,6 @@ class Crypto
 				when tvData['direction'] == 'buy'
 					@nextTakeProfit = (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1).to_f
 				end
-
-				#repaint protection of orders with current stop-loss -> match in DB
 
 				if makeorPull&.entryStatus == 'closed'
 					if makeorPull&.protection.nil?
@@ -204,7 +187,7 @@ class Crypto
 	  				
 	  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
 	  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
-				  elsif makeorPull&.protectionStatus != 'closed' || makeorPull&.protectionStatus != 'canceled'
+				  elsif makeorPull&.protectionStatus != 'closed'
 		  			#delete old order and repaint
 		  			if tvData['direction'] == 'sell'
 		  				if (@nextTakeProfit > keyInfoX[keyForInfo]['descr']['price'].to_f)
@@ -244,7 +227,7 @@ class Crypto
 		  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
 				  	end
 			  	else
-			  		puts "Tooke Profit At: "
+			  		puts "Took Profit Already at: #{pullProtexStatus['result'][makeorPull&.protection]['descr']['price']}"
 			  	end
 		  	end
 	  	end
