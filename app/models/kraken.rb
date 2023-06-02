@@ -302,7 +302,7 @@ class Kraken < ApplicationRecord
 				    "type" 			=> tvData['direction'],
 				    "ordertype" => "limit",
 				    "price" 		=> priceToSet,
-				    "volume" 		=> unitsFiltered
+				    "volume" 		=> "#{unitsFiltered}"
 				  }
 
 			  	pricePulled = pullPrices.flatten.map{|p| p[:price]}
@@ -357,11 +357,18 @@ class Kraken < ApplicationRecord
 
   			priceToSet = (tvData['currentPrice']).to_f.round(1)
 
+  			case true
+		    when tvData['ticker'] == 'BTCUSD'
+		    	unitsFiltered = (unitsToTrade > 0.0001 ? unitsToTrade : 0.0001)
+		    when tvData['ticker'] == 'PAXGUSD'
+		    	unitsFiltered = (unitsToTrade > 0.003 ? unitsToTrade : 0.003)
+		    end
+
   			orderParams = {
 			    "pair" 			=> tvData['ticker'],
 			    "type" 			=> tvData['direction'],
 			    "ordertype" => "market",
-			    "volume" 		=> "#{unitsToTrade}" 
+			    "volume" 		=> "#{unitsFiltered}" 
 			  }	
 
 			  tradesToUpdate = krakenPendingTrades
