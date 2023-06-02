@@ -140,10 +140,8 @@ class Crypto
   		keyInfoX = Crypto.krakenOrder(tradeID)['result']
   		keyForInfo = tradeID
   		
-  		if keyForInfo.present?
-	  		# debugger
-	  		# 
-
+  		if keyInfoX.present?
+	  		
   			if keyInfoX[keyForInfo]['status'] != 'canceled' && (keyInfoX[keyForInfo]['descr']['ordertype'] == 'limit' || keyInfoX[keyForInfo]['descr']['ordertype'] == 'market')
 				  makeorPull = ClosedTrade.find_by(entry: keyForInfo)
 				  makeorPull.update(entryStatus: keyInfoX[keyForInfo]['status'])
