@@ -190,7 +190,7 @@ class Crypto
 	  				
 	  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
 	  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
-				  elsif makeorPull&.protectionStatus != 'closed'
+				  elsif makeorPull&.protectionStatus != 'closed' || makeorPull&.protectionStatus != 'canceled'
 		  			#delete old order and repaint
 		  			if tvData['direction'] == 'sell'
 		  				if (@nextTakeProfit > keyInfoX[keyForInfo]['descr']['price'].to_f)
