@@ -216,11 +216,12 @@ class Crypto
 			  			end
 		  			end
 		  			#delete old order
+		  			sleep 0.5
 		  			routeToKraken = "/0/private/CancelOrder"
 				  	krakenRequest(routeToKraken, orderParams)
 
 				  	#repaint new order
-				  	# debugger
+				  	sleep 0.5
 				  	protectTrade = krakenTrailOrStop(tvData,keyInfoX)
 	  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
 	  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
