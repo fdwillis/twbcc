@@ -166,7 +166,7 @@ class Crypto
 				#repaint protection of orders with current stop-loss -> match in DB
 
 				if makeorPull&.entryStatus == 'closed'
-					if makeorPull&.protectionStatus.nil?
+					if makeorPull&.protection.nil?
 						#set first time
 		  			if tvData['direction'] == 'sell'
 		  				if (@nextTakeProfit > keyInfoX[keyForInfo]['descr']['price'].to_f)
@@ -190,40 +190,45 @@ class Crypto
 	  				
 	  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
 	  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
+				  elsif makeorPull&.protectionStatus != 'closed'
+			  			#delete old order and repaint
+			  			if tvData['direction'] == 'sell'
+			  				if (@nextTakeProfit > keyInfoX[keyForInfo]['descr']['price'].to_f)
+			  					orderParams = {
+								    "txid" 			=> tradeID,
+								  }
+								  puts "\n-- Repainting New Profit --\n"
+								else
+								  puts "\n-- Waiting For More Profit --\n"
+				  				next
+				  			end
+			  			end
+
+			  			if tvData['direction'] == 'buy'
+				  			if (@nextTakeProfit < keyInfoX[keyForInfo]['descr']['price'].to_f)
+				  				orderParams = {
+								    "txid" 			=> tradeID,
+								  }
+								  puts "\n-- Repainting New Profit --\n"
+								else
+								  puts "\n-- Waiting For More Profit --\n"
+				  				next
+				  			end
+			  			end
+			  			#delete old order
+			  			routeToKraken = "/0/private/CancelOrder"
+					  	krakenRequest(routeToKraken, orderParams)
+
+					  	#repaint new order
+					  	# debugger
+					  	protectTrade = krakenTrailOrStop(tvData,keyInfoX)
+		  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
+		  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
+				  	else
+				  		puts "Tooke Profit At: "
+				  	end
 				  else
-		  			#delete old order and repaint
-		  			if tvData['direction'] == 'sell'
-		  				if (@nextTakeProfit > keyInfoX[keyForInfo]['descr']['price'].to_f)
-		  					orderParams = {
-							    "txid" 			=> tradeID,
-							  }
-							  puts "\n-- Repainting New Profit --\n"
-							else
-							  puts "\n-- Waiting For More Profit --\n"
-			  				next
-			  			end
-		  			end
-
-		  			if tvData['direction'] == 'buy'
-			  			if (@nextTakeProfit < keyInfoX[keyForInfo]['descr']['price'].to_f)
-			  				orderParams = {
-							    "txid" 			=> tradeID,
-							  }
-							  puts "\n-- Repainting New Profit --\n"
-							else
-							  puts "\n-- Waiting For More Profit --\n"
-			  				next
-			  			end
-		  			end
-		  			#delete old order
-		  			routeToKraken = "/0/private/CancelOrder"
-				  	krakenRequest(routeToKraken, orderParams)
-
-				  	#repaint new order
-				  	# debugger
-				  	protectTrade = krakenTrailOrStop(tvData,keyInfoX)
-	  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
-	  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
+				  	next
 			  	end
 		  	end
 
