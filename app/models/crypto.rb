@@ -140,8 +140,10 @@ class Crypto
   		keyInfoX = Crypto.krakenOrder(tradeID)['result']
   		keyForInfo = tradeID
   		
-
   		if keyForInfo.present?
+	  		# debugger
+	  		# 
+
   			if keyInfoX[keyForInfo]['status'] != 'canceled' && (keyInfoX[keyForInfo]['descr']['ordertype'] == 'limit' || keyInfoX[keyForInfo]['descr']['ordertype'] == 'market')
 				  makeorPull = ClosedTrade.find_by(entry: keyForInfo)
 				  makeorPull.update(entryStatus: keyInfoX[keyForInfo]['status'])
@@ -159,9 +161,9 @@ class Crypto
 
 				case true
 				when tvData['direction'] == 'sell'
-					@nextTakeProfit = (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1).to_f
+					@nextTakeProfit = (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['profitBy'].to_f))).round(1).to_f
 				when tvData['direction'] == 'buy'
-					@nextTakeProfit = (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1).to_f
+					@nextTakeProfit = (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['profitBy'].to_f))).round(1).to_f
 				end
 
 				if makeorPull&.entryStatus == 'closed'
@@ -226,8 +228,9 @@ class Crypto
 		  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
 		  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
 				  	end
-			  	else
+			  	elsif makeorPull&.protectionStatus == 'closed'
 			  		puts "Took Profit Already at: #{pullProtexStatus['result'][makeorPull&.protection]['descr']['price']}"
+			  		next
 			  	end
 		  	end
 	  	end
