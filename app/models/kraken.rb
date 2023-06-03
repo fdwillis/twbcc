@@ -145,8 +145,8 @@ class Kraken < ApplicationRecord
   	if currentPositions.size > 0
 	  	currentPositions.each do |tradeID|
 
-		  	sleep 0.5
 	  		requestK = krakenOrder(tradeID)
+		  	sleep 0.5
 	  		
 	  		if afterSleep = requestK['result'][tradeID]
 
