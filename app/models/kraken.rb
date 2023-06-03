@@ -155,7 +155,7 @@ class Kraken < ApplicationRecord
 					  makeorPull.update(entryStatus: afterSleep['status'])
 						#update protection
 
-						if makeorPull&.protection.present?
+						if makeorPull&.protection != nil
 							# krakenTrade(properTradeID)
 							sleep 0.5
 							pullProtexStatus = krakenOrder(makeorPull&.protection)
@@ -193,11 +193,10 @@ class Kraken < ApplicationRecord
 								  puts "\n-- Waiting For More Profit --\n"
 				  			end
 			  			end
-		  				
 		  				if @protectTrade.present?
 			  				sleep 0.5
-			  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
-			  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
+			  				getStatus = krakenOrder(@protectTrade['result']['txid'][0])
+			  				makeorPull.update(protection: @protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][@protectTrade['result']['txid'][0]]['status'])
 					 		else
 					 			puts "\n-- Waiting For More Profit --\n"
 					 		end
@@ -233,17 +232,17 @@ class Kraken < ApplicationRecord
 				  			routeToKraken = "/0/private/CancelOrder"
 						  	kcancel = krakenRequest(routeToKraken, orderParams)
 						  	sleep 0.5
-						  	protectTrade = krakenTrailOrStop(tvData,afterSleep)
+						  	@protectTradex = krakenTrailOrStop(tvData,afterSleep)
 						  	sleep 0.5
-			  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
-			  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
+			  				getStatus = krakenOrder(@protectTradex['result']['txid'][0])
+			  				makeorPull.update(protection: @protectTradex['result']['txid'][0],protectionStatus: getStatus['result'][@protectTradex['result']['txid'][0]]['status'])
 					  	elsif orderParams.present?
 						  	#repaint new order
 						  	sleep 0.5
-						  	protectTrade = krakenTrailOrStop(tvData,afterSleep)
+						  	@protectTradex = krakenTrailOrStop(tvData,afterSleep)
 						  	sleep 0.5
-			  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
-			  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
+			  				getStatus = krakenOrder(@protectTradex['result']['txid'][0])
+			  				makeorPull.update(protection: @protectTradex['result']['txid'][0],protectionStatus: getStatus['result'][@protectTradex['result']['txid'][0]]['status'])
 					  	end
 				  	elsif makeorPull&.protectionStatus == 'closed'
 				  		# calculate profit and display
