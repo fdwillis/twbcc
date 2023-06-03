@@ -145,11 +145,10 @@ class Kraken < ApplicationRecord
   	if currentPositions.size > 0
 	  	currentPositions.each do |tradeID|
 
-	  		requestK = krakenOrder(tradeID)
 		  	sleep 0.5
-	  		afterSleep = requestK['result'][tradeID]
+	  		requestK = krakenOrder(tradeID)
 	  		
-	  		if afterSleep.present?
+	  		if afterSleep = requestK['result'][tradeID]
 
 	  			if afterSleep['status'] != 'canceled' && (afterSleep['descr']['ordertype'] == 'limit' || afterSleep['descr']['ordertype'] == 'market')
 					  makeorPull = ClosedTrade.find_by(entry: tradeID)

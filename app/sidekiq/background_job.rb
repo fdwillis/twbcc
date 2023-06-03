@@ -1,6 +1,8 @@
 class BackgroundJob
   include Sidekiq::Job
 
+  sidekiq_retry_in { 5.minutes.to_i }
+
   def perform(tvData)
     Kraken.krakenTrailStop(tvData)
   end
