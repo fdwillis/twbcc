@@ -8,7 +8,12 @@ class TradingviewController < ApplicationController
 
 			case true
 			when params['type'].include?('Stop')
+<<<<<<< Updated upstream
 				trailOrStop = Kraken.krakenTrailStop(params)
+=======
+				dataSaved = JsonDatum.create(payload: params)
+				BackgroundJob.perform_async(dataSaved[:payload])
+>>>>>>> Stashed changes
 			when params['type'] == 'entry'
 				
 				if params['allowMarketOrder'] == 'true'
@@ -24,3 +29,4 @@ class TradingviewController < ApplicationController
 		end
 	end
 end
+
