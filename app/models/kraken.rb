@@ -177,7 +177,7 @@ class Kraken < ApplicationRecord
 			  			if tvData['direction'] == 'sell'
 			  				if (@nextTakeProfit > afterSleep['price'].to_f)
 			  					sleep 0.5
-			  					protectTrade = krakenTrailOrStop(tvData,afterSleep)
+			  					@protectTrade = krakenTrailOrStop(tvData,afterSleep)
 								  puts "\n-- Setting Take Profit --\n"
 								else
 								  puts "\n-- Waiting For More Profit --\n"
@@ -187,14 +187,14 @@ class Kraken < ApplicationRecord
 			  			if tvData['direction'] == 'buy'
 				  			if (@nextTakeProfit < afterSleep['price'].to_f)
 				  				sleep 0.5
-				  				protectTrade = krakenTrailOrStop(tvData,afterSleep)
+				  				@protectTrade = krakenTrailOrStop(tvData,afterSleep)
 								  puts "\n-- Setting Take Profit --\n"
 								else
 								  puts "\n-- Waiting For More Profit --\n"
 				  			end
 			  			end
 		  				
-		  				if protectTrade.present?
+		  				if @protectTrade.present?
 			  				sleep 0.5
 			  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
 			  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
