@@ -194,9 +194,13 @@ class Kraken < ApplicationRecord
 				  			end
 			  			end
 		  				
-		  				sleep 0.5
-		  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
-		  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
+		  				if protectTrade.present?
+			  				sleep 0.5
+			  				getStatus = krakenOrder(protectTrade['result']['txid'][0])
+			  				makeorPull.update(protection: protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][protectTrade['result']['txid'][0]]['status'])
+					 		else
+					 			puts "\n-- Waiting For More Profit --\n"
+					 		end
 					  elsif makeorPull&.protectionStatus != 'closed'
 			  			#delete old order and repaint
 			  			if tvData['direction'] == 'sell'
