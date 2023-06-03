@@ -288,12 +288,18 @@ class Kraken < ApplicationRecord
 			  tradesToUpdate = krakenPendingTrades
 		  	keysForTrades = tradesToUpdate.keys
 
+
+
 		  	pullPrices = []
 
 		  	keysForTrades.each do |keyX|
 		  		infoX = tradesToUpdate[keyX]
 			  	if infoX['descr']['type'] == tvData['direction'] #and the same direction
 				  	pullPrices << [{price: infoX['descr']['price'].to_f, tradeID: keyX}]
+			  	end
+
+			  	if infoX['descr']['ordertype'] == 'market' || infoX['descr']['ordertype'] == 'limit' #and the same direction
+				  	ClosedTrade.find_or_create_by(entry: keyX)
 			  	end
 		  	end
 
