@@ -1,7 +1,6 @@
 class BackgroundJob
   include Sidekiq::Job
 
-<<<<<<< HEAD
   def perform(tvData)
     Kraken.krakenTrailStop(tvData)
   end
@@ -19,9 +18,4 @@ class BackgroundJob
     "broker" => "kraken",
     "trail" => "0.30"}
   end
-=======
-  def krakenTrailStop(tvData)
-    Kraken.krakenTrailStop(tvData)
-  end
->>>>>>> f96ef60 (test staging)
 end

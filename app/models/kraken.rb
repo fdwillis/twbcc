@@ -400,18 +400,12 @@ class Kraken < ApplicationRecord
 				  if @requestK['error'][0].present? && @requestK['error'][0].include?("Insufficient")
 				  	puts "\n-- MORE CASH FOR ENTRIES --\n"
 				  end
-<<<<<<< HEAD
 			  end
-<<<<<<< Updated upstream
-=======
 
 			  if @requestK.present?
 				  if @requestK['error'][0].present? && @requestK['error'][0].include?("Insufficient")
 				  	puts "\n-- MORE CASH FOR ENTRIES --\n"
 				  end
->>>>>>> Stashed changes
-=======
->>>>>>> 623d5eb (rollback and test)
 
 					if @requestK['result']['txid'].present?
 					  firstMake = ClosedTrade.create(entry: @requestK['result']['txid'][0], entryStatus: 'open')
