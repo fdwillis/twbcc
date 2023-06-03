@@ -175,7 +175,8 @@ class Kraken < ApplicationRecord
 						if makeorPull&.protection.nil?
 							#set first time
 			  			if tvData['direction'] == 'sell'
-			  				if (@nextTakeProfit > afterSleep['price'].to_f)
+
+			  				if (@nextTakeProfit > (afterSleep['price'].to_f + (afterSleep['price'].to_f * (0.01 * tvData['trail'].to_f))))
 			  					sleep 0.5
 			  					@protectTrade = krakenTrailOrStop(tvData,afterSleep)
 								  puts "\n-- Setting Take Profit --\n"
@@ -185,7 +186,8 @@ class Kraken < ApplicationRecord
 			  			end
 
 			  			if tvData['direction'] == 'buy'
-				  			if (@nextTakeProfit < afterSleep['price'].to_f)
+
+				  			if (@nextTakeProfit < (afterSleep['price'].to_f + (afterSleep['price'].to_f * (0.01 * tvData['trail'].to_f))))
 				  				sleep 0.5
 				  				@protectTrade = krakenTrailOrStop(tvData,afterSleep)
 								  puts "\n-- Setting Take Profit --\n"
