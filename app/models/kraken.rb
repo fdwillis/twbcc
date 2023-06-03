@@ -147,7 +147,6 @@ class Kraken < ApplicationRecord
 
 	  		requestK = krakenOrder(tradeID)
 		  	sleep 0.5
-
 	  		afterSleep = requestK['result'][tradeID]
 	  		
 	  		if afterSleep.present?
@@ -428,7 +427,8 @@ class Kraken < ApplicationRecord
   	currentPrice = tvData['currentPrice'].to_f
 
   	if tvData['tickerType'] == 'crypto' && tvData['broker'] == 'kraken'
-  		accountBalance = krakenBalance['ZUSD'].to_f
+  		requestK = krakenBalance
+  		accountBalance = requestK['ZUSD'].to_f
   	end
 
   	if tvData['ticker'] == 'EURUSD'
