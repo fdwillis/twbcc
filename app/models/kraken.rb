@@ -200,7 +200,7 @@ class Kraken < ApplicationRecord
 					  elsif makeorPull&.protectionStatus != 'closed'
 			  			#delete old order and repaint
 			  			if tvData['direction'] == 'sell'
-			  				if (@nextTakeProfit > afterSleep['descr']['price'].to_f)
+			  				if (@nextTakeProfit > afterSleep['price'].to_f)
 			  					orderParams = {
 								    "txid" 			=>  makeorPull&.protection,
 								  }
@@ -212,7 +212,7 @@ class Kraken < ApplicationRecord
 			  			end
 
 			  			if tvData['direction'] == 'buy'
-				  			if (@nextTakeProfit < afterSleep['descr']['price'].to_f)
+				  			if (@nextTakeProfit < afterSleep['price'].to_f)
 				  				orderParams = {
 								    "txid" 			=>  makeorPull&.protection,
 								  }
