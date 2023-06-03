@@ -394,7 +394,6 @@ class Kraken < ApplicationRecord
 			  if tvData['direction'] == 'sell'
 				  @requestK = krakenRequest('/0/private/AddOrder', orderParams)
 			  end
-				debugger
 			  if @requestK.present?
 				  if @requestK['error'][0].present? && @requestK['error'][0].include?("Insufficient")
 				  	puts "\n-- MORE CASH FOR ENTRIES --\n"
