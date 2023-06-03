@@ -137,7 +137,7 @@ class Kraken < ApplicationRecord
   	# if not in profit -> hold
 
   	# find trades that are filled and opened 
-			krakenTrades('filled')
+		# krakenTrades('filled')
   	# paginate to get all results to create JsonDatum to pass to later methods
   	# delete in worker after [timeframe] delay
 
@@ -395,7 +395,7 @@ class Kraken < ApplicationRecord
 			  if tvData['direction'] == 'sell'
 				  @requestK = krakenRequest('/0/private/AddOrder', orderParams)
 			  end
-
+				debugger
 			  if @requestK.present?
 				  if @requestK['error'][0].present? && @requestK['error'][0].include?("Insufficient")
 				  	puts "\n-- MORE CASH FOR ENTRIES --\n"

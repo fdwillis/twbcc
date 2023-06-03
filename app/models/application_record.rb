@@ -25,11 +25,13 @@ class ApplicationRecord < ActiveRecord::Base
     uri = URI("https://api.kraken.com" + uri_path)
     req = Net::HTTP::Post.new(uri.path, headers)
     req.set_form_data({ "nonce" => api_nonce }.merge(orderParams))
+    sleep 1
 
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     response = http.request(req)
     Oj.load(response.body)
+    sleep 1
   end
 
   #oanda

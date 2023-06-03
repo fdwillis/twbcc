@@ -8,12 +8,16 @@ class TradingviewController < ApplicationController
 
 			case true
 			when params['type'].include?('Stop')
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 				trailOrStop = Kraken.krakenTrailStop(params)
 =======
 				dataSaved = JsonDatum.create(payload: params)
 				BackgroundJob.perform_async(dataSaved[:payload])
 >>>>>>> Stashed changes
+=======
+				HardJob.krakenTrailStop_async(params)
+>>>>>>> f96ef60 (test staging)
 			when params['type'] == 'entry'
 				
 				if params['allowMarketOrder'] == 'true'
