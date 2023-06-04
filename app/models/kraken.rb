@@ -148,6 +148,7 @@ class Kraken < ApplicationRecord
 	  		requestK = krakenOrder(tradeID)
 		  	sleep 0.5
 	  		begin
+	  			raise if !requestK.present?
 		  		if requestK.present?
 
 		  			afterSleep = requestK['result'][tradeID]
@@ -269,8 +270,6 @@ class Kraken < ApplicationRecord
 					  		puts "Profit: #{@profitMade}"
 					  	end
 				  	end
-				  else
-				  	retry
 			  	end
 			  rescue
 			  	retry
