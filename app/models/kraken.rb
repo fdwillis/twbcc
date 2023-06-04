@@ -147,127 +147,134 @@ class Kraken < ApplicationRecord
 
 	  		requestK = krakenOrder(tradeID)
 		  	sleep 0.5
-	  		
-	  		if afterSleep = requestK['result'][tradeID]
+	  		begin
+		  		if requestK.present?
 
-	  			if afterSleep['status'] != 'canceled' && (afterSleep['descr']['ordertype'] == 'limit' || afterSleep['descr']['ordertype'] == 'market')
-					  makeorPull = ClosedTrade.find_by(entry: tradeID)
-					  makeorPull.update(entryStatus: afterSleep['status'])
-						#update protection
+		  			afterSleep = requestK['result'][tradeID]
 
-						if makeorPull&.protection != nil
-							# krakenTrade(properTradeID)
-							sleep 0.5
-							pullProtexStatus = krakenOrder(makeorPull&.protection)
-							protectedOrNah = pullProtexStatus['result'][makeorPull&.protection]['status']
-							makeorPull&.update(protectionStatus: protectedOrNah)
-						end
-					end
+		  			if afterSleep['status'] != 'canceled' && (afterSleep['descr']['ordertype'] == 'limit' || afterSleep['descr']['ordertype'] == 'market')
+						  makeorPull = ClosedTrade.find_by(entry: tradeID)
+						  makeorPull.update(entryStatus: afterSleep['status'])
+							#update protection
 
-					case true
-					when tvData['direction'] == 'sell'
-						@nextTakeProfit = (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['profitBy'].to_f))).round(1).to_f
-					when tvData['direction'] == 'buy'
-						@nextTakeProfit = (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['profitBy'].to_f))).round(1).to_f
-					end
-
-					if makeorPull&.entryStatus == 'closed'
-						if makeorPull&.protection.nil?
-							#set first time
-			  			if tvData['direction'] == 'sell'
-
-			  				if (@nextTakeProfit > (afterSleep['price'].to_f + (afterSleep['price'].to_f * (0.01 * tvData['trail'].to_f))))
-			  					sleep 0.5
-			  					@protectTrade = krakenTrailOrStop(tvData,afterSleep)
-								  puts "\n-- Setting Take Profit --\n"
-								else
-								  puts "\n-- Waiting For More Profit --\n"
-				  			end
-			  			end
-
-			  			if tvData['direction'] == 'buy'
-
-				  			if (@nextTakeProfit < (afterSleep['price'].to_f + (afterSleep['price'].to_f * (0.01 * tvData['trail'].to_f))))
-				  				sleep 0.5
-				  				@protectTrade = krakenTrailOrStop(tvData,afterSleep)
-								  puts "\n-- Setting Take Profit --\n"
-								else
-								  puts "\n-- Waiting For More Profit --\n"
-				  			end
-			  			end
-		  				if @protectTrade.present?
-			  				sleep 0.5
-			  				getStatus = krakenOrder(@protectTrade['result']['txid'][0])
-			  				makeorPull.update(protection: @protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][@protectTrade['result']['txid'][0]]['status'])
-					 			puts "\n-- Protecting Profit --\n"
-					 		end
-					  elsif makeorPull&.protectionStatus != 'closed'
-			  			#delete old order and repaint
-			  			if tvData['direction'] == 'sell'
-			  				if (@nextTakeProfit > afterSleep['price'].to_f)
-			  					orderParams = {
-								    "txid" 			=>  makeorPull&.protection,
-								  }
-								  puts "\n-- Repainting New Profit --\n"
-								else
-								  puts "\n-- Waiting For More Profit --\n"
-				  				
-				  			end
-			  			end
-
-			  			if tvData['direction'] == 'buy'
-				  			if (@nextTakeProfit < afterSleep['price'].to_f)
-				  				orderParams = {
-								    "txid" 			=>  makeorPull&.protection,
-								  }
-								  puts "\n-- Repainting New Profit --\n"
-								else
-								  puts "\n-- Waiting For More Profit --\n"
-				  				
-				  			end
-			  			end
-			  			#delete old order if not already canceled
-
-			  			if makeorPull&.protectionStatus.present? && makeorPull&.protectionStatus != 'canceled' && orderParams.present?
-				  			sleep 0.5
-				  			routeToKraken = "/0/private/CancelOrder"
-						  	kcancel = krakenRequest(routeToKraken, orderParams)
-						  	sleep 0.5
-						  	@protectTradex = krakenTrailOrStop(tvData,afterSleep)
-						  	sleep 0.5
-			  				getStatus = krakenOrder(@protectTradex['result']['txid'][0])
-			  				makeorPull.update(protection: @protectTradex['result']['txid'][0],protectionStatus: getStatus['result'][@protectTradex['result']['txid'][0]]['status'])
-					 			puts "\n-- Protecting Profit --\n"
-					  	elsif orderParams.present?
-						  	#repaint new order
-						  	sleep 0.5
-						  	@protectTradex = krakenTrailOrStop(tvData,afterSleep)
-						  	sleep 0.5
-			  				getStatus = krakenOrder(@protectTradex['result']['txid'][0])
-			  				makeorPull.update(protection: @protectTradex['result']['txid'][0],protectionStatus: getStatus['result'][@protectTradex['result']['txid'][0]]['status'])
-					 			puts "\n-- Protecting Profit --\n"
-					  	end
-				  	elsif makeorPull&.protectionStatus == 'closed'
-				  		# calculate profit and display
-				  		requestK = krakenOrder(makeorPull&.entry)
-				  		sleep 0.5
-				  		entryX = requestK['result'][makeorPull&.entry]['price']
-
-				  		requestKx = krakenOrder(makeorPull&.protection)
-				  		sleep 0.5
-				  		exitX = requestKx['result'][makeorPull&.protection]['price']
-				  		
-				  		case true
-				  		when tvData['direction'] == 'sell'
-								@profitMade = (exitX.to_f - entryX.to_f)
-							when tvData['direction'] == 'buy'
-								@profitMade = (entryX.to_f - exitX.to_f)
+							if makeorPull&.protection != nil
+								# krakenTrade(properTradeID)
+								sleep 0.5
+								pullProtexStatus = krakenOrder(makeorPull&.protection)
+								protectedOrNah = pullProtexStatus['result'][makeorPull&.protection]['status']
+								makeorPull&.update(protectionStatus: protectedOrNah)
 							end
+						end
 
-				  		puts "Profit: #{@profitMade}"
+						case true
+						when tvData['direction'] == 'sell'
+							@nextTakeProfit = (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['profitBy'].to_f))).round(1).to_f
+						when tvData['direction'] == 'buy'
+							@nextTakeProfit = (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['profitBy'].to_f))).round(1).to_f
+						end
+
+						if makeorPull&.entryStatus == 'closed'
+							if makeorPull&.protection.nil?
+								#set first time
+				  			if tvData['direction'] == 'sell'
+
+				  				if (@nextTakeProfit > (afterSleep['price'].to_f + (afterSleep['price'].to_f * (0.01 * tvData['trail'].to_f))))
+				  					sleep 0.5
+				  					@protectTrade = krakenTrailOrStop(tvData,afterSleep)
+									  puts "\n-- Setting Take Profit --\n"
+									else
+									  puts "\n-- Waiting For More Profit --\n"
+					  			end
+				  			end
+
+				  			if tvData['direction'] == 'buy'
+
+					  			if (@nextTakeProfit < (afterSleep['price'].to_f + (afterSleep['price'].to_f * (0.01 * tvData['trail'].to_f))))
+					  				sleep 0.5
+					  				@protectTrade = krakenTrailOrStop(tvData,afterSleep)
+									  puts "\n-- Setting Take Profit --\n"
+									else
+									  puts "\n-- Waiting For More Profit --\n"
+					  			end
+				  			end
+			  				if @protectTrade.present?
+				  				sleep 0.5
+				  				getStatus = krakenOrder(@protectTrade['result']['txid'][0])
+				  				makeorPull.update(protection: @protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][@protectTrade['result']['txid'][0]]['status'])
+						 			puts "\n-- Protecting Profit --\n"
+						 		end
+						  elsif makeorPull&.protectionStatus != 'closed'
+				  			#delete old order and repaint
+				  			if tvData['direction'] == 'sell'
+				  				if (@nextTakeProfit > afterSleep['price'].to_f)
+				  					orderParams = {
+									    "txid" 			=>  makeorPull&.protection,
+									  }
+									  puts "\n-- Repainting New Profit --\n"
+									else
+									  puts "\n-- Waiting For More Profit --\n"
+					  				
+					  			end
+				  			end
+
+				  			if tvData['direction'] == 'buy'
+					  			if (@nextTakeProfit < afterSleep['price'].to_f)
+					  				orderParams = {
+									    "txid" 			=>  makeorPull&.protection,
+									  }
+									  puts "\n-- Repainting New Profit --\n"
+									else
+									  puts "\n-- Waiting For More Profit --\n"
+					  				
+					  			end
+				  			end
+				  			#delete old order if not already canceled
+
+				  			if makeorPull&.protectionStatus.present? && makeorPull&.protectionStatus != 'canceled' && orderParams.present?
+					  			sleep 0.5
+					  			routeToKraken = "/0/private/CancelOrder"
+							  	kcancel = krakenRequest(routeToKraken, orderParams)
+							  	sleep 0.5
+							  	@protectTradex = krakenTrailOrStop(tvData,afterSleep)
+							  	sleep 0.5
+				  				getStatus = krakenOrder(@protectTradex['result']['txid'][0])
+				  				makeorPull.update(protection: @protectTradex['result']['txid'][0],protectionStatus: getStatus['result'][@protectTradex['result']['txid'][0]]['status'])
+						 			puts "\n-- Protecting Profit --\n"
+						  	elsif orderParams.present?
+							  	#repaint new order
+							  	sleep 0.5
+							  	@protectTradex = krakenTrailOrStop(tvData,afterSleep)
+							  	sleep 0.5
+				  				getStatus = krakenOrder(@protectTradex['result']['txid'][0])
+				  				makeorPull.update(protection: @protectTradex['result']['txid'][0],protectionStatus: getStatus['result'][@protectTradex['result']['txid'][0]]['status'])
+						 			puts "\n-- Protecting Profit --\n"
+						  	end
+					  	elsif makeorPull&.protectionStatus == 'closed'
+					  		# calculate profit and display
+					  		requestK = krakenOrder(makeorPull&.entry)
+					  		sleep 0.5
+					  		entryX = requestK['result'][makeorPull&.entry]['price']
+
+					  		requestKx = krakenOrder(makeorPull&.protection)
+					  		sleep 0.5
+					  		exitX = requestKx['result'][makeorPull&.protection]['price']
+					  		
+					  		case true
+					  		when tvData['direction'] == 'sell'
+									@profitMade = (exitX.to_f - entryX.to_f)
+								when tvData['direction'] == 'buy'
+									@profitMade = (entryX.to_f - exitX.to_f)
+								end
+
+					  		puts "Profit: #{@profitMade}"
+					  	end
 				  	end
+				  else
+				  	retry
 			  	end
-		  	end
+			  rescue
+			  	retry
+			  end
 		  end
 		else
 			puts "No Current Positions"
