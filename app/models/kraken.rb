@@ -200,8 +200,6 @@ class Kraken < ApplicationRecord
 			  				getStatus = krakenOrder(@protectTrade['result']['txid'][0])
 			  				makeorPull.update(protection: @protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][@protectTrade['result']['txid'][0]]['status'])
 					 			puts "\n-- Protecting Profit --\n"
-					 		else
-					 			puts "\n-- Waiting For More Profit --\n"
 					 		end
 					  elsif makeorPull&.protectionStatus != 'closed'
 			  			#delete old order and repaint
@@ -239,6 +237,7 @@ class Kraken < ApplicationRecord
 						  	sleep 0.5
 			  				getStatus = krakenOrder(@protectTradex['result']['txid'][0])
 			  				makeorPull.update(protection: @protectTradex['result']['txid'][0],protectionStatus: getStatus['result'][@protectTradex['result']['txid'][0]]['status'])
+					 			puts "\n-- Protecting Profit --\n"
 					  	elsif orderParams.present?
 						  	#repaint new order
 						  	sleep 0.5
@@ -246,6 +245,7 @@ class Kraken < ApplicationRecord
 						  	sleep 0.5
 			  				getStatus = krakenOrder(@protectTradex['result']['txid'][0])
 			  				makeorPull.update(protection: @protectTradex['result']['txid'][0],protectionStatus: getStatus['result'][@protectTradex['result']['txid'][0]]['status'])
+					 			puts "\n-- Protecting Profit --\n"
 					  	end
 				  	elsif makeorPull&.protectionStatus == 'closed'
 				  		# calculate profit and display
