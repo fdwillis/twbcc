@@ -332,7 +332,7 @@ class Kraken < ApplicationRecord
 				    "price" 		=> priceToSet,
 				    "volume" 		=> "#{unitsFiltered}"
 				  }
-				  # debugger
+
 			  	pricePulled = pullPrices.present? ? pullPrices.flatten.map{|p| p[:price]} : [tvData['currentPrice'].to_f.round(1)]
 
 			  	if tvData['direction'] == 'buy' && (priceToSet < (pricePulled&.min + (pricePulled&.min.to_f * (0.01 * trailPercent.to_f))))
@@ -436,6 +436,7 @@ class Kraken < ApplicationRecord
   	currentPrice = tvData['currentPrice'].to_f
 
   	if tvData['tickerType'] == 'crypto' && tvData['broker'] == 'kraken'
+  		sleep 0.5
   		requestK = krakenBalance
   		accountBalance = requestK['ZUSD'].to_f
   	end
