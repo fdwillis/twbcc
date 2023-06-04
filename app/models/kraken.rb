@@ -297,9 +297,11 @@ class Kraken < ApplicationRecord
 
 		  	pullPrices = []
 
+	  		
 		  	keysForTrades.each do |keyX|
 		  		infoX = tradesToUpdate[keyX]
-			  	if infoX['descr']['type'] == tvData['direction'] #and the same direction
+			  	if infoX['descr']['type'] == tvData['direction'] && infoX['descr']['pair'] == tvData['ticker'] #and the same direction
+			  		
 				  	pullPrices << [{price: infoX['descr']['price'].to_f, tradeID: keyX}]
 			  	end
 
@@ -329,8 +331,8 @@ class Kraken < ApplicationRecord
 				    "price" 		=> priceToSet,
 				    "volume" 		=> "#{unitsFiltered}"
 				  }
-
-			  	pricePulled = pullPrices.flatten.map{|p| p[:price]}
+				  # debugger
+			  	pricePulled = pullPrices.present? ? pullPrices.flatten.map{|p| p[:price]} : [tvData['currentPrice'].to_f.round(1)]
 
 			  	if tvData['direction'] == 'buy' && (priceToSet < (pricePulled&.min + (pricePulled&.min.to_f * (0.01 * trailPercent.to_f))))
 					  #remove current pendingOrder in this position
@@ -341,7 +343,7 @@ class Kraken < ApplicationRecord
 					  #remove current pendingOrder in this position
 					  requestK = krakenRequest('/0/private/AddOrder', orderParams)
 				  end
-
+				  
 				  if requestK.present?
 					  if requestK['error'][0].present? && requestK['error'][0].include?("Insufficient")
 					  	puts "\n-- MORE CASH FOR ENTRIES --\n"
