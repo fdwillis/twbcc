@@ -199,6 +199,7 @@ class Kraken < ApplicationRecord
 			  				sleep 0.5
 			  				getStatus = krakenOrder(@protectTrade['result']['txid'][0])
 			  				makeorPull.update(protection: @protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][@protectTrade['result']['txid'][0]]['status'])
+					 			puts "\n-- Protecting Profit --\n"
 					 		else
 					 			puts "\n-- Waiting For More Profit --\n"
 					 		end
