@@ -436,15 +436,14 @@ class Kraken < ApplicationRecord
   	currentPrice = tvData['currentPrice'].to_f
 
   	if tvData['tickerType'] == 'crypto' && tvData['broker'] == 'kraken'
+  		requestK = krakenBalance['result']
   		sleep 0.5
-  		requestK = krakenBalance
   		accountBalance = requestK['ZUSD'].to_f
   	end
 
   	if tvData['ticker'] == 'EURUSD'
   		# accountBalance = accountBalanceForOanda
   	end
-  	
     case true
   	when tvData['timeframe'] == '15'
   		tvData['tickerType'] == 'crypto' ? (((0.25* 0.01) * accountBalance / currentPrice).to_f > 3 ? ((0.25* 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f) : tvData['tickerType'] == 'forex' ? ((0.25* 0.01) * accountBalance / currentPrice).to_f.round : nil
