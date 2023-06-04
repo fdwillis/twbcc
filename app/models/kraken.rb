@@ -278,7 +278,7 @@ class Kraken < ApplicationRecord
   	
   	# only create order if within 'trail' of last set order of this 'type' -> limit/market and account less than definedRisk from TV
   	unitsToTrade = xpercentForTradeFromTimeframe(tvData)
-
+  	sleep 0.5
   	if unitsToTrade > 0 
   		# unitsWithScale
   		case true
