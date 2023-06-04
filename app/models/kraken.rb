@@ -272,7 +272,7 @@ class Kraken < ApplicationRecord
 				  	end
 			  	end
 			  rescue
-			  	retry
+			  	next
 			  end
 		  end
 		else

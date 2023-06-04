@@ -21,7 +21,8 @@ class TradingviewController < ApplicationController
 			end
 
 			render json: {success: true}
-		when params['ticker'] == "EURUSD"			
+		when params['tickerType'] == "forex"	
+		# build for oanda 
 		end
 	end
 end
