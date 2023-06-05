@@ -272,7 +272,7 @@ class Kraken < ApplicationRecord
 				  	end
 			  	end
 			  rescue
-			  	retry
+			  	next
 			  end
 		  end
 		else
@@ -370,7 +370,7 @@ class Kraken < ApplicationRecord
 					  end
 	  			end
 	  		rescue
-	  			retry
+	  			next
 	  		end
   		when tvData['tickerType'] == 'forex'
   			# execute oanda
