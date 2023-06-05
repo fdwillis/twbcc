@@ -147,7 +147,7 @@ class Kraken < ApplicationRecord
 
 	  		requestK = krakenOrder(tradeID)
 		  	Thread.pass
-	  		if requestK.present?
+	  		if requestK.present? && requestK['result'].present?
 
 	  			afterSleep = requestK['result'][tradeID]
 
@@ -346,10 +346,7 @@ class Kraken < ApplicationRecord
 					  requestK = krakenRequest('/0/private/AddOrder', orderParams)
 				  end
 				  
-				  if requestK.present?
-					  if requestK['error'][0].present? && requestK['error'][0].include?("Insufficient")
-					  	puts "\n-- MORE CASH FOR ENTRIES --\n"
-						end
+				  if requestK.present? && requestK['result'].present?
 						
 					  if requestK['result']['txid'].present?
 						  firstMake = ClosedTrade.create(entry: requestK['result']['txid'][0], entryStatus: 'open')
@@ -358,7 +355,11 @@ class Kraken < ApplicationRecord
 					  	puts "\n-- Kraken Entry Submitted --\n"
 					  end
 				  else
-				  	puts "\n-- Waiting For Better Entry --\n"
+					  if requestK['error'][0].present? && requestK['error'][0].include?("Insufficient")
+					  	puts "\n-- MORE CASH FOR ENTRIES --\n"
+						else
+					  	puts "\n-- Waiting For Better Entry --\n"
+						end
 				  end
   			end
 
@@ -402,25 +403,26 @@ class Kraken < ApplicationRecord
 
 				# averageOfPricesOpen = (pullPrices&.sum/pullPrices&.count)
 		  	if tvData['direction'] == 'buy'
-				  @requestK = krakenRequest('/0/private/AddOrder', orderParams)
+				  requestK = krakenRequest('/0/private/AddOrder', orderParams)
 		  	end
 
 			  if tvData['direction'] == 'sell'
-				  @requestK = krakenRequest('/0/private/AddOrder', orderParams)
+				  requestK = krakenRequest('/0/private/AddOrder', orderParams)
 			  end
 
 			  Thread.pass
-			  if @requestK.present?
-				  if @requestK['error'][0].present? && @requestK['error'][0].include?("Insufficient")
-				  	puts "\n-- MORE CASH FOR ENTRIES --\n"
-				  end
+			  if requestK.present? && requestK['result'].present?
 
-					if @requestK['result']['txid'].present?
-					  firstMake = ClosedTrade.create(entry: @requestK['result']['txid'][0], entryStatus: 'open')
-					  getOrder = krakenOrder(@requestK['result']['txid'][0])['result']
+					if requestK['result']['txid'].present?
+					  firstMake = ClosedTrade.create(entry: requestK['result']['txid'][0], entryStatus: 'open')
+					  getOrder = krakenOrder(requestK['result']['txid'][0])['result']
 					  Thread.pass
-					  firstMake.update(entryStatus: getOrder[@requestK['result']['txid'][0]]['status'])
+					  firstMake.update(entryStatus: getOrder[requestK['result']['txid'][0]]['status'])
 				  	puts "\n-- Kraken Entry Submitted --\n"
+				  end
+				else 
+				  if requestK['error'][0].present? && requestK['error'][0].include?("Insufficient")
+				  	puts "\n-- MORE CASH FOR ENTRIES --\n"
 				  end
 				end
 
