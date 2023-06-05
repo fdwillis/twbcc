@@ -442,9 +442,9 @@ class Kraken < ApplicationRecord
   	currentPrice = tvData['currentPrice'].to_f
 
   	if tvData['tickerType'] == 'crypto' && tvData['broker'] == 'kraken'
-  		requestK = krakenBalance['result']
+  		requestK = krakenBalance
   		Thread.pass
-  		accountBalance = requestK['ZUSD'].to_f
+  		accountBalance = requestK['result']['ZUSD'].to_f
   	end
 
   	if tvData['ticker'] == 'EURUSD'
