@@ -11,17 +11,18 @@ class TradingviewController < ApplicationController
 				dataSaved = JsonDatum.create(payload: params)
 				BackgroundJob.perform_async(dataSaved[:payload])
 			when params['type'] == 'entry'
+				limitOrder = Kraken.krakenLimitOrder(params)
 				
 				if params['allowMarketOrder'] == 'true'
 					marketOrder = Kraken.krakenMarketOrder(params)
 				end
 
-				limitOrder = Kraken.krakenLimitOrder(params)
 			when params['type'].include?('profit')
 			end
 
 			render json: {success: true}
-		when params['ticker'] == "EURUSD"			
+		when params['tickerType'] == "forex"	
+		# build for oanda 
 		end
 	end
 end
