@@ -272,7 +272,7 @@ class Kraken < ApplicationRecord
 				  	end
 			  	end
 			  rescue
-			  	next
+			  	retry
 			  end
 		  end
 		else
@@ -317,56 +317,61 @@ class Kraken < ApplicationRecord
 			  	end
 		  	end
 
-  			tvData['trail'].each do |trailPercent|
+		  	begin
+	  			tvData['trail'].each do |trailPercent|
 
-	  			priceToSet = (tvData['direction'] == 'sell' ? tvData['highPrice'].to_f + (tvData['highPrice'].to_f * (0.01 * trailPercent.to_f)) : tvData['lowPrice'].to_f - (tvData['lowPrice'].to_f * (0.01 * trailPercent.to_f))).round(1)
-	  			# allow multiple ranges of set prices from tvData
-			    # ( unitsToTrade > 0.0001) : tvData['ticker'] == 'PAXGUSD' ? : unitsToTrade
-		    	unitsFiltered = unitsToTrade
+		  			priceToSet = (tvData['direction'] == 'sell' ? tvData['highPrice'].to_f + (tvData['highPrice'].to_f * (0.01 * trailPercent.to_f)) : tvData['lowPrice'].to_f - (tvData['lowPrice'].to_f * (0.01 * trailPercent.to_f))).round(1)
+		  			# allow multiple ranges of set prices from tvData
+				    # ( unitsToTrade > 0.0001) : tvData['ticker'] == 'PAXGUSD' ? : unitsToTrade
+			    	unitsFiltered = unitsToTrade
 
-			    case true
-			    when tvData['ticker'] == 'BTCUSD'
-			    	unitsFiltered = (unitsToTrade > 0.0001 ? unitsToTrade : 0.0001)
-			    when tvData['ticker'] == 'PAXGUSD'
-			    	unitsFiltered = (unitsToTrade > 0.003 ? unitsToTrade : 0.003)
-			    end
+				    case true
+				    when tvData['ticker'] == 'BTCUSD'
+				    	unitsFiltered = (unitsToTrade > 0.0001 ? unitsToTrade : 0.0001)
+				    when tvData['ticker'] == 'PAXGUSD'
+				    	unitsFiltered = (unitsToTrade > 0.003 ? unitsToTrade : 0.003)
+				    end
 
-	  			orderParams = {
-				    "pair" 			=> tvData['ticker'],
-				    "type" 			=> tvData['direction'],
-				    "ordertype" => "limit",
-				    "price" 		=> priceToSet,
-				    "volume" 		=> "#{unitsFiltered}"
-				  }
+		  			orderParams = {
+					    "pair" 			=> tvData['ticker'],
+					    "type" 			=> tvData['direction'],
+					    "ordertype" => "limit",
+					    "price" 		=> priceToSet,
+					    "volume" 		=> "#{unitsFiltered}"
+					  }
 
-			  	pricePulled = pullPrices.present? ? pullPrices.flatten.map{|p| p[:price]} : [tvData['currentPrice'].to_f.round(1)]
+				  	pricePulled = pullPrices.present? ? pullPrices.flatten.map{|p| p[:price]} : [tvData['currentPrice'].to_f.round(1)]
 
-			  	if tvData['direction'] == 'buy' && (priceToSet < (pricePulled&.min + (pricePulled&.min.to_f * (0.01 * trailPercent.to_f))))
-					  #remove current pendingOrder in this position
-					  requestK = krakenRequest('/0/private/AddOrder', orderParams)
-			  	end
-			  	
-				  if tvData['direction'] == 'sell' && (priceToSet > (pricePulled&.max - (pricePulled&.max.to_f * (0.01 * trailPercent.to_f))))
-					  #remove current pendingOrder in this position
-					  requestK = krakenRequest('/0/private/AddOrder', orderParams)
-				  end
-				  
-				  if requestK.present?
-					  if requestK['error'][0].present? && requestK['error'][0].include?("Insufficient")
-					  	puts "\n-- MORE CASH FOR ENTRIES --\n"
-						end
-						
-					  if requestK['result']['txid'].present?
-						  firstMake = ClosedTrade.create(entry: requestK['result']['txid'][0], entryStatus: 'open')
-						  getOrder = krakenOrder(requestK['result']['txid'][0])['result']
-						  firstMake.update(entryStatus: getOrder[requestK['result']['txid'][0]]['status'])
-					  	puts "\n-- Kraken Entry Submitted --\n"
+				  	if tvData['direction'] == 'buy' && (priceToSet < (pricePulled&.min + (pricePulled&.min.to_f * (0.01 * trailPercent.to_f))))
+						  #remove current pendingOrder in this position
+						  requestK = krakenRequest('/0/private/AddOrder', orderParams)
+				  	end
+				  	
+					  if tvData['direction'] == 'sell' && (priceToSet > (pricePulled&.max - (pricePulled&.max.to_f * (0.01 * trailPercent.to_f))))
+						  #remove current pendingOrder in this position
+						  requestK = krakenRequest('/0/private/AddOrder', orderParams)
 					  end
-				  else
-				  	puts "\n-- Waiting For Better Entry --\n"
-				  end
-  			end
 
+					  raise if !requestK.present?
+					  
+					  if requestK.present?
+						  if requestK['error'][0].present? && requestK['error'][0].include?("Insufficient")
+						  	puts "\n-- MORE CASH FOR ENTRIES --\n"
+							end
+							
+						  if requestK['result']['txid'].present?
+							  firstMake = ClosedTrade.create(entry: requestK['result']['txid'][0], entryStatus: 'open')
+							  getOrder = krakenOrder(requestK['result']['txid'][0])['result']
+							  firstMake.update(entryStatus: getOrder[requestK['result']['txid'][0]]['status'])
+						  	puts "\n-- Kraken Entry Submitted --\n"
+						  end
+					  else
+					  	puts "\n-- Waiting For Better Entry --\n"
+					  end
+	  			end
+	  		rescue
+	  			retry
+	  		end
   		when tvData['tickerType'] == 'forex'
   			# execute oanda
   		end
