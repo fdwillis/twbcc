@@ -151,7 +151,7 @@ class Kraken < ApplicationRecord
 
 	  			afterSleep = requestK['result'][tradeID]
 
-	  			if afterSleep['status'] != 'canceled' && (afterSleep['descr']['ordertype'] == 'limit' || afterSleep['descr']['ordertype'] == 'market')
+	  			if afterSleep['status'] != 'canceled'
 					  makeorPull = ClosedTrade.find_by(entry: tradeID)
 					  makeorPull.update(entryStatus: afterSleep['status'])
 						#update protection
@@ -176,7 +176,6 @@ class Kraken < ApplicationRecord
 						if makeorPull&.protection.nil?
 							#set first time
 			  			if tvData['direction'] == 'sell'
-
 			  				if (@nextTakeProfit > (afterSleep['price'].to_f + (afterSleep['price'].to_f * (0.01 * tvData['trail'].to_f))))
 			  					@protectTrade = krakenTrailOrStop(tvData,afterSleep)
 			  					Thread.pass
