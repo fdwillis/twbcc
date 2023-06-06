@@ -158,8 +158,8 @@ class Kraken < ApplicationRecord
 
 						if makeorPull&.protection != nil
 							# krakenTrade(properTradeID)
-							Thread.pass
 							pullProtexStatus = krakenOrder(makeorPull&.protection)
+							Thread.pass
 							protectedOrNah = pullProtexStatus['result'][makeorPull&.protection]['status']
 							makeorPull&.update(protectionStatus: protectedOrNah)
 						end
