@@ -178,8 +178,8 @@ class Kraken < ApplicationRecord
 			  			if tvData['direction'] == 'sell'
 
 			  				if (@nextTakeProfit > (afterSleep['price'].to_f + (afterSleep['price'].to_f * (0.01 * tvData['trail'].to_f))))
-			  					Thread.pass
 			  					@protectTrade = krakenTrailOrStop(tvData,afterSleep)
+			  					Thread.pass
 								  puts "\n-- Setting Take Profit --\n"
 								else
 								  puts "\n-- Waiting For More Profit --\n"
@@ -189,16 +189,16 @@ class Kraken < ApplicationRecord
 			  			if tvData['direction'] == 'buy'
 
 				  			if (@nextTakeProfit < (afterSleep['price'].to_f + (afterSleep['price'].to_f * (0.01 * tvData['trail'].to_f))))
-				  				Thread.pass
 				  				@protectTrade = krakenTrailOrStop(tvData,afterSleep)
+				  				Thread.pass
 								  puts "\n-- Setting Take Profit --\n"
 								else
 								  puts "\n-- Waiting For More Profit --\n"
 				  			end
 			  			end
 		  				if @protectTrade.present?
-			  				Thread.pass
 			  				getStatus = krakenOrder(@protectTrade['result']['txid'][0])
+			  				Thread.pass
 			  				makeorPull.update(protection: @protectTrade['result']['txid'][0],protectionStatus: getStatus['result'][@protectTrade['result']['txid'][0]]['status'])
 					 			puts "\n-- Protecting Profit --\n"
 					 		end
@@ -230,21 +230,21 @@ class Kraken < ApplicationRecord
 			  			#delete old order if not already canceled
 
 			  			if makeorPull&.protectionStatus.present? && makeorPull&.protectionStatus != 'canceled' && orderParams.present?
-				  			Thread.pass
 				  			routeToKraken = "/0/private/CancelOrder"
 						  	kcancel = krakenRequest(routeToKraken, orderParams)
 						  	Thread.pass
 						  	@protectTradex = krakenTrailOrStop(tvData,afterSleep)
 						  	Thread.pass
 			  				getStatus = krakenOrder(@protectTradex['result']['txid'][0])
+						  	Thread.pass
 			  				makeorPull.update(protection: @protectTradex['result']['txid'][0],protectionStatus: getStatus['result'][@protectTradex['result']['txid'][0]]['status'])
 					 			puts "\n-- Protecting Profit --\n"
 					  	elsif orderParams.present?
 						  	#repaint new order
-						  	Thread.pass
 						  	@protectTradex = krakenTrailOrStop(tvData,afterSleep)
 						  	Thread.pass
 			  				getStatus = krakenOrder(@protectTradex['result']['txid'][0])
+						  	Thread.pass
 			  				makeorPull.update(protection: @protectTradex['result']['txid'][0],protectionStatus: getStatus['result'][@protectTradex['result']['txid'][0]]['status'])
 					 			puts "\n-- Protecting Profit --\n"
 					  	end
