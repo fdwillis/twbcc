@@ -15,6 +15,7 @@ gem 'jquery'
 gem 'twilio-ruby'
 gem 'bitly'
 gem 'sidekiq'
+gem 'oanda_api_v20'
 # gem 'pwa'
 # bitly predict clicks, ratios, and income #sprint2
 gem 'social-share-button'

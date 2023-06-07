@@ -158,6 +158,8 @@ GEM
     formatador (1.1.0)
     friendly_id (5.5.0)
       activerecord (>= 4.0.0)
+    gene_pool (1.5.0)
+      concurrent-ruby (>= 1.0)
     geocoder (1.8.1)
     globalid (1.1.0)
       activesupport (>= 5.0)
@@ -180,6 +182,10 @@ GEM
     http-accept (1.7.0)
     http-cookie (1.0.5)
       domain_name (~> 0.5)
+    http-exceptions (0.1.6)
+    httparty (0.21.0)
+      mini_mime (>= 1.0.0)
+      multi_xml (>= 0.5.2)
     i18n (1.13.0)
       concurrent-ruby (~> 1.0)
     image_processing (1.12.2)
@@ -242,6 +248,10 @@ GEM
     notiffany (0.1.3)
       nenv (~> 0.1)
       shellany (~> 0.0)
+    oanda_api_v20 (2.2.0)
+      http-exceptions (~> 0.1)
+      httparty (~> 0.13)
+      persistent_httparty (~> 0.1)
     oauth2 (2.0.9)
       faraday (>= 0.17.3, < 3.0)
       jwt (>= 1.0, < 3.0)
@@ -251,6 +261,11 @@ GEM
       version_gem (~> 1.1)
     oj (3.14.3)
     orm_adapter (0.5.0)
+    persistent_http (1.0.6)
+      gene_pool (>= 1.3)
+    persistent_httparty (0.1.2)
+      httparty (~> 0.9)
+      persistent_http (< 2)
     pg (1.5.3)
     power_assert (2.0.3)
     pry (0.14.2)
@@ -456,6 +471,7 @@ DEPENDENCIES
   listen
   media_embed
   mimemagic!
+  oanda_api_v20
   oj
   pg
   puma (~> 4.1)
