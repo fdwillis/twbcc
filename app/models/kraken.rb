@@ -1,4 +1,33 @@
-class Kraken < ApplicationRecord
+class Kraken
+	# self.abstract_class = true
+	def self.get_kraken_signature(uri_path, api_nonce, api_sec, api_post)
+    api_sha256 = OpenSSL::Digest.new('sha256').digest("#{api_nonce}#{api_post}")
+    api_hmac = OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha512'), Base64.decode64(ENV['krakenTestSecret']), "#{uri_path}#{api_sha256}")
+    Base64.strict_encode64(api_hmac)
+  end
+
+  # Attaches auth headers and returns results of a POST request
+  def self.krakenRequest(uri_path, orderParams = {})
+    api_nonce = (Time.now.to_f * 1000).to_i.to_s
+    post_data = orderParams.present? ? orderParams.map { |key, value| "#{key}=#{value}" }.join('&') : nil
+    api_post = (orderParams.present? ? "nonce=#{api_nonce}&#{post_data}" : "nonce=#{api_nonce}")
+    api_signature = get_kraken_signature(uri_path, api_nonce, ENV['krakenTestSecret'], api_post)
+    
+    headers = {
+      "API-Key" => ENV['krakenTestAPI'],
+      "API-Sign" => api_signature
+    }
+    
+    uri = URI("https://api.kraken.com" + uri_path)
+    req = Net::HTTP::Post.new(uri.path, headers)
+    orderParams.present? ? req.set_form_data({ "nonce" => api_nonce }.merge(orderParams)) : req.set_form_data({ "nonce" => api_nonce })
+    req.body = CGI.unescape(req.body)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    response = http.request(req)
+    sleep 0.5
+    Oj.load(response.body)
+  end
 
 	def self.krakenBalance
     routeToKraken = "/0/private/Balance"
@@ -9,7 +38,7 @@ class Kraken < ApplicationRecord
   	
     routeToKraken = "/0/private/OpenOrders"
     orderParams = {}
-    requestK = krakenRequest(routeToKraken)['result']['open']
+    requestK = krakenRequest(routeToKraken, orderParams)['result']['open']
     createPayload = JsonDatum.create(params: orderParams, payload: requestK)
     createPayload[:payload]
   end
@@ -44,11 +73,10 @@ class Kraken < ApplicationRecord
     requestK = krakenRequest(routeToKraken, orderParams)
   end
 
-  def self.publicPair(symbol)
-  	
+  def self.publicPair(tvData)
     routeToKraken = "/0/public/AssetPairs"
     orderParams = {
-    	"pair" => symbol
+    	"pair" => tvData['ticker']
     }
 
     requestK = krakenRequest(routeToKraken, orderParams)
@@ -318,12 +346,13 @@ class Kraken < ApplicationRecord
   	
   	# only create order if within 'trail' of last set order of this 'type' -> limit/market and account less than definedRisk from TV
   	unitsToTrade = xpercentForTradeFromTimeframe(tvData)
-  	Thread.pass
+  	
   	if unitsToTrade > 0 
   		# unitsWithScale
   		case true
   		when tvData['tickerType'] == 'crypto'
-				pairCall = publicPair(tvData['ticker'])
+		  	Thread.pass
+				pairCall = publicPair(tvData)
 				Thread.pass
 				resultKey = pairCall['result'].keys.first
 				baseTicker = pairCall['result'][resultKey]['base']
@@ -358,13 +387,13 @@ class Kraken < ApplicationRecord
 						    "price" 		=> priceToSet,
 						    "volume" 		=> "#{unitsFiltered}",
 						    "close[ordertype]" => "take-profit-limit",
-						    "close[price]" 		=> (tvData['direction'] == 'sell' ? priceToSet - (priceToSet * (0.01 * (1+(tvData['profitBy'].to_f)))) : priceToSet + (priceToSet * (0.01 * (1+(tvData['profitBy'].to_f))))).round(1),
-						    "close[price2]" 		=>  (tvData['direction'] == 'sell' ? priceToSet - (priceToSet * (0.01 * (1+(tvData['profitBy'].to_f - trailPercent.to_f)))) : priceToSet + (priceToSet * (0.01 * (1+(tvData['profitBy'].to_f - trailPercent.to_f))))).round(1),
+						    "close[price]" 		=> (tvData['direction'] == 'sell' ? priceToSet - (priceToSet * (0.01 * (1+(tvData['profitBy'].to_f)))) : priceToSet + (priceToSet * (0.01 * (1+(tvData['profitBy'].to_f))))).round(1).to_s,
+						    "close[price2]" 		=>  (tvData['direction'] == 'sell' ? priceToSet - (priceToSet * (0.01 * (1+(tvData['profitBy'].to_f - trailPercent.to_f)))) : priceToSet + (priceToSet * (0.01 * (1+(tvData['profitBy'].to_f - trailPercent.to_f))))).round(1).to_s,
 						  }
 
 						  # if within maxRisk
 
-						  debugger
+						  
 					  	if tvData['direction'] == 'buy' 
 							  #remove current pendingOrder in this position
 							  requestK = krakenRequest('/0/private/AddOrder', orderParams)
@@ -470,7 +499,7 @@ class Kraken < ApplicationRecord
   	#make work for kraken and oanda
 
   	currentPrice = tvData['currentPrice'].to_f
-
+  	
   	if tvData['tickerType'] == 'crypto' && tvData['broker'] == 'kraken'
   		requestK = krakenBalance
   		Thread.pass
