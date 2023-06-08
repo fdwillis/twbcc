@@ -324,10 +324,13 @@ class Kraken < ApplicationRecord
   		case true
   		when tvData['tickerType'] == 'crypto'
 				pairCall = publicPair(tvData['ticker'])
+				Thread.pass
 				resultKey = pairCall['result'].keys.first
 				baseTicker = pairCall['result'][resultKey]['base']
 				currentAllocation = krakenBalance['result'][baseTicker].to_f
+				Thread.pass
 				tickerInfoCall = tickerInfo(baseTicker)
+				Thread.pass
 				accountTotal = tickerInfoCall['result']['eb'].to_f
 
 				currentRisk = (currentAllocation/accountTotal) * 100
@@ -355,24 +358,23 @@ class Kraken < ApplicationRecord
 						    "price" 		=> priceToSet,
 						    "volume" 		=> "#{unitsFiltered}",
 						    "close[ordertype]" => "take-profit-limit",
-						    "close[price]" 		=> tvData['direction'] == 'sell' ? priceToSet + (priceToSet * (0.01 * (1+tvData['profitBy']))) : priceToSet - (priceToSet * (0.01 * (1+tvData['profitBy']))),
-						    "close[price2]" 		=> tvData['direction'] == 'sell' ? priceToSet + (priceToSet * (0.01 * (1+(tvData['profitBy'] - tvData['trail'])))) : priceToSet - (priceToSet * (0.01 * (1+(tvData['profitBy'] - tvData['trail'])))),
+						    "close[price]" 		=> (tvData['direction'] == 'sell' ? priceToSet - (priceToSet * (0.01 * (1+(tvData['profitBy'].to_f)))) : priceToSet + (priceToSet * (0.01 * (1+(tvData['profitBy'].to_f))))).round(1),
+						    "close[price2]" 		=>  (tvData['direction'] == 'sell' ? priceToSet - (priceToSet * (0.01 * (1+(tvData['profitBy'].to_f - trailPercent.to_f)))) : priceToSet + (priceToSet * (0.01 * (1+(tvData['profitBy'].to_f - trailPercent.to_f))))).round(1),
 						  }
 
 						  # if within maxRisk
 
-					  	if tvData['direction'] == 'buy' && (priceToSet < (pricePulled&.min + (pricePulled&.min.to_f * (0.01 * trailPercent.to_f))))
+						  debugger
+					  	if tvData['direction'] == 'buy' 
 							  #remove current pendingOrder in this position
 							  requestK = krakenRequest('/0/private/AddOrder', orderParams)
 					  	end
 					  	
-						  if tvData['direction'] == 'sell' && (priceToSet > (pricePulled&.max - (pricePulled&.max.to_f * (0.01 * trailPercent.to_f))))
+						  if tvData['direction'] == 'sell'
 							  #remove current pendingOrder in this position
 							  requestK = krakenRequest('/0/private/AddOrder', orderParams)
 						  end
-						  
 						  if requestK.present? && requestK['result'].present?
-								
 							  if requestK['result']['txid'].present?
 								  firstMake = ClosedTrade.create(entry: requestK['result']['txid'][0], entryStatus: 'open')
 								  getOrder = krakenOrder(requestK['result']['txid'][0])['result']
