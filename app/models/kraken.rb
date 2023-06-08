@@ -326,69 +326,73 @@ class Kraken < ApplicationRecord
 				pairCall = publicPair(tvData['ticker'])
 				resultKey = pairCall['result'].keys.first
 				baseTicker = pairCall['result'][resultKey]['base']
-				currentAllocation = krakenBalance['result'][baseTicker]
+				currentAllocation = krakenBalance['result'][baseTicker].to_f
 				tickerInfoCall = tickerInfo(baseTicker)
-				accountTotal = tickerInfoCall['result']['eb']
+				accountTotal = tickerInfoCall['result']['eb'].to_f
 
-				currentRisk = currentAllocation/accountTotal
+				currentRisk = (currentAllocation/accountTotal) * 100
+				
+				if (currentRisk <= tvData['maxRisk'].to_f)
+			  	if tvData['trail'].size > 0
+		  			tvData['trail'].each do |trailPercent|
 
-		  	if tvData['trail'].size > 0 && (currentRisk <= tvData['maxRisk'].to_f)
-	  			tvData['trail'].each do |trailPercent|
+			  			priceToSet = (tvData['direction'] == 'sell' ? tvData['highPrice'].to_f + (tvData['highPrice'].to_f * (0.01 * trailPercent.to_f)) : tvData['lowPrice'].to_f - (tvData['lowPrice'].to_f * (0.01 * trailPercent.to_f))).round(1)
+			  			# allow multiple ranges of set prices from tvData
+					    # ( unitsToTrade > 0.0001) : tvData['ticker'] == 'PAXGUSD' ? : unitsToTrade
+				    	unitsFiltered = unitsToTrade
 
-		  			priceToSet = (tvData['direction'] == 'sell' ? tvData['highPrice'].to_f + (tvData['highPrice'].to_f * (0.01 * trailPercent.to_f)) : tvData['lowPrice'].to_f - (tvData['lowPrice'].to_f * (0.01 * trailPercent.to_f))).round(1)
-		  			# allow multiple ranges of set prices from tvData
-				    # ( unitsToTrade > 0.0001) : tvData['ticker'] == 'PAXGUSD' ? : unitsToTrade
-			    	unitsFiltered = unitsToTrade
+					    case true
+					    when tvData['ticker'] == 'BTCUSD'
+					    	unitsFiltered = (unitsToTrade > 0.0001 ? unitsToTrade : 0.0001)
+					    when tvData['ticker'] == 'PAXGUSD'
+					    	unitsFiltered = (unitsToTrade > 0.003 ? unitsToTrade : 0.003)
+					    end
 
-				    case true
-				    when tvData['ticker'] == 'BTCUSD'
-				    	unitsFiltered = (unitsToTrade > 0.0001 ? unitsToTrade : 0.0001)
-				    when tvData['ticker'] == 'PAXGUSD'
-				    	unitsFiltered = (unitsToTrade > 0.003 ? unitsToTrade : 0.003)
-				    end
+			  			orderParams = {
+						    "pair" 			=> tvData['ticker'],
+						    "type" 			=> tvData['direction'],
+						    "ordertype" => "limit",
+						    "price" 		=> priceToSet,
+						    "volume" 		=> "#{unitsFiltered}",
+						    "close[ordertype]" => "take-profit-limit",
+						    "close[price]" 		=> tvData['direction'] == 'sell' ? priceToSet + (priceToSet * (0.01 * (1+tvData['profitBy']))) : priceToSet - (priceToSet * (0.01 * (1+tvData['profitBy']))),
+						    "close[price2]" 		=> tvData['direction'] == 'sell' ? priceToSet + (priceToSet * (0.01 * (1+(tvData['profitBy'] - tvData['trail'])))) : priceToSet - (priceToSet * (0.01 * (1+(tvData['profitBy'] - tvData['trail'])))),
+						  }
 
-		  			orderParams = {
-					    "pair" 			=> tvData['ticker'],
-					    "type" 			=> tvData['direction'],
-					    "ordertype" => "limit",
-					    "price" 		=> priceToSet,
-					    "volume" 		=> "#{unitsFiltered}",
-					    "close[ordertype]" => "take-profit-limit",
-					    "close[price]" 		=> tvData['direction'] == 'sell' ? priceToSet + (priceToSet * (0.01 * (1+tvData['profitBy']))) : priceToSet - (priceToSet * (0.01 * (1+tvData['profitBy']))),
-					    "close[price2]" 		=> tvData['direction'] == 'sell' ? priceToSet + (priceToSet * (0.01 * (1+(tvData['profitBy'] - tvData['trail'])))) : priceToSet - (priceToSet * (0.01 * (1+(tvData['profitBy'] - tvData['trail'])))),
-					  }
+						  # if within maxRisk
 
-					  # if within maxRisk
-
-				  	if tvData['direction'] == 'buy' && (priceToSet < (pricePulled&.min + (pricePulled&.min.to_f * (0.01 * trailPercent.to_f))))
-						  #remove current pendingOrder in this position
-						  requestK = krakenRequest('/0/private/AddOrder', orderParams)
-				  	end
-				  	
-					  if tvData['direction'] == 'sell' && (priceToSet > (pricePulled&.max - (pricePulled&.max.to_f * (0.01 * trailPercent.to_f))))
-						  #remove current pendingOrder in this position
-						  requestK = krakenRequest('/0/private/AddOrder', orderParams)
-					  end
-					  
-					  if requestK.present? && requestK['result'].present?
-							
-						  if requestK['result']['txid'].present?
-							  firstMake = ClosedTrade.create(entry: requestK['result']['txid'][0], entryStatus: 'open')
-							  getOrder = krakenOrder(requestK['result']['txid'][0])['result']
-							  firstMake.update(entryStatus: getOrder[requestK['result']['txid'][0]]['status'])
-						  	puts "\n-- Kraken Entry Submitted --\n"
+					  	if tvData['direction'] == 'buy' && (priceToSet < (pricePulled&.min + (pricePulled&.min.to_f * (0.01 * trailPercent.to_f))))
+							  #remove current pendingOrder in this position
+							  requestK = krakenRequest('/0/private/AddOrder', orderParams)
+					  	end
+					  	
+						  if tvData['direction'] == 'sell' && (priceToSet > (pricePulled&.max - (pricePulled&.max.to_f * (0.01 * trailPercent.to_f))))
+							  #remove current pendingOrder in this position
+							  requestK = krakenRequest('/0/private/AddOrder', orderParams)
 						  end
-					  else
-						  if requestK['error'][0].present? && requestK['error'][0].include?("Insufficient")
-						  	puts "\n-- MORE CASH FOR ENTRIES --\n"
-							else
-						  	puts "\n-- Waiting For Better Entry --\n"
-							end
-					  end
+						  
+						  if requestK.present? && requestK['result'].present?
+								
+							  if requestK['result']['txid'].present?
+								  firstMake = ClosedTrade.create(entry: requestK['result']['txid'][0], entryStatus: 'open')
+								  getOrder = krakenOrder(requestK['result']['txid'][0])['result']
+								  firstMake.update(entryStatus: getOrder[requestK['result']['txid'][0]]['status'])
+							  	puts "\n-- Kraken Entry Submitted --\n"
+							  end
+						  else
+							  if requestK['error'][0].present? && requestK['error'][0].include?("Insufficient")
+							  	puts "\n-- MORE CASH FOR ENTRIES --\n"
+								else
+							  	puts "\n-- Waiting For Better Entry --\n"
+								end
+						  end
+		  			end
+		  		else
+		  			puts "\n-- No Limit Orders Set --\n"
 	  			end
 	  		else
-	  			puts "\n-- No Limit Orders Set --\n"
-  			end
+	  			puts "\n-- #{tvData['timeframe']} Max Risk Met --\n"
+	  		end
 
   		when tvData['tickerType'] == 'forex'
   			# execute oanda
