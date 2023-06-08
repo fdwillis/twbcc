@@ -13,6 +13,46 @@ class Kraken < ApplicationRecord
     createPayload = JsonDatum.create(params: orderParams, payload: requestK)
     createPayload[:payload]
   end
+
+  def self.tickerInfo(symbol)
+  	
+    routeToKraken = "/0/private/TradeBalance"
+    orderParams = {
+    	"asset" => symbol
+    }
+
+    requestK = krakenRequest(routeToKraken, orderParams)
+  end
+
+  def self.publicAsset(symbol)
+  	
+    routeToKraken = "/0/public/Assets"
+    orderParams = {
+    	"asset" => symbol
+    }
+
+    requestK = krakenRequest(routeToKraken, orderParams)
+  end
+
+  def self.publicAsset(symbol)
+  	
+    routeToKraken = "/0/public/Ticker"
+    orderParams = {
+    	"pair" => symbol
+    }
+
+    requestK = krakenRequest(routeToKraken, orderParams)
+  end
+
+  def self.publicPair(symbol)
+  	
+    routeToKraken = "/0/public/AssetPairs"
+    orderParams = {
+    	"pair" => symbol
+    }
+
+    requestK = krakenRequest(routeToKraken, orderParams)
+  end
   
   def self.krakenTrades(filledOrNot = nil, page = nil)
   	buildTrades = []
@@ -283,34 +323,16 @@ class Kraken < ApplicationRecord
   		# unitsWithScale
   		case true
   		when tvData['tickerType'] == 'crypto'
-  			# execute kraken
-  			# remove oposit orders first
-  			# if tvData['direction'] == 'buy'
-  			# 	removePutOrders(tvData)
-  			# else
-  			# 	removeCallOrders(tvData)
-  			# end
+				pairCall = publicPair(tvData['ticker'])
+				resultKey = pairCall['result'].keys.first
+				baseTicker = pairCall['result'][resultKey]['base']
+				currentAllocation = krakenBalance['result'][baseTicker]
+				tickerInfoCall = tickerInfo(baseTicker)
+				accountTotal = tickerInfoCall['result']['eb']
 
-			  tradesToUpdate = krakenPendingTrades
-		  	keysForTrades = tradesToUpdate.keys
+				currentRisk = currentAllocation/accountTotal
 
-
-
-		  	pullPrices = []
-
-	  		
-		  	keysForTrades.each do |keyX|
-		  		infoX = tradesToUpdate[keyX]
-			  	if infoX['descr']['type'] == tvData['direction'] && infoX['descr']['pair'] == tvData['ticker'] #and the same direction
-			  		
-				  	pullPrices << [{price: infoX['descr']['price'].to_f, tradeID: keyX}]
-			  	end
-
-			  	if infoX['descr']['ordertype'] == 'market' || infoX['descr']['ordertype'] == 'limit' #and the same direction
-				  	ClosedTrade.find_or_create_by(entry: keyX)
-			  	end
-		  	end
-		  	if tvData['trail'].size > 0
+		  	if tvData['trail'].size > 0 && (currentRisk <= tvData['maxRisk'].to_f)
 	  			tvData['trail'].each do |trailPercent|
 
 		  			priceToSet = (tvData['direction'] == 'sell' ? tvData['highPrice'].to_f + (tvData['highPrice'].to_f * (0.01 * trailPercent.to_f)) : tvData['lowPrice'].to_f - (tvData['lowPrice'].to_f * (0.01 * trailPercent.to_f))).round(1)
@@ -330,10 +352,13 @@ class Kraken < ApplicationRecord
 					    "type" 			=> tvData['direction'],
 					    "ordertype" => "limit",
 					    "price" 		=> priceToSet,
-					    "volume" 		=> "#{unitsFiltered}"
+					    "volume" 		=> "#{unitsFiltered}",
+					    "close[ordertype]" => "take-profit-limit",
+					    "close[price]" 		=> tvData['direction'] == 'sell' ? priceToSet + (priceToSet * (0.01 * (1+tvData['profitBy']))) : priceToSet - (priceToSet * (0.01 * (1+tvData['profitBy']))),
+					    "close[price2]" 		=> tvData['direction'] == 'sell' ? priceToSet + (priceToSet * (0.01 * (1+(tvData['profitBy'] - tvData['trail'])))) : priceToSet - (priceToSet * (0.01 * (1+(tvData['profitBy'] - tvData['trail'])))),
 					  }
 
-				  	pricePulled = pullPrices.present? ? pullPrices.flatten.map{|p| p[:price]} : [tvData['currentPrice'].to_f.round(1)]
+					  # if within maxRisk
 
 				  	if tvData['direction'] == 'buy' && (priceToSet < (pricePulled&.min + (pricePulled&.min.to_f * (0.01 * trailPercent.to_f))))
 						  #remove current pendingOrder in this position
