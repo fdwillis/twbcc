@@ -39,8 +39,6 @@ class Kraken
     routeToKraken = "/0/private/OpenOrders"
     orderParams = {}
     requestK = krakenRequest(routeToKraken, orderParams)['result']['open']
-    createPayload = JsonDatum.create(params: orderParams, payload: requestK)
-    createPayload[:payload]
   end
 
   def self.tickerInfo(symbol)
@@ -99,26 +97,7 @@ class Kraken
 	    requestK = krakenRequest(routeToKraken, orderParams)
 		end
 
-    # kResult = requestK['result']
-    # kResultCount = kResult['count']
-
-    # pagesToParse = (kResultCount/50.to_f).to_s.split('.')
-
-    # pagesToParse[0].times do
-	   #  if filledOrNot == 'filled'
-	   #  	# grab closed orders with market or limit
-	   #  else
-	   #  	# grab orders not filled
-	   #  end
-
-    # end
-
-    # grab remainder (pages % 1) or something like that
-    # ".#{pagesToParse[1]}".round
-
-    # return as JsonDatum with all results in array to iterate
-    createPayload = JsonDatum.create(params: orderParams, payload: requestK['result']['trades'])
-  	createPayload[:payload]
+    requestK
   end
 
   def self.krakenTrade(tradeID)
@@ -218,8 +197,8 @@ class Kraken
   	if filterTakeProfitKeys.size > 0
 	  	filterTakeProfitKeys.each do |tradeID|
 
-	  		requestK = krakenOrder(tradeID)
 		  	Thread.pass
+	  		requestK = krakenOrder(tradeID)
 	  		if requestK.present? && requestK['result'].present?
 
 	  			afterSleep = requestK['result'][tradeID]

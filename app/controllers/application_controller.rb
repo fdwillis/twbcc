@@ -172,21 +172,31 @@ class ApplicationController < ActionController::Base
 	end
 # <%= Ahoy::Event.where_event("Search Terms").count %>
 	def checkout
-		applicationFeeAmount = Stripe::Price.retrieve(params['price'],{stripe_account: params['account']})['unit_amount'] * 0.02
-		@session = Stripe::Checkout::Session.create({
-			success_url: "https://app.oarlin.com/?&referredBy=#{params['referredBy']}",
-      phone_number_collection: {
-	      enabled: true
-	    },
-	    payment_intent_data: {
-	    	application_fee_amount: applicationFeeAmount.to_i
-	    },
-      line_items: [
-        {price: params['price'], quantity: 1},
-      ],
-      mode: 'payment',
-    }, {stripe_account: params['account']})
-
+		if params['account'].present?
+			applicationFeeAmount = Stripe::Price.retrieve(params['price'],{stripe_account: params['account']})['unit_amount'] * 0.02
+			@session = Stripe::Checkout::Session.create({
+				success_url: "https://app.oarlin.com/?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",
+	      phone_number_collection: {
+		      enabled: true
+		    },
+		    payment_intent_data: {
+		    	application_fee_amount: applicationFeeAmount.to_i
+		    },
+	      line_items: [
+	        {price: params['price'], quantity: 1},
+	      ],
+	      mode: 'payment',
+	    }, {stripe_account: params['account']})
+	  else
+	  	applicationFeeAmount = Stripe::Price.retrieve(params['price'])['unit_amount'] * 0.02
+			@session = Stripe::Checkout::Session.create({
+				success_url: "https://app.oarlin.com/trading-keys?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
+	      line_items: [
+	        {price: params['price'], quantity: 1},
+	      ],
+	      mode: 'subscription',#let stripe data determine
+	    })
+		end
     redirect_to @session['url']
 	end
 
