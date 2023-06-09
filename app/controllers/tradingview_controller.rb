@@ -8,12 +8,11 @@ class TradingviewController < ApplicationController
 
 			case true
 			when params['type'].include?('Stop')
-				dataSaved = JsonDatum.create(payload: params)
-				BackgroundJob.perform_async(dataSaved[:payload])
+				BackgroundJob.perform_async(params)
 			when params['type'] == 'entry'
 				limitOrder = Kraken.krakenLimitOrder(params)
 				
-				if params['allowMarketOrder'] == 'true'
+				if params['allowMarketOrders'] == 'true'
 					marketOrder = Kraken.krakenMarketOrder(params)
 				end
 
