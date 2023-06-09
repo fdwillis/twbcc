@@ -15,7 +15,7 @@ class TradingviewController < ApplicationController
 			when params['type'] == 'entry'
 				limitOrder = Kraken.krakenLimitOrder(params)
 				
-				if params['allowMarketOrders'] == 'true'
+				if params['allowMarketOrder'] == 'true'
 					marketOrder = Kraken.krakenMarketOrder(params)
 				end
 

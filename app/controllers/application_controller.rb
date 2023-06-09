@@ -200,6 +200,12 @@ class ApplicationController < ActionController::Base
     redirect_to @session['url']
 	end
 
+	def trading_keys
+		if params['auth'] == false && request.post?
+			# check passwords -> allow if match
+		end
+	end
+
 	def membership
 		@codes = Stripe::Coupon.list({limit: 100}).reject{|c| c['valid'] == false}
 
