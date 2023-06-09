@@ -25,7 +25,7 @@ class Kraken
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     response = http.request(req)
-    sleep 0.5
+    sleep 1
     Oj.load(response.body)
   end
 
@@ -220,7 +220,6 @@ class Kraken
 
 	  		requestK = krakenOrder(tradeID)
 		  	Thread.pass
-					debugger
 	  		if requestK.present? && requestK['result'].present?
 
 	  			afterSleep = requestK['result'][tradeID]
@@ -231,22 +230,22 @@ class Kraken
 					when tvData['direction'] == 'buy'
 						@nextTakeProfit = (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1).to_f
 					end
+					
+					Thread.pass
+
 					if tvData['direction'] == 'sell'
 	  				if (@nextTakeProfit > (afterSleep['descr']['price2'].to_f))
 						  puts "\n-- Setting Take Profit --\n"
 	  					@protectTrade = krakenTrailOrStop(tvData,afterSleep)
-	  					Thread.pass
 						else
 						  puts "\n-- Waiting For More Profit --\n"
 		  			end
 	  			end
 
 	  			if tvData['direction'] == 'buy'
-
 		  			if (@nextTakeProfit < (afterSleep['descr']['price2'].to_f))
 						  puts "\n-- Setting Take Profit --\n"
 		  				@protectTrade = krakenTrailOrStop(tvData,afterSleep)
-		  				Thread.pass
 						else
 						  puts "\n-- Waiting For More Profit --\n"
 		  			end
@@ -258,7 +257,7 @@ class Kraken
 					  }
 				  	routeToKraken = "/0/private/CancelOrder"
 				  	cancel = krakenRequest(routeToKraken, orderParams)
-				  	puts "\n-- Profit Repainted #{cancel} --\n"
+				  	puts "\n-- Profit Repainted #{@protectTrade} --\n"
 			 		end
 		  	end
 		  end
@@ -283,7 +282,6 @@ class Kraken
 				baseTicker = pairCall['result'][resultKey]['base']
 				currentAllocation = krakenBalance['result'][baseTicker].to_f
 				Thread.pass
-				sleep 0.5
 				tickerInfoCall = tickerInfo(baseTicker)
 				Thread.pass
 				accountTotal = tickerInfoCall['result']['eb'].to_f
@@ -349,7 +347,7 @@ class Kraken
 		  			puts "\n-- No Limit Orders Set --\n"
 	  			end
 	  		else
-	  			puts "\n-- #{tvData['timeframe']} Max Risk Met --\n"
+	  			puts "\n-- Max Risk Met (#{tvData['timeframe']} Minute) --\n"
 	  		end
 
   		when tvData['tickerType'] == 'forex'
