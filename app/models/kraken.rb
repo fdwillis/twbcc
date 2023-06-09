@@ -210,7 +210,7 @@ class Kraken
   	filterTakeProfitKeys = []
 
   	takeProfitTradesKeys.each do |keyID|
-  		if takeProfitTrades[keyID]['descr']['ordertype'] == 'take-profit'
+  		if takeProfitTrades[keyID]['descr']['ordertype'] == 'take-profit-limit'
   			filterTakeProfitKeys << keyID
   		end
   	end
@@ -232,7 +232,7 @@ class Kraken
 					end
 
 					if tvData['direction'] == 'sell'
-	  				if (@nextTakeProfit > (afterSleep['price2'].to_f))
+	  				if (@nextTakeProfit > (afterSleep['price'].to_f))
 						  puts "\n-- Setting Take Profit --\n"
 	  					@protectTrade = krakenTrailOrStop(tvData,afterSleep)
 	  					Thread.pass
@@ -243,7 +243,7 @@ class Kraken
 
 	  			if tvData['direction'] == 'buy'
 
-		  			if (@nextTakeProfit < (afterSleep['price2'].to_f))
+		  			if (@nextTakeProfit < (afterSleep['price'].to_f))
 						  puts "\n-- Setting Take Profit --\n"
 		  				@protectTrade = krakenTrailOrStop(tvData,afterSleep)
 		  				Thread.pass
@@ -267,7 +267,7 @@ class Kraken
 		end
   end
 
-  def self.krakenLimitOrder(tvData)
+  def self.krakenLimitOrder(tvData) #entry
   	
   	# only create order if within 'trail' of last set order of this 'type' -> limit/market and account less than definedRisk from TV
   	unitsToTrade = xpercentForTradeFromTimeframe(tvData)
@@ -283,6 +283,7 @@ class Kraken
 				baseTicker = pairCall['result'][resultKey]['base']
 				currentAllocation = krakenBalance['result'][baseTicker].to_f
 				Thread.pass
+				sleep 0.5
 				tickerInfoCall = tickerInfo(baseTicker)
 				Thread.pass
 				accountTotal = tickerInfoCall['result']['eb'].to_f
@@ -310,7 +311,7 @@ class Kraken
 						    "type" 			=> tvData['direction'],
 						    "ordertype" => "limit",
 						    "price" 		=> priceToSet,
-						    "volume" 		=> "#{unitsFiltered}",
+						    "voulme" 		=> "#{unitsFiltered}",
 						    "close[ordertype]" => "take-profit-limit",
 						    "close[price]" 		=> (tvData['direction'] == 'sell' ? priceToSet - (priceToSet * (0.01 * ((tvData['profitBy'].to_f)))) : priceToSet + (priceToSet * (0.01 * ((tvData['profitBy'].to_f))))).round(1).to_s,
 						    "close[price2]" 		=>  (tvData['direction'] == 'sell' ? priceToSet - (priceToSet * (0.01 * ((tvData['profitBy'].to_f - trailPercent.to_f)))) : priceToSet + (priceToSet * (0.01 * ((tvData['profitBy'].to_f - trailPercent.to_f))))).round(1).to_s,
@@ -356,7 +357,7 @@ class Kraken
   	end
   end
 
-  def self.krakenMarketOrder(tvData)
+  def self.krakenMarketOrder(tvData) #entry
   	# only create order if within 'trail' of last set order of this 'type' -> limit/market and account less than definedRisk from TV
   	unitsToTrade = xpercentForTradeFromTimeframe(tvData)
 
@@ -458,13 +459,14 @@ class Kraken
   	end
     case true
   	when tvData['timeframe'] == '15'
-  		tvData['tickerType'] == 'crypto' ? (((0.25* 0.01) * accountBalance / currentPrice).to_f > 3 ? ((0.25* 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f) : tvData['tickerType'] == 'forex' ? ((0.25* 0.01) * accountBalance / currentPrice).to_f.round : nil
+  		#need to make for each pair -> currently hard coded to bitcoin minimum
+  		tvData['tickerType'] == 'crypto' ? (((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f > 3 ? ((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f) : tvData['tickerType'] == 'forex' ? ((0.25* 0.01) * accountBalance / currentPrice).to_f.round : nil
   	when tvData['timeframe'] == '30'
-  		tvData['tickerType'] == 'crypto' ? (((0.50* 0.01) * accountBalance / currentPrice).to_f > 3 ? ((0.50* 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f) : tvData['tickerType'] == 'forex' ? ((0.50* 0.01) * accountBalance / currentPrice).to_f.round : nil
+  		tvData['tickerType'] == 'crypto' ? (((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f > 3 ? ((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f) : tvData['tickerType'] == 'forex' ? ((0.50* 0.01) * accountBalance / currentPrice).to_f.round : nil
   	when tvData['timeframe'] == '60'
-  		tvData['tickerType'] == 'crypto' ? (((0.75* 0.01) * accountBalance / currentPrice).to_f > 3 ? ((0.75* 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f) : tvData['tickerType'] == 'forex' ? ((0.75* 0.01) * accountBalance / currentPrice).to_f.round : nil
+  		tvData['tickerType'] == 'crypto' ? (((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f > 3 ? ((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f) : tvData['tickerType'] == 'forex' ? ((0.75* 0.01) * accountBalance / currentPrice).to_f.round : nil
   	when tvData['timeframe'] == '120'
-  		tvData['tickerType'] == 'crypto' ? (((1* 0.01) * accountBalance / currentPrice).to_f > 3 ? ((1* 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f) : tvData['tickerType'] == 'forex' ? ((1* 0.01) * accountBalance / currentPrice).to_f.round : nil
+  		tvData['tickerType'] == 'crypto' ? (((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f > 3 ? ((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f) : tvData['tickerType'] == 'forex' ? ((1* 0.01) * accountBalance / currentPrice).to_f.round : nil
   	end
   end
   
