@@ -1,7 +1,7 @@
 class BackgroundJob
   include Sidekiq::Job
 
-  sidekiq_retry_in { 5.minutes.to_i }
+  # sidekiq_retry_in { 5.minutes.to_i }
 
   def perform(tvData, currentUser, job)
     if job == 'stop'
@@ -9,11 +9,11 @@ class BackgroundJob
     end
 
     if job == 'entry'
-    Kraken.krakenMarketOrder(tvData, currentUser)
+      Kraken.krakenLimitOrder(tvData, currentUser)
     end
 
     if job == 'market'
-      Kraken.krakenLimitOrder(tvData, currentUser)
+      Kraken.krakenMarketOrder(tvData, currentUser)
     end
   end
 

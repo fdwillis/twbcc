@@ -27,11 +27,12 @@ class TradingviewController < ApplicationController
 				case true
 				when params['type'].include?('Stop')
 					BackgroundJob.perform_async(params, traderFound, 'stop')
+					# Kraken.krakenTrailStop(params, traderFound)
 				when params['type'] == 'entry'
-					BackgroundJob.perform_async(params, traderFound, 'entry')
+					limitOrder = Kraken.krakenLimitOrder(params, traderFound)
 					
 					if params['allowMarketOrder'] == 'true'
-						BackgroundJob.perform_async(params, traderFound, 'market')
+						marketOrder = Kraken.krakenMarketOrder(params, traderFound)
 					end
 
 				when params['type'].include?('profit')
