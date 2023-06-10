@@ -3,8 +3,8 @@ class BackgroundJob
 
   sidekiq_retry_in { 5.minutes.to_i }
 
-  def perform(tvData)
-    Kraken.krakenTrailStop(tvData)
+  def perform(tvData, currentUser)
+    Kraken.krakenTrailStop(tvData, currentUser)
   end
 
   def self.testParams
