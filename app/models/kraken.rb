@@ -107,8 +107,8 @@ class Kraken
 
     orderParams = {
 	    "pair" 			=> tradeInfo['descr']['pair'],
-	    "ordertype" => tradeInfo['descr']['ordertype'],
-	    "type" 			=> "stop-loss",
+	    "ordertype" => "stop-loss-limit",
+	    "type" 			=> tradeInfo['descr']['type'],
 	    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
 	    "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * (tvData['trail'].to_f)))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * (tvData['trail'].to_f)))).round(1)).to_s,
 	    "volume" 		=> tradeInfo['vol']
@@ -309,6 +309,7 @@ class Kraken
 			    when tvData['ticker'] == 'PAXGUSD'
 			    	unitsFiltered = (unitsToTrade > 0.003 ? unitsToTrade : 0.003)
 			    end
+
 	  			orderParams = {
 				    "pair" 			=> tvData['ticker'],
 				    "type" 			=> tvData['direction'],
