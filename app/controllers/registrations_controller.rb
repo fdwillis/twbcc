@@ -188,7 +188,7 @@ class RegistrationsController < ApplicationController
 		      )
 
 		      #pay affiliate for membership if US affiliate
-		      if setSessionVarParams['referredBy'].present? && loadedAffililate.checkMembership[:membershipType] != 'free' && loadedAffililate&.checkMembership[:membershipDetails][:active] && loadedAffililate.amazonCountry.upcase == 'US'
+		      if setSessionVarParams['referredBy'].present? && !loadedAffililate.checkMembership.map{|d| d[:membershipType]}.include?('free') && loadedAffililate.amazonCountry.upcase == 'US'
 		      	firstCustomerCharge = Stripe::Charge.list({limit: 1})['data'][0]
 		      	affiliateAccount = Stripe::Customer.retrieve(loadedAffililate.stripeCustomerID)
 		      	commission = (firstCustomerCharge['amount'].to_i*(affiliateAccount['metadata']['commissionRate'].to_f/100)).to_i
@@ -207,7 +207,7 @@ class RegistrationsController < ApplicationController
 
 		      # btly
 		      
-		      if loadedCustomer&.checkMembership[:membershipType] != 'free'
+		      if !loadedCustomer&.checkMembership.map{|d| d[:membershipType]}.include?('free')
 		      	oauth = Bitly::OAuth.new(client_id: ENV['bitlyClient'], client_secret: ENV['bitlySecret'])
 						@bitlyToken = oauth.access_token(username: 'team@oarlin.com', password: ENV['bitlyPass'])
 
@@ -222,7 +222,7 @@ class RegistrationsController < ApplicationController
 			        stripeSessionInfo['customer'],{
 			        	metadata: {
 				          shortLink: generateLink.link,
-				          # recipientAccount: recipientAccount['id'],
+				          # recipientAccount: recipientAccount['id'],.map{|d| d[:membershipType]}.include?('trader')
 				        }
 				      },
 			      )
@@ -231,7 +231,7 @@ class RegistrationsController < ApplicationController
 	      	ahoy.track "Membership Signup", headline: session['howITWOrks'], previousPage: request.referrer, uuid: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).uuid, referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : 'admin'
 		      
 		      if session['coupon'].present?
-			      ahoy.track "Membership Coupon Applied", coupon: session['coupon'], membershipType: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).checkMembership[:membershipType]
+			      ahoy.track "Membership Coupon Applied", coupon: session['coupon'], membershipType: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).checkMembership.map{|d| d[:membershipType]}
 		      end
 
 		      flash[:success] = "Your Account Setup Is Complete!"

@@ -34,5 +34,7 @@ class StripeWebhooksController < ApplicationController
       ApplicationMailer.sessionLink(stripeObject['id']).deliver_now
     end
 
+    # when invoice fails -> remove plan completely from subscription
+
   end
 end
