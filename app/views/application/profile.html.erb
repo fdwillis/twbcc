@@ -37,6 +37,31 @@
 		<% end %>
 	  
   	<% if @userFound.trader? && currentMembership.map{|d| d[:membershipType]}.include?('trader') %>
+	  	<div class="card card-style">
+          <div class="content">
+              <h3 class="mb-0">Your Next Steps</h3>
+              <p>Follow these steps to set up auto trading with Oarlin via <%= link_to "TradingView", "https://www.tradingview.com/gopro/?share_your_love=NetwerthTracker" %></p>
+                <ul class="content">
+                  
+                  <div class="col-12">
+                      <li><h5 class="font-600 opacity-80">Create an account at <%= link_to "TradingView", "https://www.tradingview.com/gopro/?share_your_love=NetwerthTracker" %></h5></li>
+                  </div>
+                  <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
+                  <div class="col-12">
+                      <li><h5 class="font-600 opacity-80">Add the broker keys to your Oarlin <%= link_to "Profile", new_user_session_path %></h5></li>
+                  </div>
+                  <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
+                  <div class="col-12">
+                      <li><h5 class="font-600 opacity-80">Setup your alerts on <%= link_to "TradingView", "https://www.tradingview.com/gopro/?share_your_love=NetwerthTracker" %></h5></li>
+                  </div>
+                  <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
+                  <div class="col-12">
+                      <li><h5 class="font-600 opacity-80">Activate your alerts on <%= link_to "TradingView", "https://www.tradingview.com/gopro/?share_your_love=NetwerthTracker" %></h5></li>
+                  </div>
+                  <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
+                </ul>
+          </div>
+      </div>
 			<div class="card card-style">
 		    <div class="content mb-0">
 		      <div class="row">
@@ -44,6 +69,7 @@
 			      	<h5 class="font-700 font-12 opacity-50 mb-4 text-center">
 			      		Your Webhook: <%= "https://oarlin.com/signals?&traderID=#{current_user&.uuid}" %>
 			      	</h5>
+			      	<p class="font-700 font-12 opacity-50 mb-4 text-center">Need Help Finding Keys? <%= mail_to "team@oarlin.com", "EMAIL US" %></p>
 			      	<%= form_for :editKeys, url: manage_trading_keys_path do |f| %>
 				      	<%= f.label "Kraken Live API Key" %><br />
 			      		<%= f.text_field :krakenLiveAPI, value: current_user&.krakenLiveAPI, class: 'form-control form-control-lg form-control-alt py-3' %><br />
