@@ -107,10 +107,10 @@ class Kraken
 
     orderParams = {
 	    "pair" 			=> tradeInfo['descr']['pair'],
-	    "ordertype" => "take-profit",
+	    "ordertype" => "take-profit-limit",
 	    "type" 			=> tradeInfo['descr']['type'],
-	    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
-	    # "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * (tvData['trail'].to_f)))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * (tvData['trail'].to_f)))).round(1)).to_s,
+	    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f+tvData['profitBy'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f+tvData['profitBy'].to_f))).round(1)).to_s,
+	    "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * (tvData['trail'].to_f)))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * (tvData['trail'].to_f)))).round(1)).to_s,
 	    "volume" 		=> tradeInfo['vol']
 	  }
 	  Thread.pass
@@ -153,7 +153,7 @@ class Kraken
 					Thread.pass
 
 					if tvData['direction'] == 'sell'
-	  				if (@nextTakeProfit > (afterSleep['descr']['price'].to_f))
+	  				if (@nextTakeProfit > (afterSleep['descr']['price2'].to_f))
 	  					@protectTrade = krakenTrailOrStop(tvData,afterSleep, apiKey, secretKey)
 						  puts "\n-- Setting Take Profit --\n"
 						  Thread.pass
@@ -163,7 +163,7 @@ class Kraken
 	  			end
 
 	  			if tvData['direction'] == 'buy'
-		  			if (@nextTakeProfit < (afterSleep['descr']['price'].to_f))
+		  			if (@nextTakeProfit < (afterSleep['descr']['price2'].to_f))
 		  				@protectTrade = krakenTrailOrStop(tvData,afterSleep, apiKey, secretKey)
 						  puts "\n-- Setting Take Profit --\n"
 						  Thread.pass
