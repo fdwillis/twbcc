@@ -198,20 +198,20 @@ class Kraken
   	unitsToTrade = xpercentForTradeFromTimeframe(tvData, apiKey, secretKey)
   	if unitsToTrade > 0 
   		# unitsWithScale
+	  	Thread.pass
   		case true
   		when tvData['tickerType'] == 'crypto'
-		  	Thread.pass
 				pairCall = publicPair(tvData, apiKey, secretKey)
-				Thread.pass
+		  	Thread.pass
 				resultKey = pairCall['result'].keys.first
 				baseTicker = pairCall['result'][resultKey]['base']
-				currentAllocation = krakenBalance(apiKey, secretKey)['result'][baseTicker].to_f
+				Thread.pass
+				currentAllocation = krakenBalance(apiKey, secretKey)
 				Thread.pass
 				tickerInfoCall = tickerInfo(baseTicker, apiKey, secretKey)
-				Thread.pass
 				accountTotal = tickerInfoCall['result']['eb'].to_f
 
-				currentRisk = (currentAllocation/accountTotal) * 100
+				currentRisk = (currentAllocation['result'][baseTicker].to_f/accountTotal) * 100
 				
 				if (currentRisk <= tvData['maxRisk'].to_f)
 			  	if tvData['entries'].reject(&:blank?).size > 0
@@ -287,20 +287,20 @@ class Kraken
 
   	if unitsToTrade > 0 
   		# unitsWithScale
+  		Thread.pass
   		case true
   		when tvData['tickerType'] == 'crypto'
-	  		Thread.pass
 				pairCall = publicPair(tvData, apiKey, secretKey)
 				Thread.pass
 				resultKey = pairCall['result'].keys.first
 				baseTicker = pairCall['result'][resultKey]['base']
-				currentAllocation = krakenBalance(apiKey, secretKey)['result'][baseTicker].to_f
+	  		Thread.pass
+				currentAllocation = krakenBalance(apiKey, secretKey)
 				Thread.pass
 				tickerInfoCall = tickerInfo(baseTicker, apiKey, secretKey)
-				Thread.pass
 				accountTotal = tickerInfoCall['result']['eb'].to_f
 
-				currentRisk = (currentAllocation/accountTotal) * 100
+				currentRisk = (currentAllocation['result'][baseTicker].to_f/accountTotal) * 100
 				if (currentRisk <= tvData['maxRisk'].to_f)
 	  			priceToSet = (tvData['currentPrice']).to_f.round(1)
 
