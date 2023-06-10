@@ -16,27 +16,54 @@
             </div>
             <div class="row g-0 justify-content-center">
               <% if !User.find_by(email: @stripeSession['customer_details']['email']) %>
-                <%= form_for(:setSessionVar, url: new_password_set_path) do |f| %>
+                <%= form_for(:setSessionVar, url: trading_path) do |f| %>
                   <div class="col-xl-12 p-3">
                     <div class="field">
                       <%= f.label :password %><br />
                       <%= f.password_field :password, class: "form-control form-control-lg form-control-alt py-3", placeholder: '6 characters or more', required: true %>
                       <%= f.label :password_confirmation %><br />
                       <%= f.password_field :password_confirmation, class: "form-control form-control-lg form-control-alt py-3", placeholder: '6 characters or more', required: true %>
-                      <%= f.label "Amazon ID" %><br />
-                      <%= f.text_field :amazonUUID, class: "form-control form-control-lg form-control-alt py-3", placeholder: 'paste your affiliate ID from Amazon', required: true %>
+
                       <%= f.hidden_field :stripeSession, value:  @stripeSession['id'] %>
                       <%= f.hidden_field :referredBy, value:  params['referredBy'] %>
-                      <%= f.hidden_field :accessPin, value:  'connectAccount' %>
+                      <%= f.hidden_field :accessPin, value:  'trader' %>
                     </div>
                     <br>
                     <%= f.submit "Finish Account Setup", class: "btn btn-full rounded-sm text-uppercase font-700 mt-3 bg-green-dark col-md-12" %>
                   </div>
                 <% end %>
               <% end %>
+              
             </div>
         </div>
     </div>
+    <% if foundUser = User.find_by(email: @stripeSession['customer_details']['email']) %>
+      <div class="card card-style">
+          <div class="content">
+              <h3 class="mb-0">Your Next Steps</h3>
+              <p>Follow these steps to set up auto trading with Oarlin via <%= link_to "TradingView", "https://www.tradingview.com/gopro/?share_your_love=NetwerthTracker" %></p>
+                <ul class="content">
+                  
+                  <div class="col-12">
+                      <li><h5 class="font-600 opacity-80">Create an account at <%= link_to "TradingView", "https://www.tradingview.com/gopro/?share_your_love=NetwerthTracker" %></h5></li>
+                  </div>
+                  <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
+                  <div class="col-12">
+                      <li><h5 class="font-600 opacity-80">Add the broker keys to your Oarlin <%= link_to "Profile", new_user_session_path %></h5></li>
+                  </div>
+                  <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
+                  <div class="col-12">
+                      <li><h5 class="font-600 opacity-80">Setup your alerts on <%= link_to "TradingView", "https://www.tradingview.com/gopro/?share_your_love=NetwerthTracker" %></h5></li>
+                  </div>
+                  <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
+                  <div class="col-12">
+                      <li><h5 class="font-600 opacity-80">Activate your alerts on <%= link_to "TradingView", "https://www.tradingview.com/gopro/?share_your_love=NetwerthTracker" %></h5></li>
+                  </div>
+                  <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
+                </ul>
+          </div>
+      </div>
+    <% end %>
     <div class="card card-style">
         <div class="content">
             <h3 class="mb-0">Current Plan</h3>

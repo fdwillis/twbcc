@@ -1,70 +1,32 @@
 <div class="header-clear-medium">
 
 	<% if current_user == @userFound %>
-		<% currentMembersip = @userFound.checkMembership %>
-		<%= link_to @loginLink['url'] %>
-		<% if @membershipDetails.present? %>
-			<div class="card card-style">
-		    <h1 class="p-3">Membership</h1>
-				<div class="content row">
-					<div class="col-7">
-		          <h5 class="font-600 opacity-80">Level</h5>
-		      </div>
-		      <div class="col-5">
-		          <h5><%= currentMembersip[:membershipType].titleize %></h5>
-		      </div>
-		      <% unless currentMembersip[:membershipType] == 'free' %>
-			      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
-			      <% if @profile['metadata'].present? && @profile['metadata']['shortLink'].present? %>
-				      <div class="col-7">
-				          <h5 class="font-600 opacity-80">Short Link</h5>
-				      </div>
-				      <div class="col-5">
-				          <h5><%= @profile['metadata']['shortLink'] %></h5>
-				      </div>
-				      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
-				    <% end %>
-			      <div class="col-7">
-			          <h5 class="font-600 opacity-80">Cost</h5>
-			      </div>
-			      <div class="col-5">
-			          <h5 class="font-600 opacity-80"><%= number_to_currency(currentMembersip[:membershipDetails][0][:items][:data][0][:price][:unit_amount].to_i * 0.01, precision: 2)%></h5>
-			      </div>
-			      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
-			      <div class="col-7">
-			          <h5 class="font-600 opacity-80">Interval</h5>
-			      </div>
-			      <div class="col-5">
-			          <h5>Every <%= currentMembersip[:membershipDetails][0][:items][:data][0][:price][:recurring][:interval].titleize %></h5>
-			      </div>
-			      <% if currentMembersip[:membershipDetails][0]['discount'].present? %>
-				      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
-				      <div class="col-7">
-				          <h5 class="font-600 opacity-80">Discount</h5>
-				      </div>
-				      <div class="col-5">
-				          <h5><%= currentMembersip[:membershipDetails][0]['discount']['coupon']['percent_off'].to_i %>% Off Next Month</h5>
-				      </div>
-				      <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
-				    <% end %>
-			      <% if currentMembersip[:membershipType] != 'free' %>
-				      <a href="<%= cancel_path %>" class='p-2'>
-				        <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
-				          <i class="fa fa-minus-circle font-20 color-white"></i> Cancel Membership
-				        <% end %>
-				      </a>
-			      <% end %>
+		<% currentMembership = @userFound.checkMembership %>
+	  <div class="d-flex content mb-1">
+	    <!-- left side of profile -->
+	    <div class="flex-grow-1">
+	        <h1 class="font-700"><%=@profile['name'].titleize%>#<%= current_user&.uuid %></h1>
+	        <p class="mb-2"><%= (@profile['metadata'].present? && @profile['metadata']['bio'].present?) ? @profile['metadata']['bio'] : nil %></p>
+	        <% if @userFound&.amazonCountry.present? %>
+		        <p class="font-10">
+		            <strong class="color-theme pe-1"><i class="fa fa-location-arrow"></i></strong><%= User::ACCEPTEDcountries[@userFound&.amazonCountry.downcase][:country] %>&nbsp;
+		            <!-- <strong class="color-theme pe-1">1k</strong>Followers -->
+		        </p>
 		      <% end %>
-		      
-			  </div>
-				<small class="text-center">SELLER ID: <%= Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'][5..Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'].size] %></small>
-			</div>
-			
-	  <% else %>
-		  Upgrade Your Free Membership
-		<% end %>
 
-		<% if @accountItemsDue.count > 0 %>
+	    </div>
+	    <!-- right side of profile. increase image width to increase column size-->
+	    <% if @profile['metadata'].present? && @profile['metadata']['profileImage'].present? %>
+	      <img data-card-height="272" src="<%= @profile['metadata']['profileImage'] %>" data-src="<%= @profile['metadata']['profileImage'] %>" width="115" height="115" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
+	    <% end %>
+	  </div>
+
+		<% if @loginLink.present? %>
+			<%= link_to @loginLink['url'] %>
+		<% end %>
+		
+
+		<% if @accountItemsDue.present? && @accountItemsDue.count > 0 %>
 			<div class="content row">
 			  <a href="<%= @stripeAccountUpdate['url'] %>" class='p-2'>
 	        <%= button_tag( :class => 'btn btn-full btn-m font-900 text-uppercase rounded-sm bg-green-dark form-control') do %>
@@ -73,22 +35,32 @@
 	      </a>
 	    </div>
 		<% end %>
-	<% end %>
-  <div class="d-flex content mb-1">
-    <!-- left side of profile -->
-    <div class="flex-grow-1">
-        <h1 class="font-700"><%=@profile['name'].titleize%></h1>
-        <p class="mb-2"><%= (@profile['metadata'].present? && @profile['metadata']['bio'].present?) ? @profile['metadata']['bio'] : nil %></p>
-        <p class="font-10">
-            <strong class="color-theme pe-1"><i class="fa fa-location-arrow"></i></strong><%= User::ACCEPTEDcountries[@userFound.amazonCountry.downcase][:country] %>&nbsp;
-            <!-- <strong class="color-theme pe-1">1k</strong>Followers -->
-        </p>
-    </div>
-    <!-- right side of profile. increase image width to increase column size-->
-    <% if @profile['metadata'].present? && @profile['metadata']['profileImage'].present? %>
-      <img data-card-height="272" src="<%= @profile['metadata']['profileImage'] %>" data-src="<%= @profile['metadata']['profileImage'] %>" width="115" height="115" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
+	  
+  	<% if @userFound.trader? && currentMembership.map{|d| d[:membershipType]}.include?('trader') %>
+			<div class="card card-style">
+		    <div class="content mb-0">
+		      <div class="row">
+			      	<h3 class="font-700 font-22 opacity-50 text-center mt-4">Manage Autotrading Keys</h3>
+			      	<h5 class="font-700 font-12 opacity-50 mb-4 text-center">
+			      		Your Webhook: <%= "https://oarlin.com/signals?&traderID=#{current_user&.uuid}" %>
+			      	</h5>
+			      	<%= form_for :editKeys, url: manage_trading_keys_path do |f| %>
+				      	<%= f.label "Kraken Live API Key" %><br />
+			      		<%= f.text_field :krakenLiveAPI, value: current_user&.krakenLiveAPI, class: 'form-control form-control-lg form-control-alt py-3' %><br />
+				      	<%= f.label "Kraken Live Secret Key" %><br />
+			      		<%= f.text_field :krakenLiveSecret, value: current_user&.krakenLiveSecret, class: 'form-control form-control-lg form-control-alt py-3' %><br />
+				      	<%= f.label "Kraken Test API Key" %><br />
+			      		<%= f.text_field :krakenTestAPI, value: current_user&.krakenTestAPI, class: 'form-control form-control-lg form-control-alt py-3' %><br />
+				      	<%= f.label "Kraken Test Secret Key" %><br />
+			      		<%= f.text_field :krakenTestSecret, value: current_user&.krakenTestSecret, class: 'form-control form-control-lg form-control-alt py-3' %><br />
+			      		<%= f.submit "Save Keys",class: "form-control btn btn-full btn-m rounded-m bg-highlight font-700 text-uppercase mb-4 mt-4" %>
+
+		          <% end %>
+			    </div>
+		    </div>
+		  </div>
     <% end %>
-  </div>
+	<% end %>
 	<div class="card card-style">
     <!-- follow buttons-->
     <% unless current_user == @userFound %>

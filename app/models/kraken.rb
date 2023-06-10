@@ -1,20 +1,20 @@
 class Kraken
 	# self.abstract_class = true
-	def self.get_kraken_signature(uri_path, api_nonce, api_sec, api_post)
+	def self.get_kraken_signature(uri_path, api_nonce, api_sec, api_post, currentUser)
     api_sha256 = OpenSSL::Digest.new('sha256').digest("#{api_nonce}#{api_post}")
-    api_hmac = OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha512'), Base64.decode64(ENV['krakenTestSecret']), "#{uri_path}#{api_sha256}")
+    api_hmac = OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha512'), Base64.decode64(currentUser.krakenLiveSecret), "#{uri_path}#{api_sha256}")
     Base64.strict_encode64(api_hmac)
   end
 
   # Attaches auth headers and returns results of a POST request
-  def self.krakenRequest(uri_path, orderParams = {})
+  def self.krakenRequest(uri_path, orderParams = {}, currentUser)
     api_nonce = (Time.now.to_f * 1000).to_i.to_s
     post_data = orderParams.present? ? orderParams.map { |key, value| "#{key}=#{value}" }.join('&') : nil
     api_post = (orderParams.present? ? "nonce=#{api_nonce}&#{post_data}" : "nonce=#{api_nonce}")
-    api_signature = get_kraken_signature(uri_path, api_nonce, ENV['krakenTestSecret'], api_post)
+    api_signature = get_kraken_signature(uri_path, api_nonce, currentUser.krakenLiveSecret, api_post, currentUser)
     
     headers = {
-      "API-Key" => ENV['krakenTestAPI'],
+      "API-Key" => currentUser.krakenLiveAPI,
       "API-Sign" => api_signature
     }
     
@@ -29,58 +29,38 @@ class Kraken
     Oj.load(response.body)
   end
 
-	def self.krakenBalance
+	def self.krakenBalance(currentUser)
     routeToKraken = "/0/private/Balance"
-    krakenRequest(routeToKraken)
+    krakenRequest(routeToKraken, {}, currentUser)
   end
 
-  def self.krakenPendingTrades
+  def self.krakenPendingTrades(currentUser)
   	
     routeToKraken = "/0/private/OpenOrders"
     orderParams = {}
-    requestK = krakenRequest(routeToKraken, orderParams)['result']['open']
+    requestK = krakenRequest(routeToKraken, orderParams, currentUser)['result']['open']
   end
 
-  def self.tickerInfo(symbol)
+  def self.tickerInfo(symbol, currentUser)
   	
     routeToKraken = "/0/private/TradeBalance"
     orderParams = {
     	"asset" => symbol
     }
 
-    requestK = krakenRequest(routeToKraken, orderParams)
+    requestK = krakenRequest(routeToKraken, orderParams, currentUser)
   end
 
-  def self.publicAsset(symbol)
-  	
-    routeToKraken = "/0/public/Assets"
-    orderParams = {
-    	"asset" => symbol
-    }
-
-    requestK = krakenRequest(routeToKraken, orderParams)
-  end
-
-  def self.publicAsset(symbol)
-  	
-    routeToKraken = "/0/public/Ticker"
-    orderParams = {
-    	"pair" => symbol
-    }
-
-    requestK = krakenRequest(routeToKraken, orderParams)
-  end
-
-  def self.publicPair(tvData)
+  def self.publicPair(tvData, currentUser)
     routeToKraken = "/0/public/AssetPairs"
     orderParams = {
     	"pair" => tvData['ticker']
     }
 
-    requestK = krakenRequest(routeToKraken, orderParams)
+    requestK = krakenRequest(routeToKraken, orderParams, currentUser)
   end
   
-  def self.krakenTrades(filledOrNot = nil, page = nil)
+  def self.krakenTrades(filledOrNot = nil, page = nil, currentUser)
   	buildTrades = []
     routeToKraken = "/0/private/TradesHistory"
 
@@ -89,41 +69,41 @@ class Kraken
 		    "trades" 			=> true,
 		    "ofs" 			=> (page - 1) * 50,
 		  }
-	    requestK = krakenRequest(routeToKraken, orderParams)
+	    requestK = krakenRequest(routeToKraken, orderParams, currentUser)
     else
 	    orderParams = {
 		    "trades" 			=> true,
 		  }	
-	    requestK = krakenRequest(routeToKraken, orderParams)
+	    requestK = krakenRequest(routeToKraken, orderParams, currentUser)
 		end
 
     requestK
   end
 
-  def self.krakenTrade(tradeID)
+  def self.krakenTrade(tradeID, currentUser)
   	
     routeToKraken = "/0/private/QueryTrades"
     orderParams = {
 	    "txid" 			=> tradeID,
 	    "trades" 			=> true,
 	  }	
-    krakenRequest(routeToKraken, orderParams)
+    krakenRequest(routeToKraken, orderParams, currentUser)
   end
 
-  def self.krakenOrder(orderID)
+  def self.krakenOrder(orderID, currentUser)
   	
     routeToKraken = "/0/private/QueryOrders"
     orderParams = {
 	    "txid" 			=> orderID,
 	    "trades" 			=> true,
 	  }	
-    krakenRequest(routeToKraken, orderParams)
+    krakenRequest(routeToKraken, orderParams, currentUser)
   end
 
-  def self.removeCallOrders(tvData)
+  def self.removeCallOrders(tvData, currentUser)
   	# a third
   	
-  	tradesToUpdate = krakenPendingTrades
+  	tradesToUpdate = krakenPendingTrades(currentUser)
   	keysForTrades = tradesToUpdate.keys
 
   	#delete stop losses
@@ -134,15 +114,15 @@ class Kraken
 			    "txid" 			=> keyX,
 			  }
 		  	routeToKraken = "/0/private/CancelOrder"
-		  	krakenRequest(routeToKraken, orderParams)
+		  	krakenRequest(routeToKraken, orderParams, currentUser)
 	  	end
   	end
 	end
  
-	def self.removePutOrders(tvData)
+	def self.removePutOrders(tvData, currentUser)
   	# a third
   	
-  	tradesToUpdate = krakenPendingTrades
+  	tradesToUpdate = krakenPendingTrades(currentUser)
   	keysForTrades = tradesToUpdate.keys
 
   	#delete stop losses
@@ -153,12 +133,12 @@ class Kraken
 			    "txid" 			=> keyX,
 			  }
 		  	routeToKraken = "/0/private/CancelOrder"
-		  	krakenRequest(routeToKraken, orderParams)
+		  	krakenRequest(routeToKraken, orderParams, currentUser)
 	  	end
   	end
 	end
 
-  def self.krakenTrailOrStop(tvData,tradeInfo)
+  def self.krakenTrailOrStop(tvData,tradeInfo, currentUser)
   	# edit order
   	#update ClosedTrade Model with protection or info if needed
     routeToKraken = "/0/private/AddOrder"
@@ -173,15 +153,15 @@ class Kraken
 	  }
 	  Thread.pass
 	  # remove all trailing first
-    krakenRequest(routeToKraken, orderParams)
+    krakenRequest(routeToKraken, orderParams, currentUser)
   end
 
-  def self.krakenTrailStop(tvData)
+  def self.krakenTrailStop(tvData, currentUser)
   	# if in profit by less than tvData['trail'] -> set to break even
   	# if in profit by more than tvData['trail'] -> set to trail
   	# if not in profit -> hold
 
-  	takeProfitTrades = Kraken.krakenPendingTrades
+  	takeProfitTrades = Kraken.krakenPendingTrades(currentUser)
   	takeProfitTradesKeys = takeProfitTrades.keys
 
   	filterTakeProfitKeys = []
@@ -196,7 +176,7 @@ class Kraken
 	  	filterTakeProfitKeys.each do |tradeID|
 
 		  	Thread.pass
-	  		requestK = krakenOrder(tradeID)
+	  		requestK = krakenOrder(tradeID, currentUser)
 	  		if requestK.present? && requestK['result'].present?
 
 	  			afterSleep = requestK['result'][tradeID]
@@ -214,7 +194,7 @@ class Kraken
 	  				if (@nextTakeProfit > (afterSleep['descr']['price2'].to_f))
 						  puts "\n-- Setting Take Profit --\n"
 						  Thread.pass
-	  					@protectTrade = krakenTrailOrStop(tvData,afterSleep)
+	  					@protectTrade = krakenTrailOrStop(tvData,afterSleep, currentUser)
 						else
 						  puts "\n-- Waiting For More Profit --\n"
 		  			end
@@ -224,7 +204,7 @@ class Kraken
 		  			if (@nextTakeProfit < (afterSleep['descr']['price2'].to_f))
 						  puts "\n-- Setting Take Profit --\n"
 						  Thread.pass
-		  				@protectTrade = krakenTrailOrStop(tvData,afterSleep)
+		  				@protectTrade = krakenTrailOrStop(tvData,afterSleep, currentUser)
 						else
 						  puts "\n-- Waiting For More Profit --\n"
 		  			end
@@ -238,7 +218,7 @@ class Kraken
 					  }
 				  	routeToKraken = "/0/private/CancelOrder"
 				  	Thread.pass
-				  	cancel = krakenRequest(routeToKraken, orderParams)
+				  	cancel = krakenRequest(routeToKraken, orderParams, currentUser)
 				  	Thread.pass
 				  	puts "\n-- Profit Repainted #{@protectTrade} --\n"
 			 		end
@@ -249,23 +229,23 @@ class Kraken
 		end
   end
 
-  def self.krakenLimitOrder(tvData) #entry
+  def self.krakenLimitOrder(tvData, currentUser) #entry
   	
   	# only create order if within 'trail' of last set order of this 'type' -> limit/market and account less than definedRisk from TV
-  	unitsToTrade = xpercentForTradeFromTimeframe(tvData)
+  	unitsToTrade = xpercentForTradeFromTimeframe(tvData, currentUser)
   	
   	if unitsToTrade > 0 
   		# unitsWithScale
   		case true
   		when tvData['tickerType'] == 'crypto'
 		  	Thread.pass
-				pairCall = publicPair(tvData)
+				pairCall = publicPair(tvData, currentUser)
 				Thread.pass
 				resultKey = pairCall['result'].keys.first
 				baseTicker = pairCall['result'][resultKey]['base']
-				currentAllocation = krakenBalance['result'][baseTicker].to_f
+				currentAllocation = krakenBalance(currentUser)['result'][baseTicker].to_f
 				Thread.pass
-				tickerInfoCall = tickerInfo(baseTicker)
+				tickerInfoCall = tickerInfo(baseTicker, currentUser)
 				Thread.pass
 				accountTotal = tickerInfoCall['result']['eb'].to_f
 
@@ -303,18 +283,18 @@ class Kraken
 						  Thread.pass
 					  	if tvData['direction'] == 'buy' 
 							  #remove current pendingOrder in this position
-							  requestK = krakenRequest('/0/private/AddOrder', orderParams)
+							  requestK = krakenRequest('/0/private/AddOrder', orderParams, currentUser)
 					  	end
 					  	
 						  if tvData['direction'] == 'sell'
 							  #remove current pendingOrder in this position
-							  requestK = krakenRequest('/0/private/AddOrder', orderParams)
+							  requestK = krakenRequest('/0/private/AddOrder', orderParams, currentUser)
 						  end
 
 						  if requestK.present? && requestK['result'].present?
 							  if requestK['result']['txid'].present?
 								  firstMake = ClosedTrade.create(entry: requestK['result']['txid'][0], entryStatus: 'open')
-								  getOrder = krakenOrder(requestK['result']['txid'][0])['result']
+								  getOrder = krakenOrder(requestK['result']['txid'][0], currentUser)['result']
 								  firstMake.update(entryStatus: getOrder[requestK['result']['txid'][0]]['status'])
 							  	puts "\n-- Kraken Entry Submitted --\n"
 							  end
@@ -339,22 +319,22 @@ class Kraken
   	end
   end
 
-  def self.krakenMarketOrder(tvData) #entry
+  def self.krakenMarketOrder(tvData, currentUser) #entry
   	# only create order if within 'trail' of last set order of this 'type' -> limit/market and account less than definedRisk from TV
-  	unitsToTrade = xpercentForTradeFromTimeframe(tvData)
+  	unitsToTrade = xpercentForTradeFromTimeframe(tvData, currentUser)
 
   	if unitsToTrade > 0 
   		# unitsWithScale
   		case true
   		when tvData['tickerType'] == 'crypto'
 	  		Thread.pass
-				pairCall = publicPair(tvData)
+				pairCall = publicPair(tvData, currentUser)
 				Thread.pass
 				resultKey = pairCall['result'].keys.first
 				baseTicker = pairCall['result'][resultKey]['base']
-				currentAllocation = krakenBalance['result'][baseTicker].to_f
+				currentAllocation = krakenBalance(currentUser)['result'][baseTicker].to_f
 				Thread.pass
-				tickerInfoCall = tickerInfo(baseTicker)
+				tickerInfoCall = tickerInfo(baseTicker, currentUser)
 				Thread.pass
 				accountTotal = tickerInfoCall['result']['eb'].to_f
 
@@ -363,9 +343,9 @@ class Kraken
 			  	# execute kraken
 	  			# remove oposit orders first
 	  			if tvData['direction'] == 'buy'
-	  				removePutOrders(tvData)
+	  				removePutOrders(tvData, currentUser)
 	  			else
-	  				removeCallOrders(tvData)
+	  				removeCallOrders(tvData, currentUser)
 	  			end
 
 	  			priceToSet = (tvData['currentPrice']).to_f.round(1)
@@ -390,18 +370,18 @@ class Kraken
 				  Thread.pass
 					# averageOfPricesOpen = (pullPrices&.sum/pullPrices&.count)
 			  	if tvData['direction'] == 'buy'
-					  requestK = krakenRequest('/0/private/AddOrder', orderParams)
+					  requestK = krakenRequest('/0/private/AddOrder', orderParams, currentUser)
 			  	end
 
 				  if tvData['direction'] == 'sell'
-					  requestK = krakenRequest('/0/private/AddOrder', orderParams)
+					  requestK = krakenRequest('/0/private/AddOrder', orderParams, currentUser)
 				  end
 
 				  if requestK.present? && requestK['result'].present?
 
 						if requestK['result']['txid'].present?
 						  firstMake = ClosedTrade.create(entry: requestK['result']['txid'][0], entryStatus: 'open')
-						  getOrder = krakenOrder(requestK['result']['txid'][0])['result']
+						  getOrder = krakenOrder(requestK['result']['txid'][0], currentUser)['result']
 						  Thread.pass
 						  firstMake.update(entryStatus: getOrder[requestK['result']['txid'][0]]['status'])
 					  	puts "\n-- Kraken Entry Submitted --\n"
@@ -420,13 +400,13 @@ class Kraken
   end
 
 
-  def self.xpercentForTradeFromTimeframe(tvData)
+  def self.xpercentForTradeFromTimeframe(tvData, currentUser)
   	#make work for kraken and oanda
 
   	currentPrice = tvData['currentPrice'].to_f
   	
   	if tvData['tickerType'] == 'crypto' && tvData['broker'] == 'kraken'
-  		requestK = krakenBalance
+  		requestK = krakenBalance(currentUser)
   		Thread.pass
   		accountBalance = requestK['result']['ZUSD'].to_f
   	end
@@ -450,7 +430,7 @@ class Kraken
   # def self.createTakeProfitOrder(tvData)
   # 	xpercentForTradeFromTimeframe
   #   routeToKraken = "/0/private/Balance"
-  #   krakenRequest(routeToKraken)
+  #   krakenRequest(routeToKraken,{}, currentUser)
   # end
 
 end

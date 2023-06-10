@@ -111,13 +111,9 @@ namespace :generate do
     # end
   end
 
-  # task lifetime: :environment do
-  #   # (1/1000000) odds -> $1 raffle per month
-  #   # annual selection
-  #   Stripe::Coupon.create({
-  #     percent_off: 100,
-  #     duration: 'forever',
-  #     currency_options: availableCurrencies
-  #   })
-  # end
+  task tradingReferrals: :environment do
+    # if plan due tomorrow and 10 referrals -> skip subscription
+    # uncollectable
+    # resumes 30 days from date if monthly or 12 months if annual -> check status day before 
+  end
 end

@@ -191,10 +191,10 @@ class ApplicationController < ActionController::Base
 	  	tradeCoupon = Stripe::Coupon.list({limit: 100})['data'].reject{|c| c['percent_off'] < 50}.reject{|c| c['max_redemptions'] == 0}.reject{|c| c['duration'] != 'forever'}
 	  	grabStripePrice = Stripe::Price.retrieve(params['price'])
 	  	
-	  	if (params['price'] == ENV['tradingAnnaulMembership'] || params['price'] == ENV['tradingMonthlyMembership'])
+	  	if (params['price'] == ENV['tradingAnnualMembership'] || params['price'] == ENV['tradingMonthlyMembership'])
 		  	if tradeCoupon.present?
 					@session = Stripe::Checkout::Session.create({
-						success_url: "https://app.oarlin.com/trading-keys?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
+						success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
 			      line_items: [
 			        {price: params['price'], quantity: 1},
 			      ],
@@ -205,7 +205,7 @@ class ApplicationController < ActionController::Base
 			    })
 			  else
 			    @session = Stripe::Checkout::Session.create({
-						success_url: "https://app.oarlin.com/trading-keys?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
+						success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
 			      line_items: [
 			        {price: params['price'], quantity: 1},
 			      ],
@@ -220,16 +220,7 @@ class ApplicationController < ActionController::Base
     redirect_to @session['url']
 	end
 
-	def trading_keys
-		#route here after successful checkout of price
-
-		if request.post?
-		else
-   		@stripeSession = Stripe::Checkout::Session.retrieve(
-		    params['session'],
-		  )
-   	end
-	end
+	
 
 	def membership
 		@codes = Stripe::Coupon.list({limit: 100}).reject{|c| c['valid'] == false}
@@ -504,9 +495,9 @@ class ApplicationController < ActionController::Base
 		@profile = @userFound.present? ? Stripe::Customer.retrieve(@userFound&.stripeCustomerID) : nil
 		@membershipDetails = @userFound.present? ? @userFound&.checkMembership : nil
 		@profileMetadata = @profile.present? ? @profile['metadata'] : nil
-		@accountItemsDue = @userFound.present? ? Stripe::Account.retrieve(Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due'] : nil
+		@accountItemsDue = (@userFound.present? && Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'].present?) ? Stripe::Account.retrieve(Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due'] : nil
 
-		if @userFound.present?
+		if @userFound.present? && Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'].present?
 			@stripeAccountUpdate = Stripe::AccountLink.create(
 			  {
 			    account: Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'],

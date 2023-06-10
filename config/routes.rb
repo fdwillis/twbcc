@@ -33,9 +33,11 @@ Rails.application.routes.draw do
   get "/split-session", to: 'application#split_session', as: 'split_session'
   get "/display-discount", to: 'application#display_discount', as: 'display_discount'
   get "/update-discount", to: 'application#update_discount', as: 'update_discount'
-  get "/trading-keys", to: 'application#trading_keys', as: 'trading_keys'
+  get "/trading", to: 'registrations#trading', as: 'trading'
 
+  post "/trading", to: 'registrations#trading'
   post "/signals", to: 'tradingview#signals', as: 'signals' # sprint2
+  post "/manage-trading-keys", to: 'tradingview#manage_trading_keys', as: 'manage_trading_keys' # sprint2
   post "/inquiry", to: 'application#inquiry', as: 'inquiry' # sprint2
   post "/activate", to: 'categories#activate'
   post "/search", to: 'search#index'

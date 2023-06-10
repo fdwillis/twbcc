@@ -256,6 +256,62 @@ class RegistrationsController < ApplicationController
 		end
 	end
 
+	def trading
+		#route here after successful checkout of price
+		# email them their sessionLink via webhook sessionLinkEmail
+
+		if request.post?
+			begin
+				if setSessionVarParams[:password_confirmation] == setSessionVarParams[:password]
+		      stripeSessionInfo = Stripe::Checkout::Session.retrieve(
+		        setSessionVarParams['stripeSession'],
+		      )
+		      stripeCustomer = Stripe::Customer.retrieve(stripeSessionInfo['customer'])
+
+		      stripePlan = Stripe::Subscription.list({customer: stripeSessionInfo['customer']})['data'][0]['items']['data'][0]['plan']['id']
+		      
+		    	customerUpdated = Stripe::Customer.update(
+		        stripeSessionInfo['customer'],{
+		        	metadata: {
+			          referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : ','
+			        }
+			      },
+		      )
+		      #make user with password passed
+		      
+		      loadedCustomer = User.create(
+		        referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : ',',
+		        email: stripeCustomer['email'], 
+		        password: setSessionVarParams['password'], 
+		        accessPin: setSessionVarParams['accessPin'], 
+		        stripeCustomerID: stripeSessionInfo['customer'],
+		        uuid: SecureRandom.uuid[0..7]
+		      )
+
+	      	ahoy.track "Trader Signup", previousPage: request.referrer, uuid: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).uuid, referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : 'admin'
+
+		      flash[:success] = "Your Account Is Setup!"
+		      redirect_to request.referrer
+		      return
+		    else
+		    	flash[:alert] = 'Password Must Match'
+		    	redirect_to request.referrer
+		    	return
+		    end
+	    rescue Stripe::StripeError => e
+	      flash[:error] = "#{e.error.message}"
+	      redirect_to request.referrer
+	    rescue Exception => e
+	      flash[:error] = "#{e}"
+	      redirect_to request.referrer
+	    end
+		else
+   		@stripeSession = Stripe::Checkout::Session.retrieve(
+		    params['session'],
+		  )
+   	end
+	end
+
 	private
 
   def setSessionVarParams

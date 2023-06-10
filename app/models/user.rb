@@ -92,6 +92,7 @@ class User < ApplicationRecord
   }
 
   FREEmembership = [ENV['freeMembership']] 
+  TRADERmembership = [ENV['tradingMonthlyMembership'],ENV['tradingAnnualMembership']] 
   AFFILIATEmembership = [ENV['affiliateMonthly'],ENV['affiliateAnnual']] 
   BUSINESSmembership = [ENV['businessMonthly'], ENV['businessAnnual']] 
   AUTOMATIONmembership = [ENV['automationMonthly'], ENV['automationAnnual']] 
@@ -324,22 +325,26 @@ class User < ApplicationRecord
 
   def checkMembership
     membershipValid = []
-    membershipPlans = [ENV['affiliateMonthly'], ENV['affiliateAnnual'], ENV['businessMonthly'], ENV['businessAnnual'], ENV['automationMonthly'], ENV['automationAnnual']]
+    membershipPlans = [ENV['tradingAnnualMembership'], ENV['tradingMonthlyMembership'],ENV['affiliateMonthly'], ENV['affiliateAnnual'], ENV['businessMonthly'], ENV['businessAnnual'], ENV['automationMonthly'], ENV['automationAnnual']]
     allSubscriptions = Stripe::Subscription.list({customer: stripeCustomerID})['data'].map(&:plan).map(&:id)
     membershipPlans.each do |planID|
       case true
       when allSubscriptions.include?(planID)
         membershipPlan = Stripe::Subscription.list({customer: stripeCustomerID, price: planID})['data']
-        membershipType = AFFILIATEmembership.include?(planID) ? 'affiliate' : BUSINESSmembership.include?(planID) ? 'business': AUTOMATIONmembership.include?(planID) ? 'automation': FREEmembership.include?(planID) ? 'free' : 'free'
-        membershipValid << {membershipDetails: membershipPlan}.merge({membershipType: membershipType})
+        membershipType = TRADERmembership.include?(planID) ? 'trader' : AFFILIATEmembership.include?(planID) ? 'affiliate' : BUSINESSmembership.include?(planID) ? 'business': AUTOMATIONmembership.include?(planID) ? 'automation': FREEmembership.include?(planID) ? 'free' : 'free'
+        membershipValid << {membershipDetails: membershipPlan, membershipType: membershipType}
       end
     end
 
-    membershipValid.present? ? membershipValid[0] : {membershipDetails: {0=>{'status' => 'active', 'interval' => 'N/A'}},membershipType: 'free'}
+    membershipValid.present? ? membershipValid : {membershipDetails: {0=>{'status' => 'active', 'interval' => 'N/A'}},membershipType: 'free'}
   end
 
   def customer?
     accessPin.split(',').include?('customer')
+  end
+
+  def trader?
+    accessPin.split(',').include?('trader')
   end
 
   def connectAccount?

@@ -28,5 +28,11 @@ class StripeWebhooksController < ApplicationController
         end
       end
     end
+
+    if event == 'checkout.session.completed'
+      # send sessionLinkEmail: after payment
+      ApplicationMailer.sessionLink(stripeObject['id']).deliver_now
+    end
+
   end
 end
