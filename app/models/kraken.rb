@@ -151,6 +151,7 @@ class Kraken
 	    "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * (tvData['trail'].to_f)))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * (tvData['trail'].to_f)))).round(1)).to_s,
 	    "volume" 		=> tradeInfo['vol']
 	  }
+	  sleep 0.5
 	  # remove all trailing first
     krakenRequest(routeToKraken, orderParams, currentUser)
   end
@@ -174,6 +175,7 @@ class Kraken
   	if filterTakeProfitKeys.size > 0
 	  	filterTakeProfitKeys.each do |tradeID|
 
+		  	sleep 0.5
 	  		requestK = krakenOrder(tradeID, currentUser)
 	  		if requestK.present? && requestK['result'].present?
 
@@ -186,10 +188,12 @@ class Kraken
 						@nextTakeProfit = (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1).to_f
 					end
 					
+					sleep 0.5
 
 					if tvData['direction'] == 'sell'
 	  				if (@nextTakeProfit > (afterSleep['descr']['price2'].to_f))
 						  puts "\n-- Setting Take Profit --\n"
+						  sleep 0.5
 	  					@protectTrade = krakenTrailOrStop(tvData,afterSleep, currentUser)
 						else
 						  puts "\n-- Waiting For More Profit --\n"
@@ -199,19 +203,23 @@ class Kraken
 	  			if tvData['direction'] == 'buy'
 		  			if (@nextTakeProfit < (afterSleep['descr']['price2'].to_f))
 						  puts "\n-- Setting Take Profit --\n"
+						  sleep 0.5
 		  				@protectTrade = krakenTrailOrStop(tvData,afterSleep, currentUser)
 						else
 						  puts "\n-- Waiting For More Profit --\n"
 		  			end
 	  			end
 
+			  	sleep 0.5
 
 	  			if @protectTrade.present? && @protectTrade['result'].present?
 	  				orderParams = {
 					    "txid" 			=> tradeID,
 					  }
 				  	routeToKraken = "/0/private/CancelOrder"
+				  	sleep 0.5
 				  	cancel = krakenRequest(routeToKraken, orderParams, currentUser)
+				  	sleep 0.5
 				  	puts "\n-- Profit Repainted #{@protectTrade} --\n"
 			 		end
 		  	end
@@ -230,11 +238,15 @@ class Kraken
   		# unitsWithScale
   		case true
   		when tvData['tickerType'] == 'crypto'
+		  	sleep 0.5
 				pairCall = publicPair(tvData, currentUser)
+				sleep 0.5
 				resultKey = pairCall['result'].keys.first
 				baseTicker = pairCall['result'][resultKey]['base']
 				currentAllocation = krakenBalance(currentUser)['result'][baseTicker].to_f
+				sleep 0.5
 				tickerInfoCall = tickerInfo(baseTicker, currentUser)
+				sleep 0.5
 				accountTotal = tickerInfoCall['result']['eb'].to_f
 
 				currentRisk = (currentAllocation/accountTotal) * 100
@@ -268,6 +280,7 @@ class Kraken
 
 						  # if within maxRisk
 
+						  sleep 0.5
 					  	if tvData['direction'] == 'buy' 
 							  #remove current pendingOrder in this position
 							  requestK = krakenRequest('/0/private/AddOrder', orderParams, currentUser)
@@ -314,11 +327,15 @@ class Kraken
   		# unitsWithScale
   		case true
   		when tvData['tickerType'] == 'crypto'
+	  		sleep 0.5
 				pairCall = publicPair(tvData, currentUser)
+				sleep 0.5
 				resultKey = pairCall['result'].keys.first
 				baseTicker = pairCall['result'][resultKey]['base']
 				currentAllocation = krakenBalance(currentUser)['result'][baseTicker].to_f
+				sleep 0.5
 				tickerInfoCall = tickerInfo(baseTicker, currentUser)
+				sleep 0.5
 				accountTotal = tickerInfoCall['result']['eb'].to_f
 
 				currentRisk = (currentAllocation/accountTotal) * 100
@@ -350,6 +367,7 @@ class Kraken
 				    "close[price2]" 		=>  (tvData['direction'] == 'sell' ? priceToSet - (priceToSet * (0.01 * ((tvData['profitBy'].to_f)))) : priceToSet + (priceToSet * (0.01 * ((tvData['profitBy'].to_f))))).round(1).to_s,
 				  }
 
+				  sleep 0.5
 					# averageOfPricesOpen = (pullPrices&.sum/pullPrices&.count)
 			  	if tvData['direction'] == 'buy'
 					  requestK = krakenRequest('/0/private/AddOrder', orderParams, currentUser)
@@ -364,6 +382,7 @@ class Kraken
 						if requestK['result']['txid'].present?
 						  firstMake = ClosedTrade.create(entry: requestK['result']['txid'][0], entryStatus: 'open')
 						  getOrder = krakenOrder(requestK['result']['txid'][0], currentUser)['result']
+						  sleep 0.5
 						  firstMake.update(entryStatus: getOrder[requestK['result']['txid'][0]]['status'])
 					  	puts "\n-- Kraken Entry Submitted --\n"
 					  end
@@ -388,6 +407,7 @@ class Kraken
   	
   	if tvData['tickerType'] == 'crypto' && tvData['broker'] == 'kraken'
   		requestK = krakenBalance(currentUser)
+  		sleep 0.5
   		accountBalance = requestK['result']['ZUSD'].to_f
   	end
 
