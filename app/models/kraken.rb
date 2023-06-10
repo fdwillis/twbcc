@@ -154,9 +154,9 @@ class Kraken
 
 					if tvData['direction'] == 'sell'
 	  				if (@nextTakeProfit > (afterSleep['descr']['price2'].to_f))
+	  					@protectTrade = krakenTrailOrStop(tvData,afterSleep, apiKey, secretKey)
 						  puts "\n-- Setting Take Profit --\n"
 						  Thread.pass
-	  					@protectTrade = krakenTrailOrStop(tvData,afterSleep, apiKey, secretKey)
 						else
 						  puts "\n-- Waiting For More Profit --\n"
 		  			end
@@ -164,9 +164,9 @@ class Kraken
 
 	  			if tvData['direction'] == 'buy'
 		  			if (@nextTakeProfit < (afterSleep['descr']['price2'].to_f))
+		  				@protectTrade = krakenTrailOrStop(tvData,afterSleep, apiKey, secretKey)
 						  puts "\n-- Setting Take Profit --\n"
 						  Thread.pass
-		  				@protectTrade = krakenTrailOrStop(tvData,afterSleep, apiKey, secretKey)
 						else
 						  puts "\n-- Waiting For More Profit --\n"
 		  			end
@@ -309,7 +309,7 @@ class Kraken
 			    when tvData['ticker'] == 'PAXGUSD'
 			    	unitsFiltered = (unitsToTrade > 0.003 ? unitsToTrade : 0.003)
 			    end
-
++
 	  			orderParams = {
 				    "pair" 			=> tvData['ticker'],
 				    "type" 			=> tvData['direction'],
