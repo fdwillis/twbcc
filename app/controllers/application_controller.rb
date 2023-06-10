@@ -191,7 +191,7 @@ class ApplicationController < ActionController::Base
 	  	tradeCoupon = Stripe::Coupon.list({limit: 100})['data'].reject{|c| c['percent_off'] < 50}.reject{|c| c['max_redemptions'] == 0}.reject{|c| c['duration'] != 'forever'}
 	  	grabStripePrice = Stripe::Price.retrieve(params['price'])
 	  	
-	  	if (params['price'] == ENV['tradingAnnualMembership'] || params['price'] == ENV['tradingMonthlyMembership'])
+	  	if User::TRADERmembership.include?(params['price'])
 		  	if tradeCoupon.present?
 					@session = Stripe::Checkout::Session.create({
 						success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
