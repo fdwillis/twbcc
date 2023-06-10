@@ -528,18 +528,18 @@ class ApplicationController < ActionController::Base
 			#analytics
 			ahoy.track "Profile Visit", uuid: @userFound.uuid, previousPage: request.referrer
 			
-			if @membershipDetails.present? && @membershipDetails[:membershipDetails][0]['status']	== 'active'
-			  #custom profile if active
-			  if @membershipDetails[:membershipType] == 'automation' && !@userFound
-			  	fileToFind = ("app/views/automation/#{@userFound.uuid}.html.erb")
+			# if @membershipDetails.present? && @membershipDetails[:membershipDetails][0]['status']	== 'active'
+			#   #custom profile if active
+			#   if @membershipDetails[:membershipType] == 'automation' && !@userFound
+			#   	fileToFind = ("app/views/automation/#{@userFound.uuid}.html.erb")
 			  	
-			  	if customFile = File.exist?(fileToFind)
-			  		render "automation/#{@userFound.uuid}"
-			  	end
-			  end
-			else
-				@loadedLink = 'admin'
-			end
+			#   	if customFile = File.exist?(fileToFind)
+			#   		render "automation/#{@userFound.uuid}"
+			#   	end
+			#   end
+			# else
+			# 	@loadedLink = 'admin'
+			# end
 		end
 	end
 
