@@ -316,7 +316,7 @@ class Kraken
 				    "ordertype" => "market",
 				    "volume" 		=> "#{unitsFiltered}",
 				    "close[ordertype]" => "take-profit-limit",
-				    "close[price]" 		=> (tvData['direction'] == 'sell' ? priceToSet - (priceToSet * (0.01 * ((tvData['profitBy'].to_f + 0.50)))) : priceToSet + (priceToSet * (0.01 * ((tvData['profitBy'].to_f + 0.50))))).round(1).to_s,
+				    "close[price]" 		=> (tvData['direction'] == 'sell' ? priceToSet - (priceToSet * (0.01 * ((tvData['profitBy'].to_f + tvData['profitBy'].to_f)))) : priceToSet + (priceToSet * (0.01 * ((tvData['profitBy'].to_f + tvData['profitBy'].to_f))))).round(1).to_s,
 				    "close[price2]" 		=>  (tvData['direction'] == 'sell' ? priceToSet - (priceToSet * (0.01 * ((tvData['profitBy'].to_f)))) : priceToSet + (priceToSet * (0.01 * ((tvData['profitBy'].to_f))))).round(1).to_s,
 				  }
 
