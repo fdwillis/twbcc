@@ -338,7 +338,7 @@ class User < ApplicationRecord
       end
     end
 
-    membershipValid.present? ? membershipValid : {membershipDetails: {0=>{'status' => 'active', 'interval' => 'N/A'}},membershipType: 'free'}
+    membershipValid.present? ? membershipValid : [{membershipType: 'free', membershipDetails: {0=>{'status' => 'active', 'interval' => 'N/A'}}}]
   end
 
   def customer?
