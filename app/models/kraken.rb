@@ -123,6 +123,7 @@ class Kraken
   	# if in profit by more than tvData['trail'] -> set to trail
   	# if not in profit -> hold
 
+  	Thread.pass
   	takeProfitTrades = Kraken.krakenPendingTrades(apiKey, secretKey)
   	takeProfitTradesKeys = takeProfitTrades.keys
 
