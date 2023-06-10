@@ -3,17 +3,17 @@ class BackgroundJob
 
   # sidekiq_retry_in { 5.minutes.to_i }
 
-  def perform(tvData, currentUser, job)
-    if job == 'stop'
-      Kraken.krakenTrailStop(tvData, currentUser)
+  def perform(tvData, krakenLiveAPI, krakenLiveSecret, job)
+    if job == "stop"
+      Kraken.krakenTrailStop(tvData, krakenLiveAPI, krakenLiveSecret)
     end
 
-    if job == 'entry'
-      Kraken.krakenLimitOrder(tvData, currentUser)
+    if job == "entry"
+      Kraken.krakenLimitOrder(tvData, krakenLiveAPI, krakenLiveSecret)
     end
 
-    if job == 'market'
-      Kraken.krakenMarketOrder(tvData, currentUser)
+    if job == "market"
+      Kraken.krakenMarketOrder(tvData, krakenLiveAPI, krakenLiveSecret)
     end
   end
 

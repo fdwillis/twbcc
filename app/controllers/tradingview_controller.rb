@@ -26,13 +26,15 @@ class TradingviewController < ApplicationController
 
 				case true
 				when params['type'].include?('Stop')
-					BackgroundJob.perform_async(params, traderFound, 'stop')
+					BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'stop')
 					# Kraken.krakenTrailStop(params, traderFound)
 				when params['type'] == 'entry'
-					limitOrder = Kraken.krakenLimitOrder(params, traderFound)
+					BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'entry')
+					# limitOrder = Kraken.krakenLimitOrder(params, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret)
 					
 					if params['allowMarketOrder'] == 'true'
-						marketOrder = Kraken.krakenMarketOrder(params, traderFound)
+						BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'market')
+						# marketOrder = Kraken.krakenMarketOrder(params, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret)
 					end
 
 				when params['type'].include?('profit')
@@ -51,6 +53,10 @@ class TradingviewController < ApplicationController
 
 	def autoTradingKeysparams
     params.require(:editKeys).permit(:krakenLiveAPI, :krakenLiveSecret, :krakenTestAPI, :krakenTestSecret)
+  end
+
+  def tradingviewKeysparams
+    params.permit(:ticker, :tickerType, :type, :direction, :timeframe, :currentPrice, :highPrice, :tradingview, :traderID, :lowPrice, :broker, :allowMarketOrder, :profitBy, :maxRisk, :perEntry, :entries => [])
   end
 end
 

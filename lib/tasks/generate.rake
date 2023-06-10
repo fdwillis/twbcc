@@ -115,5 +115,7 @@ namespace :generate do
     # if plan due tomorrow and 10 referrals -> skip subscription
     # uncollectable
     # resumes 30 days from date if monthly or 12 months if annual -> check status day before 
+
+    #  if currently uncollectable and less than 10 -> mark collectable
   end
 end
