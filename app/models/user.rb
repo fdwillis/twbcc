@@ -332,7 +332,9 @@ class User < ApplicationRecord
       when allSubscriptions.include?(planID)
         membershipPlan = Stripe::Subscription.list({customer: stripeCustomerID, price: planID})['data']
         membershipType = TRADERmembership.include?(planID) ? 'trader' : AFFILIATEmembership.include?(planID) ? 'affiliate' : BUSINESSmembership.include?(planID) ? 'business': AUTOMATIONmembership.include?(planID) ? 'automation': FREEmembership.include?(planID) ? 'free' : 'free'
-        membershipValid << {membershipDetails: membershipPlan, membershipType: membershipType}
+        if membershipPlan.first['status'] == 'active' && membershipPlan.first['pause_collection'] == nil
+          membershipValid << {membershipDetails: membershipPlan, membershipType: membershipType}
+        end
       end
     end
 
