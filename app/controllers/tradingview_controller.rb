@@ -29,13 +29,14 @@ class TradingviewController < ApplicationController
 					BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'stop')
 					# Kraken.krakenTrailStop(params, traderFound)
 				when params['type'] == 'entry'
-					BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'entry')
-					# limitOrder = Kraken.krakenLimitOrder(params, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret)
-					
 					if params['allowMarketOrder'] == 'true'
 						BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'market')
 						# marketOrder = Kraken.krakenMarketOrder(params, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret)
 					end
+					
+					BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'entry')
+					# limitOrder = Kraken.krakenLimitOrder(params, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret)
+					
 
 				when params['type'].include?('profit')
 				end
