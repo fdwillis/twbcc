@@ -3,16 +3,18 @@ class BackgroundJob
 
   sidekiq_retry_in { 5.minutes.to_i }
 
-  def trail(tvData, currentUser)
-    Kraken.krakenTrailStop(tvData, currentUser)
-  end
+  def perform(tvData, currentUser, job)
+    if job == 'stop'
+      Kraken.krakenTrailStop(tvData, currentUser)
+    end
 
-  def market(tvData, currentUser)
+    if job == 'entry'
     Kraken.krakenMarketOrder(tvData, currentUser)
-  end
+    end
 
-  def limit(tvData, currentUser)
-    Kraken.krakenLimitOrder(tvData, currentUser)
+    if job == 'market'
+      Kraken.krakenLimitOrder(tvData, currentUser)
+    end
   end
 
   def self.testParams
