@@ -213,8 +213,8 @@ class Kraken
 				currentRisk = (currentAllocation/accountTotal) * 100
 				
 				if (currentRisk <= tvData['maxRisk'].to_f)
-			  	if tvData['entries'].size > 0
-		  			tvData['entries'].each do |entryPercentage|
+			  	if tvData['entries'].reject(&:blank?).size > 0
+		  			tvData['entries'].reject(&:blank?).each do |entryPercentage|
 
 			  			priceToSet = (tvData['direction'] == 'sell' ? tvData['highPrice'].to_f + (tvData['highPrice'].to_f * (0.01 * entryPercentage.to_f)) : tvData['lowPrice'].to_f - (tvData['lowPrice'].to_f * (0.01 * entryPercentage.to_f))).round(1)
 			  			# allow multiple ranges of set prices from tvData
