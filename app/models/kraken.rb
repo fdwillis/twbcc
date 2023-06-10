@@ -150,14 +150,11 @@ class Kraken
 					when tvData['direction'] == 'buy'
 						@nextTakeProfit = (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1).to_f
 					end
-					
-					Thread.pass
 
 					if tvData['direction'] == 'sell'
 	  				if (@nextTakeProfit > afterSleep['descr']['price2'].to_f && takeProfitTrades[tradeID]['descr']['ordertype'] == 'take-profit-limit') || (@nextTakeProfit > afterSleep['descr']['price'].to_f && takeProfitTrades[tradeID]['descr']['ordertype'] == 'take-profit')
 	  					@protectTrade = krakenTrailOrStop(tvData,afterSleep, apiKey, secretKey)
 						  puts "\n-- Setting Take Profit --\n"
-						  Thread.pass
 						else
 						  puts "\n-- Waiting For More Profit --\n"
 		  			end
@@ -167,7 +164,6 @@ class Kraken
 		  			if (@nextTakeProfit < afterSleep['descr']['price2'].to_f && takeProfitTrades[tradeID]['descr']['ordertype'] == 'take-profit-limit') || (@nextTakeProfit < afterSleep['descr']['price'].to_f && takeProfitTrades[tradeID]['descr']['ordertype'] == 'take-profit')
 		  				@protectTrade = krakenTrailOrStop(tvData,afterSleep, apiKey, secretKey)
 						  puts "\n-- Setting Take Profit --\n"
-						  Thread.pass
 						else
 						  puts "\n-- Waiting For More Profit --\n"
 		  			end
