@@ -36,7 +36,7 @@
 	    </div>
 		<% end %>
 	  
-  	<% if @userFound.trader? && currentMembership.map{|d| d[:membershipType]}.include?('trader') %>
+  	<% if @userFound.trader? %>
 	  	<div class="card card-style">
           <div class="content">
               <h3 class="mb-0">Your Next Steps</h3>
