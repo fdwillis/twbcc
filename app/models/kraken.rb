@@ -100,44 +100,6 @@ class Kraken
     krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
   end
 
-  def self.removeCallOrders(tvData, apiKey, secretKey)
-  	# a third
-  	
-  	tradesToUpdate = krakenPendingTrades(apiKey, secretKey)
-  	keysForTrades = tradesToUpdate.keys
-
-  	#delete stop losses
-  	keysForTrades.each do |keyX|
-  		infoX = tradesToUpdate[keyX]
-	  	if infoX['descr']['type'] != tvData['direction'] #and the same direction
-		  	orderParams = {
-			    "txid" 			=> keyX,
-			  }
-		  	routeToKraken = "/0/private/CancelOrder"
-		  	krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
-	  	end
-  	end
-	end
- 
-	def self.removePutOrders(tvData, apiKey, secretKey)
-  	# a third
-  	
-  	tradesToUpdate = krakenPendingTrades(apiKey, secretKey)
-  	keysForTrades = tradesToUpdate.keys
-
-  	#delete stop losses
-  	keysForTrades.each do |keyX|
-  		infoX = tradesToUpdate[keyX]
-	  	if infoX['descr']['type'] != tvData['direction'] #and the same direction
-		  	orderParams = {
-			    "txid" 			=> keyX,
-			  }
-		  	routeToKraken = "/0/private/CancelOrder"
-		  	krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
-	  	end
-  	end
-	end
-
   def self.krakenTrailOrStop(tvData,tradeInfo, apiKey, secretKey)
   	# edit order
   	#update ClosedTrade Model with protection or info if needed
@@ -339,14 +301,6 @@ class Kraken
 
 				currentRisk = (currentAllocation/accountTotal) * 100
 				if (currentRisk <= tvData['maxRisk'].to_f)
-			  	# execute kraken
-	  			# remove oposit orders first
-	  			if tvData['direction'] == 'buy'
-	  				removePutOrders(tvData, apiKey, secretKey)
-	  			else
-	  				removeCallOrders(tvData, apiKey, secretKey)
-	  			end
-
 	  			priceToSet = (tvData['currentPrice']).to_f.round(1)
 
 	  			case true
