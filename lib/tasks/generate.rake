@@ -85,6 +85,18 @@ namespace :generate do
       })
     end
 
+    # 50% lifetime
+    customPercentages = [50]
+    customPercentages.each do |num|
+      Stripe::Coupon.create({
+        percent_off: num,
+        duration: 'forever',
+        max_redemptions: 100,
+        # max_redemptions: 2500,
+        redeem_by: (Date.today + 2.days).to_time.to_i
+      })
+    end
+
     #sprint2 one winner every 3 months, must participate in lotery up to date for eligibility
     # lifeTimePercentages = []
     # lifeTimePercentages.each do |num|

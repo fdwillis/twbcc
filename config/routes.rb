@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   get "/how-it-works", to: 'application#how_it_works', as: 'how_it_works'
   get "/new-password-set", to: 'registrations#new_password', as: 'new-password-set'
   get "/checkout/:price/:account", to: 'application#checkout'
+  get "/checkout/:price", to: 'application#checkout'
   get "/product/:asin", to: 'products#show'
   get "/split-session", to: 'application#split_session', as: 'split_session'
   get "/display-discount", to: 'application#display_discount', as: 'display_discount'

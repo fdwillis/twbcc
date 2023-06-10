@@ -163,17 +163,15 @@ class Kraken
   	#update ClosedTrade Model with protection or info if needed
     routeToKraken = "/0/private/AddOrder"
 
-    volumeToTake = tvData['tickerType'] == 'crypto' ? ((10 * 0.01) * tradeInfo['vol'].to_f).to_f : tvData['tickerType'] == 'forex' ? ((10 * 0.01) * tradeInfo['vol'].to_f).to_f.round : nil
-    volumeString = ("%.5f" % volumeToTake)
     orderParams = {
-	    "pair" 			=> tvData['ticker'],
-	    "ordertype" => "stop-loss",
-	    "type" 			=> tvData['direction'],
+	    "pair" 			=> tradeInfo['descr']['pair'],
+	    "ordertype" => tradeInfo['descr']['ordertype'],
+	    "type" 			=> tradeInfo['descr']['type'],
 	    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
 	    "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * (tvData['trail'].to_f)))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * (tvData['trail'].to_f)))).round(1)).to_s,
-	    "volume" 		=> volumeString.to_f > 0.0001 ? ("%.5f" % volumeToTake) : "0.0001"
+	    "volume" 		=> tradeInfo['vol']
 	  }
-
+	  Thread.pass
 	  # remove all trailing first
     krakenRequest(routeToKraken, orderParams)
   end
@@ -239,6 +237,7 @@ class Kraken
 					    "txid" 			=> tradeID,
 					  }
 				  	routeToKraken = "/0/private/CancelOrder"
+				  	Thread.pass
 				  	cancel = krakenRequest(routeToKraken, orderParams)
 				  	Thread.pass
 				  	puts "\n-- Profit Repainted #{@protectTrade} --\n"

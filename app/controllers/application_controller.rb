@@ -188,22 +188,47 @@ class ApplicationController < ActionController::Base
 	      mode: 'payment',
 	    }, {stripe_account: params['account']})
 	  else
-	  	applicationFeeAmount = Stripe::Price.retrieve(params['price'])['unit_amount'] * 0.02
-			@session = Stripe::Checkout::Session.create({
-				success_url: "https://app.oarlin.com/trading-keys?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
-	      line_items: [
-	        {price: params['price'], quantity: 1},
-	      ],
-	      mode: 'subscription',#let stripe data determine
-	    })
+	  	tradeCoupon = Stripe::Coupon.list({limit: 100})['data'].reject{|c| c['percent_off'] < 50}.reject{|c| c['max_redemptions'] == 0}.reject{|c| c['duration'] != 'forever'}
+	  	grabStripePrice = Stripe::Price.retrieve(params['price'])
+	  	
+	  	if (params['price'] == ENV['tradingAnnaulMembership'] || params['price'] == ENV['tradingMonthlyMembership'])
+		  	if tradeCoupon.present?
+					@session = Stripe::Checkout::Session.create({
+						success_url: "https://app.oarlin.com/trading-keys?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
+			      line_items: [
+			        {price: params['price'], quantity: 1},
+			      ],
+			      discounts: [
+					  	coupon: tradeCoupon.first
+					  ],
+			      mode: 'subscription',#let stripe data determine
+			    })
+			  else
+			    @session = Stripe::Checkout::Session.create({
+						success_url: "https://app.oarlin.com/trading-keys?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
+			      line_items: [
+			        {price: params['price'], quantity: 1},
+			      ],
+			      mode: 'subscription',#let stripe data determine
+			    })
+			  end
+			else
+				redirect_to root_path
+				flash[:notice] = "No Valid Trading Plan Found"
+			end
 		end
     redirect_to @session['url']
 	end
 
 	def trading_keys
-		if params['auth'] == false && request.post?
-			# check passwords -> allow if match
-		end
+		#route here after successful checkout of price
+
+		if request.post?
+		else
+   		@stripeSession = Stripe::Checkout::Session.retrieve(
+		    params['session'],
+		  )
+   	end
 	end
 
 	def membership
