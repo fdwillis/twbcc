@@ -153,8 +153,17 @@ class Kraken
 
 					if tvData['direction'] == 'sell'
 	  				if (@nextTakeProfit > afterSleep['descr']['price2'].to_f && takeProfitTrades[tradeID]['descr']['ordertype'] == 'take-profit-limit') || (@nextTakeProfit > afterSleep['descr']['price'].to_f && takeProfitTrades[tradeID]['descr']['ordertype'] == 'take-profit')
-	  					@protectTrade = krakenTrailOrStop(tvData,afterSleep, apiKey, secretKey)
+						  debugger
 						  puts "\n-- Setting Take Profit --\n"
+							orderParams = {
+						    "txid" 			=> tradeID,
+						  }
+					  	routeToKraken = "/0/private/CancelOrder"
+					  	Thread.pass
+					  	cancel = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
+					  	Thread.pass
+					  	puts "\n-- Profit Repainted #{@protectTrade} --\n"
+	  					@protectTrade = krakenTrailOrStop(tvData,afterSleep, apiKey, secretKey)
 						else
 						  puts "\n-- Waiting For More Profit --\n"
 		  			end
@@ -162,25 +171,21 @@ class Kraken
 
 	  			if tvData['direction'] == 'buy'
 		  			if (@nextTakeProfit < afterSleep['descr']['price2'].to_f && takeProfitTrades[tradeID]['descr']['ordertype'] == 'take-profit-limit') || (@nextTakeProfit < afterSleep['descr']['price'].to_f && takeProfitTrades[tradeID]['descr']['ordertype'] == 'take-profit')
-		  				@protectTrade = krakenTrailOrStop(tvData,afterSleep, apiKey, secretKey)
+						  debugger
 						  puts "\n-- Setting Take Profit --\n"
+							orderParams = {
+						    "txid" 			=> tradeID,
+						  }
+					  	routeToKraken = "/0/private/CancelOrder"
+					  	Thread.pass
+					  	cancel = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
+					  	Thread.pass
+					  	puts "\n-- Profit Repainted #{@protectTrade} --\n"
+		  				@protectTrade = krakenTrailOrStop(tvData,afterSleep, apiKey, secretKey)
 						else
 						  puts "\n-- Waiting For More Profit --\n"
 		  			end
 	  			end
-
-			  	Thread.pass
-
-	  			if @protectTrade.present? && @protectTrade['result'].present?
-	  				orderParams = {
-					    "txid" 			=> tradeID,
-					  }
-				  	routeToKraken = "/0/private/CancelOrder"
-				  	Thread.pass
-				  	cancel = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
-				  	Thread.pass
-				  	puts "\n-- Profit Repainted #{@protectTrade} --\n"
-			 		end
 		  	end
 		  end
 		else
