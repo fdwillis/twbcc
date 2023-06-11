@@ -153,7 +153,7 @@ class Kraken
 
 					if tvData['direction'] == 'sell'
 	  				if (@nextTakeProfit > afterSleep['descr']['price2'].to_f && takeProfitTrades[tradeID]['descr']['ordertype'] == 'take-profit-limit') || (@nextTakeProfit > afterSleep['descr']['price'].to_f && takeProfitTrades[tradeID]['descr']['ordertype'] == 'take-profit')
-						  debugger
+						  # debugger
 						  puts "\n-- Setting Take Profit --\n"
 							orderParams = {
 						    "txid" 			=> tradeID,
@@ -171,7 +171,7 @@ class Kraken
 
 	  			if tvData['direction'] == 'buy'
 		  			if (@nextTakeProfit < afterSleep['descr']['price2'].to_f && takeProfitTrades[tradeID]['descr']['ordertype'] == 'take-profit-limit') || (@nextTakeProfit < afterSleep['descr']['price'].to_f && takeProfitTrades[tradeID]['descr']['ordertype'] == 'take-profit')
-						  debugger
+						  # debugger
 						  puts "\n-- Setting Take Profit --\n"
 							orderParams = {
 						    "txid" 			=> tradeID,
@@ -355,19 +355,15 @@ class Kraken
   end
 
   def self.xpercentForTradeFromTimeframe(tvData, apiKey, secretKey)
-  	#make work for kraken and oanda
-
   	currentPrice = tvData['currentPrice'].to_f
   	
   	if tvData['tickerType'] == 'crypto' && tvData['broker'] == 'kraken'
+  		# add opentrades costs to calculation for maxRisk
   		requestK = krakenBalance(apiKey, secretKey)
   		Thread.pass
   		accountBalance = requestK['result']['ZUSD'].to_f
   	end
 
-  	if tvData['ticker'] == 'EURUSD'
-  		# accountBalance = accountBalanceForOanda
-  	end
     case true
   	when tvData['timeframe'] == '15'
   		#need to make for each pair -> currently hard coded to bitcoin minimum
