@@ -164,8 +164,8 @@ class Kraken
 					  	Thread.pass
 					  	cancel = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
 					  	Thread.pass
-					  	puts "\n-- Profit Repainted #{@protectTrade} --\n"
 	  					@protectTrade = krakenTrailOrStop(tvData,afterSleep, apiKey, secretKey)
+					  	puts "\n-- Profit Repainted #{@protectTrade} --\n"
 						else
 						  puts "\n-- Waiting For More Profit --\n"
 		  			end
@@ -184,8 +184,8 @@ class Kraken
 					  	Thread.pass
 					  	cancel = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
 					  	Thread.pass
-					  	puts "\n-- Profit Repainted #{@protectTrade} --\n"
 		  				@protectTrade = krakenTrailOrStop(tvData,afterSleep, apiKey, secretKey)
+					  	puts "\n-- Profit Repainted #{@protectTrade} --\n"
 						else
 						  puts "\n-- Waiting For More Profit --\n"
 		  			end
