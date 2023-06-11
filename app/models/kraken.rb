@@ -185,7 +185,7 @@ class Kraken
 					  	cancel = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
 					  	Thread.pass
 		  				@protectTrade = krakenTrailOrStop(tvData,afterSleep, apiKey, secretKey)
-					  	puts "\n-- Profit Repainted #{@protectTrade} --\n"
+					  	puts "\n-- Profit Repainted --\n"
 						else
 						  puts "\n-- Waiting For More Profit --\n"
 		  			end
