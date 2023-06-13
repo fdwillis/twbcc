@@ -153,7 +153,6 @@ class Kraken
 
 					if tvData['direction'] == 'sell'
 	  				if (@nextTakeProfit > afterSleep['descr']['price2'].to_f && takeProfitTrades[tradeID]['descr']['ordertype'] == 'take-profit-limit') || (@nextTakeProfit > afterSleep['descr']['price'].to_f && takeProfitTrades[tradeID]['descr']['ordertype'] == 'take-profit')
-						  # debugger
 						  puts "\n-- Setting Take Profit --\n"
 						  puts "\n-- Next Profit #{@nextTakeProfit} --\n"
 						  puts "\n-- Old Profit #{afterSleep['descr']['price2']} --\n"
@@ -173,7 +172,6 @@ class Kraken
 
 	  			if tvData['direction'] == 'buy'
 		  			if (@nextTakeProfit < afterSleep['descr']['price2'].to_f && takeProfitTrades[tradeID]['descr']['ordertype'] == 'take-profit-limit') || (@nextTakeProfit < afterSleep['descr']['price'].to_f && takeProfitTrades[tradeID]['descr']['ordertype'] == 'take-profit')
-						  # debugger
 						  puts "\n-- Setting Take Profit --\n"
 						  puts "\n-- Next Profit #{@nextTakeProfit} --\n"
 						  puts "\n-- Old Profit #{afterSleep['descr']['price2']} --\n"
