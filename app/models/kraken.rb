@@ -365,17 +365,17 @@ class Kraken
   		Thread.pass
   		accountBalance = requestK['result']['ZUSD'].to_f
   	end
-
+  	
     case true
   	when tvData['timeframe'] == '15'
   		#need to make for each pair -> currently hard coded to bitcoin minimum
-  		tvData['tickerType'] == 'crypto' ? (((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f > 3 ? ((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f) : tvData['tickerType'] == 'forex' ? ((0.25* 0.01) * accountBalance / currentPrice).to_f.round : nil
+  		tvData['tickerType'] == 'crypto' ? (((tvData['perEntry'].to_f * 0.01) * accountBalance).to_f > 3 ? ((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f) : tvData['tickerType'] == 'forex' ? ((0.25* 0.01) * accountBalance / currentPrice).to_f.round : nil
   	when tvData['timeframe'] == '30'
-  		tvData['tickerType'] == 'crypto' ? (((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f > 3 ? ((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f) : tvData['tickerType'] == 'forex' ? ((0.50* 0.01) * accountBalance / currentPrice).to_f.round : nil
+  		tvData['tickerType'] == 'crypto' ? (((tvData['perEntry'].to_f * 0.01) * accountBalance).to_f > 3 ? ((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f) : tvData['tickerType'] == 'forex' ? ((0.50* 0.01) * accountBalance / currentPrice).to_f.round : nil
   	when tvData['timeframe'] == '60'
-  		tvData['tickerType'] == 'crypto' ? (((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f > 3 ? ((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f) : tvData['tickerType'] == 'forex' ? ((0.75* 0.01) * accountBalance / currentPrice).to_f.round : nil
+  		tvData['tickerType'] == 'crypto' ? (((tvData['perEntry'].to_f * 0.01) * accountBalance).to_f > 3 ? ((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f) : tvData['tickerType'] == 'forex' ? ((0.75* 0.01) * accountBalance / currentPrice).to_f.round : nil
   	when tvData['timeframe'] == '120'
-  		tvData['tickerType'] == 'crypto' ? (((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f > 3 ? ((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f) : tvData['tickerType'] == 'forex' ? ((1* 0.01) * accountBalance / currentPrice).to_f.round : nil
+  		tvData['tickerType'] == 'crypto' ? (((tvData['perEntry'].to_f * 0.01) * accountBalance).to_f > 3 ? ((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f) : tvData['tickerType'] == 'forex' ? ((1* 0.01) * accountBalance / currentPrice).to_f.round : nil
   	end
   end
   
