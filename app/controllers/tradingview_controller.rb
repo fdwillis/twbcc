@@ -19,37 +19,40 @@ class TradingviewController < ApplicationController
 		# if user subscription is active -> continue
 		traderID = params['traderID']
 		traderFound = User.find_by(uuid: traderID)
-
-		if traderID.present? && traderFound && traderFound.trader?
-			case true
-			when params['tickerType'] == "crypto"
-
+		if params['tradingDays'].map{|d| d.downcase}.include?(Date.today.strftime('%a').downcase)
+			if traderID.present? && traderFound && traderFound.trader?
 				case true
-				when params['type'].include?('Stop')
-					BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'stop')
-					# Kraken.krakenTrailStop(params, traderFound)
-				when params['type'] == 'entry'
-					if params['allowMarketOrder'] == 'true'
-						BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'market')
-						# marketOrder = Kraken.krakenMarketOrder(params, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret)
+				when params['tickerType'] == "crypto"
+
+					case true
+					when params['type'].include?('Stop')
+						BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'stop')
+						# Kraken.krakenTrailStop(params, traderFound)
+					when params['type'] == 'entry'
+						if params['allowMarketOrder'] == 'true'
+							BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'market')
+							# marketOrder = Kraken.krakenMarketOrder(params, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret)
+						end
+
+						BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'entry')
+						# limitOrder = Kraken.krakenLimitOrder(params, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret)
+						
+
+					when params['type'].include?('profit')
 					end
-					
-					BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'entry')
-					# limitOrder = Kraken.krakenLimitOrder(params, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret)
-					
 
-				when params['type'].include?('profit')
+					render json: {success: true}
+				when params['tickerType'] == "forex"	
+				# build for oanda 
 				end
-
-				render json: {success: true}
-			when params['tickerType'] == "forex"	
-			# build for oanda 
+			else
+				puts "\n-- No Trader Found --\n"
 			end
 		else
-			puts "\n-- No Trader Found --\n"
+			puts "\n-- No Trading Today--\n"
 		end
-
 	end
+	
 	private
 
 	def autoTradingKeysparams
