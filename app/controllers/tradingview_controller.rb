@@ -19,7 +19,7 @@ class TradingviewController < ApplicationController
 		# if user subscription is active -> continue
 		traderID = params['traderID']
 		traderFound = User.find_by(uuid: traderID)
-		if params['tradingDays'].map{|d| d.downcase}.include?(Date.today.strftime('%a').downcase)
+		if params['tradingDays'].present? && params['tradingDays'].map{|d| d.downcase}.include?(Date.today.strftime('%a').downcase)
 			if traderID.present? && traderFound && traderFound.trader?
 				case true
 				when params['tickerType'] == "crypto"
@@ -52,7 +52,7 @@ class TradingviewController < ApplicationController
 			puts "\n-- No Trading Today--\n"
 		end
 	end
-	
+
 	private
 
 	def autoTradingKeysparams

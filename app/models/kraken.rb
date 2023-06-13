@@ -103,19 +103,53 @@ class Kraken
   def self.krakenTrailOrStop(tvData,tradeInfo, apiKey, secretKey)
   	# edit order
   	#update ClosedTrade Model with protection or info if needed
-    routeToKraken = "/0/private/AddOrder"
+  	if tvData['reduceBy'].present? && tvData['reduceBy'].to_f != 100
+  		#  take tvData['reduceBy'] now
+	    routeToKraken = "/0/private/AddOrder"
 
-    orderParams = {
-	    "pair" 			=> tradeInfo['descr']['pair'],
-	    "ordertype" => "take-profit-limit",
-	    "type" 			=> tradeInfo['descr']['type'],
-	    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
-	    "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
-	    "volume" 		=> tradeInfo['vol']
-	  }
-	  Thread.pass
-	  # remove all trailing first
-    krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
+	    orderParams = {
+		    "pair" 			=> tradeInfo['descr']['pair'],
+		    "ordertype" => "take-profit-limit",
+		    "type" 			=> tradeInfo['descr']['type'],
+		    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
+		    "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
+		    "volume" 		=> tradeInfo['vol'] * (0.01 * tvData['reduceBy'])
+		  }
+		  Thread.pass
+	    krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
+
+	    # set remainder for later
+
+	    routeToKraken0 = "/0/private/AddOrder"
+
+	    orderParams = {
+		    "pair" 			=> tradeInfo['descr']['pair'],
+		    "ordertype" => "take-profit-limit",
+		    "type" 			=> tradeInfo['descr']['type'],
+		    "price" 		=> tradeInfo['descr']['price'],
+		    "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
+		    "volume" 		=> tradeInfo['vol'] * (0.01 * (100 - tvData['reduceBy']))
+		  }
+		  Thread.pass
+	    krakenRequest(routeToKraken0, orderParams, apiKey, secretKey)
+	  end
+
+	  if tvData['reduceBy'].present? && tvData['reduceBy'].to_f == 100
+	  	# take all of it
+	    routeToKraken1 = "/0/private/AddOrder"
+
+	    orderParams = {
+		    "pair" 			=> tradeInfo['descr']['pair'],
+		    "ordertype" => "take-profit-limit",
+		    "type" 			=> tradeInfo['descr']['type'],
+		    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
+		    "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
+		    "volume" 		=> tradeInfo['vol']
+		  }
+		  Thread.pass
+		  # remove all trailing first
+	    krakenRequest(routeToKraken1, orderParams, apiKey, secretKey)
+	  end
   end
 
   def self.krakenTrailStop(tvData, apiKey, secretKey)
