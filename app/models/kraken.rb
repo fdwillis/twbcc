@@ -122,7 +122,7 @@ class Kraken
 
 	    routeToKraken0 = "/0/private/AddOrder"
 
-	    orderParams = {
+	    orderParams0 = {
 		    "pair" 			=> tradeInfo['descr']['pair'],
 		    "ordertype" => "take-profit-limit",
 		    "type" 			=> tradeInfo['descr']['type'],
@@ -131,14 +131,14 @@ class Kraken
 		    "volume" 		=> tradeInfo['vol'] * (0.01 * (100 - tvData['reduceBy']))
 		  }
 		  Thread.pass
-	    krakenRequest(routeToKraken0, orderParams, apiKey, secretKey)
+	    krakenRequest(routeToKraken0, orderParams0, apiKey, secretKey)
 	  end
 
 	  if tvData['reduceBy'].present? && tvData['reduceBy'].to_f == 100
 	  	# take all of it
 	    routeToKraken1 = "/0/private/AddOrder"
 
-	    orderParams = {
+	    orderParams1 = {
 		    "pair" 			=> tradeInfo['descr']['pair'],
 		    "ordertype" => "take-profit-limit",
 		    "type" 			=> tradeInfo['descr']['type'],
@@ -148,7 +148,7 @@ class Kraken
 		  }
 		  Thread.pass
 		  # remove all trailing first
-	    krakenRequest(routeToKraken1, orderParams, apiKey, secretKey)
+	    krakenRequest(routeToKraken1, orderParams1, apiKey, secretKey)
 	  end
   end
 
