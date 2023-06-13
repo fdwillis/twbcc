@@ -246,6 +246,7 @@ class Kraken
 				currentAllocation = krakenBalance(apiKey, secretKey)
 				Thread.pass
 				tickerInfoCall = tickerInfo(baseTicker, apiKey, secretKey)
+				Thread.pass
 				accountTotal = tickerInfoCall['result']['eb'].to_f
 
 				currentRisk = (currentAllocation['result'][baseTicker].to_f/accountTotal) * 100
