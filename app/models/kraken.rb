@@ -59,36 +59,6 @@ class Kraken
 
     requestK = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
   end
-  
-  def self.krakenTrades(filledOrNot = nil, page = nil, apiKey, secretKey)
-  	buildTrades = []
-    routeToKraken = "/0/private/TradesHistory"
-
-    if page.present? && page.to_i > 1
-    	orderParams = {
-		    "trades" 			=> true,
-		    "ofs" 			=> (page - 1) * 50,
-		  }
-	    requestK = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
-    else
-	    orderParams = {
-		    "trades" 			=> true,
-		  }	
-	    requestK = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
-		end
-
-    requestK
-  end
-
-  def self.krakenTrade(tradeID, apiKey, secretKey)
-  	
-    routeToKraken = "/0/private/QueryTrades"
-    orderParams = {
-	    "txid" 			=> tradeID,
-	    "trades" 			=> true,
-	  }	
-    krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
-  end
 
   def self.krakenOrder(orderID, apiKey, secretKey)
   	
@@ -102,6 +72,7 @@ class Kraken
 
   def self.krakenTrailOrStop(tvData,tradeInfo, apiKey, secretKey)
   	# edit order
+  	#hard coded min for bitcoin
   	#update ClosedTrade Model with protection or info if needed
   	if tvData['reduceBy'].present? && tvData['reduceBy'].to_f != 100
   		#  take tvData['reduceBy'] now
@@ -113,7 +84,7 @@ class Kraken
 		    "type" 			=> tradeInfo['descr']['type'],
 		    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
 		    "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
-		    "volume" 		=> tradeInfo['vol'] * (0.01 * tvData['reduceBy'])
+		    "volume" 		=> (tradeInfo['vol'].to_f * (0.01 * tvData['reduceBy'].to_f) > 0.00004061) ? (tradeInfo['vol'].to_f * (0.01 * tvData['reduceBy'].to_f)).to_s : "0.00004061" 
 		  }
 		  Thread.pass
 	    krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
@@ -128,7 +99,7 @@ class Kraken
 		    "type" 			=> tradeInfo['descr']['type'],
 		    "price"			=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['profitBy'].to_f))).round(1)	: (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['profitBy'].to_f))).round(1)).to_s,
 		    "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) 		: (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
-		    "volume" 		=> tradeInfo['vol'] * (0.01 * (100 - tvData['reduceBy']))
+		    "volume" 		=> (tradeInfo['vol'].to_f * (0.01 * (100 - tvData['reduceBy'].to_f)) > 0.00004061) ? (tradeInfo['vol'].to_f * (0.01 * (100 - tvData['reduceBy'].to_f))).to_s : "0.00004061" 
 		  }
 		  Thread.pass
 	    krakenRequest(routeToKraken0, orderParams0, apiKey, secretKey)
@@ -144,7 +115,7 @@ class Kraken
 		    "type" 			=> tradeInfo['descr']['type'],
 		    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
 		    "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
-		    "volume" 		=> tradeInfo['vol']
+		    "volume" 		=> (tradeInfo['vol'].to_f > 0.00004061) ? tradeInfo['vol'] : "0.00004061" 
 		  }
 		  Thread.pass
 		  # remove all trailing first
@@ -392,6 +363,7 @@ class Kraken
   end
 
   def self.xpercentForTradeFromTimeframe(tvData, apiKey, secretKey)
+  	# hard coded min for bitcoin
   	currentPrice = tvData['currentPrice'].to_f
   	
   	if tvData['tickerType'] == 'crypto' && tvData['broker'] == 'kraken'
