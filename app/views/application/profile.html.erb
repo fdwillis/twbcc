@@ -24,6 +24,14 @@
 		<% if @loginLink.present? %>
 			<%= link_to "Dashboard", @loginLink['url'], class: 'btn btn-full btn-m font-900 text-uppercase rounded-sm bg-green-dark form-control', 'target' => '_blank' %><br>
 		<% end %>
+		<% if !@userFound.checkMembership.map{|d| d[:membershipType]}.include?('free') %>
+            <a href="<%= cancel_path %>" class='p-2'>
+              <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
+                <i class="fa fa-minus-circle font-20 color-white"></i> Cancel Membership
+              <% end %>
+            </a>
+    <% end %>
+
 		
 
 		<% if @accountItemsDue.present? && @accountItemsDue.count > 0 %>

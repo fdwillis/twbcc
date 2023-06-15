@@ -54,7 +54,7 @@ class ApplicationController < ActionController::Base
 		if session['coupon'].nil? 
 			@discountsFor = current_user&.present? ? current_user&.checkMembership : nil
 			@discountList = Stripe::Coupon.list({limit: 100})['data'].reject{|c| c['valid'] == false}
-			if @discountsFor.nil? || @discountsFor[:membershipType] == 'free'
+			if @discountsFor.nil? || !@discountsFor.map{|s| s[:membershipType]}.include?('free')
 				@newList = @discountList.reject{|c| c['percent_off'] > 10}.reject{|c| c['percent_off'] > 90}.size > 0 ? @discountList.reject{|c| c['percent_off'] > 10}.reject{|c| c['percent_off'] > 90}.sample['id'] : 0
 			elsif @discountsFor[:membershipType] == 'affiliate'
 				@newList = @discountList.reject{|c| c['percent_off'] > 20 || c['percent_off'] < 10}.reject{|c| c['percent_off'] > 90}.size > 0 ? @discountList.reject{|c| c['percent_off'] > 20 || c['percent_off'] < 10}.reject{|c| c['percent_off'] > 90}.sample['id'] : 0
@@ -496,7 +496,7 @@ class ApplicationController < ActionController::Base
 		@membershipDetails = @userFound.present? ? @userFound&.checkMembership : nil
 		@profileMetadata = @profile.present? ? @profile['metadata'] : nil
 		@accountItemsDue = (@userFound.present? && Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'].present?) ? Stripe::Account.retrieve(Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due'] : nil
-
+	
 		if @userFound.present? && Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'].present?
 			@stripeAccountUpdate = Stripe::AccountLink.create(
 			  {
