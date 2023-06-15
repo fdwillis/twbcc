@@ -98,7 +98,7 @@ class Kraken
 		    "ordertype" => "take-profit-limit",
 		    "type" 			=> tradeInfo['descr']['type'],
 		    "price"			=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['profitBy'].to_f))).round(1)	: (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['profitBy'].to_f))).round(1)).to_s,
-		    "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) 		: (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
+		    "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
 		    "volume" 		=> (tradeInfo['vol'].to_f * (0.01 * (100 - tvData['reduceBy'].to_f)) > 0.00004061) ? (tradeInfo['vol'].to_f * (0.01 * (100 - tvData['reduceBy'].to_f))).to_s : "0.00004061" 
 		  }
 		  Thread.pass
@@ -264,9 +264,6 @@ class Kraken
 
 						  if requestK.present? && requestK['result'].present?
 							  if requestK['result']['txid'].present?
-								  firstMake = ClosedTrade.create(entry: requestK['result']['txid'][0], entryStatus: 'open')
-								  getOrder = krakenOrder(requestK['result']['txid'][0], apiKey, secretKey)['result']
-								  firstMake.update(entryStatus: getOrder[requestK['result']['txid'][0]]['status'])
 							  	puts "\n-- Kraken Entry Submitted --\n"
 							  end
 						  else
@@ -343,10 +340,6 @@ class Kraken
 				  if requestK.present? && requestK['result'].present?
 
 						if requestK['result']['txid'].present?
-						  firstMake = ClosedTrade.create(entry: requestK['result']['txid'][0], entryStatus: 'open')
-						  getOrder = krakenOrder(requestK['result']['txid'][0], apiKey, secretKey)['result']
-						  Thread.pass
-						  firstMake.update(entryStatus: getOrder[requestK['result']['txid'][0]]['status'])
 					  	puts "\n-- Kraken Entry Submitted --\n"
 					  end
 					else 
