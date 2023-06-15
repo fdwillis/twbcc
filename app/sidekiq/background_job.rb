@@ -27,7 +27,8 @@ class BackgroundJob
     "currentPrice" => "27200",
     "highPrice" => "27230",
     "lowPrice" => "27100",
-    "profitBy" => "1",
+    "profitTrigger" => "1",
+    "maxProfit" => "10",
     "broker" => "kraken",
     "trail" => "0.30"}
   end

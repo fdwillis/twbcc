@@ -274,6 +274,7 @@ class RegistrationsController < ApplicationController
 		        stripeSessionInfo['customer'],{
 		        	metadata: {
 			          referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : ','
+			          commissionRate: 0,
 			        }
 			      },
 		      )
@@ -285,7 +286,8 @@ class RegistrationsController < ApplicationController
 		        password: setSessionVarParams['password'], 
 		        accessPin: setSessionVarParams['accessPin'], 
 		        stripeCustomerID: stripeSessionInfo['customer'],
-		        uuid: SecureRandom.uuid[0..7]
+		        uuid: SecureRandom.uuid[0..7],
+		        amazonCountry: 
 		      )
 
 	      	ahoy.track "Trader Signup", previousPage: request.referrer, uuid: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).uuid, referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : 'admin'

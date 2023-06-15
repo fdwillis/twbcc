@@ -60,7 +60,7 @@ class TradingviewController < ApplicationController
   end
 
   def tradingviewKeysparams
-    params.permit(:ticker, :tickerType, :type, :direction, :timeframe, :currentPrice, :highPrice, :tradingview, :traderID, :lowPrice, :broker, :allowMarketOrder, :profitBy, :maxRisk, :perEntry, :entries => [])
+    params.permit(:ticker, :tickerType, :type, :direction, :timeframe, :currentPrice, :highPrice, :tradingview, :traderID, :lowPrice, :broker, :allowMarketOrder, :profitTrigger, :maxRisk, :maxProfit, :perEntry, :entries => [])
   end
 end
 

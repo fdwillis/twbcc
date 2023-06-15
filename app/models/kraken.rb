@@ -74,6 +74,7 @@ class Kraken
   	# edit order
   	#hard coded min for bitcoin
   	#update ClosedTrade Model with protection or info if needed
+  	debugger
   	if tvData['reduceBy'].present? && tvData['reduceBy'].to_f != 100
   		#  take tvData['reduceBy'] now
 	    routeToKraken = "/0/private/AddOrder"
@@ -97,7 +98,7 @@ class Kraken
 		    "pair" 			=> tradeInfo['descr']['pair'],
 		    "ordertype" => "take-profit-limit",
 		    "type" 			=> tradeInfo['descr']['type'],
-		    "price"			=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['profitBy'].to_f))).round(1)	: (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['profitBy'].to_f))).round(1)).to_s,
+		    "price"			=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['maxProfit'].to_f))).round(1)	: (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['maxProfit'].to_f))).round(1)).to_s,
 		    "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
 		    "volume" 		=> (tradeInfo['vol'].to_f * (0.01 * (100 - tvData['reduceBy'].to_f)) > 0.00004061) ? (tradeInfo['vol'].to_f * (0.01 * (100 - tvData['reduceBy'].to_f))).to_s : "0.00004061" 
 		  }
@@ -169,6 +170,7 @@ class Kraken
 					  	cancel = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
 					  	Thread.pass
 	  					@protectTrade = krakenTrailOrStop(tvData,afterSleep, apiKey, secretKey)
+	  					debugger
 					  	puts "\n-- Profit Repainted #{@protectTrade} --\n"
 						else
 						  puts "\n-- Waiting For More Profit --\n"
@@ -188,6 +190,7 @@ class Kraken
 					  	cancel = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
 					  	Thread.pass
 		  				@protectTrade = krakenTrailOrStop(tvData,afterSleep, apiKey, secretKey)
+		  				debugger
 					  	puts "\n-- Profit Repainted --\n"
 						else
 						  puts "\n-- Waiting For More Profit --\n"
@@ -245,8 +248,8 @@ class Kraken
 						    "price" 		=> priceToSet,
 						    "volume" 		=> "#{unitsFiltered}",
 						    "close[ordertype]" => "take-profit-limit",
-						    "close[price]" 		=> (tvData['direction'] == 'sell' ? priceToSet - (priceToSet * (0.01 * ((tvData['profitBy'].to_f + tvData['profitBy'].to_f)))) : priceToSet + (priceToSet * (0.01 * ((tvData['profitBy'].to_f + tvData['profitBy'].to_f))))).round(1).to_s,
-						    "close[price2]" 		=>  (tvData['direction'] == 'sell' ? priceToSet - (priceToSet * (0.01 * ((tvData['profitBy'].to_f)))) : priceToSet + (priceToSet * (0.01 * ((tvData['profitBy'].to_f))))).round(1).to_s,
+						    "close[price]" 		=> (tvData['direction'] == 'sell' ? priceToSet - (priceToSet * (0.01 * ((tvData['maxProfit'].to_f)))) : priceToSet + (priceToSet * (0.01 * ((tvData['maxProfit'].to_f))))).round(1).to_s,
+						    "close[price2]" 		=>  (tvData['direction'] == 'sell' ? priceToSet - (priceToSet * (0.01 * ((tvData['profitTrigger'].to_f)))) : priceToSet + (priceToSet * (0.01 * ((tvData['profitTrigger'].to_f))))).round(1).to_s,
 						  }
 
 						  # if within maxRisk
@@ -254,7 +257,7 @@ class Kraken
 						  Thread.pass
 					  	if tvData['direction'] == 'buy' 
 							  #remove current pendingOrder in this position
-							  requestK = krakenRequest('/0/private/AddOrder', orderParams, apiKey, secretKey)
+						  requestK = krakenRequest('/0/private/AddOrder', orderParams, apiKey, secretKey)
 					  	end
 					  	
 						  if tvData['direction'] == 'sell'
@@ -323,8 +326,8 @@ class Kraken
 				    "ordertype" => "market",
 				    "volume" 		=> "#{unitsFiltered}",
 				    "close[ordertype]" => "take-profit-limit",
-				    "close[price]" 		=> (tvData['direction'] == 'sell' ? priceToSet - (priceToSet * (0.01 * ((tvData['profitBy'].to_f + tvData['profitBy'].to_f)))) : priceToSet + (priceToSet * (0.01 * ((tvData['profitBy'].to_f + tvData['profitBy'].to_f))))).round(1).to_s,
-				    "close[price2]" 		=>  (tvData['direction'] == 'sell' ? priceToSet - (priceToSet * (0.01 * ((tvData['profitBy'].to_f)))) : priceToSet + (priceToSet * (0.01 * ((tvData['profitBy'].to_f))))).round(1).to_s,
+				    "close[price]" 		=> (tvData['direction'] == 'sell' ? priceToSet - (priceToSet * (0.01 * ((tvData['maxProfit'].to_f)))) : priceToSet + (priceToSet * (0.01 * ((tvData['maxProfit'].to_f))))).round(1).to_s,
+				    "close[price2]" 		=>  (tvData['direction'] == 'sell' ? priceToSet - (priceToSet * (0.01 * ((tvData['profitTrigger'].to_f)))) : priceToSet + (priceToSet * (0.01 * ((tvData['profitTrigger'].to_f))))).round(1).to_s,
 				  }
 
 				  Thread.pass
