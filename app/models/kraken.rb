@@ -59,36 +59,6 @@ class Kraken
 
     requestK = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
   end
-  
-  def self.krakenTrades(filledOrNot = nil, page = nil, apiKey, secretKey)
-  	buildTrades = []
-    routeToKraken = "/0/private/TradesHistory"
-
-    if page.present? && page.to_i > 1
-    	orderParams = {
-		    "trades" 			=> true,
-		    "ofs" 			=> (page - 1) * 50,
-		  }
-	    requestK = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
-    else
-	    orderParams = {
-		    "trades" 			=> true,
-		  }	
-	    requestK = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
-		end
-
-    requestK
-  end
-
-  def self.krakenTrade(tradeID, apiKey, secretKey)
-  	
-    routeToKraken = "/0/private/QueryTrades"
-    orderParams = {
-	    "txid" 			=> tradeID,
-	    "trades" 			=> true,
-	  }	
-    krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
-  end
 
   def self.krakenOrder(orderID, apiKey, secretKey)
   	
