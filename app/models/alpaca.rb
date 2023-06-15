@@ -28,6 +28,10 @@ class Alpaca < ApplicationRecord
 
 		response = Oj.load(curlCall)
 	end
+
+	def self.getBalance
+		getAccount['buying_power']
+	end
 end
 
 # alpaca entries: needs to accept trailing so that we can place fractional orders where traders set the bounds. 
