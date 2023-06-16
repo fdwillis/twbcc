@@ -75,7 +75,7 @@
 		      <div class="row">
 			      	<h3 class="font-700 font-22 opacity-50 text-center mt-4">Manage Autotrading Keys</h3>
 			      	<h5 class="font-700 font-12 opacity-50 mb-4 text-center">
-			      		Your Webhook: <%= "https://oarlin.com/signals?&traderID=#{current_user&.uuid}" %>
+			      		Your Webhook: <%= "https://app.oarlin.com/signals?&traderID=#{current_user&.uuid}" %>
 			      	</h5>
 			      	<p class="font-700 font-12 opacity-50 mb-4 text-center">Need Help Finding Keys? <%= mail_to "team@oarlin.com", "EMAIL US" %></p>
 			      	<%= form_for :editKeys, url: manage_trading_keys_path do |f| %>
@@ -93,7 +93,7 @@
 			    </div>
 		    </div>
 		  </div>
-    <% end %>
+    <% end %>0
 	<% end %>
 	<div class="card card-style">
     <!-- follow buttons-->

@@ -14,11 +14,15 @@
                     </p>
                 </div>
             </div>
+            
             <div class="row g-0 justify-content-center">
               <% if !User.find_by(email: @stripeSession['customer_details']['email']) %>
-                <%= form_for(:setSessionVar, url: trading_path) do |f| %>
-                  <div class="col-xl-12 p-3">
-                    <div class="field">
+                <%= form_for(:newTrader, url: trading_path) do |f| %>
+                      <%= f.label :country %><br />
+                      <div class="input-style has-borders no-icon mb-4">
+                        <label for="form5" class="color-highlight">Select A Value</label>
+                        <%= f.select :country, ISO3166::Country.codes.map{|d| [ISO3166::Country.find_country_by_alpha2(d).iso_short_name, d]}, id: "form5" %><br>
+                      </div>
                       <%= f.label :password %><br />
                       <%= f.password_field :password, class: "form-control form-control-lg form-control-alt py-3", placeholder: '6 characters or more', required: true %>
                       <%= f.label :password_confirmation %><br />
@@ -27,10 +31,8 @@
                       <%= f.hidden_field :stripeSession, value:  @stripeSession['id'] %>
                       <%= f.hidden_field :referredBy, value:  params['referredBy'] %>
                       <%= f.hidden_field :accessPin, value:  'trader' %>
-                    </div>
                     <br>
                     <%= f.submit "Finish Account Setup", class: "btn btn-full rounded-sm text-uppercase font-700 mt-3 bg-green-dark col-md-12" %>
-                  </div>
                 <% end %>
               <% end %>
               

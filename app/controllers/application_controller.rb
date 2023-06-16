@@ -190,32 +190,27 @@ class ApplicationController < ActionController::Base
 	  else
 	  	tradeCoupon = Stripe::Coupon.list({limit: 100})['data'].reject{|c| c['percent_off'] < 50}.reject{|c| c['max_redemptions'] == 0}.reject{|c| c['duration'] != 'forever'}
 	  	grabStripePrice = Stripe::Price.retrieve(params['price'])
-	  	
-	  	if User::TRADERmembership.include?(params['price'])
-		  	if tradeCoupon.present?
-					@session = Stripe::Checkout::Session.create({
-						success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
-			      line_items: [
-			        {price: params['price'], quantity: 1},
-			      ],
-			      discounts: [
-					  	coupon: tradeCoupon.first
-					  ],
-			      mode: 'subscription',#let stripe data determine
-			    })
-			  else
-			    @session = Stripe::Checkout::Session.create({
-						success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
-			      line_items: [
-			        {price: params['price'], quantity: 1},
-			      ],
-			      mode: 'subscription',#let stripe data determine
-			    })
-			  end
-			else
-				redirect_to root_path
-				flash[:notice] = "No Valid Trading Plan Found"
-			end
+
+	  	if tradeCoupon.present?
+				@session = Stripe::Checkout::Session.create({
+					success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
+		      line_items: [
+		        {price: params['price'], quantity: 1},
+		      ],
+		      discounts: [
+				  	coupon: tradeCoupon.first
+				  ],
+		      mode: 'subscription',#let stripe data determine,
+		    })
+		  else
+		    @session = Stripe::Checkout::Session.create({
+					success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
+		      line_items: [
+		        {price: params['price'], quantity: 1},
+		      ],
+		      mode: 'subscription',#let stripe data determine
+		    })
+		  end
 		end
     redirect_to @session['url']
 	end

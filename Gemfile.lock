@@ -118,6 +118,8 @@ GEM
     coffee-script-source (1.12.2)
     concurrent-ruby (1.2.2)
     connection_pool (2.4.1)
+    countries (5.4.0)
+      unaccent (~> 0.3)
     crass (1.0.6)
     curb (1.0.5)
     date (3.3.3)
@@ -415,6 +417,7 @@ GEM
       thread_safe (~> 0.1)
     uglifier (4.2.0)
       execjs (>= 0.3.0, < 3)
+    unaccent (0.4.0)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.8.2)
@@ -453,6 +456,7 @@ DEPENDENCIES
   clockwork
   cloudinary
   coffee-rails
+  countries
   curb
   devise
   email_spec

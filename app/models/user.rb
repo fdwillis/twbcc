@@ -5,6 +5,8 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :timeoutable#, :trackable
   has_many :blogs
+  has_many :trades
+  has_many :take_profits
   include MediaEmbed::Handler
 
   ACCEPTEDcountries = {
