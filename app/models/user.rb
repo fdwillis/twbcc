@@ -329,6 +329,7 @@ class User < ApplicationRecord
     membershipValid = []
     membershipPlans = [ENV['autoTradingMonthlyMembership'], ENV['autoTradingAnnualMembership'],ENV['selfTradingAnnualMembership'], ENV['selfTradingMonthlyMembership'],ENV['affiliateMonthly'], ENV['affiliateAnnual'], ENV['businessMonthly'], ENV['businessAnnual'], ENV['automationMonthly'], ENV['automationAnnual']]
     allSubscriptions = Stripe::Subscription.list({customer: stripeCustomerID})['data'].map(&:plan).map(&:id)
+    
     membershipPlans.each do |planID|
       case true
       when allSubscriptions.include?(planID)

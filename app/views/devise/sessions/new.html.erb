@@ -28,7 +28,10 @@
                       </div>
 
                       <div class="d-flex mt-4 mb-4">
-                          <div class="w-50 font-11 pb-2 text-start"><a href="/membership?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">CREATE ACCOUNT</a></div>
+                          <div class="w-50 font-11 pb-2 text-start">
+                            <a href="/auto-trading?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">NEW AUTO TRADING ACCOUNT</a><br>
+                            <a href="/membership?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">NEW AUTO AFFILIATE ACCOUNT</a>
+                          </div>
                           <div class="w-50 font-11 pb-2 text-end">FORGOT? - <%= mail_to "team@oarlin.com", "EMAIL US" %></div>
                       </div>
 
