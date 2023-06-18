@@ -81,7 +81,7 @@ class Kraken
   	# edit order
   	#hard coded min for bitcoin
   	#update ClosedTrade Model with protection or info if needed
-  	
+  	debugger
   	if tvData['reduceBy'].present? && tvData['reduceBy'].to_f != 100
   		#  take tvData['reduceBy'] now
 	    routeToKraken = "/0/private/AddOrder"
@@ -127,26 +127,28 @@ class Kraken
 
   		trade.update(status: requestK['status'])
   	end
-
+  	
   	User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'closed', broker: tvData['broker'], finalTakeProfit: nil).each do |tradeX|
 		  Thread.pass
+		  
   		requestOriginalE = krakenOrder(tradeX.uuid, apiKey, secretKey)
 
   		originalPrice = requestOriginalE['price'].to_f
   		profitTrigger = originalPrice * (0.01 * tvData['profitTrigger'].to_f)
+  		volumeTallyForTradex = 0
 
 		  case true
 			when tvData['direction'] == 'sell'
 				profitTriggerPassed = (originalPrice + profitTrigger).round(1).to_f
+				
 				if tvData['currentPrice'].to_f > profitTriggerPassed + ((0.01 * tvData['trail'].to_f) * profitTriggerPassed)
 		  		if tradeX.take_profits.nil?
+		  			debugger
 					  Thread.pass
 		  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey)
-		  			puts "\n-- Setting Take Profit #{@protectTrade['result']['txid']} --\n"
-		  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'], status: 'open', direction: tvData['direction'], broker: tvData['broker'])
+		  			puts 	"\n-- Setting Take Profit #{@protectTrade['result']['txid']} --\n"
+		  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'][0], status: 'open',direction: tvData['direction'], broker: tvData['broker'])
 			  	else
-			  		volumeTallyForTradex = 0
-
 			  		tradeX.take_profits.each do |profitTrade|
 			  			Thread.pass
 				  		requestProfitTradex = krakenOrder(profitTrade.uuid, apiKey, secretKey)
@@ -154,6 +156,7 @@ class Kraken
 
 				  		if requestProfitTradex['status'] == 'open'
 					  		if (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) >  requestProfitTradex['descr']['price2'] + ((0.01 * tvData['trail'].to_f) * (requestProfitTradex['descr']['price2']).round(1).to_f)
+					  			debugger
 					  			orderParams = {
 								    "txid" 			=> profitTrade.uuid,
 								  }
@@ -164,22 +167,24 @@ class Kraken
 					  			Thread.pass
 					  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey)
 					  			puts "\n-- Setting Take Profit #{@protectTrade['result']['txid']} --\n"
-					  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'], status: 'open', direction: tvData['direction'], broker: tvData['broker'])
+					  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'][0], status: 'open', direction: tvData['direction'], broker: tvData['broker'])
 					  		end
 				  		end
 
 				  		if requestProfitTradex['status'] == 'closed'
+				  			debugger
 					  		volumeTallyForTradex += requestProfitTradex['vol'].to_f
 				  		end
 			  		end
 
 			  		if volumeTallyForTradex > 0 && volumeTallyForTradex < requestOriginalE['vol'].to_f
+			  			debugger
 			  			Thread.pass
 			  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey)
 			  			puts "\n-- Setting Take Profit #{@protectTrade['result']['txid']} --\n"
 			  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'], status: 'open', direction: tvData['direction'], broker: tvData['broker'])
 				  	else
-				  		tradeX.update(finalTakeProfit: tradeX.take_profits)
+				  		tradeX.update(finalTakeProfit: tradeX.take_profits.last.uuid)
 			  		end
 			  	end
 		  	end
@@ -294,7 +299,7 @@ class Kraken
 
 						  if requestK.present? && requestK['result'].present?
 							  if requestK['result']['txid'].present?
-							  	User.find_by(krakenLiveAPI: apiKey).trades.create(uuid:  requestK['result']['txid'], broker: tvData['broker'], direction: tvData['direction'], status: 'open')
+							  	User.find_by(krakenLiveAPI: apiKey).trades.create(uuid:  requestK['result']['txid'][0], broker: tvData['broker'], direction: tvData['direction'], status: 'open')
 							  	puts "\n-- Kraken Entry Submitted --\n"
 							  end
 						  else
@@ -371,7 +376,7 @@ class Kraken
 				  if requestK.present? && requestK['result'].present?
 
 						if requestK['result']['txid'].present?
-							User.find_by(krakenLiveAPI: apiKey).trades.create(uuid:  requestK['result']['txid'], broker: tvData['broker'], direction: tvData['direction'], status: 'closed')
+							User.find_by(krakenLiveAPI: apiKey).trades.create(uuid:  requestK['result']['txid'][0], broker: tvData['broker'], direction: tvData['direction'], status: 'closed')
 					  	puts "\n-- Kraken Entry Submitted --\n"
 					  end
 					else 
@@ -393,6 +398,7 @@ class Kraken
   	
   	if tvData['tickerType'] == 'crypto' && tvData['broker'] == 'kraken'
   		# add opentrades costs to calculation for maxRisk
+  		Thread.pass
   		requestK = krakenBalance(apiKey, secretKey)
   		Thread.pass
   		accountBalance = requestK['result']['ZUSD'].to_f

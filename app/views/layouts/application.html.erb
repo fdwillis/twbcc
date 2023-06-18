@@ -80,7 +80,7 @@
             
           </div>
 
-          <% if current_user.present? && current_user.connectAccount? %>
+          <% if current_user.present? %>
             <div class="card card-style">
               <div class="content my-0">
                 <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Account</h5>
@@ -93,29 +93,31 @@
                       <i class="fa fa-angle-right"></i>
                     </a>
                   </div>
-                  <div class="list-group list-custom-small list-icon-0">
-                    <a href=<%= current_user&.present? ? "/commissions/#{User&.all.shuffle.take(1)[0].uuid}?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" : "/commissions/#{User&.all.shuffle.take(1)[0].uuid}?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" %>>
-                      <i class="fa font-12 fa-money bg-mint-dark rounded-sm color-white"></i>
-                      <span>
-                       Commissions
-                      </span>
-                      <i class="fa fa-angle-right"></i>
-                    </a>
-                  </div>
-                <!-- <div class="list-group list-custom-small list-icon-0">
-                  <a href="/loved">
-                    <i class="fa font-12 fa-heart bg-highlight rounded-sm color-white"></i>
-                    <span>Loved <%= current_user&.present? && Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['wishlist'].present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['wishlist'].split(',').reject(&:blank?).uniq.size})" : nil %></span>
-                    <i class="fa fa-angle-right"></i>
-                  </a>
-                </div> -->
-                <div class="list-group list-custom-small list-icon-0">
-                  <a href="/list?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                    <i class="fa font-12 fa-list bg-orange-dark rounded-sm color-white"></i>
-                    <span>List <%= current_user&.present? && Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].split('*').reject(&:blank?).uniq.size})" : nil %></span>
-                    <i class="fa fa-angle-right"></i>
-                  </a>
-                </div>
+                  <% if current_user.connectAccount? %>
+                    <div class="list-group list-custom-small list-icon-0">
+                      <a href=<%= current_user&.present? ? "/commissions/#{User&.all.shuffle.take(1)[0].uuid}?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" : "/commissions/#{User&.all.shuffle.take(1)[0].uuid}?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" %>>
+                        <i class="fa font-12 fa-money bg-mint-dark rounded-sm color-white"></i>
+                        <span>
+                         Commissions
+                        </span>
+                        <i class="fa fa-angle-right"></i>
+                      </a>
+                    </div>
+                    <!-- <div class="list-group list-custom-small list-icon-0">
+                      <a href="/loved">
+                        <i class="fa font-12 fa-heart bg-highlight rounded-sm color-white"></i>
+                        <span>Loved <%= current_user&.present? && Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['wishlist'].present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['wishlist'].split(',').reject(&:blank?).uniq.size})" : nil %></span>
+                        <i class="fa fa-angle-right"></i>
+                      </a>
+                    </div> -->
+                    <div class="list-group list-custom-small list-icon-0">
+                      <a href="/list?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
+                        <i class="fa font-12 fa-list bg-orange-dark rounded-sm color-white"></i>
+                        <span>List <%= current_user&.present? && Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].split('*').reject(&:blank?).uniq.size})" : nil %></span>
+                        <i class="fa fa-angle-right"></i>
+                      </a>
+                    </div>
+                  <% end %>
                 <% if current_user&.admin? %>
                   <div class="list-group list-custom-small list-icon-0">
                     <a href="/blog/new">
@@ -154,13 +156,23 @@
                   </a>
                 </div>
               <% end %>
-              <div class="list-group list-custom-small list-icon-0">
-                <a href="/membership?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                  <i class="fa font-12 fa-users bg-highlight rounded-sm color-white"></i>
-                  <span>Sign Up</span>
-                  <i class="fa fa-angle-right"></i>
-                </a>
-              </div>
+              <% if !current_user %>
+                <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Products</h5>
+                <div class="list-group list-custom-small list-icon-0">
+                  <a href="/auto-trading?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
+                    <i class="fa font-12 fa-signal bg-highlight rounded-sm color-white"></i>
+                    <span>Autotrading</span>
+                    <i class="fa fa-angle-right"></i>
+                  </a>
+                </div>
+                <div class="list-group list-custom-small list-icon-0">
+                  <a href="/membership?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
+                    <i class="fa font-12 fa-users bg-yellow-dark rounded-sm color-white"></i>
+                    <span>Affiliates</span>
+                    <i class="fa fa-angle-right"></i>
+                  </a>
+                </div>
+              <% end %>
               <!-- change to offerings -->
               <!-- <div class="list-group list-custom-small list-icon-0">
                 <a href="/how-it-works?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">

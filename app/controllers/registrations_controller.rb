@@ -78,7 +78,7 @@ class RegistrationsController < ApplicationController
 		      #make connect account
 		      if stripeSessionInfo['custom_fields'][1]['dropdown']['value'] == 'US'
 			      newStripeAccount = Stripe::Account.create({
-			        type: 'standard',
+			        type: 'express',
 			        country: stripeSessionInfo['custom_fields'][1]['dropdown']['value'],
 			        email: stripeCustomer['email'],
 			        capabilities: {
@@ -287,7 +287,7 @@ class RegistrationsController < ApplicationController
 		        accessPin: newTraderParams['accessPin'], 
 		        stripeCustomerID: stripeSessionInfo['customer'],
 		        uuid: SecureRandom.uuid[0..7],
-		        amazonCountry:  newTraderParams['country']
+		        amazonCountry:  stripeSessionInfo['customer_details']['address']['country']
 		      )
 
 	      	ahoy.track "Trader Signup", previousPage: request.referrer, uuid: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).uuid, referredBy: newTraderParams['referredBy'].present? ? newTraderParams['referredBy'] : 'admin'

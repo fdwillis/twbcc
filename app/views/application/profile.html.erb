@@ -9,7 +9,8 @@
 	        <p class="mb-2"><%= (@profile['metadata'].present? && @profile['metadata']['bio'].present?) ? @profile['metadata']['bio'] : nil %></p>
 	        <% if @userFound&.amazonCountry.present? %>
 		        <p class="font-10">
-		            <strong class="color-theme pe-1"><i class="fa fa-location-arrow"></i></strong><%= User::ACCEPTEDcountries[@userFound&.amazonCountry.downcase][:country] %>&nbsp;
+		            <!-- <strong class="color-theme pe-1"><i class="fa fa-location-arrow"></i></strong> -->
+		            <span class="flag-icon flag-icon-<%= @userFound&.amazonCountry.downcase %> font-20"></span>
 		            <!-- <strong class="color-theme pe-1">1k</strong>Followers -->
 		        </p>
 		      <% end %>
@@ -93,7 +94,7 @@
 			    </div>
 		    </div>
 		  </div>
-    <% end %>0
+    <% end %>
 	<% end %>
 	<div class="card card-style">
     <!-- follow buttons-->

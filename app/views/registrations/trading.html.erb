@@ -19,10 +19,6 @@
               <% if !User.find_by(email: @stripeSession['customer_details']['email']) %>
                 <%= form_for(:newTrader, url: trading_path) do |f| %>
                       <%= f.label :country %><br />
-                      <div class="input-style has-borders no-icon mb-4">
-                        <label for="form5" class="color-highlight">Select A Value</label>
-                        <%= f.select :country, ISO3166::Country.codes.map{|d| [ISO3166::Country.find_country_by_alpha2(d).iso_short_name, d]}, id: "form5" %><br>
-                      </div>
                       <%= f.label :password %><br />
                       <%= f.password_field :password, class: "form-control form-control-lg form-control-alt py-3", placeholder: '6 characters or more', required: true %>
                       <%= f.label :password_confirmation %><br />

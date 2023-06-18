@@ -27,20 +27,15 @@ class ApplicationController < ActionController::Base
 	def update_discount
 		begin
 			membershipDetails = current_user&.checkMembership
-			if membershipDetails[:membershipDetails][0]['status'] == 'active'
-				subscriptions = Stripe::Subscription.list({limit: 100, customer: current_user&.stripeCustomerID})
-				subscriptions.each do |subs|
-					Stripe::Subscription.update(
-					  subs['id'],
-					  {coupon: session['coupon']},
-					)
-				end
-				flash[:success] = "Coupon Claimed"
-		    redirect_to profile_path
-			else
-				flash[:error] = "Please Update Your Membership Before Using This Feature"
-		    redirect_to membership_path
+			subscriptions = Stripe::Subscription.list({limit: 100, customer: current_user&.stripeCustomerID})
+			subscriptions.each do |subs|
+				Stripe::Subscription.update(
+				  subs['id'],
+				  {coupon: session['coupon']},
+				)
 			end
+			flash[:success] = "Coupon Claimed"
+	    redirect_to profile_path
 		rescue Stripe::StripeError => e
       flash[:error] = "#{e.error.message}"
       redirect_to request.referrer
@@ -53,16 +48,17 @@ class ApplicationController < ActionController::Base
 	def discounts #sprint2
 		if session['coupon'].nil? 
 			@discountsFor = current_user&.present? ? current_user&.checkMembership : nil
-			@discountList = Stripe::Coupon.list({limit: 100})['data'].reject{|c| c['valid'] == false}
+			@discountList = Stripe::Coupon.list({limit: 100})['data'].reject{|c| c['valid'] == false}.reject{|c| c['duration'] == 'forever'}.reject{|c| c['max_redemptions'] == 0}
+			
 			if @discountsFor.nil? || !@discountsFor.map{|s| s[:membershipType]}.include?('free')
 				@newList = @discountList.reject{|c| c['percent_off'] > 10}.reject{|c| c['percent_off'] > 90}.size > 0 ? @discountList.reject{|c| c['percent_off'] > 10}.reject{|c| c['percent_off'] > 90}.sample['id'] : 0
-			elsif @discountsFor[:membershipType] == 'affiliate'
+			elsif @discountsFor.map{|s| s[:membershipType]}.include?('affiliate')
 				@newList = @discountList.reject{|c| c['percent_off'] > 20 || c['percent_off'] < 10}.reject{|c| c['percent_off'] > 90}.size > 0 ? @discountList.reject{|c| c['percent_off'] > 20 || c['percent_off'] < 10}.reject{|c| c['percent_off'] > 90}.sample['id'] : 0
-			elsif @discountsFor[:membershipType] == 'business'
+			elsif @discountsFor.map{|s| s[:membershipType]}.include?('business')
 				@newList = @discountList.reject{|c| c['percent_off'] > 30 || c['percent_off'] < 20}.reject{|c| c['percent_off'] > 90}.size > 0 ? @discountList.reject{|c| c['percent_off'] > 30 || c['percent_off'] < 20}.reject{|c| c['percent_off'] > 90}.sample['id'] : 0
-			elsif @discountsFor[:membershipType] == 'automation'
+			elsif @discountsFor.map{|s| s[:membershipType]}.include?('automation')
 				@newList = @discountList.reject{|c| c['percent_off'] > 40 || c['percent_off'] < 30}.reject{|c| c['percent_off'] > 90}.size > 0 ? @discountList.reject{|c| c['percent_off'] > 40 || c['percent_off'] < 30}.reject{|c| c['percent_off'] > 90}.sample['id'] : 0
-			elsif @discountsFor[:membershipType] == 'custom'
+			elsif @discountsFor.map{|s| s[:membershipType]}.include?('custom')
 				@newList = @discountList.reject{|c| c['percent_off'] > 50 || c['percent_off'] < 40}.reject{|c| c['percent_off'] > 90}.size > 0 ? @discountList.reject{|c| c['percent_off'] > 50 || c['percent_off'] < 40}.reject{|c| c['percent_off'] > 90}.sample['id'] : 0
 			end
 
@@ -80,7 +76,7 @@ class ApplicationController < ActionController::Base
 	def display_discount
 		# setcoupon code in header
 		if session['coupon'].nil?
-			codes = Stripe::Coupon.list({limit: 100})['data'].reject{|c| c['percent_off'] > 10 || c['valid'] == false}.reject{|c| c['percent_off'] > 90}
+			codes = Stripe::Coupon.list({limit: 100})['data'].reject{|c| c['valid'] == false}.reject{|c| c['duration'] == 'forever'}.reject{|c| c['max_redemptions'] == 0}
 			if codes.size > 0
 				session['coupon'] = codes.sample['id']
 				flash[:success] = "Coupon Assigned"
@@ -188,7 +184,7 @@ class ApplicationController < ActionController::Base
 	      mode: 'payment',
 	    }, {stripe_account: params['account']})
 	  else
-	  	tradeCoupon = Stripe::Coupon.list({limit: 100})['data'].reject{|c| c['percent_off'] < 50}.reject{|c| c['max_redemptions'] == 0}.reject{|c| c['duration'] != 'forever'}
+	  	tradeCoupon = Stripe::Coupon.list({limit: 100})['data'].reject{|c| c['max_redemptions'] == 0}.reject{|c| c['duration'] == 'forever'}
 	  	grabStripePrice = Stripe::Price.retrieve(params['price'])
 
 	  	if tradeCoupon.present?
@@ -216,6 +212,95 @@ class ApplicationController < ActionController::Base
 	end
 
 	
+
+	def autotrading
+		@codes = Stripe::Coupon.list({limit: 100}).reject{|c| c['valid'] == false}
+	  successURL = "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}"
+		
+		if session['coupon'].nil?	
+	    @selfTradingAnnualMembership = Stripe::Checkout::Session.create({
+	      success_url: successURL,
+	      line_items: [
+	        {price: ENV['selfTradingAnnualMembership'], quantity: 1},
+	      ],
+	      mode: 'subscription',
+	    })
+	    @selfTradingMonthlyMembership = Stripe::Checkout::Session.create({
+	      success_url: successURL,
+	      line_items: [
+	        {price: ENV['selfTradingMonthlyMembership'], quantity: 1},
+	      ],
+	      mode: 'subscription',
+	    })
+			# business,
+			@autoTradingMonthlyMembership = Stripe::Checkout::Session.create({
+	      success_url: successURL,
+	      line_items: [
+	        {price: ENV['autoTradingMonthlyMembership'], quantity: 1},
+	      ],
+	      mode: 'subscription',
+	    })
+	    @autoTradingAnnualMembership = Stripe::Checkout::Session.create({
+	      success_url: successURL,
+	      line_items: [
+	        {price: ENV['autoTradingAnnualMembership'], quantity: 1},
+	      ],
+	      mode: 'subscription',
+	    }) 
+		else
+			if @codes.map(&:id).include?(session['coupon']) == true && Stripe::Coupon.retrieve(session['coupon']).valid == true
+				# free -> build on page, 
+				# affiliate, 
+				@selfTradingAnnualMembership = Stripe::Checkout::Session.create({
+		      success_url: successURL,
+		      line_items: [
+		        {price: ENV['selfTradingAnnualMembership'], quantity: 1},
+		      ],
+		      mode: 'subscription',
+		      discounts: [
+				  	coupon: session['coupon']
+				  ],
+		    })
+		    @selfTradingMonthlyMembership = Stripe::Checkout::Session.create({
+		      success_url: successURL,
+		      line_items: [
+		        {price: ENV['selfTradingMonthlyMembership'], quantity: 1},
+		      ],
+		      mode: 'subscription',
+		      discounts: [
+				  	coupon: session['coupon']
+				  ],
+		    })
+				# business,
+				@autoTradingMonthlyMembership = Stripe::Checkout::Session.create({
+		      success_url: successURL,
+		      line_items: [
+		        {price: ENV['autoTradingMonthlyMembership'], quantity: 1},
+		      ],
+		      mode: 'subscription',
+		      discounts: [
+				  	coupon: session['coupon']
+				  ],
+		    })
+		    @autoTradingAnnualMembership = Stripe::Checkout::Session.create({
+		      success_url: successURL,
+		      line_items: [
+		        {price: ENV['autoTradingAnnualMembership'], quantity: 1},
+		      ],
+		      mode: 'subscription',
+		      discounts: [
+				  	coupon: session['coupon']
+				  ],
+		    })  
+			else
+				session['coupon'] = nil
+				flash[:notice] = "Coupon Expired"
+				redirect_to request.referrer
+				return
+			end
+		end
+		ahoy.track "Membership Visited", previousPage: request.referrer
+	end
 
 	def membership
 		@codes = Stripe::Coupon.list({limit: 100}).reject{|c| c['valid'] == false}
