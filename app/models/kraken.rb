@@ -120,6 +120,7 @@ class Kraken
   	# if in profit by less than tvData['trail'] -> set to break even
   	# if in profit by more than tvData['trail'] -> set to trail
   	# if not in profit -> hold
+		puts "Current Price: #{tvData['currentPrice'].to_f.round(1)}"
 
   	User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'open', broker: tvData['broker']).each do |trade| # go update known limit orders status
   		Thread.pass
@@ -140,7 +141,6 @@ class Kraken
 		  case true
 			when tvData['direction'] == 'sell'
 				profitTriggerPassed = (originalPrice + profitTrigger).round(1).to_f
-				puts "Current Price: #{tvData['currentPrice'].to_f.round(1)}"
 				puts "Profit Trigger Price: #{(profitTriggerPassed + ((0.01 * tvData['trail'].to_f) * profitTriggerPassed)).round(1)}"
 
 				if tvData['currentPrice'].to_f > profitTriggerPassed + ((0.01 * tvData['trail'].to_f) * profitTriggerPassed)
