@@ -299,7 +299,7 @@ class ApplicationController < ActionController::Base
 				return
 			end
 		end
-		ahoy.track "Membership Visited", previousPage: request.referrer
+		ahoy.track "Trader Membership Visited", previousPage: request.referrer
 	end
 
 	def membership
