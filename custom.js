@@ -1365,8 +1365,8 @@ document.addEventListener('DOMContentLoaded', () => {
           {
             id: 'gallery',
             plug: 'glightbox/glightbox.js',
-            call: 'glightbox/glightbox-call.js',
-            style: 'glightbox/glightbox.css',
+            call: 'assets/javascripts/glightbox-call.js',
+            style: 'assets/stylesheets/glightbox.css',
             trigger: '[data-gallery]'
           },
           {
