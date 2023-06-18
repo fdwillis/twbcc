@@ -80,7 +80,7 @@
             
           </div>
 
-          <% if current_user.present? && current_user.connectAccount? %>
+          <% if current_user.present? %>
             <div class="card card-style">
               <div class="content my-0">
                 <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Account</h5>
@@ -93,29 +93,31 @@
                       <i class="fa fa-angle-right"></i>
                     </a>
                   </div>
-                  <div class="list-group list-custom-small list-icon-0">
-                    <a href=<%= current_user&.present? ? "/commissions/#{User&.all.shuffle.take(1)[0].uuid}?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" : "/commissions/#{User&.all.shuffle.take(1)[0].uuid}?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" %>>
-                      <i class="fa font-12 fa-money bg-mint-dark rounded-sm color-white"></i>
-                      <span>
-                       Commissions
-                      </span>
-                      <i class="fa fa-angle-right"></i>
-                    </a>
-                  </div>
-                <!-- <div class="list-group list-custom-small list-icon-0">
-                  <a href="/loved">
-                    <i class="fa font-12 fa-heart bg-highlight rounded-sm color-white"></i>
-                    <span>Loved <%= current_user&.present? && Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['wishlist'].present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['wishlist'].split(',').reject(&:blank?).uniq.size})" : nil %></span>
-                    <i class="fa fa-angle-right"></i>
-                  </a>
-                </div> -->
-                <div class="list-group list-custom-small list-icon-0">
-                  <a href="/list?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                    <i class="fa font-12 fa-list bg-orange-dark rounded-sm color-white"></i>
-                    <span>List <%= current_user&.present? && Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].split('*').reject(&:blank?).uniq.size})" : nil %></span>
-                    <i class="fa fa-angle-right"></i>
-                  </a>
-                </div>
+                  <% if current_user.connectAccount? %>
+                    <div class="list-group list-custom-small list-icon-0">
+                      <a href=<%= current_user&.present? ? "/commissions/#{User&.all.shuffle.take(1)[0].uuid}?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" : "/commissions/#{User&.all.shuffle.take(1)[0].uuid}?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" %>>
+                        <i class="fa font-12 fa-money bg-mint-dark rounded-sm color-white"></i>
+                        <span>
+                         Commissions
+                        </span>
+                        <i class="fa fa-angle-right"></i>
+                      </a>
+                    </div>
+                    <!-- <div class="list-group list-custom-small list-icon-0">
+                      <a href="/loved">
+                        <i class="fa font-12 fa-heart bg-highlight rounded-sm color-white"></i>
+                        <span>Loved <%= current_user&.present? && Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['wishlist'].present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['wishlist'].split(',').reject(&:blank?).uniq.size})" : nil %></span>
+                        <i class="fa fa-angle-right"></i>
+                      </a>
+                    </div> -->
+                    <div class="list-group list-custom-small list-icon-0">
+                      <a href="/list?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
+                        <i class="fa font-12 fa-list bg-orange-dark rounded-sm color-white"></i>
+                        <span>List <%= current_user&.present? && Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].split('*').reject(&:blank?).uniq.size})" : nil %></span>
+                        <i class="fa fa-angle-right"></i>
+                      </a>
+                    </div>
+                  <% end %>
                 <% if current_user&.admin? %>
                   <div class="list-group list-custom-small list-icon-0">
                     <a href="/blog/new">
@@ -141,36 +143,48 @@
                 <% end %>
               </div>
             </div>
-            <div class="card card-style">
-              <div class="content my-0">
-                <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Company</h5>
-                <% if Stripe::Coupon.list({limit: 100})['data'].size > 0 %>
-                  <div class="list-group list-custom-small list-icon-0">
-                    <a href="/discounts?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                      <i class="fa font-12 fa-percent bg-red-dark rounded-sm color-white"></i>
-                      <span>Discounts</span>
-                      <i class="fa fa-angle-right"></i>
-                    </a>
-                  </div>
-                <% end %>
+          <% end %>
+          <div class="card card-style">
+            <div class="content my-0">
+              <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Company</h5>
+              <% if Stripe::Coupon.list({limit: 100})['data'].size > 0 %>
+                <div class="list-group list-custom-small list-icon-0">
+                  <a href="/discounts?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
+                    <i class="fa font-12 fa-percent bg-red-dark rounded-sm color-white"></i>
+                    <span>Discounts</span>
+                    <i class="fa fa-angle-right"></i>
+                  </a>
+                </div>
+              <% end %>
+              <% if !current_user %>
+                <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Products</h5>
+                <div class="list-group list-custom-small list-icon-0">
+                  <a href="/auto-trading?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
+                    <i class="fa font-12 fa-signal bg-highlight rounded-sm color-white"></i>
+                    <span>Autotrading</span>
+                    <i class="fa fa-angle-right"></i>
+                  </a>
+                </div>
                 <div class="list-group list-custom-small list-icon-0">
                   <a href="/membership?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                    <i class="fa font-12 fa-users bg-highlight rounded-sm color-white"></i>
-                    <span>Sign Up</span>
+                    <i class="fa font-12 fa-users bg-yellow-dark rounded-sm color-white"></i>
+                    <span>Affiliates</span>
                     <i class="fa fa-angle-right"></i>
                   </a>
                 </div>
-                <div class="list-group list-custom-small list-icon-0">
-                  <a href="/how-it-works?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                    <i class="fa font-12 fa-question bg-yellow-dark rounded-sm color-white"></i>
-                    <span>How It Works</span>
-                    <i class="fa fa-angle-right"></i>
-                  </a>
-                </div>
-                
-              </div>
+              <% end %>
+              <!-- change to offerings -->
+              <!-- <div class="list-group list-custom-small list-icon-0">
+                <a href="/how-it-works?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
+                  <i class="fa font-12 fa-question bg-yellow-dark rounded-sm color-white"></i>
+                  <span>How It Works</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+              </div> -->
+              
             </div>
-          <% end %>
+          </div>
+          
 
           <% if current_user&.admin? %>
             <div class="card card-style">
@@ -211,27 +225,27 @@
 
         </div>
         <% if current_user %>
-              <div class=" position-sticky bottom-0 end-0">
-                    <div class="content list-group list-custom-small list-icon-0">
-                      <a href="<%= destroy_user_session_path %>" class="border-0" data-confirm="Logout?">
-                        <i class="fa font-12 fa-sign-out bg-red-dark color-white rounded-sm"></i>
-                        <span>Logout</span>
-                      </a>
-                    </div>
-              </div>
-            <% else %>
-              <div class="position-sticky w-100 bottom-0 end-0 pb-1">
-                <div class="content">
-                    <div class="list-group list-custom-small list-icon-0">
-                      <a href="<%= new_user_session_path %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" data-toggle-theme="" data-trigger-switch="switch-dark2-mode" class="border-0">
-                        <i class="fa font-12 fa-sign-in bg-green-dark color-white rounded-sm"></i>
-                        <span>Login</span>
-                        <i class="fa fa-angle-right"></i>
-                      </a>
-                    </div>
+          <div class=" position-sticky bottom-0 end-0">
+                <div class="content list-group list-custom-small list-icon-0">
+                  <a href="<%= destroy_user_session_path %>" class="border-0" data-confirm="Logout?">
+                    <i class="fa font-12 fa-sign-out bg-red-dark color-white rounded-sm"></i>
+                    <span>Logout</span>
+                  </a>
                 </div>
-              </div>
-            <% end %>
+          </div>
+        <% else %>
+          <div class="position-sticky w-100 bottom-0 end-0 pb-1">
+            <div class="content">
+                <div class="list-group list-custom-small list-icon-0">
+                  <a href="<%= new_user_session_path %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" data-toggle-theme="" data-trigger-switch="switch-dark2-mode" class="border-0">
+                    <i class="fa font-12 fa-sign-in bg-green-dark color-white rounded-sm"></i>
+                    <span>Login</span>
+                    <i class="fa fa-angle-right"></i>
+                  </a>
+                </div>
+            </div>
+          </div>
+        <% end %>
       </div>
 
 

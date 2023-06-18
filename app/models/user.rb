@@ -5,6 +5,8 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :timeoutable#, :trackable
   has_many :blogs
+  has_many :trades
+  has_many :take_profits
   include MediaEmbed::Handler
 
   ACCEPTEDcountries = {
@@ -92,7 +94,7 @@ class User < ApplicationRecord
   }
 
   FREEmembership = [ENV['freeMembership']] 
-  TRADERmembership = [ENV['tradingMonthlyMembership'],ENV['tradingAnnualMembership']] 
+  TRADERmembership = [ENV['selfTradingMonthlyMembership'],ENV['selfTradingAnnualMembership'],ENV['autoTradingMonthlyMembership'],ENV['autoTradingAnnualMembership']] 
   AFFILIATEmembership = [ENV['affiliateMonthly'],ENV['affiliateAnnual']] 
   BUSINESSmembership = [ENV['businessMonthly'], ENV['businessAnnual']] 
   AUTOMATIONmembership = [ENV['automationMonthly'], ENV['automationAnnual']] 
@@ -325,7 +327,7 @@ class User < ApplicationRecord
 
   def checkMembership
     membershipValid = []
-    membershipPlans = [ENV['tradingAnnualMembership'], ENV['tradingMonthlyMembership'],ENV['affiliateMonthly'], ENV['affiliateAnnual'], ENV['businessMonthly'], ENV['businessAnnual'], ENV['automationMonthly'], ENV['automationAnnual']]
+    membershipPlans = [ENV['autoTradingMonthlyMembership'], ENV['autoTradingAnnualMembership'],ENV['selfTradingAnnualMembership'], ENV['selfTradingMonthlyMembership'],ENV['affiliateMonthly'], ENV['affiliateAnnual'], ENV['businessMonthly'], ENV['businessAnnual'], ENV['automationMonthly'], ENV['automationAnnual']]
     allSubscriptions = Stripe::Subscription.list({customer: stripeCustomerID})['data'].map(&:plan).map(&:id)
     membershipPlans.each do |planID|
       case true

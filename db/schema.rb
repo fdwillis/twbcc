@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_06_10_015442) do
+ActiveRecord::Schema.define(version: 2023_06_16_155530) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -98,15 +98,6 @@ ActiveRecord::Schema.define(version: 2023_06_10_015442) do
     t.index ["slug"], name: "index_categories_on_slug", unique: true
   end
 
-  create_table "closed_trades", force: :cascade do |t|
-    t.string "entry"
-    t.string "protection"
-    t.string "entryStatus"
-    t.string "protectionStatus"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-  end
-
   create_table "custominquiries", force: :cascade do |t|
     t.string "email"
     t.string "phone"
@@ -123,13 +114,6 @@ ActiveRecord::Schema.define(version: 2023_06_10_015442) do
     t.index ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true
     t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
-  end
-
-  create_table "json_data", force: :cascade do |t|
-    t.json "payload"
-    t.json "params"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "products", force: :cascade do |t|
@@ -149,6 +133,31 @@ ActiveRecord::Schema.define(version: 2023_06_10_015442) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["session_id"], name: "index_sessions_on_session_id", unique: true
     t.index ["updated_at"], name: "index_sessions_on_updated_at"
+  end
+
+  create_table "take_profits", force: :cascade do |t|
+    t.string "uuid"
+    t.string "broker"
+    t.string "direction"
+    t.string "status"
+    t.bigint "trade_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["trade_id"], name: "index_take_profits_on_trade_id"
+    t.index ["user_id"], name: "index_take_profits_on_user_id"
+  end
+
+  create_table "trades", force: :cascade do |t|
+    t.string "uuid"
+    t.string "broker"
+    t.string "direction"
+    t.string "status"
+    t.string "finalTakeProfit"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_trades_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -181,4 +190,7 @@ ActiveRecord::Schema.define(version: 2023_06_10_015442) do
   end
 
   add_foreign_key "blogs", "users"
+  add_foreign_key "take_profits", "trades"
+  add_foreign_key "take_profits", "users"
+  add_foreign_key "trades", "users"
 end

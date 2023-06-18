@@ -9,7 +9,8 @@
 	        <p class="mb-2"><%= (@profile['metadata'].present? && @profile['metadata']['bio'].present?) ? @profile['metadata']['bio'] : nil %></p>
 	        <% if @userFound&.amazonCountry.present? %>
 		        <p class="font-10">
-		            <strong class="color-theme pe-1"><i class="fa fa-location-arrow"></i></strong><%= User::ACCEPTEDcountries[@userFound&.amazonCountry.downcase][:country] %>&nbsp;
+		            <!-- <strong class="color-theme pe-1"><i class="fa fa-location-arrow"></i></strong> -->
+		            <span class="flag-icon flag-icon-<%= @userFound&.amazonCountry.downcase %> font-20"></span>
 		            <!-- <strong class="color-theme pe-1">1k</strong>Followers -->
 		        </p>
 		      <% end %>
@@ -22,8 +23,16 @@
 	  </div>
 
 		<% if @loginLink.present? %>
-			<%= link_to "Dashboard", @loginLink['url'], class: 'btn btn-full btn-m font-900 text-uppercase rounded-sm bg-green-dark form-control' %><br>
+			<%= link_to "Dashboard", @loginLink['url'], class: 'btn btn-full btn-m font-900 text-uppercase rounded-sm bg-green-dark form-control', 'target' => '_blank' %><br>
 		<% end %>
+		<% if !@userFound.checkMembership.map{|d| d[:membershipType]}.include?('free') %>
+            <a href="<%= cancel_path %>" class='p-2'>
+              <%= button_tag( :class => "btn btn-full btn-m font-900 text-uppercase rounded-sm bg-yellow-dark form-control") do %>
+                <i class="fa fa-minus-circle font-20 color-white"></i> Cancel Membership
+              <% end %>
+            </a>
+    <% end %>
+
 		
 
 		<% if @accountItemsDue.present? && @accountItemsDue.count > 0 %>
@@ -67,7 +76,7 @@
 		      <div class="row">
 			      	<h3 class="font-700 font-22 opacity-50 text-center mt-4">Manage Autotrading Keys</h3>
 			      	<h5 class="font-700 font-12 opacity-50 mb-4 text-center">
-			      		Your Webhook: <%= "https://oarlin.com/signals?&traderID=#{current_user&.uuid}" %>
+			      		Your Webhook: <%= "https://app.oarlin.com/signals?&traderID=#{current_user&.uuid}" %>
 			      	</h5>
 			      	<p class="font-700 font-12 opacity-50 mb-4 text-center">Need Help Finding Keys? <%= mail_to "team@oarlin.com", "EMAIL US" %></p>
 			      	<%= form_for :editKeys, url: manage_trading_keys_path do |f| %>

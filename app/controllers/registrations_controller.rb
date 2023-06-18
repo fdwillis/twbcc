@@ -78,7 +78,7 @@ class RegistrationsController < ApplicationController
 		      #make connect account
 		      if stripeSessionInfo['custom_fields'][1]['dropdown']['value'] == 'US'
 			      newStripeAccount = Stripe::Account.create({
-			        type: 'standard',
+			        type: 'express',
 			        country: stripeSessionInfo['custom_fields'][1]['dropdown']['value'],
 			        email: stripeCustomer['email'],
 			        capabilities: {
@@ -262,9 +262,9 @@ class RegistrationsController < ApplicationController
 
 		if request.post?
 			begin
-				if setSessionVarParams[:password_confirmation] == setSessionVarParams[:password]
+				if newTraderParams[:password_confirmation] == newTraderParams[:password]
 		      stripeSessionInfo = Stripe::Checkout::Session.retrieve(
-		        setSessionVarParams['stripeSession'],
+		        newTraderParams['stripeSession'],
 		      )
 		      stripeCustomer = Stripe::Customer.retrieve(stripeSessionInfo['customer'])
 
@@ -273,22 +273,24 @@ class RegistrationsController < ApplicationController
 		    	customerUpdated = Stripe::Customer.update(
 		        stripeSessionInfo['customer'],{
 		        	metadata: {
-			          referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : ','
+			          referredBy: newTraderParams['referredBy'].present? ? newTraderParams['referredBy'] : ',',
+			          commissionRate: 0,
 			        }
 			      },
 		      )
 		      #make user with password passed
 		      
 		      loadedCustomer = User.create(
-		        referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : ',',
+		        referredBy: newTraderParams['referredBy'].present? ? newTraderParams['referredBy'] : ',',
 		        email: stripeCustomer['email'], 
-		        password: setSessionVarParams['password'], 
-		        accessPin: setSessionVarParams['accessPin'], 
+		        password: newTraderParams['password'], 
+		        accessPin: newTraderParams['accessPin'], 
 		        stripeCustomerID: stripeSessionInfo['customer'],
-		        uuid: SecureRandom.uuid[0..7]
+		        uuid: SecureRandom.uuid[0..7],
+		        amazonCountry:  stripeSessionInfo['customer_details']['address']['country']
 		      )
 
-	      	ahoy.track "Trader Signup", previousPage: request.referrer, uuid: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).uuid, referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : 'admin'
+	      	ahoy.track "Trader Signup", previousPage: request.referrer, uuid: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).uuid, referredBy: newTraderParams['referredBy'].present? ? newTraderParams['referredBy'] : 'admin'
 
 		      flash[:success] = "Your Account Is Setup!"
 		      redirect_to request.referrer
@@ -318,4 +320,11 @@ class RegistrationsController < ApplicationController
     paramsClean = params.require(:setSessionVar).permit(:password_confirmation, :password, :stripeSession, :referredBy, :accessPin, :amazonUUID)
     return paramsClean.reject{|_, v| v.blank?}
   end
+
+  def newTraderParams
+    paramsClean = params.require(:newTrader).permit(:password_confirmation, :password, :stripeSession, :referredBy, :accessPin, :country)
+    return paramsClean.reject{|_, v| v.blank?}
+  end
 end
+
+

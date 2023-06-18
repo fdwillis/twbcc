@@ -34,12 +34,21 @@ class Alpaca < ApplicationRecord
 	end
 end
 
+def self.xpercentForTradeFromTimeframe(tvData)
+	# get dynamic min for
+	currentPrice = tvData['currentPrice'].to_f
+	
+	if tvData['tickerType'] == 'stock' && tvData['broker'] == 'alpaca'
+		accountBalance = getBalance
+	end
+	
+  ((tvData['perEntry'].to_f * 0.01) * accountBalance).to_f
+end
+
 # alpaca entries: needs to accept trailing so that we can place fractional orders where traders set the bounds. 
 
-# calculate units
 # new entries
 # trail profitable positions
 # pull open orders
-# query ticker info
 # trade history
-# query specific trade
+# query specific trade/order
