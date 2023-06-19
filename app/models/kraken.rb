@@ -81,18 +81,17 @@ class Kraken
   	# edit order
   	#hard coded min for bitcoin
   	#update ClosedTrade Model with protection or info if needed
-
   	if tvData['reduceBy'].present? && tvData['reduceBy'].to_f != 100
   		#  take tvData['reduceBy'] now
 	    routeToKraken = "/0/private/AddOrder"
 
 	    orderParams = {
 		    "pair" 			=> tradeInfo['descr']['pair'],
-		    "ordertype" => "take-profit-limit",
-		    "type" 			=> tradeInfo['descr']['type'],
-		    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
-		    "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
-		    "volume" 		=> (tradeInfo['vol'].to_f * (0.01 * tvData['reduceBy'].to_f)).to_s
+		    "ordertype" => "take-profit",
+		    "type" 			=> tvData['direction'],
+		    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['maxProfit'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
+		    # "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
+		    "volume" 		=> (tradeInfo['vol'].to_f * (0.01 * tvData['reduceBy'].to_f)) > 0.0001 ? "%.10f" % (tradeInfo['vol'].to_f * (0.01 * tvData['reduceBy'].to_f)) : "0.0001"
 		  }
 		  Thread.pass
 	    krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
@@ -104,10 +103,10 @@ class Kraken
 
 	    orderParams1 = {
 		    "pair" 			=> tradeInfo['descr']['pair'],
-		    "ordertype" => "take-profit-limit",
-		    "type" 			=> tradeInfo['descr']['type'],
-		    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
-		    "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
+		    "ordertype" => "take-profit",
+		    "type" 			=> tvData['direction'],
+		    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['maxProfit'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
+		    # "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
 		    "volume" 		=> tradeInfo['vol']
 		  }
 		  Thread.pass
@@ -146,12 +145,17 @@ class Kraken
 				profitTriggerPassed = (originalPrice + profitTrigger).round(1).to_f
 				puts "Profit Trigger Price: #{(profitTriggerPassed + ((0.01 * tvData['trail'].to_f) * profitTriggerPassed)).round(1)}"
 
-				if tvData['currentPrice'].to_f > profitTriggerPassed + ((0.01 * tvData['trail'].to_f) * profitTriggerPassed)
+				if tvData['currentPrice'].to_f > profitTriggerPassed
 		  		if tradeX.take_profits.empty?
-					  Thread.pass
-		  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey)
-		  			puts 	"\n-- Setting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
-		  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'][0], status: 'open',direction: tvData['direction'], broker: tvData['broker'])
+					  if tvData['currentPrice'].to_f > profitTriggerPassed + ((0.01 * tvData['trail'].to_f) * profitTriggerPassed)
+						  Thread.pass
+			  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey)
+			  			if @protectTrade.present?
+			  				
+			  				puts 	"\n-- Setting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
+				  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'][0], status: 'open',direction: tvData['direction'], broker: tvData['broker'])
+			  			end
+		  			end
 			  	else
 			  		tradeX.take_profits.each do |profitTrade|
 			  			Thread.pass
@@ -159,6 +163,7 @@ class Kraken
 				  		profitTrade.update(status: requestProfitTradex['status'])
 
 				  		if requestProfitTradex['status'] == 'open'
+				  			
 					  		if (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) >  requestProfitTradex['descr']['price2'] + ((0.01 * tvData['trail'].to_f) * (requestProfitTradex['descr']['price2']).round(1).to_f)
 					  			
 					  			orderParams = {
@@ -171,8 +176,11 @@ class Kraken
 					  			puts "\n-- Old Take Profit Canceled --\n"
 					  			Thread.pass
 					  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey)
-					  			puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
-					  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'][0], status: 'open', direction: tvData['direction'], broker: tvData['broker'])
+					  			if @protectTrade.present?
+					  				
+					  				puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
+						  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'][0], status: 'open', direction: tvData['direction'], broker: tvData['broker'])
+					  			end
 					  		end
 				  		end
 
@@ -186,8 +194,10 @@ class Kraken
 			  			
 			  			Thread.pass
 			  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey)
-			  			puts "\n-- Setting Additional Take Profit #{@protectTrade['result']['txid'][0]} --\n"
-			  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'][0], status: 'open', direction: tvData['direction'], broker: tvData['broker'])
+			  			if @protectTrade.present?
+			  				puts "\n-- Setting Additional Take Profit #{@protectTrade['result']['txid'][0]} --\n"
+				  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'][0], status: 'open', direction: tvData['direction'], broker: tvData['broker'])
+			  			end
 				  	else
 				  		tradeX.update(finalTakeProfit: tradeX.take_profits.last.uuid)
 			  		end
