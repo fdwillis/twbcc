@@ -122,14 +122,17 @@ class Kraken
   	# if not in profit -> hold
 		puts "Current Price: #{tvData['currentPrice'].to_f.round(1)}"
 
-  	User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'open', broker: tvData['broker']).each do |trade| # go update known limit orders status
+		openTrades = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'open', broker: tvData['broker'])
+  	openTrades.each do |trade| # go update known limit orders status
   		Thread.pass
   		requestK = krakenOrder(trade.uuid, apiKey, secretKey)
 
   		trade.update(status: requestK['status'])
   	end
   	
-  	User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'closed', broker: tvData['broker'], finalTakeProfit: nil).each do |tradeX|
+  	afterUpdates = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'closed', broker: tvData['broker'], finalTakeProfit: nil)
+  	
+  	afterUpdates.each do |tradeX|
 		  Thread.pass
 		  
   		requestOriginalE = krakenOrder(tradeX.uuid, apiKey, secretKey)
@@ -147,7 +150,7 @@ class Kraken
 		  		if tradeX.take_profits.empty?
 					  Thread.pass
 		  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey)
-		  			puts 	"\n-- Setting Take Profit #{@protectTrade['result']['txid']} --\n"
+		  			puts 	"\n-- Setting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
 		  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'][0], status: 'open',direction: tvData['direction'], broker: tvData['broker'])
 			  	else
 			  		tradeX.take_profits.each do |profitTrade|
@@ -168,7 +171,7 @@ class Kraken
 					  			puts "\n-- Old Take Profit Canceled --\n"
 					  			Thread.pass
 					  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey)
-					  			puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid']} --\n"
+					  			puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
 					  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'][0], status: 'open', direction: tvData['direction'], broker: tvData['broker'])
 					  		end
 				  		end
@@ -183,8 +186,8 @@ class Kraken
 			  			
 			  			Thread.pass
 			  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey)
-			  			puts "\n-- Setting Additional Take Profit #{@protectTrade['result']['txid']} --\n"
-			  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'], status: 'open', direction: tvData['direction'], broker: tvData['broker'])
+			  			puts "\n-- Setting Additional Take Profit #{@protectTrade['result']['txid'][0]} --\n"
+			  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'][0], status: 'open', direction: tvData['direction'], broker: tvData['broker'])
 				  	else
 				  		tradeX.update(finalTakeProfit: tradeX.take_profits.last.uuid)
 			  		end

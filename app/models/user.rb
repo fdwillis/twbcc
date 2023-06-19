@@ -333,38 +333,52 @@ class User < ApplicationRecord
     membershipPlans.each do |planID|
       case true
       when allSubscriptions.include?(planID)
-        membershipPlan = Stripe::Subscription.list({customer: stripeCustomerID, price: planID})['data']
+        membershipPlan = Stripe::Subscription.list({customer: stripeCustomerID, price: planID})['data'][0]
         membershipType = TRADERmembership.include?(planID) ? 'trader' : AFFILIATEmembership.include?(planID) ? 'affiliate' : BUSINESSmembership.include?(planID) ? 'business': AUTOMATIONmembership.include?(planID) ? 'automation': FREEmembership.include?(planID) ? 'free' : 'free'
-        if membershipPlan.first['status'] == 'active' && membershipPlan.first['pause_collection'] == nil
+        if membershipPlan['status'] == 'active' && membershipPlan['pause_collection'] == nil
           membershipValid << {membershipDetails: membershipPlan, membershipType: membershipType}
         end
       end
     end
 
     membershipValid.present? ? membershipValid : [{membershipType: 'free', membershipDetails: {0=>{'status' => 'active', 'interval' => 'N/A'}}}]
+
+    if Oj.load(ENV['adminUUID']).include?(self.uuid)
+      membershipValid.present? ? self.update(accessPin:"admin,#{ membershipValid.map{|d| d[:membershipType]}.join(',')}") : nil
+    else
+      membershipValid.present? ? self.update(accessPin: membershipValid.map{|d| d[:membershipType]}.join(',')) : nil
+    end
+
+    membershipValid
   end
 
   def customer?
+    checkMembership
     accessPin.split(',').include?('customer')
   end
 
   def trader?
+    checkMembership
     accessPin.split(',').include?('trader')
   end
 
   def connectAccount?
-    accessPin.split(',').include?('connectAccount')
+    checkMembership
+    accessPin.split(',').include?('connectAccount') || accessPin.split(',').include?('affilite') || accessPin.split(',').include?('business') || accessPin.split(',').include?('automation')
   end
 
   def trustee?
+    checkMembership
     accessPin.split(',').include?('trustee')
   end
 
   def manager?
+    checkMembership
     accessPin.split(',').include?('manager')
   end
 
   def admin?
+    checkMembership
     accessPin.split(',').include?('admin')
   end
 
