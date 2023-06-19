@@ -328,7 +328,7 @@ class User < ApplicationRecord
   def checkMembership
     membershipValid = []
     membershipPlans = [ENV['autoTradingMonthlyMembership'], ENV['autoTradingAnnualMembership'],ENV['selfTradingAnnualMembership'], ENV['selfTradingMonthlyMembership'],ENV['affiliateMonthly'], ENV['affiliateAnnual'], ENV['businessMonthly'], ENV['businessAnnual'], ENV['automationMonthly'], ENV['automationAnnual']]
-    allSubscriptions = Stripe::Subscription.list({customer: stripeCustomerID})['data'].map(&:plan).map(&:id)
+    allSubscriptions = Stripe::Subscription.list({customer: stripeCustomerID})['data'].map(&:items).map(&:data).flatten.map(&:plan).map(&:id)
     
     membershipPlans.each do |planID|
       case true
