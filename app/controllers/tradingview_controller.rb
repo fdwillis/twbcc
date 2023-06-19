@@ -20,7 +20,7 @@ class TradingviewController < ApplicationController
 		traderID = params['traderID']
 		traderFound = User.find_by(uuid: traderID)
 		if params['tradingDays'].present? && params['tradingDays'].map{|d| d.downcase}.include?(Date.today.strftime('%a').downcase)
-			if traderID.present? && traderFound && traderFound.trader?
+			if traderFound.trader?
 				case true
 				when params['tickerType'] == "crypto"
 

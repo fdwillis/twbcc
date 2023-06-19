@@ -405,10 +405,11 @@ class Kraken
   		# add opentrades costs to calculation for maxRisk
   		Thread.pass
   		requestK = krakenBalance(apiKey, secretKey)
-  		Thread.pass
   		accountBalance = requestK['result']['ZUSD'].to_f
   	end
   	
+		Thread.pass
+		
     case true
   	when tvData['timeframe'] == '15'
   		#need to make for each pair -> currently hard coded to bitcoin minimum
