@@ -6,7 +6,6 @@ class Kraken
     Base64.strict_encode64(api_hmac)
   end
 
-  # Attaches auth headers and returns results of a POST request
   def self.krakenRequest(uri_path, orderParams = {}, apiKey, secretKey)
     api_nonce = (Time.now.to_f * 1000).to_i.to_s
     post_data = orderParams.present? ? orderParams.map { |key, value| "#{key}=#{value}" }.join('&') : nil
@@ -80,9 +79,7 @@ class Kraken
   end
 
   def self.krakenTrailOrStop(tvData,tradeInfo, apiKey, secretKey)
-  	# edit order
-  	#hard coded min for bitcoin
-  	#update ClosedTrade Model with protection or info if needed
+  	# FINAL TESTING
   	requestProfit = nil
   	if tvData['reduceBy'].present? && tvData['reduceBy'].to_f != 100
   		#  take tvData['reduceBy'] now
@@ -93,7 +90,6 @@ class Kraken
 		    "ordertype" => "take-profit-limit",
 		    "type" 			=> tvData['direction'],
 		    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
-		    # "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
 		    "volume" 		=> (tradeInfo['vol'].to_f * (0.01 * tvData['reduceBy'].to_f)) > 0.0001 ? "%.10f" % (tradeInfo['vol'].to_f * (0.01 * tvData['reduceBy'].to_f)) : "0.0001"
 		  }
 		  Thread.pass
@@ -101,7 +97,6 @@ class Kraken
 	  end
 
 	  if tvData['reduceBy'].present? && tvData['reduceBy'].to_f == 100
-	  	# take all of it
 	    routeToKraken1 = "/0/private/AddOrder"
 
 	    orderParams1 = {
@@ -109,7 +104,6 @@ class Kraken
 		    "ordertype" => "take-profit-limit",
 		    "type" 			=> tvData['direction'],
 		    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
-		    # "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
 		    "volume" 		=> tradeInfo['vol']
 		  }
 		  Thread.pass
