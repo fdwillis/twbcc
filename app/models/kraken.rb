@@ -133,7 +133,7 @@ class Kraken
 	  	end
   	end
   	
-  	afterUpdates = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'closed', broker: tvData['broker'], finalTakeProfit: nil)
+  	afterUpdates = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'closed', broker: tvData['broker'])
   	
   	if afterUpdates.size > 0	
 	  	afterUpdates.each do |tradeX|
