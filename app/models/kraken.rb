@@ -191,7 +191,12 @@ class Kraken
 						  		volumeTallyForTradex += requestProfitTradex['vol'].to_f
 					  		end
 					  		
-					  		unless volumeTallyForTradex < requestOriginalE['vol'].to_f
+					  		if volumeTallyForTradex < requestOriginalE['vol'].to_f
+					  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey, tradeX)
+					  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
+					  				puts "\n-- Additional Take Profit #{@protectTrade['result']['txid'][0]} --\n"
+					  			end
+					  		else
 						  		tradeX.update(finalTakeProfit: tradeX.take_profits.last.uuid)
 					  		end
 				  		end
