@@ -4,9 +4,10 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :timeoutable#, :trackable
-  has_many :blogs
-  has_many :trades
-  has_many :take_profits
+  has_many :blogs, dependent: :delete_all
+  has_many :trades, dependent: :delete_all
+  has_many :take_profits, dependent: :delete_all
+  
   include MediaEmbed::Handler
 
   ACCEPTEDcountries = {
