@@ -166,6 +166,7 @@ class Kraken
 					  		profitTrade.update(status: requestProfitTradex['status'])
 
 					  		if requestProfitTradex['status'] == 'open'
+					  			volumeTallyForTradex += requestProfitTradex['vol'].to_f
 					  			
 						  		if (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) >  requestProfitTradex['descr']['price2'].to_f + ((0.01 * tvData['trail'].to_f) * (requestProfitTradex['descr']['price2'].to_f).round(1).to_f)
 						  			
