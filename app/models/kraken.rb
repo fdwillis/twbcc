@@ -154,8 +154,8 @@ class Kraken
 						  Thread.pass
 			  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey)
 			  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
-			  				puts 	"\n-- Taking Profit #{@protectTrade['result']['txid'][0]} --\n"
 				  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'][0], status: 'open',direction: tvData['direction'], broker: tvData['broker'])
+			  				puts 	"\n-- Taking Profit #{@protectTrade['result']['txid'][0]} --\n"
 			  			end
 		  			end
 			  	else
@@ -179,8 +179,8 @@ class Kraken
 					  			Thread.pass
 					  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey)
 					  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
-					  				puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
 						  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'][0], status: 'open', direction: tvData['direction'], broker: tvData['broker'])
+					  				puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
 					  			end
 					  		end
 				  		end
@@ -196,8 +196,8 @@ class Kraken
 			  			Thread.pass
 			  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey)
 			  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
-			  				puts "\n-- Setting Additional Take Profit #{@protectTrade['result']['txid'][0]} --\n"
 				  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'][0], status: 'open', direction: tvData['direction'], broker: tvData['broker'])
+			  				puts "\n-- Setting Additional Take Profit #{@protectTrade['result']['txid'][0]} --\n"
 			  			end
 				  	else
 				  		tradeX.update(finalTakeProfit: tradeX.take_profits.last.uuid)
