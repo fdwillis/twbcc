@@ -176,7 +176,7 @@ class Kraken
 								  	routeToKraken = "/0/private/CancelOrder"
 								  	Thread.pass
 								  	cancel = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
-								  	TakeProfit.find_by(uuid: profitTrade.uuid).destroy
+								  	profitTrade.destroy
 						  			puts "\n-- Old Take Profit Canceled --\n"
 						  			Thread.pass
 						  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey, tradeX)
