@@ -124,88 +124,92 @@ class Kraken
 		puts "Current Price: #{tvData['currentPrice'].to_f.round(1)}"
 
 		openTrades = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'open', broker: tvData['broker'])
-  	openTrades.each do |trade| # go update known limit orders status
-  		Thread.pass
-  		requestK = krakenOrder(trade.uuid, apiKey, secretKey)
+		if openTrades.size > 0 
+	  	openTrades.each do |trade| # go update known limit orders status
+	  		Thread.pass
+	  		requestK = krakenOrder(trade.uuid, apiKey, secretKey)
 
-  		trade.update(status: requestK['status'])
+	  		trade.update(status: requestK['status'])
+	  	end
   	end
   	
   	afterUpdates = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'closed', broker: tvData['broker'], finalTakeProfit: nil)
   	
-  	afterUpdates.each do |tradeX|
-		  Thread.pass
-		  
-  		requestOriginalE = krakenOrder(tradeX.uuid, apiKey, secretKey)
+  	if afterUpdates.size > 0	
+	  	afterUpdates.each do |tradeX|
+			  Thread.pass
+			  
+	  		requestOriginalE = krakenOrder(tradeX.uuid, apiKey, secretKey)
 
-  		originalPrice = requestOriginalE['price'].to_f
-  		profitTrigger = originalPrice * (0.01 * tvData['profitTrigger'].to_f)
-  		volumeTallyForTradex = 0
+	  		originalPrice = requestOriginalE['price'].to_f
+	  		profitTrigger = originalPrice * (0.01 * tvData['profitTrigger'].to_f)
+	  		volumeTallyForTradex = 0
 
-		  case true
-			when tvData['direction'] == 'sell'
-				profitTriggerPassed = (originalPrice + profitTrigger).round(1).to_f
-				puts "Profit Trigger Price: #{(profitTriggerPassed + ((0.01 * tvData['trail'].to_f) * profitTriggerPassed)).round(1)}"
+			  case true
+				when tvData['direction'] == 'sell'
+					profitTriggerPassed = (originalPrice + profitTrigger).round(1).to_f
+					puts "Profit Trigger Price: #{(profitTriggerPassed + ((0.01 * tvData['trail'].to_f) * profitTriggerPassed)).round(1)}"
 
-				if tvData['currentPrice'].to_f > profitTriggerPassed
-		  		if tradeX.take_profits.empty?
-					  if tvData['currentPrice'].to_f > profitTriggerPassed + ((0.01 * tvData['trail'].to_f) * profitTriggerPassed)
-						  Thread.pass
-			  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey, tradeX)
-			  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
-			  				puts 	"\n-- Taking Profit #{@protectTrade['result']['txid'][0]} --\n"
+					if tvData['currentPrice'].to_f > profitTriggerPassed
+			  		if tradeX.take_profits.empty?
+						  if tvData['currentPrice'].to_f > profitTriggerPassed + ((0.01 * tvData['trail'].to_f) * profitTriggerPassed)
+							  Thread.pass
+				  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey, tradeX)
+				  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
+				  				puts 	"\n-- Taking Profit #{@protectTrade['result']['txid'][0]} --\n"
+				  			end
 			  			end
-		  			end
-			  	else
-			  		tradeX.take_profits.each do |profitTrade|
-			  			Thread.pass
-				  		requestProfitTradex = krakenOrder(profitTrade.uuid, apiKey, secretKey)
-				  		profitTrade.update(status: requestProfitTradex['status'])
+				  	else
+				  		tradeX.take_profits.each do |profitTrade|
+				  			Thread.pass
+					  		requestProfitTradex = krakenOrder(profitTrade.uuid, apiKey, secretKey)
+					  		profitTrade.update(status: requestProfitTradex['status'])
 
-				  		if requestProfitTradex['status'] == 'open'
-				  			
-					  		if (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) >  requestProfitTradex['descr']['price2'] + ((0.01 * tvData['trail'].to_f) * (requestProfitTradex['descr']['price2']).round(1).to_f)
+					  		if requestProfitTradex['status'] == 'open'
 					  			
-					  			orderParams = {
-								    "txid" 			=> profitTrade.uuid,
-								  }
-							  	routeToKraken = "/0/private/CancelOrder"
-							  	Thread.pass
-							  	cancel = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
-							  	TakeProfit.find_by(uuid: profitTrade.uuid).destroy
-					  			puts "\n-- Old Take Profit Canceled --\n"
-					  			Thread.pass
-					  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey, tradeX)
-					  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
-					  				puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
-					  			end
+						  		if (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) >  requestProfitTradex['descr']['price2'].to_f + ((0.01 * tvData['trail'].to_f) * (requestProfitTradex['descr']['price2'].to_f).round(1).to_f)
+						  			
+						  			orderParams = {
+									    "txid" 			=> profitTrade.uuid,
+									  }
+								  	routeToKraken = "/0/private/CancelOrder"
+								  	Thread.pass
+								  	cancel = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
+								  	TakeProfit.find_by(uuid: profitTrade.uuid).destroy
+						  			puts "\n-- Old Take Profit Canceled --\n"
+						  			Thread.pass
+						  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey, tradeX)
+						  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
+						  				puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
+						  			end
+						  		end
+					  		end
+
+					  		if requestProfitTradex['status'] == 'closed'
+					  			
+						  		volumeTallyForTradex += requestProfitTradex['vol'].to_f
 					  		end
 				  		end
 
-				  		if requestProfitTradex['status'] == 'closed'
+				  		if volumeTallyForTradex > 0 && volumeTallyForTradex < requestOriginalE['vol'].to_f
 				  			
-					  		volumeTallyForTradex += requestProfitTradex['vol'].to_f
+				  			Thread.pass
+				  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey, tradeX)
+				  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
+				  				puts "\n-- Setting Additional Take Profit #{@protectTrade['result']['txid'][0]} --\n"
+				  			end
+					  	else
+					  		tradeX.update(finalTakeProfit: tradeX.take_profits.last.uuid)
 				  		end
-			  		end
-
-			  		if volumeTallyForTradex > 0 && volumeTallyForTradex < requestOriginalE['vol'].to_f
-			  			
-			  			Thread.pass
-			  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey, tradeX)
-			  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
-			  				puts "\n-- Setting Additional Take Profit #{@protectTrade['result']['txid'][0]} --\n"
-			  			end
-				  	else
-				  		tradeX.update(finalTakeProfit: tradeX.take_profits.last.uuid)
-			  		end
+				  	end
 			  	end
-		  	end
-			when tvData['direction'] == 'buy'
-				profitTriggerPassed = (originalPrice - profitTrigger).round(1).to_f
-				if tvData['currentPrice'].to_f < profitTriggerPassed - ((0.01 * tvData['trail'].to_f) * profitTriggerPassed)
-					
+				when tvData['direction'] == 'buy'
+					profitTriggerPassed = (originalPrice - profitTrigger).round(1).to_f
+					if tvData['currentPrice'].to_f < profitTriggerPassed - ((0.01 * tvData['trail'].to_f) * profitTriggerPassed)
+						
+					end
 				end
-			end
+	  	end
   	end
 
   	puts "Done With Profit"
