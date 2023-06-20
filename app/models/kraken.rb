@@ -113,7 +113,7 @@ class Kraken
 
 	  end
 
-		tradeX.take_profits.create(uuid: requestProfit['result']['txid'][0], status: 'open', direction: tvData['direction'], broker: tvData['broker'])
+		tradeX.take_profits.create!(uuid: requestProfit['result']['txid'][0], status: 'open', direction: tvData['direction'], broker: tvData['broker'])
 		requestProfit
   end
 
