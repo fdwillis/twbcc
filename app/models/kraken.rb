@@ -190,11 +190,12 @@ class Kraken
 					  			
 						  		volumeTallyForTradex += requestProfitTradex['vol'].to_f
 					  		end
+					  		
+					  		unless volumeTallyForTradex < requestOriginalE['vol'].to_f
+						  		tradeX.update(finalTakeProfit: tradeX.take_profits.last.uuid)
+					  		end
 				  		end
 
-				  		unless volumeTallyForTradex < requestOriginalE['vol'].to_f
-					  		tradeX.update(finalTakeProfit: tradeX.take_profits.last.uuid)
-				  		end
 				  	end
 			  	end
 				when tvData['direction'] == 'buy'
