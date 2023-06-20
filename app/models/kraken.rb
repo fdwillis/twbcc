@@ -184,11 +184,12 @@ class Kraken
 						  				puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
 						  			end
 						  		end
-					  		end
-
-					  		if requestProfitTradex['status'] == 'closed'
-					  			
+					  		elsif requestProfitTradex['status'] == 'closed'
 						  		volumeTallyForTradex += requestProfitTradex['vol'].to_f
+					  		elsif requestProfitTradex['status'] == 'canceled'
+				  				puts "\n-- Removing Canceled Order #{profitTrade.uuid} --\n"
+					  			profitTrade.destroy
+					  			next
 					  		end
 					  		
 				  		end
