@@ -97,7 +97,7 @@ class Kraken
 	    requestProfit = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
 	  end
 
-	  if tvData['reduceBy'].present? && tvData['reduceBy'].to_f == 100
+	  if tvData[  'reduceBy'].present? && tvData['reduceBy'].to_f == 100
 	    routeToKraken1 = "/0/private/AddOrder"
 
 	    orderParams1 = {
@@ -200,6 +200,8 @@ class Kraken
 				  			end
 				  		else
 					  		tradeX.update(finalTakeProfit: tradeX.take_profits.last.uuid)
+					  		puts "\n-- Position Closed #{tradeX.uuid} --\n"
+			  				puts "\n-- Last Profit Taken #{tradeX.take_profits.last.uuid} --\n"
 				  		end
 
 				  	end
