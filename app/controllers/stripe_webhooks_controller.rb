@@ -9,8 +9,8 @@ class StripeWebhooksController < ApplicationController
     if event == 'invoice.paid'
       #pay affiliate -> if affilaite active & usd base
       stripeCustomer = Stripe::Customer.retrieve(stripeObject['customer'])
-      if Stripe::Customer.retrieve(stripeObject['customer'])['metadata']['referredBy'].present? && Stripe::Customer.retrieve(stripeObject['customer'])['metadata']['referredBy'].split(',').reject(&:blank?)[0].present?
-        loadedAffililate = User.find_by(uuid: stripeCustomer['metadata']['referredBy'])
+      loadedAffililate = User.find_by(uuid: stripeCustomer['metadata']['referredBy'])
+      if loadedAffililate.present? && Stripe::Customer.retrieve(stripeObject['customer'])['metadata']['referredBy'].present? && Stripe::Customer.retrieve(stripeObject['customer'])['metadata']['referredBy'].split(',').reject(&:blank?)[0].present?
         subscriptionList = Stripe::Subscription.list({customer: loadedAffililate.stripeCustomerID})['data'].map(&:plan)
         stripeAffiliate = Stripe::Customer.retrieve(loadedAffililate.stripeCustomerID)
         affiliateConnectAccount = stripeAffiliate['metadata']['connectAccount']
