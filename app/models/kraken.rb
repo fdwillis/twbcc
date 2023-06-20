@@ -192,14 +192,7 @@ class Kraken
 					  		end
 				  		end
 
-				  		if volumeTallyForTradex > 0 && volumeTallyForTradex < requestOriginalE['vol'].to_f
-				  			
-				  			Thread.pass
-				  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey, tradeX)
-				  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
-				  				puts "\n-- Setting Additional Take Profit #{@protectTrade['result']['txid'][0]} --\n"
-				  			end
-					  	else
+				  		unless volumeTallyForTradex < requestOriginalE['vol'].to_f
 					  		tradeX.update(finalTakeProfit: tradeX.take_profits.last.uuid)
 				  		end
 				  	end
