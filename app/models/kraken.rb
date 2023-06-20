@@ -6,7 +6,6 @@ class Kraken
     Base64.strict_encode64(api_hmac)
   end
 
-  # Attaches auth headers and returns results of a POST request
   def self.krakenRequest(uri_path, orderParams = {}, apiKey, secretKey)
     api_nonce = (Time.now.to_f * 1000).to_i.to_s
     post_data = orderParams.present? ? orderParams.map { |key, value| "#{key}=#{value}" }.join('&') : nil
@@ -80,9 +79,7 @@ class Kraken
   end
 
   def self.krakenTrailOrStop(tvData,tradeInfo, apiKey, secretKey)
-  	# edit order
-  	#hard coded min for bitcoin
-  	#update ClosedTrade Model with protection or info if needed
+  	# FINAL TESTING
   	requestProfit = nil
   	if tvData['reduceBy'].present? && tvData['reduceBy'].to_f != 100
   		#  take tvData['reduceBy'] now
@@ -90,10 +87,10 @@ class Kraken
 
 	    orderParams = {
 		    "pair" 			=> tradeInfo['descr']['pair'],
-		    "ordertype" => "limit",
+		    "ordertype" => "take-profit-limit",
 		    "type" 			=> tvData['direction'],
 		    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
-		    "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
+		    "price2" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
 		    "volume" 		=> (tradeInfo['vol'].to_f * (0.01 * tvData['reduceBy'].to_f)) > 0.0001 ? "%.10f" % (tradeInfo['vol'].to_f * (0.01 * tvData['reduceBy'].to_f)) : "0.0001"
 		  }
 		  Thread.pass
@@ -101,15 +98,14 @@ class Kraken
 	  end
 
 	  if tvData['reduceBy'].present? && tvData['reduceBy'].to_f == 100
-	  	# take all of it
 	    routeToKraken1 = "/0/private/AddOrder"
 
 	    orderParams1 = {
 		    "pair" 			=> tradeInfo['descr']['pair'],
-		    "ordertype" => "limit",
+		    "ordertype" => "take-profit-limit",
 		    "type" 			=> tvData['direction'],
 		    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
-		    "price2"		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
+		    "price2" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
 		    "volume" 		=> tradeInfo['vol']
 		  }
 		  Thread.pass
@@ -154,8 +150,8 @@ class Kraken
 						  Thread.pass
 			  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey)
 			  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
-			  				puts 	"\n-- Taking Profit #{@protectTrade['result']['txid'][0]} --\n"
 				  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'][0], status: 'open',direction: tvData['direction'], broker: tvData['broker'])
+			  				puts 	"\n-- Taking Profit #{@protectTrade['result']['txid'][0]} --\n"
 			  			end
 		  			end
 			  	else
@@ -179,8 +175,8 @@ class Kraken
 					  			Thread.pass
 					  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey)
 					  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
-					  				puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
 						  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'][0], status: 'open', direction: tvData['direction'], broker: tvData['broker'])
+					  				puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
 					  			end
 					  		end
 				  		end
@@ -196,8 +192,8 @@ class Kraken
 			  			Thread.pass
 			  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey)
 			  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
-			  				puts "\n-- Setting Additional Take Profit #{@protectTrade['result']['txid'][0]} --\n"
 				  			tradeX.take_profits.create(uuid: @protectTrade['result']['txid'][0], status: 'open', direction: tvData['direction'], broker: tvData['broker'])
+			  				puts "\n-- Setting Additional Take Profit #{@protectTrade['result']['txid'][0]} --\n"
 			  			end
 				  	else
 				  		tradeX.update(finalTakeProfit: tradeX.take_profits.last.uuid)
@@ -412,26 +408,16 @@ class Kraken
   	# hard coded min for bitcoin
   	currentPrice = tvData['currentPrice'].to_f
   	
+		Thread.pass
   	if tvData['tickerType'] == 'crypto' && tvData['broker'] == 'kraken'
   		# add opentrades costs to calculation for maxRisk
   		Thread.pass
   		requestK = krakenBalance(apiKey, secretKey)
+			Thread.pass
   		accountBalance = requestK['result']['ZUSD'].to_f
   	end
-  	
-		Thread.pass
-		
-    case true
-  	when tvData['timeframe'] == '15'
-  		#need to make for each pair -> currently hard coded to bitcoin minimum
-  		tvData['tickerType'] == 'crypto' ? ((tvData['perEntry'].to_f * 0.01) * accountBalance).to_f > 3 ? ((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f : nil
-  	when tvData['timeframe'] == '30'
-  		tvData['tickerType'] == 'crypto' ? ((tvData['perEntry'].to_f * 0.01) * accountBalance).to_f > 3 ? ((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f : nil
-  	when tvData['timeframe'] == '60'
-  		tvData['tickerType'] == 'crypto' ? ((tvData['perEntry'].to_f * 0.01) * accountBalance).to_f > 3 ? ((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f : nil
-  	when tvData['timeframe'] == '120'
-  		tvData['tickerType'] == 'crypto' ? ((tvData['perEntry'].to_f * 0.01) * accountBalance).to_f > 3 ? ((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f : nil
-  	end
+
+  	((tvData['perEntry'].to_f * 0.01) * accountBalance).to_f > 3 ? ((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f 
   end
   
   # def self.createTakeProfitOrder(tvData)
