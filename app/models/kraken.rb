@@ -302,6 +302,7 @@ class Kraken
 	  			end
 	  		else
 	  			puts "\n-- Max Risk Met (#{tvData['timeframe']} Minute) --\n"
+	  			puts "\n-- Current Risk (#{currentRisk.round(2)}%) --\n"
 	  		end
 
   		when tvData['tickerType'] == 'forex'
@@ -376,6 +377,9 @@ class Kraken
 					  	puts "\n-- MORE CASH FOR ENTRIES --\n"
 					  end
 					end
+				else
+	  			puts "\n-- Max Risk Met (#{tvData['timeframe']} Minute) --\n"
+	  			puts "\n-- Current Risk (#{currentRisk.round(2)}%) --\n"
 				end
 
   		when tvData['tickerType'] == 'forex'
