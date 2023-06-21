@@ -124,7 +124,7 @@ class Kraken
 		puts "Current Price: #{tvData['currentPrice'].to_f.round(1)}"
 
 		openTrades = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'open', broker: tvData['broker'])
-		if openTrades.size > 0 
+		if openTrades.present? && openTrades.size > 0 
 	  	openTrades.each do |trade| # go update known limit orders status
 	  		Thread.pass
 	  		requestK = krakenOrder(trade.uuid, apiKey, secretKey)
@@ -134,9 +134,9 @@ class Kraken
   	end
   	
   	# pull current pending orders for sync of database
-  	afterUpdates = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'closed', broker: tvData['broker'])
+  	afterUpdates = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'closed', broker: tvData['broker'], finalTakeProfit: nil)
   	
-  	if afterUpdates.size > 0	
+  	if afterUpdates.present? && afterUpdates.size > 0	
 	  	afterUpdates.each do |tradeX|
 			  Thread.pass
 			  
@@ -195,6 +195,7 @@ class Kraken
 					  		
 				  		end
 				  		
+			  			Thread.pass
 				  		if volumeTallyForTradex < requestOriginalE['vol'].to_f
 				  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey, tradeX)
 				  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
