@@ -133,6 +133,7 @@ class Kraken
 	  	end
   	end
   	
+  	# pull current pending orders for sync of database
   	afterUpdates = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'closed', broker: tvData['broker'])
   	
   	if afterUpdates.size > 0	
@@ -200,9 +201,17 @@ class Kraken
 				  				puts "\n-- Additional Take Profit #{@protectTrade['result']['txid'][0]} --\n"
 				  			end
 				  		else
-					  		tradeX.update(finalTakeProfit: tradeX.take_profits.last.uuid)
-					  		puts "\n-- Position Closed #{tradeX.uuid} --\n"
-			  				puts "\n-- Last Profit Taken #{tradeX.take_profits.last.uuid} --\n"
+				  			checkFill = krakenOrder(tradeX.take_profits.last.uuid, apiKey, secretKey)
+					  		tradeX.take_profits.last.update(status: checkFill['status'])
+
+					  		if checkFill['status'] == 'closed'
+						  		tradeX.update(finalTakeProfit: tradeX.take_profits.last.uuid)
+						  		puts "\n-- Position Closed #{tradeX.uuid} --\n"
+				  				puts "\n-- Last Profit Taken #{tradeX.take_profits.last.uuid} --\n"
+					  		else
+					  			tradeX.update(finalTakeProfit:nil)
+				  				puts "\n-- Waiting To Close Last Position --\n"
+					  		end
 				  		end
 
 				  	end
