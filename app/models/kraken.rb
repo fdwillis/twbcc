@@ -121,7 +121,7 @@ class Kraken
   	# if in profit by less than tvData['trail'] -> set to break even
   	# if in profit by more than tvData['trail'] -> set to trail
   	# if not in profit -> hold
-		puts "Current Price: #{tvData['currentPrice'].to_f.round(1)}"
+		puts "\n-- Current Price: #{tvData['currentPrice'].to_f.round(1)} --\n"
 
 		openTrades = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'open', broker: tvData['broker'])
 		if openTrades.present? && openTrades.size > 0 
@@ -145,6 +145,7 @@ class Kraken
 	  		originalPrice = requestOriginalE['price'].to_f
 	  		profitTrigger = originalPrice * (0.01 * tvData['profitTrigger'].to_f)
 	  		volumeTallyForTradex = 0
+	  		openProfitCount = 0
 
 			  case true
 				when tvData['direction'] == 'sell'
@@ -168,6 +169,7 @@ class Kraken
 
 					  		if requestProfitTradex['status'] == 'open'
 					  			volumeTallyForTradex += requestProfitTradex['vol'].to_f
+				  				openProfitCount += 1
 					  			
 						  		if (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) >  requestProfitTradex['descr']['price2'].to_f + ((0.01 * tvData['trail'].to_f) * (requestProfitTradex['descr']['price2'].to_f).round(1).to_f)
 						  			
@@ -197,9 +199,13 @@ class Kraken
 				  		
 			  			Thread.pass
 				  		if volumeTallyForTradex < requestOriginalE['vol'].to_f
-				  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey, tradeX)
-				  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
-				  				puts "\n-- Additional Take Profit #{@protectTrade['result']['txid'][0]} --\n"
+				  			if openProfitCount == 0
+					  			@protectTrade = krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey, tradeX)
+					  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
+					  				puts "\n-- Additional Take Profit #{@protectTrade['result']['txid'][0]} --\n"
+					  			end
+					  		else
+					  				puts "\n-- Waiting To Close Open Take Profit --\n"
 				  			end
 				  		else
 				  			checkFill = krakenOrder(tradeX.take_profits.last.uuid, apiKey, secretKey)
@@ -209,7 +215,7 @@ class Kraken
 						  		tradeX.update(finalTakeProfit: tradeX.take_profits.last.uuid)
 						  		puts "\n-- Position Closed #{tradeX.uuid} --\n"
 				  				puts "\n-- Last Profit Taken #{tradeX.take_profits.last.uuid} --\n"
-					  		else
+					  		elsif checkFill['status'] == 'open'
 					  			tradeX.update(finalTakeProfit:nil)
 				  				puts "\n-- Waiting To Close Last Position --\n"
 					  		end
