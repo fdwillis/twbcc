@@ -232,6 +232,7 @@ class Kraken
 		  	Thread.pass
 				resultKey = pairCall['result'].keys.first
 				baseTicker = pairCall['result'][resultKey]['base']
+				tickerForAllocation = pairCall['result'][resultKey]['altname']
 				Thread.pass
 				currentAllocation = krakenBalance(apiKey, secretKey)
 				currentOpenAllocation = krakenPendingTrades(apiKey, secretKey)
@@ -322,6 +323,7 @@ class Kraken
 		  	Thread.pass
 				resultKey = pairCall['result'].keys.first
 				baseTicker = pairCall['result'][resultKey]['base']
+				tickerForAllocation = pairCall['result'][resultKey]['altname']
 				Thread.pass
 				currentAllocation = krakenBalance(apiKey, secretKey)
 				currentOpenAllocation = krakenPendingTrades(apiKey, secretKey)
