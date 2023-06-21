@@ -234,12 +234,14 @@ class Kraken
 				baseTicker = pairCall['result'][resultKey]['base']
 				Thread.pass
 				currentAllocation = krakenBalance(apiKey, secretKey)
+				currentOpenAllocation = krakenPendingTrades(apiKey, secretKey)
+
 				Thread.pass
 				tickerInfoCall = tickerInfo(baseTicker, apiKey, secretKey)
 				Thread.pass
 				accountTotal = tickerInfoCall['result']['eb'].to_f
 
-				currentRisk = (currentAllocation['result'][baseTicker].to_f/accountTotal) * 100
+				currentRisk = ((currentOpenAllocation.reject{|d| d['type'] != tvData['direction']}.reject{|d| d['pair'] != baseTicker}.map{|d|d[1]['vol'].to_f * d[1]['descr']['price'].to_f}.sum + currentAllocation['result'][baseTicker].to_f)/accountTotal) * 100
 				
 				if (currentRisk <= tvData['maxRisk'].to_f)
 			  	if tvData['entries'].reject(&:blank?).size > 0
@@ -322,11 +324,15 @@ class Kraken
 				baseTicker = pairCall['result'][resultKey]['base']
 	  		Thread.pass
 				currentAllocation = krakenBalance(apiKey, secretKey)
+				currentOpenAllocation = krakenPendingTrades(apiKey, secretKey)
+
 				Thread.pass
 				tickerInfoCall = tickerInfo(baseTicker, apiKey, secretKey)
+				Thread.pass
 				accountTotal = tickerInfoCall['result']['eb'].to_f
 
-				currentRisk = (currentAllocation['result'][baseTicker].to_f/accountTotal) * 100
+				currentRisk = ((currentOpenAllocation.reject{|d| d['type'] != tvData['direction']}.reject{|d| d['pair'] != baseTicker}.map{|d|d[1]['vol'].to_f * d[1]['descr']['price'].to_f}.sum + currentAllocation['result'][baseTicker].to_f)/accountTotal) * 100
+				
 				if (currentRisk <= tvData['maxRisk'].to_f)
 	  			priceToSet = (tvData['currentPrice']).to_f.round(1)
 
