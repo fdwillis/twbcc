@@ -241,9 +241,9 @@ class Kraken
 				Thread.pass
 				accountTotal = tickerInfoCall['result']['eb'].to_f
 
-				currentRisk = ((currentOpenAllocation.reject{|d| d['type'] != tvData['direction']}.reject{|d| d['pair'] != baseTicker}.map{|d|d[1]['vol'].to_f * d[1]['descr']['price'].to_f}.sum + currentAllocation['result'][baseTicker].to_f)/accountTotal) * 100
-				
-				if (currentRisk <= tvData['maxRisk'].to_f)
+				currentRisk = ((currentOpenAllocation.map{|d| d[1]}.reject{|d| d['descr']['type'] != tvData['direction']}.reject{|d| d['descr']['pair'] != tickerForAllocation}.map{|d| d['vol'].to_f * d['descr']['price'].to_f}.sum + (currentAllocation['result'][baseTicker].to_f * tvData['currentPrice'].to_f))/(accountTotal * tvData['currentPrice'].to_f)) * 100
+
+				if (currentRisk.round(2) <= tvData['maxRisk'].to_f)
 			  	if tvData['entries'].reject(&:blank?).size > 0
 		  			tvData['entries'].reject(&:blank?).each do |entryPercentage|
 
@@ -319,10 +319,10 @@ class Kraken
   		case true
   		when tvData['tickerType'] == 'crypto'
 				pairCall = publicPair(tvData, apiKey, secretKey)
-				Thread.pass
+		  	Thread.pass
 				resultKey = pairCall['result'].keys.first
 				baseTicker = pairCall['result'][resultKey]['base']
-	  		Thread.pass
+				Thread.pass
 				currentAllocation = krakenBalance(apiKey, secretKey)
 				currentOpenAllocation = krakenPendingTrades(apiKey, secretKey)
 
@@ -331,9 +331,9 @@ class Kraken
 				Thread.pass
 				accountTotal = tickerInfoCall['result']['eb'].to_f
 
-				currentRisk = ((currentOpenAllocation.reject{|d| d['type'] != tvData['direction']}.reject{|d| d['pair'] != baseTicker}.map{|d|d[1]['vol'].to_f * d[1]['descr']['price'].to_f}.sum + currentAllocation['result'][baseTicker].to_f)/accountTotal) * 100
-				
-				if (currentRisk <= tvData['maxRisk'].to_f)
+				currentRisk = ((currentOpenAllocation.map{|d| d[1]}.reject{|d| d['descr']['type'] != tvData['direction']}.reject{|d| d['descr']['pair'] != tickerForAllocation}.map{|d| d['vol'].to_f * d['descr']['price'].to_f}.sum + (currentAllocation['result'][baseTicker].to_f * tvData['currentPrice'].to_f))/(accountTotal * tvData['currentPrice'].to_f)) * 100
+
+				if (currentRisk.round(2) <= tvData['maxRisk'].to_f)
 	  			priceToSet = (tvData['currentPrice']).to_f.round(1)
 
 	  			case true
