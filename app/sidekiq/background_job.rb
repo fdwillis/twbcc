@@ -5,15 +5,15 @@ class BackgroundJob
 
   def perform(tvData, krakenLiveAPI, krakenLiveSecret, job)
     if job == "stop"
-      Kraken.krakenTrailStop(tvData, krakenLiveAPI, krakenLiveSecret)
+      # Kraken.krakenTrailStop(tvData, krakenLiveAPI, krakenLiveSecret)
     end
     
     if job == "market"
-      Kraken.krakenMarketOrder(tvData, krakenLiveAPI, krakenLiveSecret)
+      ApplicationRecord.marketOrder(tvData, krakenLiveAPI, krakenLiveSecret)
     end
 
-    if job == "entry"
-      Kraken.krakenLimitOrder(tvData, krakenLiveAPI, krakenLiveSecret)
+    if job == "limit"
+      ApplicationRecord.limitOrder(tvData, krakenLiveAPI, krakenLiveSecret)
     end
 
   end

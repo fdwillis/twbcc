@@ -22,28 +22,24 @@ class TradingviewController < ApplicationController
 		if params['tradingDays'].present? && params['tradingDays'].map{|d| d.downcase}.include?(Date.today.strftime('%a').downcase)
 			if traderFound.trader?
 				case true
-				when params['tickerType'] == "crypto"
+				when params['broker'] == "kraken"
 
 					case true
 					when params['type'].include?('Stop')
-						BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'stop')
+						# BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'stop')
 						# Kraken.krakenTrailStop(params, traderFound)
 					when params['type'] == 'entry'
 						if params['allowMarketOrder'] == 'true'
 							BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'market')
-							# marketOrder = Kraken.krakenMarketOrder(params, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret)
 						end
 
-						BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'entry')
-						# limitOrder = Kraken.krakenLimitOrder(params, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret)
+						BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'limit')
 						
 
 					when params['type'].include?('profit')
 					end
 
 					render json: {success: true}
-				when params['tickerType'] == "forex"	
-				# build for oanda 
 				end
 			else
 				puts "\n-- No Trader Found --\n"
