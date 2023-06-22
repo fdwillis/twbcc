@@ -1,12 +1,11 @@
 class Kraken < ApplicationRecord
-	# self.abstract_class = true
 	def self.get_kraken_signature(uri_path, api_nonce, api_sec, api_post, secretKey)
     api_sha256 = OpenSSL::Digest.new('sha256').digest("#{api_nonce}#{api_post}")
     api_hmac = OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha512'), Base64.decode64(secretKey), "#{uri_path}#{api_sha256}")
     Base64.strict_encode64(api_hmac)
   end
 
-  def self.krakenRequest(uri_path, orderParams = {}, apiKey, secretKey)
+  def self.request(uri_path, orderParams = {}, apiKey, secretKey)
     api_nonce = (Time.now.to_f * 1000).to_i.to_s
     post_data = orderParams.present? ? orderParams.map { |key, value| "#{key}=#{value}" }.join('&') : nil
     api_post = (orderParams.present? ? "nonce=#{api_nonce}&#{post_data}" : "nonce=#{api_nonce}")
@@ -28,25 +27,16 @@ class Kraken < ApplicationRecord
     Oj.load(response.body)
   end
 
-	def self.krakenBalance(apiKey, secretKey)
+	def self.balance(apiKey, secretKey)
     routeToKraken = "/0/private/Balance"
-    krakenRequest(routeToKraken, nil, apiKey, secretKey)
+    request(routeToKraken, nil, apiKey, secretKey)
   end
 
-  def self.krakenPendingTrades(apiKey, secretKey)
+  def self.pendingTrades(apiKey, secretKey)
   	
     routeToKraken = "/0/private/OpenOrders"
     orderParams = {}
-    requestK = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)['result']['open']
-  end
-
-  def self.krakenClosedTrades(apiKey, secretKey)
-  	
-    routeToKraken = "/0/private/ClosedOrders"
-    orderParams = {
-    	"trades" => true
-    }
-    requestK = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)['result']['closed']
+    requestK = request(routeToKraken, orderParams, apiKey, secretKey)['result']['open']
   end
 
   def self.tickerInfo(symbol, apiKey, secretKey)
@@ -56,7 +46,7 @@ class Kraken < ApplicationRecord
     	"asset" => symbol
     }
 
-    requestK = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
+    requestK = request(routeToKraken, orderParams, apiKey, secretKey)
   end
 
   def self.publicPair(tvData, apiKey, secretKey)
@@ -65,20 +55,20 @@ class Kraken < ApplicationRecord
     	"pair" => tvData['ticker']
     }
 
-    requestK = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
+    requestK = request(routeToKraken, orderParams, apiKey, secretKey)
   end
 
-  def self.krakenOrder(orderID, apiKey, secretKey)
+  def self.orderInfo(orderID, apiKey, secretKey)
   	
     routeToKraken = "/0/private/QueryOrders"
     orderParams = {
 	    "txid" 			=> orderID,
 	    "trades" 			=> true,
 	  }	
-    krakenRequest(routeToKraken, orderParams, apiKey, secretKey)['result'][orderID]
+    request(routeToKraken, orderParams, apiKey, secretKey)['result'][orderID]
   end
 
-  def self.krakenTrailOrStop(tvData,tradeInfo, apiKey, secretKey, tradeX)
+  def self.newTrail(tvData,tradeInfo, apiKey, secretKey, tradeX)
   	# FINAL TESTING
   	requestProfit = nil
   	if tvData['reduceBy'].present? && tvData['reduceBy'].to_f != 100
@@ -94,7 +84,7 @@ class Kraken < ApplicationRecord
 		    "volume" 		=> (tradeInfo['vol'].to_f * (0.01 * tvData['reduceBy'].to_f)) > 0.0001 ? "%.10f" % (tradeInfo['vol'].to_f * (0.01 * tvData['reduceBy'].to_f)) : "0.0001"
 		  }
 		  
-	    requestProfit = krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
+	    requestProfit = request(routeToKraken, orderParams, apiKey, secretKey)
 	  end
 
 	  if tvData[  'reduceBy'].present? && tvData['reduceBy'].to_f == 100
@@ -109,7 +99,7 @@ class Kraken < ApplicationRecord
 		    "volume" 		=> tradeInfo['vol']
 		  }
 		  
-	    requestProfit = krakenRequest(routeToKraken1, orderParams1, apiKey, secretKey)
+	    requestProfit = request(routeToKraken1, orderParams1, apiKey, secretKey)
 
 	  end
 
@@ -118,7 +108,7 @@ class Kraken < ApplicationRecord
   end
   
 
-  def self.xpercentForTradeFromTimeframe(tvData, apiKey, secretKey)
+  def self.krakenRisk(tvData, apiKey, secretKey)
   	# hard coded min for bitcoin
   	currentPrice = tvData['currentPrice'].to_f
   	
@@ -126,7 +116,7 @@ class Kraken < ApplicationRecord
   	if tvData['tickerType'] == 'crypto' && tvData['broker'] == 'kraken'
   		# add opentrades costs to calculation for maxRisk
   		
-  		requestK = krakenBalance(apiKey, secretKey)
+  		requestK = balance(apiKey, secretKey)
 			
   		accountBalance = requestK['result']['ZUSD'].to_f
   	end
@@ -135,9 +125,9 @@ class Kraken < ApplicationRecord
   end
   
   # def self.createTakeProfitOrder(tvData)
-  # 	xpercentForTradeFromTimeframe
-  #   routeToKraken = "/0/private/Balance"
-  #   krakenRequest(routeToKraken,{}, apiKey, secretKey)
+    #xpercentForTradeFromTimeframe
+    #routeToKraken = "/0/private/Balance"
+    #request(routeToKraken,{}, apiKey, secretKey)
   # end
 
 end
