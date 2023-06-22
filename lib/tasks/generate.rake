@@ -41,7 +41,7 @@ namespace :generate do
       coupon = Stripe::Coupon.create({
         percent_off: num,
         duration: 'once',
-        max_redemptions: 500,
+        max_redemptions: 400,
         redeem_by: (Date.today + 2.days).to_time.to_i
       })
     end
@@ -54,7 +54,7 @@ namespace :generate do
       Stripe::Coupon.create({
         percent_off: num,
         duration: 'once',
-        max_redemptions: 500,
+        max_redemptions: 300,
         redeem_by: (Date.today + 2.days).to_time.to_i
       })
     end
@@ -65,7 +65,7 @@ namespace :generate do
       Stripe::Coupon.create({
         percent_off: num,
         duration: 'once',
-        max_redemptions: 500,
+        max_redemptions: 200,
         redeem_by: (Date.today + 2.days).to_time.to_i
       })
     end
@@ -75,7 +75,7 @@ namespace :generate do
       Stripe::Coupon.create({
         percent_off: num,
         duration: 'once',
-        max_redemptions: 250,
+        max_redemptions: 100,
         redeem_by: (Date.today + 2.days).to_time.to_i
       })
     end
