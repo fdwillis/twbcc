@@ -190,7 +190,6 @@ class ApplicationRecord < ActiveRecord::Base
 				  	if tvData['direction'] == 'buy' 
 						  case true
 						  when tvData['broker'] == 'kraken'
-							  #remove current pendingOrder in this position
 							  @requestK = Kraken.krakenRequest('/0/private/AddOrder', @orderParams, apiKey, secretKey)
 						  	
 						  end
@@ -199,7 +198,6 @@ class ApplicationRecord < ActiveRecord::Base
 					  if tvData['direction'] == 'sell'
 						  case true
 						  when tvData['broker'] == 'kraken'
-							  #remove current pendingOrder in this position
 							  @requestK = Kraken.krakenRequest('/0/private/AddOrder', @orderParams, apiKey, secretKey)
 						  	
 						  end
