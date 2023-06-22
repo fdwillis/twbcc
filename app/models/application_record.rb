@@ -317,5 +317,4 @@ class ApplicationRecord < ActiveRecord::Base
 			puts "\n-- Current Risk (#{@currentRisk.round(2)}%) --\n"
 		end
   end
-
 end

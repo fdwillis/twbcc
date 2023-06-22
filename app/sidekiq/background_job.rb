@@ -3,17 +3,17 @@ class BackgroundJob
 
   # sidekiq_retry_in { 1.minutes.to_i }
 
-  def perform(tvData, krakenLiveAPI, krakenLiveSecret, job)
+  def perform(tvData, apiKey, secretKey, job)
     if job == "stop"
-      ApplicationRecord.trailStop(tvData, krakenLiveAPI, krakenLiveSecret)
+      ApplicationRecord.trailStop(tvData, apiKey, secretKey)
     end
     
     if job == "market"
-      ApplicationRecord.marketOrder(tvData, krakenLiveAPI, krakenLiveSecret)
+      ApplicationRecord.marketOrder(tvData, apiKey, secretKey)
     end
 
     if job == "limit"
-      ApplicationRecord.limitOrder(tvData, krakenLiveAPI, krakenLiveSecret)
+      ApplicationRecord.limitOrder(tvData, apiKey, secretKey)
     end
 
   end

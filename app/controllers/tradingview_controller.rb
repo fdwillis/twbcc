@@ -15,8 +15,6 @@ class TradingviewController < ApplicationController
 	end
 
 	def signals
-		# check user exists from uuid
-		# if user subscription is active -> continue
 		traderID = params['traderID']
 		traderFound = User.find_by(uuid: traderID)
 		if params['tradingDays'].present? && params['tradingDays'].map{|d| d.downcase}.include?(Date.today.strftime('%a').downcase)
@@ -33,8 +31,6 @@ class TradingviewController < ApplicationController
 						end
 
 						BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'limit')
-						
-
 					when params['type'].include?('profit')
 					end
 
