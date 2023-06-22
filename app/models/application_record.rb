@@ -10,7 +10,7 @@ class ApplicationRecord < ActiveRecord::Base
 		end
 		if openTrades.present? && openTrades.size > 0 
 	  	openTrades.each do |trade| # go update known limit orders status
-	  		Thread.pass
+	  		
 	  		case true
 				when tvData['broker'] == 'kraken'
 		  		requestK = Kraken.krakenOrder(trade.uuid, apiKey, secretKey)
@@ -31,7 +31,7 @@ class ApplicationRecord < ActiveRecord::Base
   	
   	if afterUpdates.present? && afterUpdates.size > 0	
 	  	afterUpdates.each do |tradeX|
-			  Thread.pass
+			  
 	    	case true
 				when tvData['broker'] == 'kraken'	
 		  		requestOriginalE = Kraken.krakenOrder(tradeX.uuid, apiKey, secretKey)
@@ -50,7 +50,7 @@ class ApplicationRecord < ActiveRecord::Base
 					if tvData['currentPrice'].to_f > profitTriggerPassed
 			  		if tradeX.take_profits.empty?
 						  if tvData['currentPrice'].to_f > profitTriggerPassed + ((0.01 * tvData['trail'].to_f) * profitTriggerPassed)
-							  Thread.pass
+							  
 					    	case true
 								when tvData['broker'] == 'kraken'
 					  			@protectTrade = Kraken.krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey, tradeX)
@@ -62,7 +62,7 @@ class ApplicationRecord < ActiveRecord::Base
 			  			end
 				  	else
 				  		tradeX.take_profits.each do |profitTrade|
-				  			Thread.pass
+				  			
 		  			  	case true
 								when tvData['broker'] == 'kraken'	
 						  		requestProfitTradex = Kraken.krakenOrder(profitTrade.uuid, apiKey, secretKey)
@@ -83,11 +83,11 @@ class ApplicationRecord < ActiveRecord::Base
 									    "txid" 			=> profitTrade.uuid,
 									  }
 								  	routeToKraken = "/0/private/CancelOrder"
-								  	Thread.pass
+								  	
 								  	cancel = Kraken.krakenRequest(routeToKraken, orderParams, apiKey, secretKey)
 								  	profitTrade.destroy
 						  			puts "\n-- Old Take Profit Canceled --\n"
-						  			Thread.pass
+						  			
 						  			@protectTrade = Kraken.krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey, tradeX)
 						  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
 						  				puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
@@ -103,7 +103,7 @@ class ApplicationRecord < ActiveRecord::Base
 					  		
 				  		end
 				  		
-			  			Thread.pass
+			  			
 				  		if volumeTallyForTradex < requestOriginalE['vol'].to_f
 				  			if openProfitCount == 0
 					  			@protectTrade = Kraken.krakenTrailOrStop(tvData,requestOriginalE, apiKey, secretKey, tradeX)
@@ -149,19 +149,19 @@ class ApplicationRecord < ActiveRecord::Base
 	  	
 	  	if @unitsToTrade > 0 
 	  		# unitsWithScale
-		  	Thread.pass
+		  	
 				@pairCall = Kraken.publicPair(tvData, apiKey, secretKey)
-		  	Thread.pass
+		  	
 				@resultKey = @pairCall['result'].keys.first
 				@baseTicker = @pairCall['result'][@resultKey]['base']
 				@tickerForAllocation = @pairCall['result'][@resultKey]['altname']
-				Thread.pass
+				
 				@currentAllocation = Kraken.krakenBalance(apiKey, secretKey)
 				@currentOpenAllocation = Kraken.krakenPendingTrades(apiKey, secretKey)
 
-				Thread.pass
+				
 				@tickerInfoCall = Kraken.tickerInfo(@baseTicker, apiKey, secretKey)
-				Thread.pass
+				
 				@accountTotal = @tickerInfoCall['result']['eb'].to_f
 
 				@currentRisk = ((@currentOpenAllocation.map{|d| d[1]}.reject{|d| d['descr']['type'] != tvData['direction']}.reject{|d| d['descr']['pair'] != @tickerForAllocation}.map{|d| d['vol'].to_f * d['descr']['price'].to_f}.sum + (@currentAllocation['result'][@baseTicker].to_f * tvData['currentPrice'].to_f))/(@accountTotal * tvData['currentPrice'].to_f)) * 100
@@ -191,7 +191,7 @@ class ApplicationRecord < ActiveRecord::Base
 
 					  # if within maxRisk
 
-					  Thread.pass
+					  
 				  	if tvData['direction'] == 'buy' 
 						  case true
 						  when tvData['broker'] == 'kraken'
@@ -247,19 +247,19 @@ class ApplicationRecord < ActiveRecord::Base
 	  	
 	  	if @unitsToTrade > 0 
 	  		# unitsWithScale
-		  	Thread.pass
+		  	
 				@pairCall = Kraken.publicPair(tvData, apiKey, secretKey)
-		  	Thread.pass
+		  	
 				@resultKey = @pairCall['result'].keys.first
 				@baseTicker = @pairCall['result'][@resultKey]['base']
 				@tickerForAllocation = @pairCall['result'][@resultKey]['altname']
-				Thread.pass
+				
 				@currentAllocation = Kraken.krakenBalance(apiKey, secretKey)
 				@currentOpenAllocation = Kraken.krakenPendingTrades(apiKey, secretKey)
 
-				Thread.pass
+				
 				@tickerInfoCall = Kraken.tickerInfo(@baseTicker, apiKey, secretKey)
-				Thread.pass
+				
 				@accountTotal = @tickerInfoCall['result']['eb'].to_f
 
 				@currentRisk = ((@currentOpenAllocation.map{|d| d[1]}.reject{|d| d['descr']['type'] != tvData['direction']}.reject{|d| d['descr']['pair'] != @tickerForAllocation}.map{|d| d['vol'].to_f * d['descr']['price'].to_f}.sum + (@currentAllocation['result'][@baseTicker].to_f * tvData['currentPrice'].to_f))/(@accountTotal * tvData['currentPrice'].to_f)) * 100
@@ -281,7 +281,7 @@ class ApplicationRecord < ActiveRecord::Base
 		    "volume" 		=> "#{@unitsFiltered}",
 		  }
 
-		  Thread.pass
+		  
 			# averageOfPricesOpen = (pullPrices&.sum/pullPrices&.count)
 	  	if tvData['direction'] == 'buy'
 	  		case true
