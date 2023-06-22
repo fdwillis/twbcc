@@ -24,6 +24,7 @@ class Kraken < ApplicationRecord
     http.use_ssl = true
     response = http.request(req)
     Thread.pass
+    sleep 1
     Oj.load(response.body)
   end
 
