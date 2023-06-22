@@ -69,10 +69,6 @@ class ApplicationRecord < ActiveRecord::Base
 						  		profitTrade.update(status: requestProfitTradex['status'])
 								end
 
-								if profitTrade.status == 'canceled'
-					  			profitTrade.destroy
-						  	end
-
 					  		if profitTrade.status == 'open'
 					  			volumeTallyForTradex += requestProfitTradex['vol'].to_f
 				  				openProfitCount += 1
@@ -100,7 +96,6 @@ class ApplicationRecord < ActiveRecord::Base
 					  			profitTrade.destroy
 					  			next
 					  		end
-					  		
 				  		end
 				  		
 			  			
@@ -237,7 +232,7 @@ class ApplicationRecord < ActiveRecord::Base
 		end
 	end
 
-	def self.marketOrder(tvData, apiKey = nil, secretKey = nil) #entry
+	def self.marketOrder(tvData, apiKey = nil, secretKey = nil)
   	# only create order if within 'trail' of last set order of this 'type' -> limit/market and account less than definedRisk from TV
 
   	case true
