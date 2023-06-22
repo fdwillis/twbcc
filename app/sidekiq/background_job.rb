@@ -5,7 +5,7 @@ class BackgroundJob
 
   def perform(tvData, krakenLiveAPI, krakenLiveSecret, job)
     if job == "stop"
-      # Kraken.krakenTrailStop(tvData, krakenLiveAPI, krakenLiveSecret)
+      ApplicationRecord.trailStop(tvData, krakenLiveAPI, krakenLiveSecret)
     end
     
     if job == "market"

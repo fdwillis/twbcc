@@ -26,8 +26,7 @@ class TradingviewController < ApplicationController
 
 					case true
 					when params['type'].include?('Stop')
-						# BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'stop')
-						# Kraken.krakenTrailStop(params, traderFound)
+						BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'stop')
 					when params['type'] == 'entry'
 						if params['allowMarketOrder'] == 'true'
 							BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'market')
