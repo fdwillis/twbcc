@@ -22,16 +22,47 @@ class TradingviewController < ApplicationController
 				case true
 				when params['broker'] == "kraken"
 
-					case true
-					when params['type'].include?('Stop')
-						BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'stop')
-					when params['type'] == 'entry'
-						if params['allowMarketOrder'] == 'true'
-							BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'market')
+					if ENV['adminUUID'].include?(traderFound.uuid)
+						#copy trades to all valid members
+						if params['tradeForAdmin'] == 'true'
+							case true
+							when params['type'].include?('Stop')
+								BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'stop')
+							when params['type'] == 'entry'
+								if params['allowMarketOrder'] == 'true'
+									BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'market')
+								end
+
+								BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'limit')
+							when params['type'].include?('profit')
+							end
 						end
 
-						BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'limit')
-					when params['type'].include?('profit')
+						puts "\n-- Starting To Copy Trades --\n"
+						#pull those with done for you plan
+						monthlyAuto = Stripe::Subscription.list({limit: 100, price: ENV['autoTradingMonthlyMembership']})['data'].reject{|d| d['status'] != 'active'}
+						annualAuto = Stripe::Subscription.list({limit: 100, price: ENV['autoTradingAnnualMembership']})['data'].reject{|d| d['status'] != 'active'}
+
+						validPlansToParse = monthlyAuto + annualAuto
+
+						validPlansToParse.each do |planXinfo|
+							traderFoundForCopy = User.find_by(stripeCustomerID: planXinfo['customer'])
+							puts traderFoundForCopy.uuid
+						end
+
+						#execute if this ticker is authorized by account holder
+					else
+						case true
+						when params['type'].include?('Stop')
+							BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'stop')
+						when params['type'] == 'entry'
+							if params['allowMarketOrder'] == 'true'
+								BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'market')
+							end
+
+							BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'limit')
+						when params['type'].include?('profit')
+						end
 					end
 
 					render json: {success: true}
