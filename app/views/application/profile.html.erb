@@ -1,7 +1,7 @@
 <div class="header-clear-medium">
 
 	<% if current_user == @userFound %>
-		<% currentMembership = @userFound.checkMembership %>
+
 	  <div class="d-flex content mb-1">
 	    <!-- left side of profile -->
 	    <div class="flex-grow-1">
@@ -71,6 +71,22 @@
                 </ul>
           </div>
       </div>
+
+      <% if @membershipDetails.map{|d| d[:membershipDetails]}.map(&:items).map(&:data).flatten.map(&:plan).map(&:id).include?(ENV['autoTradingMonthlyMembership']) || @membershipDetails.map{|d| d[:membershipDetails]}.map(&:items).map(&:data).flatten.map(&:plan).map(&:id).include?(ENV['autoTradingAnnualMembership']) || current_user.admin? %>
+      	<div class="card card-style">
+          <div class="content">
+              <h3 class="mb-0">Your Auto Trading List</h3>
+              <p>Choose the assets you want your account to auto trade</p>
+                <div class="content">
+                  <%= form_for :authorizedList, url: manage_trading_keys_path do |form| %>
+                  	<%= form.label "Authorized Trading List (Separate By Comma)" %><br />
+					      		<%= form.text_field :authorizedList, value: current_user&.authorizedList, class: 'form-control form-control-lg form-control-alt py-3' %><br />
+                  <%= form.submit "Save List",class: "form-control btn btn-full btn-m rounded-m bg-highlight font-700 text-uppercase mb-4 mt-4" %>
+                  <% end %>
+                </div>
+          </div>
+	      </div>
+      <% end %>
 			<div class="card card-style">
 		    <div class="content mb-0">
 		      <div class="row">
