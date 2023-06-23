@@ -2,9 +2,14 @@ class TradingviewController < ApplicationController
 	protect_from_forgery with: :null_session
 
 	def manage_trading_keys
-		if autoTradingKeysparams.present?
+		if params['editKeys'] && autoTradingKeysparams.present?
 			current_user.update(autoTradingKeysparams)
 			flash[:success] = "Keys Updated"
+			redirect_to request.referrer
+			return
+		elsif params['authorizedList'] && authorizedListParams.present?
+			current_user.update(authorizedListParams)
+			flash[:success] = "Authorized List Updated"
 			redirect_to request.referrer
 			return
 		else
@@ -22,8 +27,7 @@ class TradingviewController < ApplicationController
 				case true
 				when params['broker'] == "kraken"
 
-					if ENV['adminUUID'].include?(traderFound.uuid)
-						#copy trades to all valid members
+					if Oj.load(ENV['adminUUID']).include?(traderFound.uuid)
 						if params['tradeForAdmin'] == 'true'
 							case true
 							when params['type'].include?('Stop')
@@ -38,6 +42,7 @@ class TradingviewController < ApplicationController
 							end
 						end
 
+						#copy trades to all valid members
 						puts "\n-- Starting To Copy Trades --\n"
 						#pull those with done for you plan
 						monthlyAuto = Stripe::Subscription.list({limit: 100, price: ENV['autoTradingMonthlyMembership']})['data'].reject{|d| d['status'] != 'active'}
@@ -47,10 +52,26 @@ class TradingviewController < ApplicationController
 
 						validPlansToParse.each do |planXinfo|
 							traderFoundForCopy = User.find_by(stripeCustomerID: planXinfo['customer'])
-							puts traderFoundForCopy.uuid
+							listToTrade = traderFoundForCopy.authorizedList.split(",").reject(&:blank?)
+							listToTrade.each do |assetX|
+								if assetX.upcase == params['ticker']
+									# execute trade
+									case true
+									when params['type'].include?('Stop')
+										BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFoundForCopy.krakenLiveAPI, traderFoundForCopy.krakenLiveSecret, 'stop')
+									when params['type'] == 'entry'
+										if params['allowMarketOrder'] == 'true'
+											BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFoundForCopy.krakenLiveAPI, traderFoundForCopy.krakenLiveSecret, 'market')
+										end
+
+										BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFoundForCopy.krakenLiveAPI, traderFoundForCopy.krakenLiveSecret, 'limit')
+									when params['type'].include?('profit')
+									end
+								end
+							end
 						end
 
-						#execute if this ticker is authorized by account holder
+						puts "\n-- Finished Copying Trades --\n"
 					else
 						case true
 						when params['type'].include?('Stop')
@@ -81,8 +102,12 @@ class TradingviewController < ApplicationController
     params.require(:editKeys).permit(:krakenLiveAPI, :krakenLiveSecret, :krakenTestAPI, :krakenTestSecret)
   end
 
+  def authorizedListParams
+    params.require(:authorizedList).permit(:authorizedList)
+  end
+
   def tradingviewKeysparams
-    params.permit(:ticker, :tickerType, :type, :direction, :timeframe, :currentPrice, :highPrice, :tradingview, :traderID, :lowPrice, :broker, :allowMarketOrder, :profitTrigger, :maxRisk, :maxProfit, :reduceBy, :trail, :perEntry, :entries => [], :tradingDays => [])
+    params.permit(:tradeForAdmin, :ticker, :tickerType, :type, :direction, :timeframe, :currentPrice, :highPrice, :tradingview, :traderID, :lowPrice, :broker, :allowMarketOrder, :profitTrigger, :maxRisk, :maxProfit, :reduceBy, :trail, :perEntry, :entries => [], :tradingDays => [])
   end
 end
 
