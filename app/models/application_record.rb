@@ -137,6 +137,7 @@ class ApplicationRecord < ActiveRecord::Base
 	end
 
 	def self.limitOrder(tvData, apiKey = nil, secretKey = nil)
+		traderFound = User.find_by(krakenLiveAPI: apiKey)
 		case true
 		when tvData['broker'] == 'kraken'
 			
@@ -221,6 +222,7 @@ class ApplicationRecord < ActiveRecord::Base
 			end
 		else
 			puts "\n-- Max Risk Met (#{tvData['timeframe']} Minute) --\n"
+			puts "\n-- Trader #{traderFound.uuid} --\n"
 			puts "\n-- Current Risk (#{@currentRisk.round(2)}%) --\n"
 		end
 	end
