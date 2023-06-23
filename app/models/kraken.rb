@@ -23,7 +23,7 @@ class Kraken < ApplicationRecord
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     response = http.request(req)
-    Thread.pass
+    sleep 0.5
     Oj.load(response.body)
   end
 
@@ -102,7 +102,7 @@ class Kraken < ApplicationRecord
 	    requestProfit = request(routeToKraken1, orderParams1, apiKey, secretKey)
 
 	  end
-    Thread.pass
+
 		tradeX.take_profits.create!(uuid: requestProfit['result']['txid'][0], status: 'open', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(krakenLiveAPI: apiKey).id)
 		requestProfit
   end
