@@ -25,7 +25,7 @@ class TradingviewController < ApplicationController
 		if params['tradingDays'].present? && params['tradingDays'].map{|d| d.downcase}.include?(Date.today.strftime('%a').downcase)
 			if traderFound.trader?
 				case true
-				when params['broker'] == "kraken"
+				when params['broker'] == 'KRAKEN'
 
 					if Oj.load(ENV['adminUUID']).include?(traderFound.uuid)
 						if params['tradeForAdmin'] == 'true'

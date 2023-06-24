@@ -4,7 +4,7 @@ class ApplicationRecord < ActiveRecord::Base
 	def self.trailStop(tvData, apiKey = nil, secretKey = nil)
 		puts "\n-- Current Price: #{tvData['currentPrice'].to_f.round(1)} --\n"
 		case true
-		when tvData['broker'] == 'kraken'
+		when tvData['broker'] == 'KRAKEN'
 			openTrades = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'open', broker: tvData['broker'])
 			
 		end
@@ -12,7 +12,7 @@ class ApplicationRecord < ActiveRecord::Base
 	  	openTrades.each do |trade|
 	  		
 	  		case true
-				when tvData['broker'] == 'kraken'
+				when tvData['broker'] == 'KRAKEN'
 		  		requestK = Kraken.orderInfo(trade.uuid, apiKey, secretKey)
 		  		trade.update(status: requestK['status'])
 					
@@ -25,7 +25,7 @@ class ApplicationRecord < ActiveRecord::Base
   	
   	# pull current pending orders for sync of database
   	case true
-		when tvData['broker'] == 'kraken'
+		when tvData['broker'] == 'KRAKEN'
 	  	afterUpdates = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'closed', broker: tvData['broker'], finalTakeProfit: nil)
 		end
   	
@@ -33,7 +33,7 @@ class ApplicationRecord < ActiveRecord::Base
 	  	afterUpdates.each do |tradeX|
 			  
 	    	case true
-				when tvData['broker'] == 'kraken'	
+				when tvData['broker'] == 'KRAKEN'	
 		  		requestOriginalE = Kraken.orderInfo(tradeX.uuid, apiKey, secretKey)
 				end
 
@@ -52,7 +52,7 @@ class ApplicationRecord < ActiveRecord::Base
 						  if tvData['currentPrice'].to_f > profitTriggerPassed + ((0.01 * tvData['trail'].to_f) * profitTriggerPassed)
 							  
 					    	case true
-								when tvData['broker'] == 'kraken'
+								when tvData['broker'] == 'KRAKEN'
 					  			@protectTrade = Kraken.newTrail(tvData,requestOriginalE, apiKey, secretKey, tradeX)
 					  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
 					  				puts 	"\n-- Taking Profit #{@protectTrade['result']['txid'][0]} --\n"
@@ -64,7 +64,7 @@ class ApplicationRecord < ActiveRecord::Base
 				  		tradeX.take_profits.each do |profitTrade|
 				  			
 		  			  	case true
-								when tvData['broker'] == 'kraken'	
+								when tvData['broker'] == 'KRAKEN'	
 						  		requestProfitTradex = Kraken.orderInfo(profitTrade.uuid, apiKey, secretKey)
 						  		profitTrade.update(status: requestProfitTradex['status'])
 								end
@@ -139,7 +139,7 @@ class ApplicationRecord < ActiveRecord::Base
 	def self.limitOrder(tvData, apiKey = nil, secretKey = nil)
 		traderFound = User.find_by(krakenLiveAPI: apiKey)
 		case true
-		when tvData['broker'] == 'kraken'
+		when tvData['broker'] == 'KRAKEN'
 			
 			@unitsToTrade = Kraken.krakenRisk(tvData, apiKey, secretKey)
 	  	
@@ -169,7 +169,7 @@ class ApplicationRecord < ActiveRecord::Base
 	  			priceToSet = (tvData['direction'] == 'sell' ? tvData['highPrice'].to_f + (tvData['highPrice'].to_f * (0.01 * entryPercentage.to_f)) : tvData['lowPrice'].to_f - (tvData['lowPrice'].to_f * (0.01 * entryPercentage.to_f))).round(1)
 
 				  case true
-				  when tvData['broker'] == 'kraken'
+				  when tvData['broker'] == 'KRAKEN'
 				    case true
 				    when tvData['ticker'] == 'BTCUSD'
 				    	@unitsFiltered = (@unitsToTrade > 0.0001 ? @unitsToTrade : 0.0001)
@@ -185,7 +185,7 @@ class ApplicationRecord < ActiveRecord::Base
 
 				  	if tvData['direction'] == 'buy' 
 						  case true
-						  when tvData['broker'] == 'kraken'
+						  when tvData['broker'] == 'KRAKEN'
 							  @requestK = Kraken.request('/0/private/AddOrder', @orderParams, apiKey, secretKey)
 						  	
 						  end
@@ -193,14 +193,14 @@ class ApplicationRecord < ActiveRecord::Base
 				  	
 					  if tvData['direction'] == 'sell'
 						  case true
-						  when tvData['broker'] == 'kraken'
+						  when tvData['broker'] == 'KRAKEN'
 							  @requestK = Kraken.request('/0/private/AddOrder', @orderParams, apiKey, secretKey)
 						  	
 						  end
 					  end
 
 					  case true
-					  when tvData['broker'] == 'kraken'
+					  when tvData['broker'] == 'KRAKEN'
 						  if @requestK.present? && @requestK['result'].present?
 							  if @requestK['result']['txid'].present?
 							  	User.find_by(krakenLiveAPI: apiKey).trades.create(uuid:  @requestK['result']['txid'][0], broker: tvData['broker'], direction: tvData['direction'], status: 'open')
@@ -229,7 +229,7 @@ class ApplicationRecord < ActiveRecord::Base
 
 	def self.marketOrder(tvData, apiKey = nil, secretKey = nil)
   	case true
-		when tvData['broker'] == 'kraken'
+		when tvData['broker'] == 'KRAKEN'
 			
 			@unitsToTrade = Kraken.krakenRisk(tvData, apiKey, secretKey)
 	  	
@@ -269,20 +269,20 @@ class ApplicationRecord < ActiveRecord::Base
 		  
 	  	if tvData['direction'] == 'buy'
 	  		case true
-	  		when tvData['broker'] == 'kraken'
+	  		when tvData['broker'] == 'KRAKEN'
 				  requestK = Kraken.request('/0/private/AddOrder', orderParams, apiKey, secretKey)
 	  		end
 	  	end
 
 		  if tvData['direction'] == 'sell'
 		  	case true
-		  	when tvData['broker'] == 'kraken'
+		  	when tvData['broker'] == 'KRAKEN'
 				  requestK = Kraken.request('/0/private/AddOrder', orderParams, apiKey, secretKey)
 		  	end
 		  end
 
 		  case true
-	  	when tvData['broker'] == 'kraken'
+	  	when tvData['broker'] == 'KRAKEN'
 			  if requestK.present? && requestK['result'].present?
 
 					if requestK['result']['txid'].present?
