@@ -1,7 +1,7 @@
 class BackgroundJob
   include Sidekiq::Job
 
-  def perform(tvData, apiKey, secretKey, job)
+  def perform(tvData, apiKey = nil, secretKey = nil, job)
     if job == "stop"
       ApplicationRecord.trailStop(tvData, apiKey, secretKey)
     end
