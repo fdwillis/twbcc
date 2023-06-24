@@ -260,24 +260,28 @@ class ApplicationRecord < ActiveRecord::Base
 	    	@unitsFiltered = (@unitsToTrade > 0.0001 ? @unitsToTrade : 0.0001)
 	    end
 
-			orderParams = {
-		    "pair" 			=> tvData['ticker'],
-		    "type" 			=> tvData['direction'],
-		    "ordertype" => "market",
-		    "volume" 		=> "#{@unitsFiltered}",
-		  }
+	    case true
+  		when tvData['broker'] == 'KRAKEN'
+				krakenOrderParams = {
+			    "pair" 			=> tvData['ticker'],
+			    "type" 			=> tvData['direction'],
+			    "ordertype" => "market",
+			    "volume" 		=> "#{@unitsFiltered}",
+			  }
+  		end
+
 		  
 	  	if tvData['direction'] == 'buy'
 	  		case true
 	  		when tvData['broker'] == 'KRAKEN'
-				  requestK = Kraken.request('/0/private/AddOrder', orderParams, apiKey, secretKey)
+				  requestK = Kraken.request('/0/private/AddOrder', krakenOrderParams, apiKey, secretKey)
 	  		end
 	  	end
 
 		  if tvData['direction'] == 'sell'
 		  	case true
 		  	when tvData['broker'] == 'KRAKEN'
-				  requestK = Kraken.request('/0/private/AddOrder', orderParams, apiKey, secretKey)
+				  requestK = Kraken.request('/0/private/AddOrder', krakenOrderParams, apiKey, secretKey)
 		  	end
 		  end
 
