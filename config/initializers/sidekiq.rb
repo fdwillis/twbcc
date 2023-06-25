@@ -12,10 +12,4 @@ Sidekiq.configure_client do |config|
   }
 end
 
-Sidekiq.configure_server do |config|
-   config.server_middleware do |chain|
-      chain.add Sidekiq::Middleware::Server::RetryJobs, :max_retries => 1
-   end
-end
-
 Sidekiq.strict_args!(false)
