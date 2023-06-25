@@ -96,8 +96,6 @@ class TradingviewController < ApplicationController
 					end
 				end
 
-				Trade.where(status: 'canceled').destroy_all
-
 				render json: {success: true}
 			else
 				puts "\n-- No Trader Found --\n"
