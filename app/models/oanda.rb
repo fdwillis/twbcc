@@ -1,29 +1,23 @@
 class Oanda < ApplicationRecord
-	@oanda = OandaApiV20.new(access_token: ENV['oandaToken'])
 
-	def self.accounts
-		@oanda.accounts.show['accounts']
+	def self.oandaRequest(token)
+		@oanda = OandaApiV20.new(access_token: token)
 	end
 
-	def self.balance
-		@oanda.accounts.show['accounts']
+	def self.accounts(token)
+		oandaRequest(token).accounts.show['accounts']
 	end
 
-	def self.entry #limit&market
-		options = {
-		  'order' => {
-		    'units' => '100',
-		    'instrument' => 'EUR_CAD',
-		    'timeInForce' => 'FOK',
-		    'type' => 'MARKET',
-		    'positionFill' => 'DEFAULT'
-		  },
-		}
-		@oanda.account('account_id').order(options).create
+	def self.balance(token)
+		oandaRequest(token).accounts.show['accounts']
 	end
 
-	def self.trail
-		@oanda.account('account_id').open_trades.show
+	def self.entry(token, orderParams) #limit&market
+		oandaRequest(token).account('account_id').order(orderParams).create
+	end
+
+	def self.trail(token)
+		oandaRequest(token).account('account_id').open_trades.show
 
 		options = {
 			'takeProfit' => {
@@ -31,13 +25,13 @@ class Oanda < ApplicationRecord
 			  'price' => '2.5'
 			}
 		}
-		@oanda.account('account_id').order(id, options).update
+		oandaRequest(token).account('account_id').order(id, options).update
 	end
 	
-	def self.takeProfit
+	def self.takeProfit(token)
 		id = client.account('account_id').open_trades.show['trades'][0]['id']
 		options = { 'units' => '10' }
-		@oanda.account('account_id').trade(id, options).close
+		oandaRequest(token).account('account_id').trade(id, options).close
 	end
 end
 
