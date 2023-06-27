@@ -145,11 +145,19 @@ class ApplicationRecord < ActiveRecord::Base
   	puts "Done Checking Profit"
 	end
 
-	def self.limitOrder(tvData, apiKey = nil, secretKey = nil)
-		traderFound = User.find_by(krakenLiveAPI: apiKey)
+	def self.newEntry(tvData, apiKey = nil, secretKey = nil)
 		case true
 		when tvData['broker'] == 'KRAKEN'
-			
+			traderFound = User.find_by(krakenLiveAPI: apiKey)
+		when tvData['broker'] == 'OANDA'
+			traderFound = User.find_by(oandaToken: apiKey)
+		end
+		# if allowMarketOrder -> market order
+		# if entries.count > 0 -> limit order
+
+		# variables
+  	case true
+		when tvData['broker'] == 'KRAKEN'
 			@unitsToTrade = Kraken.krakenRisk(tvData, apiKey, secretKey)
 	  	
 	  	if @unitsToTrade > 0 
@@ -169,19 +177,86 @@ class ApplicationRecord < ActiveRecord::Base
 
 				@currentRisk = ((@currentOpenAllocation.map{|d| d[1]}.reject{|d| d['descr']['type'] != tvData['direction']}.reject{|d| d['descr']['pair'] != @tickerForAllocation}.map{|d| d['vol'].to_f * d['descr']['price'].to_f}.sum + (@currentAllocation['result'][@baseTicker].to_f * tvData['currentPrice'].to_f))/(@accountTotal * tvData['currentPrice'].to_f)) * 100
 	  	end
+	  when tvData['broker'] == 'OANDA'
+	  	# @currentRisk = 
+	  	# @unitsToTrade =
+	  	# @unitsFiltered = @unitsToTrade
 		end
 
+		# ticker specific
+		case true
+    when tvData['ticker'] == 'BTCUSD'
+    	@unitsFiltered = (@unitsToTrade > 0.0001 ? @unitsToTrade : 0.0001)
+    end
+
 		if (@currentRisk.round(2) <= tvData['maxRisk'].to_f)
-	  	if tvData['entries'].reject(&:blank?).size > 0
-  			tvData['entries'].reject(&:blank?).each do |entryPercentage|
+			# market order
+			if tvData['allowMarketOrder'] == 'true'
+				# set order params
+		    case true
+	  		when tvData['broker'] == 'KRAKEN'
+					krakenOrderParams = {
+				    "pair" 			=> tvData['ticker'],
+				    "type" 			=> tvData['direction'],
+				    "ordertype" => "market",
+				    "volume" 		=> "#{@unitsFiltered}",
+				  }
+	  		when tvData['broker'] == 'OANDA'
+	  			oandaOrderParams = {
+					  'order' => {
+					    'units' => "#{@unitsFiltered}",
+					    'instrument' => tvData['ticker'],
+					    'timeInForce' => 'FOK',
+					    'type' => 'MARKET',
+					    'positionFill' => 'DEFAULT'
+					  }
+					}
+	  		end
+	  		# call order
+	  		if tvData['direction'] == 'buy'
+		  		case true
+		  		when tvData['broker'] == 'KRAKEN'
+					  requestK = Kraken.request('/0/private/AddOrder', krakenOrderParams, apiKey, secretKey)
+		  		when tvData['broker'] == 'OANDA'
+		  			requestK = Oanda.entry(apiKey, oandaOrderParams)
+		  		end
+		  	end
+		  	# put order
+			  if tvData['direction'] == 'sell'
+			  	case true
+			  	when tvData['broker'] == 'KRAKEN'
+					  requestK = Kraken.request('/0/private/AddOrder', krakenOrderParams, apiKey, secretKey)
+			  	when tvData['broker'] == 'OANDA'
+		  			requestK = Oanda.entry(apiKey, oandaOrderParams)
+			  	end
+			  end
 
-	  			priceToSet = (tvData['direction'] == 'sell' ? tvData['highPrice'].to_f + (tvData['highPrice'].to_f * (0.01 * entryPercentage.to_f)) : tvData['lowPrice'].to_f - (tvData['lowPrice'].to_f * (0.01 * entryPercentage.to_f))).round(1)
+			  # update database with ID from requestK
+			  case true
+		  	when tvData['broker'] == 'KRAKEN'
+				  if requestK.present? && requestK['result'].present?
 
-			    case true
-			    when tvData['ticker'] == 'BTCUSD'
-			    	@unitsFiltered = (@unitsToTrade > 0.0001 ? @unitsToTrade : 0.0001)
-			    end
-
+						if requestK['result']['txid'].present?
+							User.find_by(krakenLiveAPI: apiKey).trades.create(uuid:  requestK['result']['txid'][0], broker: tvData['broker'], direction: tvData['direction'], status: 'closed')
+					  	puts "\n-- Kraken Entry Submitted --\n"
+					  end
+					else 
+					  if requestK['error'][0].present? && requestK['error'][0].include?("Insufficient")
+					  	puts "\n-- MORE CASH FOR ENTRIES --\n"
+					  end
+					end
+				when tvData['broker'] == 'OANDA'
+					if requestK.present?
+					else
+						puts "\n-- NOTHING --\n"
+					end
+		  	end
+			end
+			# limit order
+			if tvData['entries'].reject(&:blank?).size > 0
+				tvData['entries'].reject(&:blank?).each do |entryPercentage|
+					priceToSet = (tvData['direction'] == 'sell' ? tvData['highPrice'].to_f + (tvData['highPrice'].to_f * (0.01 * entryPercentage.to_f)) : tvData['lowPrice'].to_f - (tvData['lowPrice'].to_f * (0.01 * entryPercentage.to_f))).round(1)
+					# set order params
 			    case true
 		  		when tvData['broker'] == 'KRAKEN'
 		  			krakenParams0 = {
@@ -192,126 +267,47 @@ class ApplicationRecord < ActiveRecord::Base
 					    "volume" 		=> "#{@unitsFiltered}",
 					  }
 					end
-
+					# call order
 			  	if tvData['direction'] == 'buy' 
 					  case true
 					  when tvData['broker'] == 'KRAKEN'
-						  @requestK = Kraken.request('/0/private/AddOrder', krakenParams0, apiKey, secretKey)
+						  requestKlimit = Kraken.request('/0/private/AddOrder', krakenParams0, apiKey, secretKey)
 					  	
 					  end
 			  	end
-			  	
+			  	# put order
 				  if tvData['direction'] == 'sell'
 					  case true
 					  when tvData['broker'] == 'KRAKEN'
-						  @requestK = Kraken.request('/0/private/AddOrder', krakenParams0, apiKey, secretKey)
-					  	
+						  requestKlimit = Kraken.request('/0/private/AddOrder', krakenParams0, apiKey, secretKey)
 					  end
 				  end
 
+				  # update database with ID from requestK
 				  case true
 				  when tvData['broker'] == 'KRAKEN'
-					  if @requestK.present? && @requestK['result'].present?
-						  if @requestK['result']['txid'].present?
-						  	User.find_by(krakenLiveAPI: apiKey).trades.create(uuid:  @requestK['result']['txid'][0], broker: tvData['broker'], direction: tvData['direction'], status: 'open')
+					  if requestKlimit.present? && requestKlimit['result'].present?
+						  if requestKlimit['result']['txid'].present?
+						  	User.find_by(krakenLiveAPI: apiKey).trades.create(uuid:  requestKlimit['result']['txid'][0], broker: tvData['broker'], direction: tvData['direction'], status: 'open')
 						  	puts "\n-- Kraken Entry Submitted --\n"
 						  end
 					  else
-						  if @requestK['error'][0].present? && @requestK['error'][0].include?("Insufficient")
+						  if requestKlimit['error'][0].present? && requestKlimit['error'][0].include?("Insufficient")
 						  	puts "\n-- MORE CASH FOR ENTRIES --\n"
-							else
-						  	puts "\n-- Waiting For Better Entry --\n"
 							end
 					  end
 				  end
-
-  			end
-  		else
+				end
+			else
   			puts "\n-- No Limit Orders Set --\n"
 			end
 		else
 			puts "\n-- Max Risk Met (#{tvData['timeframe']} Minute) --\n"
 			puts "\n-- Trader #{traderFound.uuid} --\n"
 			puts "\n-- Current Risk (#{@currentRisk.round(2)}%) --\n"
+			puts "\n-- Trader #{traderFound.uuid} --\n"
 		end
 	end
 
-	def self.marketOrder(tvData, apiKey = nil, secretKey = nil)
-  	case true
-		when tvData['broker'] == 'KRAKEN'
-			
-			@unitsToTrade = Kraken.krakenRisk(tvData, apiKey, secretKey)
-	  	
-	  	if @unitsToTrade > 0 
-				@pairCall = Kraken.publicPair(tvData, apiKey, secretKey)
-		  	
-				@resultKey = @pairCall['result'].keys.first
-				@baseTicker = @pairCall['result'][@resultKey]['base']
-				@tickerForAllocation = @pairCall['result'][@resultKey]['altname']
-				
-				@currentAllocation = Kraken.balance(apiKey, secretKey)
-				@currentOpenAllocation = Kraken.pendingTrades(apiKey, secretKey)
-
-				
-				@tickerInfoCall = Kraken.tickerInfo(@baseTicker, apiKey, secretKey)
-				
-				@accountTotal = @tickerInfoCall['result']['eb'].to_f
-
-				@currentRisk = ((@currentOpenAllocation.map{|d| d[1]}.reject{|d| d['descr']['type'] != tvData['direction']}.reject{|d| d['descr']['pair'] != @tickerForAllocation}.map{|d| d['vol'].to_f * d['descr']['price'].to_f}.sum + (@currentAllocation['result'][@baseTicker].to_f * tvData['currentPrice'].to_f))/(@accountTotal * tvData['currentPrice'].to_f)) * 100
-	  	end
-		end
-
-
-
-		if (@currentRisk.round(2) <= tvData['maxRisk'].to_f)
-			case true
-	    when tvData['ticker'] == 'BTCUSD'
-	    	@unitsFiltered = (@unitsToTrade > 0.0001 ? @unitsToTrade : 0.0001)
-	    end
-
-	    case true
-  		when tvData['broker'] == 'KRAKEN'
-				krakenOrderParams = {
-			    "pair" 			=> tvData['ticker'],
-			    "type" 			=> tvData['direction'],
-			    "ordertype" => "market",
-			    "volume" 		=> "#{@unitsFiltered}",
-			  }
-  		end
-
-		  
-	  	if tvData['direction'] == 'buy'
-	  		case true
-	  		when tvData['broker'] == 'KRAKEN'
-				  requestK = Kraken.request('/0/private/AddOrder', krakenOrderParams, apiKey, secretKey)
-	  		end
-	  	end
-
-		  if tvData['direction'] == 'sell'
-		  	case true
-		  	when tvData['broker'] == 'KRAKEN'
-				  requestK = Kraken.request('/0/private/AddOrder', krakenOrderParams, apiKey, secretKey)
-		  	end
-		  end
-
-		  case true
-	  	when tvData['broker'] == 'KRAKEN'
-			  if requestK.present? && requestK['result'].present?
-
-					if requestK['result']['txid'].present?
-						User.find_by(krakenLiveAPI: apiKey).trades.create(uuid:  requestK['result']['txid'][0], broker: tvData['broker'], direction: tvData['direction'], status: 'closed')
-				  	puts "\n-- Kraken Entry Submitted --\n"
-				  end
-				else 
-				  if requestK['error'][0].present? && requestK['error'][0].include?("Insufficient")
-				  	puts "\n-- MORE CASH FOR ENTRIES --\n"
-				  end
-				end
-	  	end
-
-		else
-			puts "\n-- Max Risk Met (#{tvData['timeframe']} Minute) --\n"
-			puts "\n-- Current Risk (#{@currentRisk.round(2)}%) --\n"
-		end
-  end
+	# combine limit and market into one 'entry' call with logic to determine wich
 end

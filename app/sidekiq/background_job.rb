@@ -1,17 +1,13 @@
 class BackgroundJob
   include Sidekiq::Job
 
-  def perform(tvData, apiKey = nil, secretKey = nil, job)
+  def perform(job,tvData, apiKey = nil, secretKey = nil)
     if job == "stop"
       ApplicationRecord.trailStop(tvData, apiKey, secretKey)
     end
     
-    if job == "market"
-      ApplicationRecord.marketOrder(tvData, apiKey, secretKey)
-    end
-
-    if job == "limit"
-      ApplicationRecord.limitOrder(tvData, apiKey, secretKey)
+    if job == "entry"
+      ApplicationRecord.newEntry(tvData, apiKey, secretKey)
     end
 
   end

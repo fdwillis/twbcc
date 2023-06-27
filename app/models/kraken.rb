@@ -110,6 +110,7 @@ class Kraken < ApplicationRecord
 
   def self.krakenRisk(tvData, apiKey, secretKey)
   	# hard coded min for bitcoin
+    
   	currentPrice = tvData['currentPrice'].to_f
 		
 		requestK = balance(apiKey, secretKey)
