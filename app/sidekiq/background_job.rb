@@ -6,12 +6,8 @@ class BackgroundJob
       ApplicationRecord.trailStop(tvData, apiKey, secretKey)
     end
     
-    if job == "market"
-      ApplicationRecord.marketOrder(tvData, apiKey, secretKey)
-    end
-
-    if job == "limit"
-      ApplicationRecord.limitOrder(tvData, apiKey, secretKey)
+    if job == "entry"
+      ApplicationRecord.newEntry(tvData, apiKey, secretKey)
     end
 
   end

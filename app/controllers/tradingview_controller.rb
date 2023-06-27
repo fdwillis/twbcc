@@ -38,15 +38,9 @@ class TradingviewController < ApplicationController
 						when params['type'] == 'entry'
 							case true
 							when params['broker'] == 'KRAKEN'
-								if params['allowMarketOrder'] == 'true'
-									BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'market')
-								end
-								BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'limit')
+								BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'entry')
 							when params['broker'] == 'OANDA'
-								if params['allowMarketOrder'] == 'true'
-									BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.oandaToken, nil, 'market')
-								end
-								BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.oandaToken, nil, 'limit')
+								BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.oandaToken, nil, 'entry')
 							end
 						when params['type'].include?('profit')
 						end
