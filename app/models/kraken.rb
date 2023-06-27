@@ -27,7 +27,7 @@ class Kraken < ApplicationRecord
     Oj.load(response.body)
   end
 
-	def self.balance(apiKey, secretKey)
+	def self.krakenBalance(apiKey, secretKey)
     routeToKraken = "/0/private/Balance"
     request(routeToKraken, nil, apiKey, secretKey)
   end
@@ -113,7 +113,7 @@ class Kraken < ApplicationRecord
     
   	currentPrice = tvData['currentPrice'].to_f
 		
-		requestK = balance(apiKey, secretKey)
+		requestK = krakenBalance(apiKey, secretKey)
 		
 		accountBalance = requestK['result']['ZUSD'].to_f
 

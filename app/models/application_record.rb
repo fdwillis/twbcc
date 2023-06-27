@@ -167,7 +167,7 @@ class ApplicationRecord < ActiveRecord::Base
 				@baseTicker = @pairCall['result'][@resultKey]['base']
 				@tickerForAllocation = @pairCall['result'][@resultKey]['altname']
 				
-				@currentAllocation = Kraken.balance(apiKey, secretKey)
+				@amountToRisk = Kraken.krakenBalance(apiKey, secretKey)
 				@currentOpenAllocation = Kraken.pendingTrades(apiKey, secretKey)
 
 				
@@ -175,12 +175,20 @@ class ApplicationRecord < ActiveRecord::Base
 				
 				@accountTotal = @tickerInfoCall['result']['eb'].to_f
 
-				@currentRisk = ((@currentOpenAllocation.map{|d| d[1]}.reject{|d| d['descr']['type'] != tvData['direction']}.reject{|d| d['descr']['pair'] != @tickerForAllocation}.map{|d| d['vol'].to_f * d['descr']['price'].to_f}.sum + (@currentAllocation['result'][@baseTicker].to_f * tvData['currentPrice'].to_f))/(@accountTotal * tvData['currentPrice'].to_f)) * 100
+				@currentRisk = ((@currentOpenAllocation.map{|d| d[1]}.reject{|d| d['descr']['type'] != tvData['direction']}.reject{|d| d['descr']['pair'] != @tickerForAllocation}.map{|d| d['vol'].to_f * d['descr']['price'].to_f}.sum + (@amountToRisk['result'][@baseTicker].to_f * tvData['currentPrice'].to_f))/(@accountTotal * tvData['currentPrice'].to_f)) * 100
 	  	end
 	  when tvData['broker'] == 'OANDA'
-	  	# @currentRisk = 
-	  	# @unitsToTrade =
-	  	# @unitsFiltered = @unitsToTrade
+	  	@amountToRisk = Oanda.oandaRisk(tvData, apiKey, nil)
+	  	oandaAccount = Oanda.oandaAccount(apiKey)
+	  	cleanTickers = oandaAccount['account']['positions'].map{|d| d['instrument'].tr!('_','')}
+
+  		foundTicker = oandaAccount['account']['positions'].reject{|d| d['instrument'] != tvData['ticker']}.first
+
+  		marginUsed = foundTicker.present? && foundTicker['marginUsed'].present? ? foundTicker['marginUsed'].to_f : 0
+
+  		@openOrders = 0
+
+			@currentRisk = (marginUsed + @openOrders) / (oandaAccount['account']['marginAvailable'].to_f) * 100
 		end
 
 		# ticker specific
@@ -204,21 +212,22 @@ class ApplicationRecord < ActiveRecord::Base
 	  		when tvData['broker'] == 'OANDA'
 	  			oandaOrderParams = {
 					  'order' => {
-					    'units' => "#{@unitsFiltered}",
-					    'instrument' => tvData['ticker'],
+					    'units' => "#{@amountToRisk == oandaAccount['account']['marginRate'] ? 1 : @amountToRisk.round }",
+					    'instrument' => tvData['ticker'].insert(3, '_'),
 					    'timeInForce' => 'FOK',
 					    'type' => 'MARKET',
 					    'positionFill' => 'DEFAULT'
 					  }
 					}
 	  		end
+
 	  		# call order
 	  		if tvData['direction'] == 'buy'
 		  		case true
 		  		when tvData['broker'] == 'KRAKEN'
 					  requestK = Kraken.request('/0/private/AddOrder', krakenOrderParams, apiKey, secretKey)
 		  		when tvData['broker'] == 'OANDA'
-		  			requestK = Oanda.entry(apiKey, oandaOrderParams)
+		  			requestK = Oanda.oandaEntry(apiKey, oandaOrderParams)
 		  		end
 		  	end
 		  	# put order
@@ -227,7 +236,7 @@ class ApplicationRecord < ActiveRecord::Base
 			  	when tvData['broker'] == 'KRAKEN'
 					  requestK = Kraken.request('/0/private/AddOrder', krakenOrderParams, apiKey, secretKey)
 			  	when tvData['broker'] == 'OANDA'
-		  			requestK = Oanda.entry(apiKey, oandaOrderParams)
+		  			requestK = Oanda.oandaEntry(apiKey, oandaOrderParams)
 			  	end
 			  end
 
@@ -246,6 +255,7 @@ class ApplicationRecord < ActiveRecord::Base
 					  end
 					end
 				when tvData['broker'] == 'OANDA'
+					debugger
 					if requestK.present?
 					else
 						puts "\n-- NOTHING --\n"

@@ -1,22 +1,26 @@
 class Oanda < ApplicationRecord
 
+	AccountID = '001-001-7086038-005'
+
 	def self.oandaRequest(token)
 		@oanda = OandaApiV20.new(access_token: token)
 	end
 
-	def self.accounts(token)
-		oandaRequest(token).accounts.show['accounts']
+	def self.oandaAccount(token)
+		oandaRequest(token).account(AccountID).show
 	end
 
-	def self.balance(token)
-		oandaRequest(token).accounts.show['accounts']
+	def self.oandaBalance(token)
+		accountToFind = Oanda.oandaAccount(ENV['oandaToken'])
+
+		accountBalance = accountToFind['account']['balance'].to_f
 	end
 
-	def self.entry(token, orderParams) #limit&market
+	def self.oandaEntry(token,orderParams)
 		oandaRequest(token).account('account_id').order(orderParams).create
 	end
 
-	def self.trail(token)
+	def self.oandaTrail(token)
 		oandaRequest(token).account('account_id').open_trades.show
 
 		options = {
@@ -32,6 +36,17 @@ class Oanda < ApplicationRecord
 		id = client.account('account_id').open_trades.show['trades'][0]['id']
 		options = { 'units' => '10' }
 		oandaRequest(token).account('account_id').trade(id, options).close
+	end
+
+	def self.oandaRisk(tvData, token, accountID = nil)
+		#return number of units to buy
+		currentPrice = tvData['currentPrice'].to_f
+
+		accountBalance = Oanda.oandaBalance(ENV['oandaToken'])
+		marginRate = Oanda.oandaAccount(ENV['oandaToken'])['account']['marginRate'].to_f
+
+  	# return units
+  	unitsRisk = (((tvData['perEntry'].to_f * 0.01) * accountBalance).to_f > marginRate ? ((tvData['perEntry'].to_f * 0.01) * accountBalance).to_f  / marginRate : (1).to_f * marginRate)
 	end
 end
 
