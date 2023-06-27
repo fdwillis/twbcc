@@ -23,7 +23,7 @@ class Kraken < ApplicationRecord
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     response = http.request(req)
-    Thread.pass
+    sleep 0.5
     Oj.load(response.body)
   end
 
@@ -77,10 +77,10 @@ class Kraken < ApplicationRecord
 
 	    orderParams = {
 		    "pair" 			=> tradeInfo['descr']['pair'],
-		    "ordertype" => "stop-loss-limit",
+		    "ordertype" => "stop-loss",
 		    "type" 			=> tvData['direction'],
 		    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
-		    "price2" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
+		    # "price2" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
 		    "volume" 		=> (tradeInfo['vol'].to_f * (0.01 * tvData['reduceBy'].to_f)) > 0.0001 ? "%.10f" % (tradeInfo['vol'].to_f * (0.01 * tvData['reduceBy'].to_f)) : "0.0001"
 		  }
 		  
@@ -92,17 +92,17 @@ class Kraken < ApplicationRecord
 
 	    orderParams1 = {
 		    "pair" 			=> tradeInfo['descr']['pair'],
-		    "ordertype" => "stop-loss-limit",
+		    "ordertype" => "stop-loss",
 		    "type" 			=> tvData['direction'],
 		    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
-		    "price2" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
+		    # "price2" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
 		    "volume" 		=> tradeInfo['vol']
 		  }
 		  
 	    requestProfit = request(routeToKraken1, orderParams1, apiKey, secretKey)
 
 	  end
-    Thread.pass
+
 		tradeX.take_profits.create!(uuid: requestProfit['result']['txid'][0], status: 'open', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(krakenLiveAPI: apiKey).id)
 		requestProfit
   end
@@ -112,8 +112,6 @@ class Kraken < ApplicationRecord
   	# hard coded min for bitcoin
     
   	currentPrice = tvData['currentPrice'].to_f
-		
-		# add opentrades costs to calculation for maxRisk
 		
 		requestK = balance(apiKey, secretKey)
 		

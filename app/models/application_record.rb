@@ -280,7 +280,6 @@ class ApplicationRecord < ActiveRecord::Base
 					  case true
 					  when tvData['broker'] == 'KRAKEN'
 						  requestKlimit = Kraken.request('/0/private/AddOrder', krakenParams0, apiKey, secretKey)
-					  	
 					  end
 				  end
 
@@ -304,11 +303,11 @@ class ApplicationRecord < ActiveRecord::Base
 			end
 		else
 			puts "\n-- Max Risk Met (#{tvData['timeframe']} Minute) --\n"
+			puts "\n-- Trader #{traderFound.uuid} --\n"
 			puts "\n-- Current Risk (#{@currentRisk.round(2)}%) --\n"
 			puts "\n-- Trader #{traderFound.uuid} --\n"
 		end
 	end
-
 
 	# combine limit and market into one 'entry' call with logic to determine wich
 end

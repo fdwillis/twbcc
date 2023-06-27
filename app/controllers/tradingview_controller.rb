@@ -64,24 +64,16 @@ class TradingviewController < ApplicationController
 									when params['type'].include?('Stop')
 										case true
 										when params['broker'] == 'KRAKEN'
-											BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFoundForCopy.krakenLiveAPI, traderFoundForCopy.krakenLiveSecret, 'stop')
+											BackgroundJob.perform_async('stop', tradingviewKeysparams.to_h, traderFoundForCopy.krakenLiveAPI, traderFoundForCopy.krakenLiveSecret)
 										when params['broker'] == 'OANDA'
-											BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.oandaToken, nil, 'stop')
+											BackgroundJob.perform_async('stop', tradingviewKeysparams.to_h, traderFoundForCopy.oandaToken, nil)
 										end
 									when params['type'] == 'entry'
 										case true
 										when params['broker'] == 'KRAKEN'
-											if params['allowMarketOrder'] == 'true'
-												BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFoundForCopy.krakenLiveAPI, traderFoundForCopy.krakenLiveSecret, 'market')
-											end
-
-											BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFoundForCopy.krakenLiveAPI, traderFoundForCopy.krakenLiveSecret, 'limit')
+											BackgroundJob.perform_async('entry', tradingviewKeysparams.to_h, traderFoundForCopy.krakenLiveAPI, traderFoundForCopy.krakenLiveSecret)
 										when params['broker'] == 'OANDA'
-											if params['allowMarketOrder'] == 'true'
-												BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.oandaToken, nil, 'market')
-											end
-
-											BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.oandaToken, nil, 'limit')
+											BackgroundJob.perform_async('entry', tradingviewKeysparams.to_h, traderFoundForCopy.oandaToken, nil)
 										end
 									when params['type'].include?('profit')
 									end
@@ -96,24 +88,16 @@ class TradingviewController < ApplicationController
 					when params['type'].include?('Stop')
 						case true
 						when params['broker'] == 'KRAKEN'
-							BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'stop')
+							BackgroundJob.perform_async('stop', tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret)
 						when params['broker'] == 'OANDA'
-							BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.oandaToken, nil, 'stop')
+							BackgroundJob.perform_async('stop', tradingviewKeysparams.to_h, traderFound.oandaToken, nil)
 						end
 					when params['type'] == 'entry'
 						case true
 						when params['broker'] == 'KRAKEN'
-							if params['allowMarketOrder'] == 'true'
-								BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'market')
-							end
-
-							BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret, 'limit')
+							BackgroundJob.perform_async('entry',tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret)
 						when params['broker'] == 'OANDA'
-							if params['allowMarketOrder'] == 'true'
-								BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.oandaToken, nil, 'market')
-							end
-
-							BackgroundJob.perform_async(tradingviewKeysparams.to_h, traderFound.oandaToken, nil, 'limit')
+							BackgroundJob.perform_async('entry', tradingviewKeysparams.to_h, traderFound.oandaToken, nil)
 						end
 					when params['type'].include?('profit')
 					end

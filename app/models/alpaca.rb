@@ -38,7 +38,7 @@ def self.xpercentForTradeFromTimeframe(tvData)
 	# get dynamic min for
 	currentPrice = tvData['currentPrice'].to_f
 	
-	if tvData['tickerType'] == 'stock' && tvData['broker'] == 'alpaca'
+	if tvData['tickerType'] == 'stock' && tvData['broker'] == 'ALPACA'
 		accountBalance = getBalance
 	end
 	
