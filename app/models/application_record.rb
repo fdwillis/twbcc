@@ -149,6 +149,8 @@ class ApplicationRecord < ActiveRecord::Base
 		case true
 		when tvData['broker'] == 'KRAKEN'
 			traderFound = User.find_by(krakenLiveAPI: apiKey)
+		when tvData['broker'] == 'OANDA'
+			traderFound = User.find_by(oandaToken: apiKey)
 		end
 		# if allowMarketOrder -> market order
 		# if entries.count > 0 -> limit order
@@ -156,7 +158,6 @@ class ApplicationRecord < ActiveRecord::Base
 		# variables
   	case true
 		when tvData['broker'] == 'KRAKEN'
-			
 			@unitsToTrade = Kraken.krakenRisk(tvData, apiKey, secretKey)
 	  	
 	  	if @unitsToTrade > 0 
@@ -220,7 +221,7 @@ class ApplicationRecord < ActiveRecord::Base
 		  			requestK = Oanda.entry(apiKey, oandaOrderParams)
 		  		end
 		  	end
-		  	# put oroder
+		  	# put order
 			  if tvData['direction'] == 'sell'
 			  	case true
 			  	when tvData['broker'] == 'KRAKEN'
@@ -246,10 +247,8 @@ class ApplicationRecord < ActiveRecord::Base
 					end
 				when tvData['broker'] == 'OANDA'
 					if requestK.present?
-						debugger
 					else
 						puts "\n-- NOTHING --\n"
-						debugger
 					end
 		  	end
 			end
@@ -257,7 +256,7 @@ class ApplicationRecord < ActiveRecord::Base
 			if tvData['entries'].reject(&:blank?).size > 0
 				tvData['entries'].reject(&:blank?).each do |entryPercentage|
 					priceToSet = (tvData['direction'] == 'sell' ? tvData['highPrice'].to_f + (tvData['highPrice'].to_f * (0.01 * entryPercentage.to_f)) : tvData['lowPrice'].to_f - (tvData['lowPrice'].to_f * (0.01 * entryPercentage.to_f))).round(1)
-
+					# set order params
 			    case true
 		  		when tvData['broker'] == 'KRAKEN'
 		  			krakenParams0 = {
@@ -268,7 +267,7 @@ class ApplicationRecord < ActiveRecord::Base
 					    "volume" 		=> "#{@unitsFiltered}",
 					  }
 					end
-
+					# call order
 			  	if tvData['direction'] == 'buy' 
 					  case true
 					  when tvData['broker'] == 'KRAKEN'
@@ -276,7 +275,7 @@ class ApplicationRecord < ActiveRecord::Base
 					  	
 					  end
 			  	end
-			  	
+			  	# put order
 				  if tvData['direction'] == 'sell'
 					  case true
 					  when tvData['broker'] == 'KRAKEN'
@@ -285,6 +284,7 @@ class ApplicationRecord < ActiveRecord::Base
 					  end
 				  end
 
+				  # update database with ID from requestK
 				  case true
 				  when tvData['broker'] == 'KRAKEN'
 					  if requestKlimit.present? && requestKlimit['result'].present?

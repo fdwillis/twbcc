@@ -110,16 +110,14 @@ class Kraken < ApplicationRecord
 
   def self.krakenRisk(tvData, apiKey, secretKey)
   	# hard coded min for bitcoin
+    
   	currentPrice = tvData['currentPrice'].to_f
-  	
 		
-  	if tvData['tickerType'] == 'crypto' && tvData['broker'] == 'kraken'
-  		# add opentrades costs to calculation for maxRisk
-  		
-  		requestK = balance(apiKey, secretKey)
-			
-  		accountBalance = requestK['result']['ZUSD'].to_f
-  	end
+		# add opentrades costs to calculation for maxRisk
+		
+		requestK = balance(apiKey, secretKey)
+		
+		accountBalance = requestK['result']['ZUSD'].to_f
 
   	((tvData['perEntry'].to_f * 0.01) * accountBalance).to_f > 3 ? ((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f 
   end
