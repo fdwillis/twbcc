@@ -96,8 +96,13 @@
 			      	</h5>
 			      	<p class="font-700 font-12 opacity-50 mb-4 text-center">Need Help Finding Keys? <%= mail_to "team@oarlin.com", "EMAIL US" %></p>
 			      	<%= form_for :editKeys, url: manage_trading_keys_path do |f| %>
-				      	<%= f.label "Kraken Live API Key" %><br />
-			      		<%= f.text_field :krakenLiveAPI, value: current_user&.krakenLiveAPI, class: 'form-control form-control-lg form-control-alt py-3' %><br />
+				      	<%= f.label "Oanda Live API Key" %><br />
+			      		<%= f.text_field :oandaToken, value: current_user&.oandaToken, class: 'form-control form-control-lg form-control-alt py-3' %><br />
+			      		<%= f.label "Oanda Account List (Separate By Comma)" %><br />
+			      		<%= f.text_field :oandaList, value: current_user&.oandaList, class: 'form-control form-control-lg form-control-alt py-3' %><br />
+		      		  <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
+			      		<%= f.label "Kraken Live API Key" %><br />
+			      		<%= f.text_field :krakenLiveAPI, value: current_user&.krakenLiveAPI, class: 'form-control form-control-lg form-control-alt py-3' %><br />1
 				      	<%= f.label "Kraken Live Secret Key" %><br />
 			      		<%= f.text_field :krakenLiveSecret, value: current_user&.krakenLiveSecret, class: 'form-control form-control-lg form-control-alt py-3' %><br />
 				      	<%= f.label "Kraken Test API Key" %><br />
@@ -105,7 +110,6 @@
 				      	<%= f.label "Kraken Test Secret Key" %><br />
 			      		<%= f.text_field :krakenTestSecret, value: current_user&.krakenTestSecret, class: 'form-control form-control-lg form-control-alt py-3' %><br />
 			      		<%= f.submit "Save Keys",class: "form-control btn btn-full btn-m rounded-m bg-highlight font-700 text-uppercase mb-4 mt-4" %>
-
 		          <% end %>
 			    </div>
 		    </div>
