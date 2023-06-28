@@ -17,11 +17,11 @@ class Oanda < ApplicationRecord
 	end
 
 	def self.oandaEntry(token,orderParams)
-		oandaRequest(token).account('account_id').order(orderParams).create
+		oandaRequest(token).account(AccountID).order(orderParams).create
 	end
 
 	def self.oandaTrail(token)
-		oandaRequest(token).account('account_id').open_trades.show
+		oandaRequest(token).account(AccountID).open_trades.show
 
 		options = {
 			'takeProfit' => {
@@ -29,13 +29,13 @@ class Oanda < ApplicationRecord
 			  'price' => '2.5'
 			}
 		}
-		oandaRequest(token).account('account_id').order(id, options).update
+		oandaRequest(token).account(AccountID).order(id, options).update
 	end
 	
 	def self.takeProfit(token)
-		id = client.account('account_id').open_trades.show['trades'][0]['id']
+		id = client.account(AccountID).open_trades.show['trades'][0]['id']
 		options = { 'units' => '10' }
-		oandaRequest(token).account('account_id').trade(id, options).close
+		oandaRequest(token).account(AccountID).trade(id, options).close
 	end
 
 	def self.oandaRisk(tvData, token, accountID = nil)
