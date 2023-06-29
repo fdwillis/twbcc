@@ -60,7 +60,7 @@ class TradingviewController < ApplicationController
 
 						validPlansToParse.each do |planXinfo|
 							traderFoundForCopy = User.find_by(stripeCustomerID: planXinfo['customer'])
-							listToTrade = traderFoundForCopy.authorizedList.strip.split(",").reject(&:blank?)
+							listToTrade = traderFoundForCopy.authorizedList.delete(' ').split(",").reject(&:blank?)
 							if !traderFoundForCopy.admin?
 								puts "\n-- Started For #{traderFoundForCopy.uuid} --\n"
 								listToTrade.each do |assetX|
