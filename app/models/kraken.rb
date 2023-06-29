@@ -70,7 +70,6 @@ class Kraken < ApplicationRecord
 
   def self.newTrail(tvData,tradeInfo, apiKey, secretKey, tradeX)
   	# FINAL TESTING
-  	requestProfit = nil
   	if tvData['reduceBy'].present? && tvData['reduceBy'].to_f != 100
   		#  take tvData['reduceBy'] now
 	    routeToKraken = "/0/private/AddOrder"
@@ -85,9 +84,7 @@ class Kraken < ApplicationRecord
 		  }
 		  
 	    requestProfit = request(routeToKraken, orderParams, apiKey, secretKey)
-	  end
-
-	  if tvData[  'reduceBy'].present? && tvData['reduceBy'].to_f == 100
+	  elsif tvData[  'reduceBy'].present? && tvData['reduceBy'].to_f == 100
 	    routeToKraken1 = "/0/private/AddOrder"
 
 	    orderParams1 = {

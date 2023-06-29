@@ -48,7 +48,7 @@ class ApplicationRecord < ActiveRecord::Base
 
   	# protect closed/filled bot trades
   	if afterUpdates.present? && afterUpdates.size > 0	
-	  	afterUpdates.reverse.each do |tradeX|
+	  	afterUpdates.each do |tradeX|
 			  
 	    	case true
 				when tvData['broker'] == 'KRAKEN'	
