@@ -62,7 +62,7 @@ class TradingviewController < ApplicationController
 							traderFoundForCopy = User.find_by(stripeCustomerID: planXinfo['customer'])
 							listToTrade = traderFoundForCopy.authorizedList.strip.split(",").reject(&:blank?)
 							listToTrade.each do |assetX|
-								if assetX.upcase == params['ticker']
+								if assetX.upcase == params['ticker'] && !traderFoundForCopy.admin?
 									# execute trade
 									case true
 									when params['type'].include?('Stop')
