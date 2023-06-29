@@ -48,9 +48,7 @@ class TradingviewController < ApplicationController
 							end
 						when params['type'].include?('profit')
 						end
-					end
-
-					if params['adminOnly'] == 'false'
+					elsif  params['adminOnly'] == 'false'
 						puts "\n-- Starting To Copy Trades --\n"
 						#pull those with done for you plan
 						monthlyAuto = Stripe::Subscription.list({limit: 100, price: ENV['autoTradingMonthlyMembership']})['data'].reject{|d| d['status'] != 'active'}
