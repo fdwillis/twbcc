@@ -60,7 +60,7 @@ class TradingviewController < ApplicationController
 
 						validPlansToParse.each do |planXinfo|
 							traderFoundForCopy = User.find_by(stripeCustomerID: planXinfo['customer'])
-							listToTrade = traderFoundForCopy.authorizedList.split(",").reject(&:blank?)
+							listToTrade = traderFoundForCopy.authorizedList.strip.split(",").reject(&:blank?)
 							listToTrade.each do |assetX|
 								if assetX.upcase == params['ticker']
 									# execute trade

@@ -8,6 +8,8 @@ class ApplicationRecord < ActiveRecord::Base
 		case true
 		when tvData['broker'] == 'KRAKEN'
 			openTrades = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'open', broker: tvData['broker'])
+		when tvData['broker'] == 'OANDA'
+			openTrades = User.find_by(oandaToken: apiKey).trades.where(status: 'open', broker: tvData['broker'])
 		end
 
 
@@ -21,6 +23,18 @@ class ApplicationRecord < ActiveRecord::Base
 		  		if trade.status == 'canceled'
 		  			trade.destroy
 			  	end
+				when tvData['broker'] == 'OANDA'
+					requestK = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
+
+					if requestK['order']['state'] == "CANCELLED"
+			  		if trade.status == 'canceled'
+			  			trade.destroy
+				  	end
+			  	end
+
+			  	if requestK['order']['state'] == "FILLED"
+			  		trade.update(status: 'closed')
+			  	end
 				end
 	  	end
   	end
@@ -28,27 +42,44 @@ class ApplicationRecord < ActiveRecord::Base
   	case true
 		when tvData['broker'] == 'KRAKEN'
 	  	afterUpdates = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'closed', broker: tvData['broker'], finalTakeProfit: nil)
+		when tvData['broker'] == 'OANDA'
+	  	afterUpdates = User.find_by(oandaToken: apiKey).trades.where(status: 'closed', broker: tvData['broker'], finalTakeProfit: nil)
 		end
-  	
+
   	# protect closed/filled bot trades
   	if afterUpdates.present? && afterUpdates.size > 0	
-	  	afterUpdates.each do |tradeX|
+	  	afterUpdates.reverse.each do |tradeX|
 			  
 	    	case true
 				when tvData['broker'] == 'KRAKEN'	
 		  		requestOriginalE = Kraken.orderInfo(tradeX.uuid, apiKey, secretKey)
 		  		originalPrice = requestOriginalE['price'].to_f
 		  		originalVolume = requestOriginalE['vol'].to_f
+				when tvData['broker'] == 'OANDA'	
+			  	requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
+					if requestExecution['order']['state'] == "CANCELLED"
+						tradeX.destroy
+						next
+					end
+			  	requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, requestExecution['order']['fillingTransactionID'])
+			  	originalPrice = requestOriginalE['trade']['price'].to_f
+					originalVolume = requestOriginalE['trade']['initialUnits'].to_f
 				end
 
 	  		profitTrigger = originalPrice * (0.01 * tvData['profitTrigger'].to_f)
 	  		volumeTallyForTradex = 0
 	  		openProfitCount = 0
 
+	  		case true
+				when tvData['broker'] == 'KRAKEN'	
+					profitTriggerPassed = (originalPrice + profitTrigger).round(1).to_f
+				when tvData['broker'] == 'OANDA'	
+					profitTriggerPassed = (originalPrice + profitTrigger).round(5).to_f
+				end
+
 			  case true
 				when tvData['direction'] == 'sell'
-					profitTriggerPassed = (originalPrice + profitTrigger).round(1).to_f
-					puts "Profit Trigger Price: #{(profitTriggerPassed + ((0.01 * tvData['trail'].to_f) * profitTriggerPassed)).round(1)}"
+					puts "Profit Trigger Price: #{(profitTriggerPassed + ((0.01 * tvData['trail'].to_f) * profitTriggerPassed)).round(5)}"
 
 					if tvData['currentPrice'].to_f > profitTriggerPassed
 			  		if tradeX.take_profits.empty?
@@ -60,12 +91,15 @@ class ApplicationRecord < ActiveRecord::Base
 					  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
 					  				puts 	"\n-- Taking Profit #{@protectTrade['result']['txid'][0]} --\n"
 					  			end
-									
+								when tvData['broker'] == 'OANDA'
+									@protectTrade = Oanda.oandaTrail(tvData,requestExecution, apiKey, secretKey, tradeX)
+					  			if @protectTrade.present? && @protectTrade['orderCreateTransaction']['id'].present?
+					  				puts 	"\n-- Taking Profit #{@protectTrade['orderCreateTransaction']['id']} --\n"
+					  			end
 								end
 			  			end
 				  	else
 				  		tradeX.take_profits.each do |profitTrade|
-				  			
 		  			  	case true
 								when tvData['broker'] == 'KRAKEN'	
 						  		requestProfitTradex = Kraken.orderInfo(profitTrade.uuid, apiKey, secretKey)
@@ -182,15 +216,15 @@ class ApplicationRecord < ActiveRecord::Base
 	  	oandaAccount = Oanda.oandaAccount(apiKey, secretKey)
 	  	cleanTickers = oandaAccount['account']['positions'].map{|d| d['instrument'].tr!('_','')}
 
-  		foundTicker = oandaAccount['account']['positions'].reject{|d| d['instrument'] != tvData['ticker']}.first
+  		foundTickerPosition = oandaAccount['account']['positions'].reject{|d| d['instrument'] != tvData['ticker']}.first
+  		foundTickerOrders = oandaAccount['account']['orders'].reject{|d| d['instrument'] != "#{tvData['ticker'][0..2]}_#{tvData['ticker'][3..5]}"}
 
-  		marginUsed = foundTicker.present? && foundTicker['marginUsed'].present? ? foundTicker['marginUsed'].to_f : 0
+  		marginUsed = foundTickerPosition.present? && foundTickerPosition['marginUsed'].present? ? foundTickerPosition['marginUsed'].to_f : 0
 
-  		@openOrders = 0
+  		@openOrders = (oandaAccount['account']['marginRate'].to_f * (foundTickerOrders.map{|d|d['units'].to_i}.sum))
 
 			@currentRisk = (marginUsed + @openOrders) / ((marginUsed + @openOrders) + oandaAccount['account']['marginAvailable'].to_f) * 100
 		end
-
 
 
 		# ticker specific
@@ -200,6 +234,8 @@ class ApplicationRecord < ActiveRecord::Base
     end
 
 		if (@currentRisk.round(2) <= tvData['maxRisk'].to_f)
+
+
 			# market order
 			if tvData['allowMarketOrder'] == 'true'
 				# set order params
@@ -215,13 +251,14 @@ class ApplicationRecord < ActiveRecord::Base
 	  			oandaOrderParams = {
 					  'order' => {
 					    'units' => "#{@amountToRisk == oandaAccount['account']['marginRate'].to_f ? 1 : @amountToRisk.round }",
-					    'instrument' => tvData['ticker'].insert(3, '_'),
+					    'instrument' => "#{tvData['ticker'][0..2]}_#{tvData['ticker'][3..5]}",
 					    'timeInForce' => 'FOK',
 					    'type' => 'MARKET',
 					    'positionFill' => 'DEFAULT'
 					  }
 					}
 	  		end
+
 
 	  		# call order
 	  		if tvData['direction'] == 'buy'
@@ -232,6 +269,8 @@ class ApplicationRecord < ActiveRecord::Base
 		  			requestK = Oanda.oandaEntry(apiKey, secretKey, oandaOrderParams)
 		  		end
 		  	end
+
+
 		  	# put order
 			  if tvData['direction'] == 'sell'
 			  	case true
@@ -241,6 +280,7 @@ class ApplicationRecord < ActiveRecord::Base
 		  			requestK = Oanda.oandaEntry(apiKey, secretKey, oandaOrderParams)
 			  	end
 			  end
+
 
 			  # update database with ID from requestK
 			  case true
@@ -261,12 +301,13 @@ class ApplicationRecord < ActiveRecord::Base
 					if requestK['orderCancelTransaction']['reason'].present?
 						puts "\n-- #{requestK['orderCancelTransaction']['reason']} --\n"
 					else
-						debugger
 						User.find_by(oandaToken: apiKey).trades.create(uuid:  requestK['orderCreateTransaction']['id'], broker: tvData['broker'], direction: tvData['direction'], status: 'closed')
 				  	puts "\n-- #{tvData['broker']} Entry Submitted --\n"
 					end
 		  	end
 			end
+
+
 			# limit order
 			if tvData['entries'].reject(&:blank?).size > 0
 				tvData['entries'].reject(&:blank?).each do |entryPercentage|
@@ -274,7 +315,7 @@ class ApplicationRecord < ActiveRecord::Base
 		  		when tvData['broker'] == 'KRAKEN'
 						priceToSet = (tvData['direction'] == 'sell' ? tvData['highPrice'].to_f + (tvData['highPrice'].to_f * (0.01 * entryPercentage.to_f)) : tvData['lowPrice'].to_f - (tvData['lowPrice'].to_f * (0.01 * entryPercentage.to_f))).round(1)
 		  		when tvData['broker'] == 'OANDA'
-						priceToSet = (tvData['direction'] == 'sell' ? tvData['highPrice'].to_f + (tvData['highPrice'].to_f * (0.01 * entryPercentage.to_f)) : tvData['lowPrice'].to_f - (tvData['lowPrice'].to_f * (0.01 * entryPercentage.to_f))).round(4)
+						priceToSet = (tvData['direction'] == 'sell' ? tvData['highPrice'].to_f + (tvData['highPrice'].to_f * (0.01 * entryPercentage.to_f)) : tvData['lowPrice'].to_f - (tvData['lowPrice'].to_f * (0.01 * entryPercentage.to_f))).round(5)
 					end
 					# set order params
 
@@ -292,9 +333,9 @@ class ApplicationRecord < ActiveRecord::Base
 					  'order' => {
 					  	'price' => "#{priceToSet}",
 					    'units' => "#{@amountToRisk == oandaAccount['account']['marginRate'].to_f ? 1 : @amountToRisk.round }",
-					    'instrument' => tvData['ticker'].insert(3, '_'),
+					    'instrument' => "#{tvData['ticker'][0..2]}_#{tvData['ticker'][3..5]}",
 					    'timeInForce' => 'GTC',
-					    'type' => 'MARKET_IF_TOUCHED',
+					    'type' => 'LIMIT',
 					    'positionFill' => 'DEFAULT'
 					  }
 					}
