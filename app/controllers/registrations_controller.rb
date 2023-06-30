@@ -78,7 +78,7 @@ class RegistrationsController < ApplicationController
 		      #make connect account
 		      if stripeSessionInfo['custom_fields'][1]['dropdown']['value'] == 'US'
 			      newStripeAccount = Stripe::Account.create({
-			        type: 'express',
+			        type: 'standard',
 			        country: stripeSessionInfo['custom_fields'][1]['dropdown']['value'],
 			        email: stripeCustomer['email'],
 			        capabilities: {
@@ -270,11 +270,18 @@ class RegistrationsController < ApplicationController
 
 		      stripePlan = Stripe::Subscription.list({customer: stripeSessionInfo['customer']})['data'][0]['items']['data'][0]['plan']['id']
 		      
+		      newStripeAccount = Stripe::Account.create({
+		        type: 'standard',
+		        country: stripeSessionInfo['customer_details']['address']['country'],
+		        email: stripeCustomer['email'],
+		      })
+
 		    	customerUpdated = Stripe::Customer.update(
 		        stripeSessionInfo['customer'],{
 		        	metadata: {
 			          referredBy: newTraderParams['referredBy'].present? ? newTraderParams['referredBy'] : ',',
 			          commissionRate: 0,
+			          connectAccount: newStripeAccount['id']
 			        }
 			      },
 		      )
