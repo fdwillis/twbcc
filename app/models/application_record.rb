@@ -2,7 +2,7 @@ class ApplicationRecord < ActiveRecord::Base
 	self.abstract_class = true
 
 	def self.trailStop(tvData, apiKey = nil, secretKey = nil)
-		puts "\n-- Current Price: #{tvData['currentPrice'].to_f.round(1)} --\n"
+		puts "\n-- Current Price: #{tvData['currentPrice'].to_f} --\n"
 
 		# pull bot trades
 		case true
