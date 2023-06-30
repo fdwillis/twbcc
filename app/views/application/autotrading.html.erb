@@ -15,10 +15,10 @@
   <% end %>
   <div class="card card-style bg-theme pb-0">
       <div id="tab-group-1">
-          <h1 class="font-700 font-30 opacity-50 mb-4 text-center mt-4">Autotrading with <%= link_to "TradingView", "https://www.tradingview.com/gopro/?share_your_love=NetwerthTracker" %></h1>
+          <h4 class="font-700 font-22 opacity-50 mb-4 text-center mt-4">Prices Will Increase Starting <%=  Time.now.strftime("%Y").to_i + 1%></h4>
+          <h4 class="font-700 font-12 opacity-50 mb-4 text-center mt-4">Autotrading with <%= link_to "TradingView", "https://www.tradingview.com/gopro/?share_your_love=NetwerthTracker" %></h4>
 
           <div data-bs-parent="#tab-group-1" class="pt-0" id="tab-2">
-            <h1 class="font-700 font-20 opacity-50 mb-4 text-center mt-4">Monthly Plans</h1>
             <div class="content text-center">
               <!-- <h1 class="font-20 line-height-m pb-2">Explore Amazon Products</h1> -->
               <div class="splide double-slider slider-no-dots slider-arrows splide--loop splide--ltr splide--draggable is-active" id="single-slider-3" style="visibility: visible;">
@@ -31,6 +31,7 @@
                             <div class="mt-4">
                                 <p class=" font-12 color-highlight m-n2">Self Managed Auto Trading</p>
                                 <h1 class="m-n2 p-2"><%= number_to_currency(selfTradingMonthlyMembership['unit_amount'] * 0.01, precision: 2) %></h1>
+                                <p class=" font-12 color-highlight m-n2">Per Month</p>
                             </div>
                             <div class="list-group list-custom-small">
                               <% selfTradingMonthlyMembership['metadata'].each do |point| %>
@@ -59,6 +60,7 @@
                             <div class="mt-4">
                                 <p class=" font-12 color-highlight m-n2">Done For You Auto Trading</p>
                                 <h1 class="m-n2 p-2"><%= number_to_currency(autoTradingMonthlyMembership['unit_amount'] * 0.01, precision: 2) %></h1>
+                                <p class=" font-12 color-highlight m-n2">Per Month</p>
                             </div>
                             <div class="list-group list-custom-small">
                               <% autoTradingMonthlyMembership['metadata'].each do |point| %>
@@ -89,7 +91,6 @@
           </div>
 
           <div data-bs-parent="#tab-group-1" id="tab-2">
-            <h1 class="font-700 font-20 opacity-50 text-center mt-4">Annual Plans</h1>
             <div class="content text-center">
               <!-- <h1 class="font-20 line-height-m pb-2">Explore Amazon Products</h1> -->
               <div class="splide double-slider slider-no-dots slider-arrows splide--loop splide--ltr splide--draggable is-active" id="single-slider-3432" style="visibility: visible;">
@@ -102,6 +103,7 @@
                             <div class="mt-4">
                                 <p class=" font-12 color-highlight m-n2">Self Managed Auto Trading</p>
                                 <h1 class="m-n2 p-2"><%= number_to_currency(selfTradingAnnualMembership['unit_amount'] * 0.01, precision: 2) %></h1>
+                                <p class=" font-12 color-highlight m-n2">Per Month</p>
                             </div>
                             <div class="list-group list-custom-small">
                               <% selfTradingAnnualMembership['metadata'].each do |point| %>
@@ -129,6 +131,7 @@
                             <div class="mt-4">
                                 <p class=" font-12 color-highlight m-n2">Done For You Auto Trading</p>
                                 <h1 class="m-n2 p-2"><%= number_to_currency(autoTradingAnnualMembership['unit_amount'] * 0.01, precision: 2) %></h1>
+                                <p class=" font-12 color-highlight m-n2">Per Month</p>
                             </div>
                             <div class="list-group list-custom-small">
                               <% autoTradingAnnualMembership['metadata'].each do |point| %>
