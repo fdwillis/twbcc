@@ -82,7 +82,7 @@ class Kraken < ApplicationRecord
 		    # "price2" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
 		    "volume" 		=> (tradeInfo['vol'].to_f * (0.01 * tvData['reduceBy'].to_f)) > 0.0001 ? "%.10f" % (tradeInfo['vol'].to_f * (0.01 * tvData['reduceBy'].to_f)) : "0.0001"
 		  }
-		  
+		  sleep 1
 	    requestProfit = request(routeToKraken, orderParams, apiKey, secretKey)
 	  elsif tvData[  'reduceBy'].present? && tvData['reduceBy'].to_f == 100
 	    routeToKraken1 = "/0/private/AddOrder"
@@ -95,7 +95,7 @@ class Kraken < ApplicationRecord
 		    # "price2" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
 		    "volume" 		=> tradeInfo['vol']
 		  }
-		  
+		  sleep 1
 	    requestProfit = request(routeToKraken1, orderParams1, apiKey, secretKey)
 
 	  end
