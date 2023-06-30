@@ -23,7 +23,7 @@ class Kraken < ApplicationRecord
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     response = http.request(req)
-    sleep 0.5
+    sleep 1
     Oj.load(response.body)
   end
 
