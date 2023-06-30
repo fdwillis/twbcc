@@ -88,12 +88,12 @@ class ApplicationRecord < ActiveRecord::Base
 					    	case true
 								when tvData['broker'] == 'KRAKEN'
 					  			@protectTrade = Kraken.newTrail(tvData,requestOriginalE, apiKey, secretKey, tradeX)
-					  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
+					  			if !@protectTrade.empty? && @protectTrade['result']['txid'].present?
 					  				puts 	"\n-- Taking Profit #{@protectTrade['result']['txid'][0]} --\n"
 					  			end
 								when tvData['broker'] == 'OANDA'
 									@protectTrade = Oanda.oandaTrail(tvData,requestExecution, apiKey, secretKey, tradeX)
-					  			if @protectTrade.present? && @protectTrade['orderCreateTransaction']['id'].present?
+					  			if !@protectTrade.empty? && @protectTrade['orderCreateTransaction']['id'].present?
 					  				puts 	"\n-- Taking Profit #{@protectTrade['orderCreateTransaction']['id']} --\n"
 					  			end
 								end
@@ -125,7 +125,7 @@ class ApplicationRecord < ActiveRecord::Base
 							  			puts "\n-- Old Take Profit Canceled --\n"
 							  			
 							  			@protectTrade = Kraken.newTrail(tvData,requestOriginalE, apiKey, secretKey, tradeX)
-							  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
+							  			if !@protectTrade.empty? && @protectTrade['result']['txid'].present?
 							  				puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
 							  			end
 										end
@@ -145,7 +145,7 @@ class ApplicationRecord < ActiveRecord::Base
 				  				case true
 									when tvData['broker'] == 'KRAKEN'
 						  			@protectTrade = Kraken.newTrail(tvData,requestOriginalE, apiKey, secretKey, tradeX)
-						  			if @protectTrade.present? && @protectTrade['result']['txid'].present?
+						  			if !@protectTrade.empty? && @protectTrade['result']['txid'].present?
 						  				puts "\n-- Additional Take Profit #{@protectTrade['result']['txid'][0]} --\n"
 						  			end
 									end
