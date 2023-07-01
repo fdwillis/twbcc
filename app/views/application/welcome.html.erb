@@ -5,7 +5,7 @@
         <h1 class="mt-5 mb-0 font-24 color-white text-center"><%= session['headlines'] %></h1>
         <h1 class="mb-0 font-34 color-white text-center"><%= session['subline'] %></h1>
         <p class="color-white font-13 pt-2 opacity-50 text-center">Trading as a Service (TAAS) with Oarlin</p>
-        <p class="color-white text-center px-2 content">Lightning-fast order executions from the cloud<br>Never miss profitable opportunities again<br>Get started today with Oarlin's Trading as a Service (TAAS)</p>
+        <p class="color-white text-center px-2 content">Lightning-fast order executions from the cloud<br>Never miss profitable opportunities again</p>
         <div class="col-12">
           <a href="/checkout/<%= ENV['trialTradingDaily'] %>?&trial=true&referredBy=#{params[:splitSession]}" data-back-button="" class="btn btn-full btn-m mt-3 rounded-sm shadow-xl border-purple-dark bg-theme font-800 text-uppercase">Start Trial Trading</a>
           <a href="/auto-trading&referredBy=#{params[:splitSession]}" data-back-button="" class="btn btn-full btn-m mt-3 rounded-sm shadow-xl bg-highlight font-800 text-uppercase">Start Automated Trading</a>
