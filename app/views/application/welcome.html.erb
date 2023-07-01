@@ -15,3 +15,46 @@
     <div class="card-overlay bg-black opacity-80"></div>
   </div>
 </div>
+<div class="content">
+  <h6 class="color-highlight text-uppercase font-700 mb-1">JOIN TODAY</h6>
+  <h1 class="text-uppercase font-900 mt-n2">MEMBERSHIP</h1>
+  <p class='font-14'>Oarlin's Trading as a Service (TAAS) allows you to copy trades in real time directly to all of your brokerage accounts. With Oarlin, you can trade crypto, stocks, options, and forex markets simultaneously without lifting a finger. To activate your Trading as a Service (TAAS) with Oarlin, provide the Oarlin platform with the assets and brokers you want to trade, set your risk tolerance, and watch as Oarlin's Trading as a Service (TAAS) executes your positions accordingly.  Let Oarlin automate trading for you today.</p>
+  <div class="divider"></div>
+  <div class="row text-center">
+    <div class="col-6">
+      <i class="fa fa-copy fa-4x color-theme mb-3"></i>
+      <h6 class="text-uppercase color-highlight font-700">Copy Trades</h6>
+      <p>Copy Trades In Real Time</p>
+    </div>
+    <div class="col-6">
+      <i class="fa fa-globe fa-4x color-theme mb-3"></i>
+      <h6 class="text-uppercase color-highlight font-700">all markets</h6>
+      <p>Stocks, Options, Forex, &amp; Crypto</p>
+    </div>
+
+    <div class="col-6">
+      <i class="fa fa-bolt fa-4x color-theme mb-3"></i>
+      <h6 class="text-uppercase color-highlight font-700">Instant executions</h6>
+      <p>Executions From The Cloud</p>
+    </div>
+    <div class="col-6">
+      <i class="fa fa-wifi fa-4x color-theme mb-3"></i>
+      <h6 class="text-uppercase color-highlight font-700">Trade 24/7</h6>
+      <p>Trade Any Time or Day</p>
+    </div>
+    <div class="col-6">
+      <i class="fa fa-gears fa-4x color-theme mb-3"></i>
+      <h6 class="text-uppercase color-highlight font-700">Adjustable Triggers</h6>
+      <p>Risk &amp; Profit Set By You</p>
+    </div>
+    <div class="col-6">
+      <i class="fa fa-lock fa-4x color-theme mb-3"></i>
+      <h6 class="text-uppercase color-highlight font-700">Profit Protection</h6>
+      <p>Lock Profits Automatically</p>
+    </div>
+  </div>
+  <div class="col-12">
+    <a href="/checkout/<%= ENV['trialTradingDaily'] %>?&trial=true&referredBy=#{params[:splitSession]}" data-back-button="" class="btn btn-full btn-m mt-3 rounded-sm shadow-xl border-purple-dark bg-theme font-800 text-uppercase">Start Trial Trading</a>
+    <a href="/auto-trading&referredBy=#{params[:splitSession]}" data-back-button="" class="btn btn-full btn-m mt-3 rounded-sm shadow-xl bg-highlight font-800 text-uppercase">Start Automated Trading</a>
+  </div>
+</div>
