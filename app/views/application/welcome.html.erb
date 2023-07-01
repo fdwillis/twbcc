@@ -1,0 +1,17 @@
+<div class="page-content pb-0">
+  <div class="card" data-card-height="cover" style="background-image: url(/assets/53d9a3fd304ab73d580828e5367313eb.jpeg); height: 668px;">
+    <div class="card-bottom mb-5 mx-3">
+      <div class="content mb-0">
+        <h1 class="mt-5 mb-0 font-24 color-white text-center"><%= session['headlines'] %></h1>
+        <h1 class="mb-0 font-34 color-white text-center"><%= session['subline'] %></h1>
+        <p class="color-white font-13 pt-2 opacity-50 text-center">Trading as a Service (TAAS) with Oarlin</p>
+        <p class="color-white text-center px-2 content">Lightning-fast order executions from the cloud.<br>Don't let profitable opportunities slip through your fingers like manual traders often do.<br>Get started today with our trial and unlock the full potential of Oarlin's Trading as a Service (TAAS).</p>
+        <div class="col-12">
+          <a href="/checkout/<%= ENV['trialTradingDaily'] %>?&trial=true&referredBy=#{params[:splitSession]}" data-back-button="" class="btn btn-full btn-m mt-3 rounded-sm shadow-xl border-purple-dark bg-theme font-800 text-uppercase">Start Trial Trading</a>
+          <a href="/auto-trading&referredBy=#{params[:splitSession]}" data-back-button="" class="btn btn-full btn-m mt-3 rounded-sm shadow-xl bg-highlight font-800 text-uppercase">Start Automated Trading</a>
+        </div>
+      </div>
+    </div>
+    <div class="card-overlay bg-black opacity-80"></div>
+  </div>
+</div>

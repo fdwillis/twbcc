@@ -739,12 +739,14 @@ class ApplicationController < ActionController::Base
 		end
 	end
 
-	def how_it_works
-		if session['howITWOrks'].present?
+	def welcome
+		if session['headlines'] && session['subline']
 		else
-			@headlines = ['Signup - Share - Earn','Made Exclusively For Amazon Associates','Customizable Automation For Amazon Associates','Oarlin - Join The Hive','Supercharged Automation For Amazon Associates']
+			@headlines = ['Real Time Trade Copying','Never Miss Trading Opportunities','Amplify Your Profits','Supercharge Your Day Trading']
+			@subline	 = ['Profit While You Sleep', 'Start Passive Trading', 'Travel More Trade Less', 'Worry Free Trading']
 
-			session['howITWOrks'] = @headlines.sample
+			session['headlines'] = @headlines.sample
+			session['subline'] = @subline.sample
 		end
 		ahoy.track "How It Works Visited", previousPage: request.referrer, title: session['howITWOrks']
 	end

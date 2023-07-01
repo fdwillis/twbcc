@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   end
 
   unauthenticated :user do
-    root 'search#index'
+    root 'application#welcome'
   end
 
   %w( 404 422 500 503 ).each do |code|
@@ -26,7 +26,7 @@ Rails.application.routes.draw do
   get "/analytics", to: 'application#analytics', as: 'analytics'
   get "/commissions/:id", to: 'application#commissions', as: 'commissions'
   get "/profile/:id", to: 'application#profile', as: 'profile'
-  get "/how-it-works", to: 'application#how_it_works', as: 'how_it_works'
+  get "/welcome", to: 'application#welcome', as: 'welcome'
   get "/new-password-set", to: 'registrations#new_password', as: 'new-password-set'
   get "/checkout/:price/:account", to: 'application#checkout'
   get "/checkout/:price", to: 'application#checkout'
