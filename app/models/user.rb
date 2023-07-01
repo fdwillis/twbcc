@@ -8,14 +8,14 @@ class User < ApplicationRecord
   has_many :trades
   has_many :take_profits
 
-  validates_uniqueness_of :krakenLiveSecret
-  validates_uniqueness_of :krakenTestAPI
-  validates_uniqueness_of :krakenTestSecret
-  validates_uniqueness_of :alpacaKey
-  validates_uniqueness_of :alpacaSecret
-  validates_uniqueness_of :alpacaTestKey
-  validates_uniqueness_of :alpacaTestSecret
-  validates_uniqueness_of :oandaToken
+  validates_uniqueness_of :krakenLiveSecret, allow_blank: true
+  validates_uniqueness_of :krakenTestAPI, allow_blank: true
+  validates_uniqueness_of :krakenTestSecret, allow_blank: true
+  validates_uniqueness_of :alpacaKey, allow_blank: true
+  validates_uniqueness_of :alpacaSecret, allow_blank: true
+  validates_uniqueness_of :alpacaTestKey, allow_blank: true
+  validates_uniqueness_of :alpacaTestSecret, allow_blank: true
+  validates_uniqueness_of :oandaToken, allow_blank: true
 
   
   include MediaEmbed::Handler
@@ -105,6 +105,7 @@ class User < ApplicationRecord
   }
 
   FREEmembership = [ENV['freeMembership']] 
+  TRIALmembership = [ENV['trialTradingDaily']] 
   TRADERmembership = [ENV['selfTradingMonthlyMembership'],ENV['selfTradingAnnualMembership'],ENV['autoTradingMonthlyMembership'],ENV['autoTradingAnnualMembership']] 
   AFFILIATEmembership = [ENV['affiliateMonthly'],ENV['affiliateAnnual']] 
   BUSINESSmembership = [ENV['businessMonthly'], ENV['businessAnnual']] 
@@ -338,14 +339,14 @@ class User < ApplicationRecord
 
   def checkMembership
     membershipValid = []
-    membershipPlans = [ENV['autoTradingMonthlyMembership'], ENV['autoTradingAnnualMembership'],ENV['selfTradingAnnualMembership'], ENV['selfTradingMonthlyMembership'],ENV['affiliateMonthly'], ENV['affiliateAnnual'], ENV['businessMonthly'], ENV['businessAnnual'], ENV['automationMonthly'], ENV['automationAnnual']]
+    membershipPlans = [ENV['trialTradingDaily'],ENV['autoTradingMonthlyMembership'], ENV['autoTradingAnnualMembership'],ENV['selfTradingAnnualMembership'], ENV['selfTradingMonthlyMembership'],ENV['affiliateMonthly'], ENV['affiliateAnnual'], ENV['businessMonthly'], ENV['businessAnnual'], ENV['automationMonthly'], ENV['automationAnnual']]
     allSubscriptions = Stripe::Subscription.list({customer: stripeCustomerID})['data'].map(&:items).map(&:data).flatten.map(&:plan).map(&:id)
     
     membershipPlans.each do |planID|
       case true
       when allSubscriptions.include?(planID)
         membershipPlan = Stripe::Subscription.list({customer: stripeCustomerID, price: planID})['data'][0]
-        membershipType = TRADERmembership.include?(planID) ? 'trader' : AFFILIATEmembership.include?(planID) ? 'affiliate' : BUSINESSmembership.include?(planID) ? 'business': AUTOMATIONmembership.include?(planID) ? 'automation': FREEmembership.include?(planID) ? 'free' : 'free'
+        membershipType = TRIALmembership.include?(planID) ? 'trial,trader' :TRADERmembership.include?(planID) ? 'trader' : AFFILIATEmembership.include?(planID) ? 'affiliate' : BUSINESSmembership.include?(planID) ? 'business': AUTOMATIONmembership.include?(planID) ? 'automation': FREEmembership.include?(planID) ? 'free' : 'free'
         if membershipPlan['status'] == 'active' && membershipPlan['pause_collection'] == nil
           membershipValid << {membershipDetails: membershipPlan, membershipType: membershipType}
         end
@@ -371,6 +372,11 @@ class User < ApplicationRecord
   def trader?
     checkMembership
     accessPin.split(',').include?('trader')
+  end
+
+  def trial?
+    checkMembership
+    accessPin.split(',').include?('trial')
   end
 
   def connectAccount?

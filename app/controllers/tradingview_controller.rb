@@ -58,12 +58,35 @@ class TradingviewController < ApplicationController
 
 						validPlansToParse.each do |planXinfo|
 							traderFoundForCopy = User.find_by(stripeCustomerID: planXinfo['customer'])
-							listToTrade = traderFoundForCopy.authorizedList.delete(' ').split(",").reject(&:blank?)
-							if !traderFoundForCopy.admin?
+							listToTrade = traderFoundForCopy&.authorizedList&.delete(' ')
+							if traderFoundForCopy.trader? && !listToTrade.blank?
 								puts "\n-- Started For #{traderFoundForCopy.uuid} --\n"
-								listToTrade.each do |assetX|
+								listToTrade.split(",")&.reject(&:blank?).each do |assetX|
 									if assetX.upcase == params['ticker']
 										# execute trade
+										case true
+										when params['type'].include?('Stop')
+											case true
+											when params['broker'] == 'KRAKEN'
+												BackgroundJob.perform_async('stop', tradingviewKeysparams.to_h, traderFoundForCopy.krakenLiveAPI, traderFoundForCopy.krakenLiveSecret)
+											when params['broker'] == 'OANDA'
+												traderFound.oandaList.split(",").each do |accountID|
+													BackgroundJob.perform_async('stop', tradingviewKeysparams.to_h, traderFoundForCopy.oandaToken, accountID)
+												end
+											end
+										when params['type'] == 'entry'
+											case true
+											when params['broker'] == 'KRAKEN'
+												BackgroundJob.perform_async('entry', tradingviewKeysparams.to_h, traderFoundForCopy.krakenLiveAPI, traderFoundForCopy.krakenLiveSecret)
+											when params['broker'] == 'OANDA'
+												traderFound.oandaList.split(",").each do |accountID|
+													BackgroundJob.perform_async('entry', tradingviewKeysparams.to_h, traderFoundForCopy.oandaToken, accountID)
+												end
+											end
+										when params['type'].include?('profit')
+										end
+									elsif (current_user&.authorizedList == 'crypto' ? "BTC#{ISO3166::Country[current_user.amazonCountry.downcase].currency_code}" : current_user&.authorizedList == 'forex' ? "EUR#{ISO3166::Country[current_user.amazonCountry.downcase].currency_code}" : nil )
+										debugger
 										case true
 										when params['type'].include?('Stop')
 											case true

@@ -286,7 +286,6 @@ class RegistrationsController < ApplicationController
 			      },
 		      )
 		      #make user with password passed
-		      
 		      loadedCustomer = User.create(
 		        referredBy: newTraderParams['referredBy'].present? ? newTraderParams['referredBy'] : ',',
 		        email: stripeCustomer['email'], 
@@ -294,10 +293,15 @@ class RegistrationsController < ApplicationController
 		        accessPin: newTraderParams['accessPin'], 
 		        stripeCustomerID: stripeSessionInfo['customer'],
 		        uuid: SecureRandom.uuid[0..7],
-		        amazonCountry:  stripeSessionInfo['customer_details']['address']['country']
+		        amazonCountry:  stripeSessionInfo['customer_details']['address']['country'],
 		      )
 
-	      	ahoy.track "Trader Signup", previousPage: request.referrer, uuid: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).uuid, referredBy: newTraderParams['referredBy'].present? ? newTraderParams['referredBy'] : 'admin'
+		      loadedCustomer.checkMembership
+		      if loadedCustomer.trial?
+		      	loadedCustomer.update(authorizedList:  stripeSessionInfo['custom_fields'][0]['dropdown']['value'])
+		      end
+
+	      	ahoy.track "Trader Signup", previousPage: request.referrer, uuid: loadedCustomer.uuid, referredBy: newTraderParams['referredBy'].present? ? newTraderParams['referredBy'] : 'admin'
 
 		      flash[:success] = "Your Account Is Setup!"
 		      redirect_to request.referrer
@@ -319,6 +323,10 @@ class RegistrationsController < ApplicationController
 		    params['session'],
 		  )
    	end
+	end
+
+	def trial
+		
 	end
 
 	private

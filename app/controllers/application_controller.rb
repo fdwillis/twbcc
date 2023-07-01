@@ -168,52 +168,99 @@ class ApplicationController < ActionController::Base
 	end
 # <%= Ahoy::Event.where_event("Search Terms").count %>
 	def checkout
-		if params['account'].present?
-			applicationFeeAmount = Stripe::Price.retrieve(params['price'],{stripe_account: params['account']})['unit_amount'] * 0.02
-			@session = Stripe::Checkout::Session.create({
-				success_url: "https://app.oarlin.com/?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",
-	      phone_number_collection: {
-		      enabled: true
-		    },
-		    payment_intent_data: {
-		    	application_fee_amount: applicationFeeAmount.to_i
-		    },
-	      line_items: [
-	        {price: params['price'], quantity: 1},
-	      ],
-	      mode: 'payment',
-	    }, {stripe_account: params['account']})
-	  else
-	  	tradeCoupon = Stripe::Coupon.list({limit: 100})['data'].reject{|c| c['max_redemptions'] == 0}.reject{|c| c['duration'] == 'forever'}
-	  	grabStripePrice = Stripe::Price.retrieve(params['price'])
-
-	  	if tradeCoupon.present?
+		customFields = [
+			# {
+			# 	key: 'type',
+			# 	label: {custom: 'Account Type', type: 'custom'},
+			# 	type: 'dropdown',
+			# 	dropdown: {options: [
+			# 		{label: 'Individual', value: 'individual'},
+			# 		{label: 'Company', value: 'company'},
+			# 	]}},
+			{
+				key: 'asset',
+				label: {custom: 'Choose Your Market', type: 'custom'},
+				type: 'dropdown',
+				dropdown: {options: [
+				# {label: 'Options', value: 'options'},
+				{label: 'Crypto', value: 'crypto'},
+				{label: 'Forex', value: 'forex'},
+				# {label: 'Stocks', value: 'stocks'},
+				]}
+			}
+		]
+		begin
+			if params['account'].present?
+				applicationFeeAmount = Stripe::Price.retrieve(params['price'],{stripe_account: params['account']})['unit_amount'] * 0.02
 				@session = Stripe::Checkout::Session.create({
-					success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
+					success_url: "https://app.oarlin.com/?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",
+		      phone_number_collection: {
+			      enabled: true
+			    },
+			    payment_intent_data: {
+			    	application_fee_amount: applicationFeeAmount.to_i
+			    },
 		      line_items: [
 		        {price: params['price'], quantity: 1},
 		      ],
-		      discounts: [
-				  	coupon: tradeCoupon.first
-				  ],
-		      mode: 'subscription',#let stripe data determine,
-		    })
+		      mode: 'payment',
+		    }, {stripe_account: params['account']})
 		  else
-		    @session = Stripe::Checkout::Session.create({
-					success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
-		      line_items: [
-		        {price: params['price'], quantity: 1},
-		      ],
-		      mode: 'subscription',#let stripe data determine
-		    })
-		  end
-		end
-    redirect_to @session['url']
+		  	if params['trial'] == 'true'
+		  		pullPrice = Stripe::Price.retrieve(params['price'])
+
+		  		 @session = Stripe::Checkout::Session.create({
+						success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
+			      custom_fields: customFields,
+			      line_items: [
+			        {price: params['price'], quantity: 1},
+			      ],
+			      mode: 'subscription',#let stripe data determine
+			    })
+		  	else
+			  	tradeCoupon = Stripe::Coupon.list({limit: 100})['data'].reject{|c| c['max_redemptions'] == 0}.reject{|c| c['duration'] == 'forever'}
+			  	grabStripePrice = Stripe::Price.retrieve(params['price'])
+
+			  	if tradeCoupon.present?
+						@session = Stripe::Checkout::Session.create({
+							success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
+				      custom_fields: customFields,
+				      line_items: [
+				        {price: params['price'], quantity: 1},
+				      ],
+				      discounts: [
+						  	coupon: tradeCoupon.first
+						  ],
+				      mode: 'subscription',#let stripe data determine,
+				    })
+				  else
+				    @session = Stripe::Checkout::Session.create({
+							success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
+				      custom_fields: customFields,
+				      line_items: [
+				        {price: params['price'], quantity: 1},
+				      ],
+				      mode: 'subscription',#let stripe data determine
+				    })
+				  end
+			  end
+			end
+	    redirect_to @session['url']
+	  rescue Stripe::StripeError => e
+      session['coupon'] = nil
+      flash[:error] = "#{e.error.message}"
+      redirect_to request.referrer
+    rescue Exception => e
+      session['coupon'] = nil
+      flash[:error] = "#{e}"
+      redirect_to request.referrer
+    end
 	end
 
 	
 
 	def autotrading
+
 		@codes = Stripe::Coupon.list({limit: 100}).reject{|c| c['valid'] == false}
 	  successURL = "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}"
 		
