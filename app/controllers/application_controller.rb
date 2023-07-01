@@ -211,6 +211,9 @@ class ApplicationController < ActionController::Base
 
 		  		 @session = Stripe::Checkout::Session.create({
 						success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
+			      phone_number_collection: {
+				      enabled: true
+				    },
 			      custom_fields: customFields,
 			      line_items: [
 			        {price: params['price'], quantity: 1},
@@ -224,6 +227,9 @@ class ApplicationController < ActionController::Base
 			  	if tradeCoupon.present?
 						@session = Stripe::Checkout::Session.create({
 							success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
+				      phone_number_collection: {
+					      enabled: true
+					    },
 				      custom_fields: customFields,
 				      line_items: [
 				        {price: params['price'], quantity: 1},
@@ -236,6 +242,9 @@ class ApplicationController < ActionController::Base
 				  else
 				    @session = Stripe::Checkout::Session.create({
 							success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
+				      phone_number_collection: {
+					      enabled: true
+					    },
 				      custom_fields: customFields,
 				      line_items: [
 				        {price: params['price'], quantity: 1},
