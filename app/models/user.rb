@@ -7,6 +7,16 @@ class User < ApplicationRecord
   has_many :blogs
   has_many :trades
   has_many :take_profits
+
+  validates_uniqueness_of :krakenLiveSecret
+  validates_uniqueness_of :krakenTestAPI
+  validates_uniqueness_of :krakenTestSecret
+  validates_uniqueness_of :alpacaKey
+  validates_uniqueness_of :alpacaSecret
+  validates_uniqueness_of :alpacaTestKey
+  validates_uniqueness_of :alpacaTestSecret
+  validates_uniqueness_of :oandaToken
+
   
   include MediaEmbed::Handler
 
