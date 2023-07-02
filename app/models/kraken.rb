@@ -36,10 +36,10 @@ class Kraken < ApplicationRecord
   	
     routeToKraken = "/0/private/OpenOrders"
     orderParams = {}
-    requestK = request(routeToKraken, orderParams, apiKey, secretKey)['result']['open']
+    requestK = request(routeToKrafken, orderParams, apiKey, secretKey)['result']['open']
   end
 
-  def self.tickerInfo(symbol, apiKey, secretKey)
+  def self.tradeBalance(symbol, apiKey, secretKey)
   	
     routeToKraken = "/0/private/TradeBalance"
     orderParams = {
@@ -49,10 +49,28 @@ class Kraken < ApplicationRecord
     requestK = request(routeToKraken, orderParams, apiKey, secretKey)
   end
 
+  def self.tickerInfo(tvData, apiKey, secretKey)
+    routeToKraken = "/0/public/Ticker"
+    orderParams = {
+    	"pair" => tvData['ticker']
+    }
+
+    requestK = request(routeToKraken, orderParams, apiKey, secretKey)
+  end
+
+  def self.assetInfo(tvData, apiKey, secretKey)
+    routeToKraken = "/0/public/Ticker"
+    orderParams = {
+      "pair" => tvData['ticker']
+    }
+
+    requestK = request(routeToKraken, orderParams, apiKey, secretKey)
+  end
+
   def self.publicPair(tvData, apiKey, secretKey)
     routeToKraken = "/0/public/AssetPairs"
     orderParams = {
-    	"pair" => tvData['ticker']
+      "pair" => tvData['ticker']
     }
 
     requestK = request(routeToKraken, orderParams, apiKey, secretKey)

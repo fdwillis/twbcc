@@ -2,9 +2,76 @@ class TradingviewController < ApplicationController
 	protect_from_forgery with: :null_session
 
 	def trading_history
-		#assets under management
 		#pull all closed trades -> build result to display
 		#pull all open trades -> build result to display
+		cryptoAssets = 0
+		forexAssets = 0
+		stocksAssets = 0
+		optionsAssets = 0
+		@currentTrades = Trade.all.where(finalTakeProfit: nil)&.size
+		@entriesTrades = Trade.all.size
+		@exitsTrades = Trade.all.where.not(finalTakeProfit: nil)&.size
+		@profitTotal = 0
+		@costTotal = 0
+
+		User.all.each do |user|
+			#assets under management (tally together crypto, forex, stocks, options)
+			if user&.oandaToken.present? && user&.oandaList.present?
+				oandaAccounts = user&.oandaList.split(',')
+				oandaAccounts.each do |accountID|
+					oandaX = Oanda.oandaRequest(user&.oandaToken, accountID)
+					balanceX = Oanda.oandaBalance(user&.oandaToken, accountID)
+					forexAssets += balanceX
+				end
+			end
+
+			if user&.krakenLiveAPI.present? && user&.krakenLiveSecret.present?
+				balanceX = Kraken.krakenBalance(user&.krakenLiveAPI, user&.krakenLiveSecret)
+				krakenResult = balanceX['result'].reject{|d,f| f.to_f == 0}
+				baseCurrency = krakenResult.reject{|d, f| !d.include?("Z")}.keys[0]
+
+				krakenResult.each do |resultX|
+
+					if resultX[0] == "ZUSD"
+						cryptoAssets += krakenResult['ZUSD'].to_f
+					else
+						krakenSym = resultX[0]
+						publicPair = Kraken.publicPair({'ticker' => "#{krakenSym}#{baseCurrency}"}, user&.krakenLiveAPI, user&.krakenLiveSecret)
+						tickerInfo = publicPair['result']["#{krakenSym}#{baseCurrency}"]
+						baseTicker = tickerInfo['base']
+						krakenTicker = tickerInfo['altname']
+						tradeBalanceCall = Kraken.tradeBalance(baseTicker, user&.krakenLiveAPI, user&.krakenLiveSecret)
+						units = balanceX['result'][baseTicker].to_f
+
+						assetInfo = Kraken.assetInfo({'ticker' => krakenTicker},  user&.krakenLiveAPI, user&.krakenLiveSecret)
+						ask = assetInfo['result']["#{baseTicker}#{baseCurrency}"]['a'][0].to_f
+						bid = assetInfo['result']["#{baseTicker}#{baseCurrency}"]['b'][0].to_f
+
+						averagePrice = (ask + bid)/2
+
+						risked = averagePrice * units
+						cryptoAssets += risked
+					end
+				end
+
+
+				user&.trades.where(broker: 'KRAKEN').each do |tradeX|
+					
+					orderInfo = Kraken.orderInfo(tradeX&.uuid, user&.krakenLiveAPI, user&.krakenLiveSecret)
+					@costTotal += orderInfo.present? ? orderInfo['cost'].to_f : 0
+					
+
+					if !tradeX.finalTakeProfit.nil?
+						tradeX.take_profits.each do |profitX|
+							orderInfo = Kraken.orderInfo(profitX&.uuid, user&.krakenLiveAPI, user&.krakenLiveSecret)
+							@profitTotal += orderInfo.present? ? orderInfo['cost'].to_f : 0
+						end
+					end
+				end
+			end
+		end
+
+		@assetsUM = cryptoAssets + forexAssets + stocksAssets + optionsAssets
 	end
 
 	def manage_trading_keys
@@ -97,7 +164,6 @@ class TradingviewController < ApplicationController
 										when params['type'].include?('profit')
 										end
 									elsif (current_user&.authorizedList == 'crypto' ? "BTC#{ISO3166::Country[current_user.amazonCountry.downcase].currency_code}" : current_user&.authorizedList == 'forex' ? "EUR#{ISO3166::Country[current_user.amazonCountry.downcase].currency_code}" : nil )
-										debugger
 										case true
 										when params['type'].include?('Stop')
 											case true

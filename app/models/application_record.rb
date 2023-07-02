@@ -207,9 +207,9 @@ class ApplicationRecord < ActiveRecord::Base
 				@currentOpenAllocation = Kraken.pendingTrades(apiKey, secretKey)
 
 				
-				@tickerInfoCall = Kraken.tickerInfo(@baseTicker, apiKey, secretKey)
+				@tradeBalanceCall = Kraken.tradeBalance(@baseTicker, apiKey, secretKey)
 				
-				@accountTotal = @tickerInfoCall['result']['eb'].to_f
+				@accountTotal = @tradeBalanceCall['result']['eb'].to_f
 
 				@currentRisk = ((@currentOpenAllocation.map{|d| d[1]}.reject{|d| d['descr']['type'] != tvData['direction']}.reject{|d| d['descr']['pair'] != @tickerForAllocation}.map{|d| d['vol'].to_f * d['descr']['price'].to_f}.sum + (@amountToRisk['result'][@baseTicker].to_f * tvData['currentPrice'].to_f))/(@accountTotal * tvData['currentPrice'].to_f)) * 100
 	  	end

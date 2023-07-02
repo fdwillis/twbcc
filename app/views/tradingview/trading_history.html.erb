@@ -1,14 +1,14 @@
 <div class="page-content header-clear-medium">
 	<div data-card-height="230" class="card card-style rounded-m shadow-xl preload-img entered loaded" data-src="images/pictures/18w.jpg" data-ll-status="loaded" style="height: 230px; background-image: url(&quot;images/pictures/18w.jpg&quot;);">
 		<div class="card-top mt-4 ms-3">
-		<h1 class="color-white mb-0 mb-n2">Trade History</h1>
-			<p class="bottom-0 color-white opacity-50 under-heading font-12">View The Trade List Below</p>
+		<h1 class="color-white mb-0 mb-n2">Trade Stats</h1>
+			<p class="bottom-0 color-white opacity-50 under-heading font-12">View The Trade Stats Below</p>
 		</div>
 		<div class="card-top mt-4 me-3">
-			<a href="#" class="mt-1 float-end text-uppercase font-900 font-11 btn btn-s rounded-s shadow-l bg-highlight">JOIN NOW</a>
+			<a href="/auto-trading?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="mt-1 float-end text-uppercase font-900 font-11 btn btn-s rounded-s shadow-l bg-highlight">JOIN NOW</a>
 		</div>
 		<div class="card-bottom text-center">
-			<h1 class="color-white fa-4x mb-4">$8.178</h1>
+			<h1 class="color-white fa-4x mb-4"><%= number_to_currency(@assetsUM, precision: 2) %></h1>
 			<p class="color-white opacity-70 font-14 mb-4">Assets Under Management</p>
 		</div>
 		<!-- <div class="card-bottom">
@@ -21,6 +21,45 @@
 	</div>
 </div>
 
+<div class="card card-style">
+	<div class="content mb-0">
+		<h4 class="font-700 text-uppercase font-12 opacity-30 mb-3 mt-n2">ENtries</h4>
+		<div class="d-flex">
+			<div class="pe-4 align-self-center">
+				<p class="font-600 color-highlight mb-n1">Profit</p>
+				<h1 class="mb-2"><%=  number_to_currency(@profitTotal - @costTotal, precision: 2)  %></h1>
+			</div>
+			<div class="w-100 align-self-center ps-3">
+				<h6 class="font-14 font-700">Invested<span class="float-end color-highlight-dark"><%= number_to_currency(@costTotal, precision: 2)  %></span></h6>
+				<div class="divider mb-2 mt-1"></div>
+				<h6 class="font-14 font-700">Returned<span class="float-end color-highlight-dark"><%=  number_to_currency(@profitTotal, precision: 2)  %></span></h6>
+			</div>
+		</div>
+		<div class="divider mt-2 mb-3"></div>
+		<div class="row mb-0">
+			<h4 class="font-700 text-uppercase font-12 opacity-30 mb-3 mt-n2">Positions</h4>
+			<div class="col-4">
+				<div class="mx-0 mb-3">
+					<h6 class="font-12 font-800 text-uppercase opacity-30">Open</h6>
+					<h3 class="color-green-dark font-20 mb-0"><%= @currentTrades %></h3>
+				</div>
+			</div>
+			<div class="col-4 text-center">
+				<div class="mx-0 mb-3">
+					<h6 class="font-12 font-800 text-uppercase opacity-30">Closed</h6>
+					<h3 class="color-blue-dark font-20 mb-0"><%= @exitsTrades %></h3>
+				</div>
+			</div>
+			<div class="col-4 pe-3 text-end">
+				<div class="mx-0 mb-3">
+					<h6 class="font-12 font-800 text-uppercase opacity-30">Win Rate</h6>
+					<h3 class="color-highlight-dark font-20 mb-0"><%= number_to_percentage((@exitsTrades.to_f/@entriesTrades.to_f) * 100, precision: 2) %></h3>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- 
 <div class="card card-style bg-theme pb-0">
 	<div id="tab-group-1">
 		<div class="tab-controls tabs-small" data-highlight="bg-highlight-dark">
@@ -77,4 +116,4 @@
 			</canvas></div>
 		</div>
 	</div>
-</div>
+</div> -->
