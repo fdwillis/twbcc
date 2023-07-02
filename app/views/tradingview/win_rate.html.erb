@@ -7,10 +7,12 @@
 		<div class="card-top mt-4 me-3">
 			<a href="/auto-trading?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="mt-1 float-end text-uppercase font-900 font-11 btn btn-s rounded-s shadow-l bg-highlight">JOIN NOW</a>
 		</div>
-		<div class="card-bottom text-center">
-			<h1 class="color-white fa-4x mb-4"><%= number_to_percentage((@exitsTrades.to_f/@entriesTrades.to_f) * 100, precision: 2) %></h1>
+		<div class="card-bottom text-center col-12">
+			<h1 class="color-white fa-4x mb-4"><%= number_to_percentage((@exitsTrades.to_f/@entriesTrades.size.to_f) * 100, precision: 2) %></h1>
 			<p class="color-white opacity-70 font-22 mb-4">Win Rate</p>
+			<p class="color-white opacity-70 font-18 mb-4">Full Close</p>
 		</div>
+
 		<!-- <div class="card-bottom">
 			<p class="ms-3 font-8 font-500 opacity-50 color-white">You could be trading</p>
 		</div>
@@ -29,7 +31,7 @@
 				<h1 class="mb-2"><%= number_to_currency(@assetsUM, precision: 2) %></h1>
 			</div>
 			<div class="w-100 align-self-center ps-3">
-				<h6 class="font-14 font-700">Trades<span class="float-end color-highlight-dark"><%= @entriesTrades %></span></h6>
+				<h6 class="font-14 font-700">Trades<span class="float-end color-highlight-dark"><%= @entriesTrades.size %></span></h6>
 				<div class="divider mb-2 mt-1"></div>
 				<h6 class="font-14 font-700">Open<span class="float-end color-highlight-dark"><%= @currentTrades %></span></h6>
 				<div class="divider mb-2 mt-1"></div>

@@ -9,10 +9,17 @@ class TradingviewController < ApplicationController
 		stocksAssets = 0
 		optionsAssets = 0
 		@currentTrades = Trade.all.where(finalTakeProfit: nil)&.size
-		@entriesTrades = Trade.all.size
-		@exitsTrades = Trade.all.where.not(finalTakeProfit: nil)&.size
+		@entriesTrades = Trade.all
+		@exitsTrades = Trade.all.where.not(finalTakeProfit: nil)&.size 
 		@profitTotal = 0
+		@partialClose = 0
 		@costTotal = 0
+
+		@entriesTrades.each do |entry|
+			if entry.finalTakeProfit.nil? && entry.take_profits.size > 0
+				@partialClose += 1
+			end
+		end
 
 		User.all.each do |user|
 			#assets under management (tally together crypto, forex, stocks, options)
@@ -29,8 +36,9 @@ class TradingviewController < ApplicationController
 				balanceX = Kraken.krakenBalance(user&.krakenLiveAPI, user&.krakenLiveSecret)
 				krakenResult = balanceX['result'].reject{|d,f| f.to_f == 0}
 				baseCurrency = krakenResult.reject{|d, f| !d.include?("Z")}.keys[0]
+				cryptoAssets += krakenResult[baseCurrency].to_f
 
-				krakenResult.each do |resultX|
+				krakenResult.except(baseCurrency).each do |resultX|
 					baseTicker = resultX[0]
 					assetInfo = Kraken.assetInfo({'ticker' => baseTicker},  user&.krakenLiveAPI, user&.krakenLiveSecret)
 					tradeBalanceCall = Kraken.tradeBalance(baseTicker, user&.krakenLiveAPI, user&.krakenLiveSecret)
@@ -38,18 +46,14 @@ class TradingviewController < ApplicationController
 					altName = assetInfo['result'][baseTicker]['altname']
 					tickerInfo = Kraken.tickerInfo({'ticker' => "#{altName}#{baseCurrency.delete("Z")}"}, user&.krakenLiveAPI, user&.krakenLiveSecret)
 
-					if resultX[0] == "ZUSD"
-						cryptoAssets += krakenResult['ZUSD'].to_f
-					else
 
 						ask = tickerInfo['result']["#{baseTicker}#{baseCurrency}"]['a'][0].to_f
-						bid = tickerInfo['result']["#{baseTicker}#{baseCurrency}"]['b'][0].to_f
+					bid = tickerInfo['result']["#{baseTicker}#{baseCurrency}"]['b'][0].to_f
 
-						averagePrice = (ask + bid)/2
+					averagePrice = (ask + bid)/2
 
-						risked = averagePrice * units
-						cryptoAssets += risked
-					end
+					risked = averagePrice * units
+					cryptoAssets += risked
 				end
 			end
 		end
