@@ -1,6 +1,12 @@
 class TradingviewController < ApplicationController
 	protect_from_forgery with: :null_session
 
+	def trading_history
+		#assets under management
+		#pull all closed trades -> build result to display
+		#pull all open trades -> build result to display
+	end
+
 	def manage_trading_keys
 		if params['editKeys'] && autoTradingKeysparams.present?
 			current_user.update(autoTradingKeysparams)

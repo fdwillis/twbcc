@@ -36,6 +36,7 @@ Rails.application.routes.draw do
   get "/update-discount", to: 'application#update_discount', as: 'update_discount'
   get "/questions", to: 'application#questions', as: 'questions'
   get "/trading", to: 'registrations#trading', as: 'trading'
+  get "/trade-history", to: 'tradingview#trading_history', as: 'trading_history'
 
   post "/trading", to: 'registrations#trading'
   post "/signals", to: 'tradingview#signals', as: 'signals' # sprint2
