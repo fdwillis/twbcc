@@ -23,7 +23,6 @@ class Kraken < ApplicationRecord
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     response = http.request(req)
-    sleep 1
     Oj.load(response.body)
   end
 
@@ -59,9 +58,9 @@ class Kraken < ApplicationRecord
   end
 
   def self.assetInfo(tvData, apiKey, secretKey)
-    routeToKraken = "/0/public/Ticker"
+    routeToKraken = "/0/public/Assets"
     orderParams = {
-      "pair" => tvData['ticker']
+      "asset" => tvData['ticker']
     }
 
     requestK = request(routeToKraken, orderParams, apiKey, secretKey)

@@ -25,10 +25,6 @@
 	<div class="content mb-0">
 		<h4 class="font-700 text-uppercase font-12 opacity-30 mb-3 mt-n2">ENtries</h4>
 		<div class="d-flex">
-			<div class="pe-4 align-self-center">
-				<p class="font-600 color-highlight mb-n1">Profit</p>
-				<h1 class="mb-2"><%=  number_to_currency(@profitTotal - @costTotal, precision: 2)  %></h1>
-			</div>
 			<div class="w-100 align-self-center ps-3">
 				<h6 class="font-14 font-700">Invested<span class="float-end color-highlight-dark"><%= number_to_currency(@costTotal, precision: 2)  %></span></h6>
 				<div class="divider mb-2 mt-1"></div>

@@ -1,7 +1,7 @@
 class TradingviewController < ApplicationController
 	protect_from_forgery with: :null_session
 
-	def trading_history
+	def win_rate
 		#pull all closed trades -> build result to display
 		#pull all open trades -> build result to display
 		cryptoAssets = 0
@@ -35,17 +35,19 @@ class TradingviewController < ApplicationController
 					if resultX[0] == "ZUSD"
 						cryptoAssets += krakenResult['ZUSD'].to_f
 					else
-						krakenSym = resultX[0]
-						publicPair = Kraken.publicPair({'ticker' => "#{krakenSym}#{baseCurrency}"}, user&.krakenLiveAPI, user&.krakenLiveSecret)
-						tickerInfo = publicPair['result']["#{krakenSym}#{baseCurrency}"]
-						baseTicker = tickerInfo['base']
-						krakenTicker = tickerInfo['altname']
+						baseTicker =  resultX[0]
 						tradeBalanceCall = Kraken.tradeBalance(baseTicker, user&.krakenLiveAPI, user&.krakenLiveSecret)
 						units = balanceX['result'][baseTicker].to_f
 
-						assetInfo = Kraken.assetInfo({'ticker' => krakenTicker},  user&.krakenLiveAPI, user&.krakenLiveSecret)
-						ask = assetInfo['result']["#{baseTicker}#{baseCurrency}"]['a'][0].to_f
-						bid = assetInfo['result']["#{baseTicker}#{baseCurrency}"]['b'][0].to_f
+						assetInfo = Kraken.assetInfo({'ticker' => baseTicker},  user&.krakenLiveAPI, user&.krakenLiveSecret)
+						altName = assetInfo['result'][baseTicker]['altname']
+						
+						tickerInfo = Kraken.tickerInfo({'ticker' => "#{altName}#{baseCurrency.delete("Z")}"}, user&.krakenLiveAPI, user&.krakenLiveSecret)
+
+						ask = tickerInfo['result']["#{baseTicker}#{baseCurrency}"]['a'][0].to_f
+						bid = tickerInfo['result']["#{baseTicker}#{baseCurrency}"]['b'][0].to_f
+
+						Kraken.publicPair("#{baseTicker}#{baseCurrency}", user&.krakenLiveAPI, user&.krakenLiveSecret)
 
 						averagePrice = (ask + bid)/2
 
