@@ -191,7 +191,7 @@ ActiveRecord::Schema.define(version: 2023_07_02_044006) do
     t.float "reduceBy"
     t.float "profitTrigger"
     t.float "maxRisk"
-    t.boolean "allowMarketOrder"
+    t.string "allowMarketOrder"
     t.index ["alpacaKey"], name: "index_users_on_alpacaKey", unique: true
     t.index ["alpacaSecret"], name: "index_users_on_alpacaSecret", unique: true
     t.index ["alpacaTestKey"], name: "index_users_on_alpacaTestKey", unique: true

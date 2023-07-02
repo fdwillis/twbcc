@@ -91,6 +91,34 @@
                 </div>
           </div>
 	      </div>
+
+	      <div class="card card-style">
+          <div class="content">
+              <h3 class="mb-0">Risk Tolerance &amp; Profit Triggers</h3>
+              <p>Decide how much to risk &amp; when to exit.<br>All numbers are represented as percentages</p>
+                <div class="content">
+                  <%= form_for :profitTriggers, url: manage_trading_keys_path do |form| %>
+
+                  	<%= form.label "Percentage to risk per entry" %><br />
+                  	<%= form.text_field :perEntry, value: current_user&.perEntry, class: 'form-control form-control-lg form-control-alt py-3' %>
+                  	
+                  	<%= form.label "Percentage to reduce positions by" %><br />
+										<%= form.text_field :reduceBy, value: current_user&.reduceBy, class: 'form-control form-control-lg form-control-alt py-3' %>
+                  	
+                  	<%= form.label "Profit Trigger" %><br />
+										<%= form.text_field :profitTrigger, value: current_user&.profitTrigger, class: 'form-control form-control-lg form-control-alt py-3' %>
+                  	
+                  	<%= form.label "Max total risk" %><br />
+										<%= form.text_field :maxRisk, value: current_user&.maxRisk, class: 'form-control form-control-lg form-control-alt py-3' %>
+                  	
+                  	<%= form.label "Do you want to allow market orders? (true or false)" %><br />
+										<%= form.select :allowMarketOrder, ['true', 'false'], selected: current_user&.allowMarketOrder, class: 'form-control form-control-lg form-control-alt py-3' %>
+                  	                  	
+	                  <%= form.submit "Save Risk & Triggers",class: "form-control btn btn-full btn-m rounded-m bg-highlight font-700 text-uppercase mb-4 mt-4" %>
+                  <% end %>
+                </div>
+          </div>
+	      </div>
       <% end %>
 			<div class="card card-style">
 		    <div class="content mb-0">
@@ -107,7 +135,7 @@
 			      		<%= f.text_field :oandaList, value: current_user&.oandaList, class: 'form-control form-control-lg form-control-alt py-3' %><br />
 		      		  <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
 			      		<%= f.label "Kraken Live API Key" %><br />
-			      		<%= f.text_field :krakenLiveAPI, value: current_user&.krakenLiveAPI, class: 'form-control form-control-lg form-control-alt py-3' %><br />1
+			      		<%= f.text_field :krakenLiveAPI, value: current_user&.krakenLiveAPI, class: 'form-control form-control-lg form-control-alt py-3' %><br />
 				      	<%= f.label "Kraken Live Secret Key" %><br />
 			      		<%= f.text_field :krakenLiveSecret, value: current_user&.krakenLiveSecret, class: 'form-control form-control-lg form-control-alt py-3' %><br />
 				      	<%= f.label "Kraken Test API Key" %><br />

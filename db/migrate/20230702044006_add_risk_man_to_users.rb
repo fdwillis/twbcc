@@ -4,6 +4,6 @@ class AddRiskManToUsers < ActiveRecord::Migration[6.0]
     add_column :users, :reduceBy, :float
     add_column :users, :profitTrigger, :float
     add_column :users, :maxRisk, :float
-    add_column :users, :allowMarketOrder, :boolean
+    add_column :users, :allowMarketOrder, :string
   end
 end

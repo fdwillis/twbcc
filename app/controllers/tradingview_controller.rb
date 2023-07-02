@@ -12,6 +12,11 @@ class TradingviewController < ApplicationController
 			flash[:success] = "Authorized List Updated"
 			redirect_to request.referrer
 			return
+		elsif profitTriggersparams.present?
+			current_user.update(profitTriggersparams)
+			flash[:success] = "Profit Triggers & Risk Tolerance Updated"
+			redirect_to request.referrer
+			return
 		else
 			flash[:notice] = "Cannot Be Blank"
 			redirect_to request.referrer
@@ -158,6 +163,10 @@ class TradingviewController < ApplicationController
 
   def tradingviewKeysparams
     params.permit(:adminOnly, :tradeForAdmin, :ticker, :tickerType, :type, :direction, :timeframe, :currentPrice, :highPrice, :tradingview, :traderID, :lowPrice, :broker, :trail, :entries => [], :tradingDays => [])
+  end
+
+  def profitTriggersparams
+    params.require(:profitTriggers).permit(:perEntry,:reduceBy,:profitTrigger,:maxRisk,:allowMarketOrder)
   end
 end
 
