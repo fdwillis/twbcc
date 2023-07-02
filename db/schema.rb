@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_06_28_154836) do
+ActiveRecord::Schema.define(version: 2023_07_02_044006) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -187,6 +187,11 @@ ActiveRecord::Schema.define(version: 2023_06_28_154836) do
     t.string "oandaToken"
     t.string "authorizedList"
     t.string "oandaList"
+    t.float "perEntry"
+    t.float "reduceBy"
+    t.float "profitTrigger"
+    t.float "maxRisk"
+    t.boolean "allowMarketOrder"
     t.index ["alpacaKey"], name: "index_users_on_alpacaKey", unique: true
     t.index ["alpacaSecret"], name: "index_users_on_alpacaSecret", unique: true
     t.index ["alpacaTestKey"], name: "index_users_on_alpacaTestKey", unique: true

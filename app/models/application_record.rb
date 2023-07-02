@@ -8,8 +8,10 @@ class ApplicationRecord < ActiveRecord::Base
 		case true
 		when tvData['broker'] == 'KRAKEN'
 			openTrades = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'open', broker: tvData['broker'])
+			traderFound = User.find_by(krakenLiveAPI: apiKey)
 		when tvData['broker'] == 'OANDA'
 			openTrades = User.find_by(oandaToken: apiKey).trades.where(status: 'open', broker: tvData['broker'])
+			traderFound = User.find_by(oandaToken: apiKey)
 		end
 
 
@@ -66,7 +68,7 @@ class ApplicationRecord < ActiveRecord::Base
 					originalVolume = requestOriginalE['trade']['initialUnits'].to_f
 				end
 
-	  		profitTrigger = originalPrice * (0.01 * tvData['profitTrigger'].to_f)
+	  		profitTrigger = originalPrice * (0.01 * traderFound&.profitTrigger)
 	  		volumeTallyForTradex = 0
 	  		openProfitCount = 0
 
@@ -233,11 +235,11 @@ class ApplicationRecord < ActiveRecord::Base
     	@unitsFiltered = (@unitsToTrade > 0.0001 ? @unitsToTrade : 0.0001)
     end
 
-		if (@currentRisk.round(2) <= tvData['maxRisk'].to_f)
+		if (@currentRisk.round(2) <= traderFound&.maxRisk)
 
 
 			# market order
-			if tvData['allowMarketOrder'] == 'true'
+			if traderFound&.allowMarketOrder == true
 				# set order params
 		    case true
 	  		when tvData['broker'] == 'KRAKEN'

@@ -69,9 +69,8 @@ class Kraken < ApplicationRecord
   end
 
   def self.newTrail(tvData,tradeInfo, apiKey, secretKey, tradeX)
-  	# FINAL TESTING
-  	if tvData['reduceBy'].present? && tvData['reduceBy'].to_f != 100
-  		#  take tvData['reduceBy'] now
+  	traderFound = User.find_by(krakenLiveAPI: apiKey)
+  	if traderFound&.reduceBy.present? && traderFound&.reduceBy != 100
 	    routeToKraken = "/0/private/AddOrder"
 
 	    orderParams = {
@@ -80,11 +79,11 @@ class Kraken < ApplicationRecord
 		    "type" 			=> tvData['direction'],
 		    "price" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
 		    # "price2" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
-		    "volume" 		=> (tradeInfo['vol'].to_f * (0.01 * tvData['reduceBy'].to_f)) > 0.0001 ? "%.10f" % (tradeInfo['vol'].to_f * (0.01 * tvData['reduceBy'].to_f)) : "0.0001"
+		    "volume" 		=> (tradeInfo['vol'].to_f * (0.01 * traderFound&.reduceBy)) > 0.0001 ? "%.10f" % (tradeInfo['vol'].to_f * (0.01 * traderFound&.reduceBy)) : "0.0001"
 		  }
 		  sleep 1
 	    requestProfit = request(routeToKraken, orderParams, apiKey, secretKey)
-	  elsif tvData[  'reduceBy'].present? && tvData['reduceBy'].to_f == 100
+	  elsif tvtraderFound&.reduceBy.present? && traderFound&.reduceBy == 100
 	    routeToKraken1 = "/0/private/AddOrder"
 
 	    orderParams1 = {
@@ -111,6 +110,7 @@ class Kraken < ApplicationRecord
   
 
   def self.krakenRisk(tvData, apiKey, secretKey)
+    traderFound = User.find_by(krakenLiveAPI: apiKey)
   	# hard coded min for bitcoin
     
   	currentPrice = tvData['currentPrice'].to_f
@@ -119,15 +119,8 @@ class Kraken < ApplicationRecord
 		
 		accountBalance = requestK['result']['ZUSD'].to_f
 
-  	((tvData['perEntry'].to_f * 0.01) * accountBalance).to_f > 3 ? ((tvData['perEntry'].to_f * 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f 
+  	((traderFound&.perEntry * 0.01) * accountBalance).to_f > 3 ? ((traderFound&.perEntry * 0.01) * accountBalance / currentPrice).to_f : (3 / currentPrice).to_f 
   end
-  
-  # def self.createTakeProfitOrder(tvData)
-    #xpercentForTradeFromTimeframe
-    #routeToKraken = "/0/private/Balance"
-    #request(routeToKraken,{}, apiKey, secretKey)
-  # end
-
 end
 
 
