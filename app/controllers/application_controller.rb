@@ -266,6 +266,10 @@ class ApplicationController < ActionController::Base
     end
 	end
 
+	def questions
+		
+	end
+
 	
 
 	def autotrading

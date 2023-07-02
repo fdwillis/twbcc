@@ -34,6 +34,7 @@ Rails.application.routes.draw do
   get "/split-session", to: 'application#split_session', as: 'split_session'
   get "/display-discount", to: 'application#display_discount', as: 'display_discount'
   get "/update-discount", to: 'application#update_discount', as: 'update_discount'
+  get "/questions", to: 'application#questions', as: 'questions'
   get "/trading", to: 'registrations#trading', as: 'trading'
 
   post "/trading", to: 'registrations#trading'
