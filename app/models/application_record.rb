@@ -239,7 +239,7 @@ class ApplicationRecord < ActiveRecord::Base
 
 
 			# market order
-			if traderFound&.allowMarketOrder == true
+			if traderFound&.allowMarketOrder == 'true'
 				# set order params
 		    case true
 	  		when tvData['broker'] == 'KRAKEN'
