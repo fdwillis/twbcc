@@ -14,6 +14,7 @@ class TradingviewController < ApplicationController
 		@profitTotal = 0
 		@partialClose = 0
 		@costTotal = 0
+		@assetsUM = 0
 
 		@entriesTrades.each do |entry|
 			if entry.finalTakeProfit.nil? && entry.take_profits.size > 0
@@ -28,7 +29,7 @@ class TradingviewController < ApplicationController
 				oandaAccounts.each do |accountID|
 					oandaX = Oanda.oandaRequest(user&.oandaToken, accountID)
 					balanceX = Oanda.oandaBalance(user&.oandaToken, accountID)
-					forexAssets += balanceX
+					@assetsUM += balanceX
 				end
 			end
 
@@ -36,7 +37,7 @@ class TradingviewController < ApplicationController
 				balanceX = Kraken.krakenBalance(user&.krakenLiveAPI, user&.krakenLiveSecret)
 				krakenResult = balanceX['result'].reject{|d,f| f.to_f == 0}
 				baseCurrency = krakenResult.reject{|d, f| !d.include?("Z")}.keys[0]
-				cryptoAssets += krakenResult[baseCurrency].to_f
+				@assetsUM += krakenResult[baseCurrency].to_f
 
 				krakenResult.except(baseCurrency).each do |resultX|
 					baseTicker = resultX[0]
@@ -53,13 +54,11 @@ class TradingviewController < ApplicationController
 					averagePrice = (ask + bid)/2
 
 					risked = averagePrice * units
-					cryptoAssets += risked
+					@assetsUM += risked
 					
 				end
 			end
 		end
-
-		@assetsUM = cryptoAssets + forexAssets + stocksAssets + optionsAssets
 	end
 
 	def manage_trading_keys
