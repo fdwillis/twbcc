@@ -31,7 +31,6 @@
                           <div class="w-50 font-11 pb-2 text-start">
                             CREATE AN ACCOUNT<br>
                             <a href="/auto-trading?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">AUTO TRADING</a><br>
-                            <a href="/membership?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">AUTO AFFILIATE</a>
                           </div>
                           <div class="w-50 font-11 pb-2 text-end">FORGOT? - <%= mail_to "team@oarlin.com", "EMAIL US" %></div>
                       </div>
