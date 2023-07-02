@@ -47,13 +47,14 @@ class TradingviewController < ApplicationController
 					tickerInfo = Kraken.tickerInfo({'ticker' => "#{altName}#{baseCurrency.delete("Z")}"}, user&.krakenLiveAPI, user&.krakenLiveSecret)
 
 
-						ask = tickerInfo['result']["#{baseTicker}#{baseCurrency}"]['a'][0].to_f
+					ask = tickerInfo['result']["#{baseTicker}#{baseCurrency}"]['a'][0].to_f
 					bid = tickerInfo['result']["#{baseTicker}#{baseCurrency}"]['b'][0].to_f
 
 					averagePrice = (ask + bid)/2
 
 					risked = averagePrice * units
 					cryptoAssets += risked
+					
 				end
 			end
 		end
