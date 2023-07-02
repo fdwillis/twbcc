@@ -36,7 +36,7 @@ class Kraken < ApplicationRecord
   	
     routeToKraken = "/0/private/OpenOrders"
     orderParams = {}
-    requestK = request(routeToKrafken, orderParams, apiKey, secretKey)['result']['open']
+    requestK = request(routeToKraken, orderParams, apiKey, secretKey)['result']['open']
   end
 
   def self.tradeBalance(symbol, apiKey, secretKey)

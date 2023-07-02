@@ -31,43 +31,24 @@ class TradingviewController < ApplicationController
 				baseCurrency = krakenResult.reject{|d, f| !d.include?("Z")}.keys[0]
 
 				krakenResult.each do |resultX|
+					baseTicker = resultX[0]
+					assetInfo = Kraken.assetInfo({'ticker' => baseTicker},  user&.krakenLiveAPI, user&.krakenLiveSecret)
+					tradeBalanceCall = Kraken.tradeBalance(baseTicker, user&.krakenLiveAPI, user&.krakenLiveSecret)
+					units = balanceX['result'][baseTicker].to_f
+					altName = assetInfo['result'][baseTicker]['altname']
+					tickerInfo = Kraken.tickerInfo({'ticker' => "#{altName}#{baseCurrency.delete("Z")}"}, user&.krakenLiveAPI, user&.krakenLiveSecret)
 
 					if resultX[0] == "ZUSD"
 						cryptoAssets += krakenResult['ZUSD'].to_f
 					else
-						baseTicker =  resultX[0]
-						tradeBalanceCall = Kraken.tradeBalance(baseTicker, user&.krakenLiveAPI, user&.krakenLiveSecret)
-						units = balanceX['result'][baseTicker].to_f
-
-						assetInfo = Kraken.assetInfo({'ticker' => baseTicker},  user&.krakenLiveAPI, user&.krakenLiveSecret)
-						altName = assetInfo['result'][baseTicker]['altname']
-						
-						tickerInfo = Kraken.tickerInfo({'ticker' => "#{altName}#{baseCurrency.delete("Z")}"}, user&.krakenLiveAPI, user&.krakenLiveSecret)
 
 						ask = tickerInfo['result']["#{baseTicker}#{baseCurrency}"]['a'][0].to_f
 						bid = tickerInfo['result']["#{baseTicker}#{baseCurrency}"]['b'][0].to_f
-
-						Kraken.publicPair("#{baseTicker}#{baseCurrency}", user&.krakenLiveAPI, user&.krakenLiveSecret)
 
 						averagePrice = (ask + bid)/2
 
 						risked = averagePrice * units
 						cryptoAssets += risked
-					end
-				end
-
-
-				user&.trades.where(broker: 'KRAKEN').each do |tradeX|
-					
-					orderInfo = Kraken.orderInfo(tradeX&.uuid, user&.krakenLiveAPI, user&.krakenLiveSecret)
-					@costTotal += orderInfo.present? ? orderInfo['cost'].to_f : 0
-					
-
-					if !tradeX.finalTakeProfit.nil?
-						tradeX.take_profits.each do |profitX|
-							orderInfo = Kraken.orderInfo(profitX&.uuid, user&.krakenLiveAPI, user&.krakenLiveSecret)
-							@profitTotal += orderInfo.present? ? orderInfo['cost'].to_f : 0
-						end
 					end
 				end
 			end
