@@ -274,21 +274,6 @@ class ApplicationController < ActionController::Base
 	  successURL = "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}"
 		
 		if session['coupon'].nil?	
-	    @selfTradingAnnualMembership = Stripe::Checkout::Session.create({
-	      success_url: successURL,
-	      line_items: [
-	        {price: ENV['selfTradingAnnualMembership'], quantity: 1},
-	      ],
-	      mode: 'subscription',
-	    })
-	    @selfTradingMonthlyMembership = Stripe::Checkout::Session.create({
-	      success_url: successURL,
-	      line_items: [
-	        {price: ENV['selfTradingMonthlyMembership'], quantity: 1},
-	      ],
-	      mode: 'subscription',
-	    })
-			# business,
 			@autoTradingMonthlyMembership = Stripe::Checkout::Session.create({
 	      success_url: successURL,
 	      line_items: [

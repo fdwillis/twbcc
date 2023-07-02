@@ -1,5 +1,3 @@
-<% selfTradingAnnualMembership = Stripe::Price.retrieve(ENV['selfTradingAnnualMembership']) %>
-<% selfTradingMonthlyMembership = Stripe::Price.retrieve(ENV['selfTradingMonthlyMembership']) %>
 <% autoTradingMonthlyMembership = Stripe::Price.retrieve(ENV['autoTradingMonthlyMembership']) %>
 <% autoTradingAnnualMembership = Stripe::Price.retrieve(ENV['autoTradingAnnualMembership']) %>
 <div class="header-clear-medium">     
@@ -21,149 +19,68 @@
           <div data-bs-parent="#tab-group-1" class="pt-0" id="tab-2">
             <div class="content text-center">
               <!-- <h1 class="font-20 line-height-m pb-2">Explore Amazon Products</h1> -->
-              <div class="splide double-slider slider-no-dots slider-arrows splide--loop splide--ltr splide--draggable is-active" id="single-slider-3" style="visibility: visible;">
-                <div class="splide__track" id="single-slider-3-track">
-                  <div class="splide__list" id="single-slider-3-list" style="transform: translateX(-975px);">
-                    <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
-                      <div data-card-height="500" class="card mx-1 rounded-m shadow-l">
-                        <div class="content">
-                          <div class="card-top text-center">
-                            <div class="mt-4">
-                                <h1 class="m-n2 p-2"><%= number_to_currency(selfTradingMonthlyMembership['unit_amount'] * 0.01, precision: 2) %></h1>
-                                <p class=" font-12 color-highlight m-n2">Per Month</p>
-                                <p class=" font-12 color-highlight m-n2">Self Managed Auto Trading</p>
-                            </div>
-                            <div class="list-group list-custom-small">
-                              <% selfTradingMonthlyMembership['metadata'].each do |point| %>
-                                  
-                                  <span href="#" class="text-center ">
-                                    <%= button_tag( :class => "") do %>
-                                    <%= point[0] %> 
-                                    <% end %>
-                                  </span>
-                                  <div class="divider mb-2 mt-1"></div>
-                              <% end %>
-                                
-                            </div>
-                          </div>
-                          <div class="content card-bottom text-center">
-                            <a href="/checkout/<%= ENV['trialTradingDaily'] %>?&trial=true&referredBy=#{params[:splitSession]}" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-orange-dark">Trial Trading</a> <!-- upgrade or downgrade #sprint2 -->
-                            <a href="<%= @selfTradingMonthlyMembership['url'] %>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Unlimited Trading</a> <!-- upgrade or downgrade #sprint2 -->
-                            
-                          </div>
-                        </div>
-                      </div>
+              <div data-card-height="500" class="card mx-1 rounded-m shadow-l">
+                <div class="content">
+                  <div class="card-top text-center">
+                    <div class="mt-4">
+                        <h1 class="m-n2 p-2"><%= number_to_currency(autoTradingMonthlyMembership['unit_amount'] * 0.01, precision: 2) %></h1>
+                        <p class=" font-12 color-highlight m-n2">Per Month</p>
+                        <p class=" font-12 color-highlight m-n2">Done For You Auto Trading</p>
                     </div>
-                    <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
-                      <div data-card-height="500" class="card mx-1 rounded-m shadow-l">
-                        <div class="content">
-                          <div class="card-top text-center">
-                            <div class="mt-4">
-                                <h1 class="m-n2 p-2"><%= number_to_currency(autoTradingMonthlyMembership['unit_amount'] * 0.01, precision: 2) %></h1>
-                                <p class=" font-12 color-highlight m-n2">Per Month</p>
-                                <p class=" font-12 color-highlight m-n2">Done For You Auto Trading</p>
-                            </div>
-                            <div class="list-group list-custom-small">
-                              <% autoTradingMonthlyMembership['metadata'].each do |point| %>
-                                  
-                                  <span href="#" class="text-center font-15">
-                                    <%= point[0] %> 
+                    <div class="list-group list-custom-small">
+                      <% autoTradingMonthlyMembership['metadata'].each do |point| %>
+                          
+                          <span href="#" class="text-center font-15">
+                            <%= point[0] %> 
 
-                                  </span>
-                                  <div class="divider mb-2 mt-1"></div>
-                              <% end %>
-                                
-                            </div>
-                          </div>
-                          <div class="content card-bottom text-center">
-                            <a href="/checkout/<%= ENV['trialTradingDaily'] %>?&trial=true&referredBy=#{params[:splitSession]}" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-orange-dark">Trial Trading</a> <!-- upgrade or downgrade #sprint2 -->
-                            <a href="<%= @autoTradingMonthlyMembership['url'] %>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Unlimited Trading</a> <!-- upgrade or downgrade #sprint2 -->
-                            
-                          </div>
-                        </div>
-                      </div>
+                          </span>
+                          <div class="divider mb-2 mt-1"></div>
+                      <% end %>
+                        
                     </div>
                   </div>
-
+                  <div class="content card-bottom text-center">
+                    <a href="/checkout/<%= ENV['trialTradingDaily'] %>?&trial=true&referredBy=#{params[:splitSession]}" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-yellow-dark">Trial Trading</a> <!-- upgrade or downgrade #sprint2 -->
+                    <a href="<%= @autoTradingMonthlyMembership['url'] %>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Unlimited Trading</a> <!-- upgrade or downgrade #sprint2 -->
+                    
+                  </div>
                 </div>
               </div>
               
-              < Slide To View More >
             </div>
           </div>
 
           <div data-bs-parent="#tab-group-1" id="tab-2">
             <div class="content text-center">
               <!-- <h1 class="font-20 line-height-m pb-2">Explore Amazon Products</h1> -->
-              <div class="splide double-slider slider-no-dots slider-arrows splide--loop splide--ltr splide--draggable is-active" id="single-slider-3432" style="visibility: visible;">
-                <div class="splide__track" id="single-slider-3432-track">
-                  <div class="splide__list" id="single-slider-3432-list" style="transform: translateX(-975px);">
-                    <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
-                      <div data-card-height="500" class="card mx-1 rounded-m shadow-l">
-                        <div class="content">
-                          <div class="card-top text-center">
-                            <div class="mt-4">
-                                <h1 class="m-n2 p-2"><%= number_to_currency(selfTradingAnnualMembership['unit_amount'] * 0.01, precision: 2) %></h1>
-                                <p class=" font-12 color-highlight m-n2">Per Year</p>
-                                <p class=" font-12 color-highlight m-n2">Self Managed Auto Trading</p>
-                            </div>
-                            <div class="list-group list-custom-small">
-                              <% selfTradingAnnualMembership['metadata'].each do |point| %>
-                                  
-                                  <span href="#" class="text-center font-15">
-                                    <%= point[0] %> 
-
-                                  </span>
-                                  <div class="divider mb-2 mt-1"></div>
-                              <% end %>
-                                
-                            </div>
-                          </div>
-                          <div class="content card-bottom text-center">
-                            <a href="/checkout/<%= ENV['trialTradingDaily'] %>?&trial=true&referredBy=#{params[:splitSession]}" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-orange-dark">Trial Trading</a> <!-- upgrade or downgrade #sprint2 -->
-                            <a href="<%= @selfTradingAnnualMembership['url'] %>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Unlimited Trading</a> <!-- upgrade or downgrade #sprint2 -->
-                            
-                          </div>
-                        </div>
-                      </div>
+              <div data-card-height="500" class="card mx-1 rounded-m shadow-l">
+                <div class="content">
+                  <div class="card-top text-center">
+                    <div class="mt-4">
+                        <h1 class="m-n2 p-2"><%= number_to_currency(autoTradingAnnualMembership['unit_amount'] * 0.01, precision: 2) %></h1>
+                        <p class=" font-12 color-highlight m-n2">Per Year</p>
+                        <p class=" font-12 color-highlight m-n2">Done For You Auto Trading</p>
                     </div>
-                    <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1">
-                      <div data-card-height="500" class="card mx-1 rounded-m shadow-l">
-                        <div class="content">
-                          <div class="card-top text-center">
-                            <div class="mt-4">
-                                <h1 class="m-n2 p-2"><%= number_to_currency(autoTradingAnnualMembership['unit_amount'] * 0.01, precision: 2) %></h1>
-                                <p class=" font-12 color-highlight m-n2">Per Year</p>
-                                <p class=" font-12 color-highlight m-n2">Done For You Auto Trading</p>
-                            </div>
-                            <div class="list-group list-custom-small">
-                              <% autoTradingAnnualMembership['metadata'].each do |point| %>
-                                  
-                                  <span href="#" class="text-center font-15">
-                                    <%= point[0] %> 
+                    <div class="list-group list-custom-small">
+                      <% autoTradingAnnualMembership['metadata'].each do |point| %>
+                          
+                          <span href="#" class="text-center font-15">
+                            <%= point[0] %> 
 
-                                  </span>
-                                  <div class="divider mb-2 mt-1"></div>
-                              <% end %>
-                                
-                            </div>
-                          </div>
-                          <div class="content card-bottom text-center">
-                            <a href="/checkout/<%= ENV['trialTradingDaily'] %>?&trial=true&referredBy=#{params[:splitSession]}" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-orange-dark">Trial Trading</a> <!-- upgrade or downgrade #sprint2 -->
-                            <a href="<%= @autoTradingAnnualMembership['url'] %>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Unlimited Trading</a> <!-- upgrade or downgrade #sprint2 -->
-                            
-                          </div>
-                        </div>
-                      </div>
+                          </span>
+                          <div class="divider mb-2 mt-1"></div>
+                      <% end %>
+                        
                     </div>
-                    
-
                   </div>
-
+                  <div class="content card-bottom text-center">
+                    <a href="/checkout/<%= ENV['trialTradingDaily'] %>?&trial=true&referredBy=#{params[:splitSession]}" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-yellow-dark">Trial Trading</a> <!-- upgrade or downgrade #sprint2 -->
+                    <a href="<%= @autoTradingAnnualMembership['url'] %>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Unlimited Trading</a> <!-- upgrade or downgrade #sprint2 -->
+                    
+                  </div>
                 </div>
               </div>
               
-              < Slide To View More >
             </div>
           </div>
 
