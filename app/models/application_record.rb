@@ -6,14 +6,14 @@ class ApplicationRecord < ActiveRecord::Base
 			'uuid' => 'd57307d7',
 			'initialDepopsit' => 169
 		},
-		# {
-		# 	'uuid' => '728f1600',
-		# 	'initialDepopsit' => 1500
-		# },
-		# {
-		# 	'uuid' => 'dbff2194',
-		# 	'initialDepopsit' => 500
-		# },
+		{
+			'uuid' => '728f1600',
+			'initialDepopsit' => 1500
+		},
+		{
+			'uuid' => 'dbff2194',
+			'initialDepopsit' => 500
+		},
 	]
 
 	def after_initialize(tvData)
