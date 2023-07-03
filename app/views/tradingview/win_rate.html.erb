@@ -38,13 +38,13 @@
 		<div class="row mb-0">
 			<div class="col-6">
 				<div class="mx-0 mb-3">
-					<h6 class="font-16 font-800 text-uppercase opacity-30 text-center">Full Close Win Rate</h6>
+					<h6 class="font-12 font-800 text-uppercase opacity-30 text-center">Full Close Win Rate</h6>
 					<h3 class="color-highlight-dark font-30 mb-0 text-center"><%= number_to_percentage((@exitsTrades.to_f/@entriesTrades.size.to_f) * 100, precision: 2) %></h3>
 				</div>
 			</div>
 			<div class="col-6 text-center">
 				<div class="mx-0 mb-3">
-					<h6 class="font-16 font-800 text-uppercase opacity-30 text-center">Partial Close Win Rate</h6>
+					<h6 class="font-12 font-800 text-uppercase opacity-30 text-center">Partial Close Win Rate</h6>
 					<h3 class="color-highlight-dark font-30 mb-0 text-center"><%= number_to_percentage((@partialClose.to_f/@entriesTrades.size.to_f) * 100, precision: 2) %></h3>
 				</div>
 			</div>
