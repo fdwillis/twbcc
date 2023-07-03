@@ -17,7 +17,7 @@ class TradingviewController < ApplicationController
 		@assetsUM = 0
 
 		@entriesTrades.each do |entry|
-			if entry.finalTakeProfit.nil? && entry.take_profits.size > 0
+			if entry.take_profits.size > 0
 				@partialClose += 1
 			end
 		end
