@@ -10,5 +10,9 @@ class BackgroundJob
       ApplicationRecord.newEntry(tvData, apiKey, secretKey)
     end
 
+    if job == "kill"
+      ApplicationRecord.killPending(tvData, apiKey, secretKey)
+    end
+
   end
 end

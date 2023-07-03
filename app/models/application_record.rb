@@ -1,23 +1,40 @@
 class ApplicationRecord < ActiveRecord::Base
 	self.abstract_class = true
 
+	def after_initialize(tvData)
+		case true
+		when tvData['broker'] == 'KRAKEN'
+			@openTrades = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'open', broker: tvData['broker'])
+			@traderFound = User.find_by(krakenLiveAPI: apiKey)
+		when tvData['broker'] == 'OANDA'
+			@openTrades = User.find_by(oandaToken: apiKey).trades.where(status: 'open', broker: tvData['broker'])
+			@traderFound = User.find_by(oandaToken: apiKey)
+		end
+	end
+
+	def self.killPending(tvData, apiKey = nil, secretKey = nil)
+		case true
+		when tvData['broker'] == 'KRAKEN'
+			@currentOpenAllocation = Kraken.pendingTrades(apiKey, secretKey)
+			@currentOpenAllocation.each do |tradeX|
+				
+				krakenOrderParams = {
+			    "txid" 			=> tradeX[0],
+			  }
+		  	routeToKraken = "/0/private/CancelOrder"
+		  	
+		  	cancel = Kraken.request(routeToKraken, krakenOrderParams, apiKey, secretKey)
+			end
+		when tvData['broker'] == 'OANDA'
+		end
+	end
+
 	def self.trailStop(tvData, apiKey = nil, secretKey = nil)
 		puts "\n-- Current Price: #{tvData['currentPrice'].to_f} --\n"
 
-		# pull bot trades
-		case true
-		when tvData['broker'] == 'KRAKEN'
-			openTrades = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'open', broker: tvData['broker'])
-			traderFound = User.find_by(krakenLiveAPI: apiKey)
-		when tvData['broker'] == 'OANDA'
-			openTrades = User.find_by(oandaToken: apiKey).trades.where(status: 'open', broker: tvData['broker'])
-			traderFound = User.find_by(oandaToken: apiKey)
-		end
-
-
 		# update trade status
-		if openTrades.present? && openTrades.size > 0 
-	  	openTrades.each do |trade|
+		if @openTrades.present? && @openTrades.size > 0 
+	  	@openTrades.each do |trade|
 	  		case true
 				when tvData['broker'] == 'KRAKEN'
 		  		requestK = Kraken.orderInfo(trade.uuid, apiKey, secretKey)
@@ -68,7 +85,7 @@ class ApplicationRecord < ActiveRecord::Base
 					originalVolume = requestOriginalE['trade']['initialUnits'].to_f
 				end
 
-	  		profitTrigger = originalPrice * (0.01 * traderFound&.profitTrigger)
+	  		profitTrigger = originalPrice * (0.01 * @traderFound&.profitTrigger)
 	  		volumeTallyForTradex = 0
 	  		openProfitCount = 0
 
@@ -182,12 +199,6 @@ class ApplicationRecord < ActiveRecord::Base
 	end
 
 	def self.newEntry(tvData, apiKey = nil, secretKey = nil)
-		case true
-		when tvData['broker'] == 'KRAKEN'
-			traderFound = User.find_by(krakenLiveAPI: apiKey)
-		when tvData['broker'] == 'OANDA'
-			traderFound = User.find_by(oandaToken: apiKey)
-		end
 		# if allowMarketOrder -> market order
 		# if entries.count > 0 -> limit order
 
@@ -235,11 +246,11 @@ class ApplicationRecord < ActiveRecord::Base
     	@unitsFiltered = (@unitsToTrade > 0.0001 ? @unitsToTrade : 0.0001)
     end
 
-		if (@currentRisk.round(2) <= traderFound&.maxRisk)
+		if (@currentRisk.round(2) <= @traderFound&.maxRisk)
 
 
 			# market order
-			if traderFound&.allowMarketOrder == 'true'
+			if @traderFound&.allowMarketOrder == 'true'
 				# set order params
 		    case true
 	  		when tvData['broker'] == 'KRAKEN'
@@ -390,9 +401,9 @@ class ApplicationRecord < ActiveRecord::Base
 			end
 		else
 			puts "\n-- Max Risk Met (#{tvData['timeframe']} Minute) --\n"
-			puts "\n-- Trader #{traderFound.uuid} --\n"
+			puts "\n-- Trader #{@traderFound.uuid} --\n"
 			puts "\n-- Current Risk (#{@currentRisk.round(2)}%) --\n"
-			puts "\n-- Trader #{traderFound.uuid} --\n"
+			puts "\n-- Trader #{@traderFound.uuid} --\n"
 		end
 	end
 

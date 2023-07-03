@@ -33,7 +33,6 @@ class Kraken < ApplicationRecord
   end
 
   def self.pendingTrades(apiKey, secretKey)
-  	
     routeToKraken = "/0/private/OpenOrders"
     orderParams = {}
     requestK = request(routeToKraken, orderParams, apiKey, secretKey)['result']['open']

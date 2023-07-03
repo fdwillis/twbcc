@@ -93,6 +93,7 @@ class TradingviewController < ApplicationController
 				
 				if Oj.load(ENV['adminUUID']).include?(traderFound.uuid)
 					if params['tradeForAdmin'] == 'true'
+						
 						case true
 						when params['type'].include?('Stop')
 							case true
@@ -113,6 +114,13 @@ class TradingviewController < ApplicationController
 								end
 							end
 						when params['type'].include?('profit')
+						when params['type'] == 'kill'
+							case true
+							when params['broker'] == 'KRAKEN'
+								BackgroundJob.perform_async('kill',tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret)
+							when params['broker'] == 'OANDA'
+								BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFound.oandaToken, nil)
+							end
 						end
 					elsif  params['adminOnly'] == 'false'
 						puts "\n-- Starting To Copy Trades --\n"
@@ -150,8 +158,15 @@ class TradingviewController < ApplicationController
 												end
 											end
 										when params['type'].include?('profit')
+										when params['type'] == 'kill'
+											case true
+											when params['broker'] == 'KRAKEN'
+												BackgroundJob.perform_async('kill',tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret)
+											when params['broker'] == 'OANDA'
+												BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFound.oandaToken, nil)
+											end
 										end
-									elsif (current_user&.authorizedList == 'crypto' ? "BTC#{ISO3166::Country[current_user.amazonCountry.downcase].currency_code}" : current_user&.authorizedList == 'forex' ? "EUR#{ISO3166::Country[current_user.amazonCountry.downcase].currency_code}" : nil )
+									elsif (current_user&.authorizedList == 'crypto' ? "BTC#{ISO3166::Country[current_user.amazonCountry.downcase].currency_code}" : current_user&.authorizedList == 'forex' ? "EUR#{ISO3166::Country[current_user.amazonCountry.downcase].currency_code}" : nil ) == params['ticker']
 										case true
 										when params['type'].include?('Stop')
 											case true
@@ -172,6 +187,13 @@ class TradingviewController < ApplicationController
 												end
 											end
 										when params['type'].include?('profit')
+										when params['type'] == 'kill'
+											case true
+											when params['broker'] == 'KRAKEN'
+												BackgroundJob.perform_async('kill',tradingviewKeysparams.to_h, traderFoundForCopy.krakenLiveAPI, traderFoundForCopy.krakenLiveSecret)
+											when params['broker'] == 'OANDA'
+												BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFoundForCopy.oandaToken, nil)
+											end
 										end
 									end
 								end
@@ -197,6 +219,13 @@ class TradingviewController < ApplicationController
 							BackgroundJob.perform_async('entry', tradingviewKeysparams.to_h, traderFound.oandaToken, nil)
 						end
 					when params['type'].include?('profit')
+					when params['type'] == 'kill'
+						case true
+						when params['broker'] == 'KRAKEN'
+							BackgroundJob.perform_async('kill',tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret)
+						when params['broker'] == 'OANDA'
+							BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFound.oandaToken, nil)
+						end
 					end
 				end
 
