@@ -27,9 +27,7 @@
 				<div class="divider mb-2 mt-1"></div>
 				<h6 class="font-14 font-700">Open<span class="float-end color-highlight-dark"><%= @currentTrades %></span></h6>
 				<div class="divider mb-2 mt-1"></div>
-				<h6 class="font-14 font-700">Full Close<span class="float-end color-highlight-dark"><%= @exitsTrades %></span></h6>
-				<div class="divider mb-2 mt-1"></div>
-				<h6 class="font-14 font-700">Partial Close<span class="float-end color-highlight-dark"><%= @partialClose %></span></h6>
+				<h6 class="font-14 font-700">Close<span class="float-end color-highlight-dark"><%= @partialClose %></span></h6>
 			</div>
 		</div>
 		<div class="divider mt-2 mb-3"></div>
@@ -38,17 +36,18 @@
 		<div class="row mb-0">
 			<div class="col-6">
 				<div class="mx-0 mb-3">
-					<h6 class="font-12 font-800 text-uppercase opacity-30 text-center">Full Close Win Rate</h6>
-					<h3 class="color-highlight-dark font-30 mb-0 text-center"><%= number_to_percentage((@exitsTrades.to_f/@entriesTrades.size.to_f) * 100, precision: 2) %></h3>
+					<h6 class="font-12 font-800 text-uppercase opacity-30 text-center">Total Traders</h6>
+					<h3 class="color-highlight-dark font-30 mb-0 text-center"><%= @entriesTrades.map(&:user).uniq.size %></h3>
 				</div>
 			</div>
 			<div class="col-6 text-center">
 				<div class="mx-0 mb-3">
-					<h6 class="font-12 font-800 text-uppercase opacity-30 text-center">Partial Close Win Rate</h6>
+					<h6 class="font-12 font-800 text-uppercase opacity-30 text-center">Win Rate</h6>
 					<h3 class="color-highlight-dark font-30 mb-0 text-center"><%= number_to_percentage((@partialClose.to_f/@entriesTrades.size.to_f) * 100, precision: 2) %></h3>
 				</div>
 			</div>
 		</div>
+		<h6 class="font-12 font-800 text-uppercase opacity-30 text-center mb-4">Each trader controls their risk and reward preferences.<br>Oarlin was able to protect <%= number_to_percentage((@partialClose.to_f/@entriesTrades.size.to_f) * 100, precision: 2) %> of the <%= @entriesTrades&.size %> trades entered based on the risk and reward settings traders chose.</h6>
 
 
 
