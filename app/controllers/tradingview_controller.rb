@@ -16,7 +16,8 @@ class TradingviewController < ApplicationController
 		@partialClose = 0
 		@costTotal = 0
 		@assetsUM = 0
-
+		@initalBalance = ApplicationRecord::INITALBALANCE.map{|d|d['initialDepopsit']}.sum
+		
 		@entriesTrades.each do |entry|
 			if entry.take_profits.size > 0
 				@partialClose += 1

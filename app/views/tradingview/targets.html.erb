@@ -1,3 +1,4 @@
+<%= growth = ((@assetsUM - @initalBalance)/@initalBalance) %>
 <div class="page-content header-clear-medium">
 	<div data-card-height="230" class="card card-style rounded-m shadow-xl preload-img entered loaded" data-src="images/pictures/18w.jpg" data-ll-status="loaded" style="height: 230px; background-image: url(&quot;images/pictures/18w.jpg&quot;);">
 		<div class="card-top mt-4 me-3">
@@ -15,6 +16,24 @@
 			<p class="text-end me-3 font-8 font-500 opacity-50 color-white"><i class="fa fa-wifi font-10 rotate-90"></i></p>
 		</div> -->
 		<div class="card-overlay bg-black opacity-70"></div>
+	</div>
+</div>
+
+<div class="card card-style">
+	<div class="content mb-4">
+		<div class="content">
+			<h2 class="font-30 color-highlight text-center mb-4">Asset Growth</h2>
+			<h6 class="font-24 font-800 text-uppercase opacity-30 mb-4 text-center">
+				<%= number_to_percentage( growth * 100, precision: 2)%>
+			</h6>
+			<div class="text-center">
+				<% if growth > 0%>
+					<i class="fa fa-chevron-up color-green-dark font-30"></i>
+				<% else %>
+					<i class="fa fa-chevron-down color-red-dark font-30"></i>
+				<% end %>
+			</div>
+		</div>
 	</div>
 </div>
 
