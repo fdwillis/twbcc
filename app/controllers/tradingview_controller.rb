@@ -128,8 +128,9 @@ class TradingviewController < ApplicationController
 						#pull those with done for you plan
 						monthlyAuto = Stripe::Subscription.list({limit: 100, price: ENV['autoTradingMonthlyMembership']})['data'].reject{|d| d['status'] != 'active'}
 						annualAuto = Stripe::Subscription.list({limit: 100, price: ENV['autoTradingAnnualMembership']})['data'].reject{|d| d['status'] != 'active'}
+						trial = Stripe::Subscription.list({limit: 100, price: ENV['trialTradingDaily']})['data'].reject{|d| d['status'] != 'active'}
 
-						validPlansToParse = monthlyAuto + annualAuto
+						validPlansToParse = monthlyAuto + annualAuto + trial
 
 						validPlansToParse.each do |planXinfo|
 							traderFoundForCopy = User.find_by(stripeCustomerID: planXinfo['customer'])
@@ -167,7 +168,7 @@ class TradingviewController < ApplicationController
 												BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFound.oandaToken, nil)
 											end
 										end
-									elsif (current_user&.authorizedList == 'crypto' ? "BTC#{ISO3166::Country[current_user.amazonCountry.downcase].currency_code}" : current_user&.authorizedList == 'forex' ? "EUR#{ISO3166::Country[current_user.amazonCountry.downcase].currency_code}" : nil ) == params['ticker']
+									elsif DateTime.now.strftime('%a') != "Sun" && DateTime.now.strftime('%a') != "Sat" && (current_user&.authorizedList == 'crypto' ? "BTC#{ISO3166::Country[current_user.amazonCountry.downcase].currency_code}" : current_user&.authorizedList == 'forex' ? "EUR#{ISO3166::Country[current_user.amazonCountry.downcase].currency_code}" : nil ) == params['ticker']
 										case true
 										when params['type'].include?('Stop')
 											case true
