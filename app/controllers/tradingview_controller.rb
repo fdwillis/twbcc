@@ -208,8 +208,6 @@ class TradingviewController < ApplicationController
 		else
 			puts "\n-- No Trading Today--\n"
 		end
-
-		Sidekiq.redis(&:flushdb)
 	end
 
 	private
