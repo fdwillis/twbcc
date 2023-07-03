@@ -16,17 +16,6 @@ class ApplicationRecord < ActiveRecord::Base
 		},
 	]
 
-	def after_initialize(tvData)
-		case true
-		when tvData['broker'] == 'KRAKEN'
-			@openTrades = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'open', broker: tvData['broker'])
-			@traderFound = User.find_by(krakenLiveAPI: apiKey)
-		when tvData['broker'] == 'OANDA'
-			@openTrades = User.find_by(oandaToken: apiKey).trades.where(status: 'open', broker: tvData['broker'])
-			@traderFound = User.find_by(oandaToken: apiKey)
-		end
-	end
-
 	def self.killPending(tvData, apiKey = nil, secretKey = nil)
 		case true
 		when tvData['broker'] == 'KRAKEN'
@@ -45,6 +34,15 @@ class ApplicationRecord < ActiveRecord::Base
 	end
 
 	def self.trailStop(tvData, apiKey = nil, secretKey = nil)
+		case true
+		when tvData['broker'] == 'KRAKEN'
+			@openTrades = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'open', broker: tvData['broker'])
+			@traderFound = User.find_by(krakenLiveAPI: apiKey)
+		when tvData['broker'] == 'OANDA'
+			@openTrades = User.find_by(oandaToken: apiKey).trades.where(status: 'open', broker: tvData['broker'])
+			@traderFound = User.find_by(oandaToken: apiKey)
+		end
+		
 		puts "\n-- Current Price: #{tvData['currentPrice'].to_f} --\n"
 
 		# update trade status
@@ -96,7 +94,7 @@ class ApplicationRecord < ActiveRecord::Base
 						next
 					end
 			  	requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, requestExecution['order']['fillingTransactionID'])
-			  	originalPrice = requestOriginalE['trade']['price'].to_f
+			  	originalPrice = requestOriginalE['trade']['price'].present? ? requestOriginalE['trade']['price'].to_f : 0
 					originalVolume = requestOriginalE['trade']['initialUnits'].to_f
 				end
 
@@ -216,6 +214,15 @@ class ApplicationRecord < ActiveRecord::Base
 	def self.newEntry(tvData, apiKey = nil, secretKey = nil)
 		# if allowMarketOrder -> market order
 		# if entries.count > 0 -> limit order
+
+		case true
+		when tvData['broker'] == 'KRAKEN'
+			@openTrades = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'open', broker: tvData['broker'])
+			@traderFound = User.find_by(krakenLiveAPI: apiKey)
+		when tvData['broker'] == 'OANDA'
+			@openTrades = User.find_by(oandaToken: apiKey).trades.where(status: 'open', broker: tvData['broker'])
+			@traderFound = User.find_by(oandaToken: apiKey)
+		end
 
 		# variables
   	case true
