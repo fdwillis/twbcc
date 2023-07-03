@@ -185,7 +185,8 @@ class ApplicationController < ActionController::Base
 				# {label: 'Options', value: 'options'},
 				{label: 'Crypto', value: 'crypto'},
 				{label: 'Forex', value: 'forex'},
-				# {label: 'Stocks', value: 'stocks'},
+				{label: 'Stocks', value: 'stocks'},
+				{label: 'Options', value: 'options'},
 				]}
 			}
 		]
