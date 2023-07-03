@@ -1,4 +1,5 @@
 class TradingviewController < ApplicationController
+	require 'sidekiq/api'
 	protect_from_forgery with: :null_session
 
 	def win_rate
