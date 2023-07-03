@@ -9,9 +9,9 @@ class TradingviewController < ApplicationController
 		forexAssets = 0
 		stocksAssets = 0
 		optionsAssets = 0
-		@currentTrades = Trade.all.where(finalTakeProfit: nil, status: 'closed')&.size
-		@entriesTrades = Trade.all.where(status: 'closed')
-		@exitsTrades = Trade.all.where.not(finalTakeProfit: nil).where(status: 'closed')&.size 
+		@currentTrades = Trade.all.where(finalTakeProfit: nil, status: 'closed').where('created_at > ?', 30.days.ago )&.size
+		@entriesTrades = Trade.all.where(status: 'closed').where('created_at > ?', 30.days.ago )
+		@exitsTrades = Trade.all.where.not(finalTakeProfit: nil).where(status: 'closed').where('created_at > ?', 30.days.ago )&.size 
 		@profitTotal = 0
 		@partialClose = 0
 		@costTotal = 0
