@@ -36,7 +36,7 @@
 		<div class="row mb-0">
 			<div class="col-6">
 				<div class="mx-0 mb-3">
-					<h6 class="font-12 font-800 text-uppercase opacity-30 text-center">Total Traders</h6>
+					<h6 class="font-12 font-800 text-uppercase opacity-30 text-center">Traders</h6>
 					<h3 class="color-highlight-dark font-30 mb-0 text-center"><%= @entriesTrades.map(&:user).uniq.size %></h3>
 				</div>
 			</div>
@@ -47,7 +47,7 @@
 				</div>
 			</div>
 		</div>
-		<h6 class="font-12 font-800 text-uppercase opacity-30 text-center mb-4">Each trader controls their risk and reward preferences.<br>Oarlin was able to protect <%= number_to_percentage((@partialClose.to_f/@entriesTrades.size.to_f) * 100, precision: 2) %> of the <%= @entriesTrades&.size %> trades entered based on the risk and reward settings traders chose.</h6>
+		<h6 class="font-12 font-800 text-uppercase opacity-30 text-center mb-4">Traders controls their risk and reward preferences.<br>Oarlin was able to protect <%= number_to_percentage((@partialClose.to_f/@entriesTrades.size.to_f) * 100, precision: 2) %> of the <%= @entriesTrades&.size %> trades entered based on the risk and reward settings traders chose.</h6>
 
 
 
