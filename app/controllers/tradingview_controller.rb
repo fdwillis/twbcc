@@ -199,6 +199,8 @@ class TradingviewController < ApplicationController
 					end
 				end
 
+				Sidekiq.redis(&:flushdb)
+
 				render json: {success: true}
 			else
 				puts "\n-- No Trader Found --\n"
