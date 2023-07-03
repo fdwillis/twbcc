@@ -100,19 +100,19 @@
 </div> -->
 
 <div class="card card-style">
-		<div class="row m-4">
-			<div class="col-6">
-				<div class="mx-0 mb-3">
-					<h6 class="font-12 font-800 text-uppercase opacity-30 text-center">Traders</h6>
-					<h3 class="color-highlight-dark font-30 mb-0 text-center"><%= @entriesTrades.map(&:user).uniq.size %></h3>
-				</div>
-			</div>
-			<div class="col-6 text-center">
-				<div class="mx-0 mb-3">
-					<h6 class="font-12 font-800 text-uppercase opacity-30 text-center">Accuracy</h6>
-					<h3 class="color-highlight-dark font-30 mb-0 text-center"><%= number_to_percentage((@partialClose.to_f/@entriesTrades.size.to_f) * 100, precision: 2) %></h3>
-				</div>
+	<div class="row m-4 content">
+		<div class="col-6">
+			<div class="mx-0 mb-3">
+				<h6 class="font-12 font-800 text-uppercase opacity-30 text-center">Traders</h6>
+				<h3 class="color-highlight-dark font-30 mb-0 text-center"><%= @entriesTrades.map(&:user).uniq.size %></h3>
 			</div>
 		</div>
-		<h6 class="font-12 font-800 text-uppercase opacity-30 text-center mb-4 content">Oarlin was able to protect <%= number_to_percentage((@partialClose.to_f/@entriesTrades.size.to_f) * 100, precision: 2) %> of the <%= @entriesTrades&.size %> trades taken based on the risk &amp; reward settings traders chose.</h6>
+		<div class="col-6 text-center">
+			<div class="mx-0 mb-3">
+				<h6 class="font-12 font-800 text-uppercase opacity-30 text-center">Accuracy</h6>
+				<h3 class="color-highlight-dark font-30 mb-0 text-center"><%= number_to_percentage((@partialClose.to_f/@entriesTrades.size.to_f) * 100, precision: 2) %></h3>
+			</div>
+		</div>
+		<h6 class="font-12 font-800 text-uppercase opacity-30 text-center mb-4 ">Oarlin was able to protect <%= number_to_percentage((@partialClose.to_f/@entriesTrades.size.to_f) * 100, precision: 2) %> of the <%= @entriesTrades&.size %> trades taken based on the risk &amp; reward settings traders chose.</h6>
+	</div>
 </div>
