@@ -2,7 +2,7 @@ class TradingviewController < ApplicationController
 	require 'sidekiq/api'
 	protect_from_forgery with: :null_session
 
-	def win_rate
+	def targets
 		#pull all closed trades -> build result to display
 		#pull all open trades -> build result to display
 		cryptoAssets = 0
