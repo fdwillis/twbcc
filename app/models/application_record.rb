@@ -42,7 +42,7 @@ class ApplicationRecord < ActiveRecord::Base
 			@openTrades = User.find_by(oandaToken: apiKey).trades.where(status: 'open', broker: tvData['broker'])
 			@traderFound = User.find_by(oandaToken: apiKey)
 		end
-		
+
 		puts "\n-- Current Price: #{tvData['currentPrice'].to_f} --\n"
 
 		# update trade status
@@ -333,7 +333,7 @@ class ApplicationRecord < ActiveRecord::Base
 					end
 				when tvData['broker'] == 'OANDA'
 					
-					if requestK['orderCancelTransaction']['reason'].present?
+					if requestK['orderCancelTransaction'].present? && requestK['orderCancelTransaction']['reason'].present?
 						puts "\n-- #{requestK['orderCancelTransaction']['reason']} --\n"
 					else
 						User.find_by(oandaToken: apiKey).trades.create(uuid:  requestK['orderCreateTransaction']['id'], broker: tvData['broker'], direction: tvData['direction'], status: 'closed')
