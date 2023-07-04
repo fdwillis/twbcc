@@ -8,7 +8,6 @@ class TradingviewController < ApplicationController
 		@allTrades = Trade.all
 		@currentTradesall = @allTrades.where(finalTakeProfit: nil, status: 'closed')
 		@entriesTradesall = @allTrades.where(status: 'closed')
-		@exitsTradesall = @allTrades.where.not(finalTakeProfit: nil).where(status: 'closed') 
 
 
 		cryptoAssets = 0
@@ -19,18 +18,15 @@ class TradingviewController < ApplicationController
 
 		@currentTrades24 = @currentTradesall.where('created_at > ?', 7.days.ago )
 		@entriesTrades24 = @entriesTradesall.where('created_at > ?', 7.days.ago )
-		@exitsTrades24 = @exitsTradesall.where('created_at > ?', 7.days.ago ) 
 
 		@currentTrades = @currentTradesall.where('created_at > ?', 30.days.ago )
 		@entriesTrades = @entriesTradesall.where('created_at > ?', 30.days.ago )
-		@exitsTrades = @exitsTradesall.where('created_at > ?', 30.days.ago ) 
 
 		@profitTotal = 0
 		@partialClose = 0
 		@partialClose24 = 0
 		@partialCloseall = 0
 
-		@costTotal = 0
 		@assetsUM = 0
 		@initalBalance = ApplicationRecord::INITALBALANCE.map{|d|d['initialDepopsit']}.sum
 		
