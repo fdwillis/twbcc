@@ -163,9 +163,9 @@ class TradingviewController < ApplicationController
 										when params['type'] == 'kill'
 											case true
 											when params['broker'] == 'KRAKEN'
-												BackgroundJob.perform_async('kill',tradingviewKeysparams.to_h, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret)
+												BackgroundJob.perform_async('kill',tradingviewKeysparams.to_h, traderFoundForCopy.krakenLiveAPI, traderFoundForCopy.krakenLiveSecret)
 											when params['broker'] == 'OANDA'
-												BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFound.oandaToken, nil)
+												BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFoundForCopy.oandaToken, nil)
 											end
 										end
 									elsif DateTime.now.strftime('%a') != "Sun" && DateTime.now.strftime('%a') != "Sat" && (current_user&.authorizedList == 'crypto' ? "BTC#{ISO3166::Country[current_user.amazonCountry.downcase].currency_code}" : current_user&.authorizedList == 'forex' ? "EUR#{ISO3166::Country[current_user.amazonCountry.downcase].currency_code}" : nil ) == params['ticker']
