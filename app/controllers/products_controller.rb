@@ -1,10 +1,10 @@
-#/trending
+# /trending
 class ProductsController < ApplicationController
-  before_action :set_product, only: %i[ edit update destroy ]
-  before_action :checkAdmin, only: %i[ new ]
+  before_action :set_product, only: %i[edit update destroy]
+  before_action :checkAdmin, only: %i[new]
 
   def brand
-    #rainforest search by brand using the country from the url -> display here with pagination and friendly brand ID
+    # rainforest search by brand using the country from the url -> display here with pagination and friendly brand ID
   end
 
   # GET /products or /products.json
@@ -20,12 +20,11 @@ class ProductsController < ApplicationController
     @blogs = Blog.all.where(country: params['country']).paginate(page: params['page'], per_page: 6)
     @products = Product.all.where(country: params['country']).paginate(page: params['page'], per_page: 6)
     @callToRain = []
-
   end
 
   def amazon
-    #analytics
-    
+    # analytics
+
     if params['fromProfile'].present?
       redirect_to User.renderLink(params['referredBy'].present? ? params['referredBy'] : nil, params['country'], params['asin'], current_user&.present? ? current_user : nil)
     else
@@ -39,26 +38,26 @@ class ProductsController < ApplicationController
     @country = product_params['country']
 
     if session['products'].present?
-      if session['products'].map{|d| d[:product]}.include?(@product)
+      if session['products'].map { |d| d[:product] }.include?(@product)
         session['products'].each do |info|
-          if info[:product] == @product && info[:data].present?
-            # show cache data to paginate
-            
-            @callToRain = info[:data]
-          end
+          next unless info[:product] == @product && info[:data].present?
+
+          # show cache data to paginate
+
+          @callToRain = info[:data]
         end
       else
         @callToRain = User.rainforestProduct(params['asin'], nil, @country)
-        session['products'] |= [{product: @product, data: @callToRain, country: @country}]
+        session['products'] |= [{ product: @product, data: @callToRain, country: @country }]
       end
     else
       session['products'] = []
-      #paginate
+      # paginate
       @callToRain = User.rainforestProduct(params['asin'], nil, @country)
-      session['products'] |= [{product: params['asin'], data: @callToRain, country: @country}]
+      session['products'] |= [{ product: params['asin'], data: @callToRain, country: @country }]
     end
 
-    @posts = Blog.where("asins like ?", "%#{params['asin']}%")
+    @posts = Blog.where('asins like ?', "%#{params['asin']}%")
     @profileMetadata = current_user.present? ? Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata'] : []
   end
 
@@ -68,8 +67,7 @@ class ProductsController < ApplicationController
   end
 
   # GET /products/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /products or /products.json
   def create
@@ -77,7 +75,7 @@ class ProductsController < ApplicationController
 
     respond_to do |format|
       if @product.save
-        format.html { redirect_to explore_path, notice: "Product was successfully created." }
+        format.html { redirect_to explore_path, notice: 'Product was successfully created.' }
         format.json { render :show, status: :created, location: @product }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -90,7 +88,7 @@ class ProductsController < ApplicationController
   def update
     respond_to do |format|
       if @product.update(product_params)
-        format.html { redirect_to product_url(@product), notice: "Product was successfully updated." }
+        format.html { redirect_to product_url(@product), notice: 'Product was successfully updated.' }
         format.json { render :show, status: :ok, location: @product }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -104,26 +102,27 @@ class ProductsController < ApplicationController
     @product.destroy
 
     respond_to do |format|
-      format.html { redirect_to products_url, notice: "Product was successfully destroyed." }
+      format.html { redirect_to products_url, notice: 'Product was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_product
-      @product = Product.friendly.find_by(asin: params['id'])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def product_params
-      params.require(:product).permit(:country, :tags, :asin, :referredBy)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_product
+    @product = Product.friendly.find_by(asin: params['id'])
+  end
 
-    def checkAdmin
-      unless current_user&.admin? || current_user&.trustee?
-        flash[:error] = "No Access"
-        redirect_to root_path
-      end
+  # Only allow a list of trusted parameters through.
+  def product_params
+    params.require(:product).permit(:country, :tags, :asin, :referredBy)
+  end
+
+  def checkAdmin
+    unless current_user&.admin? || current_user&.trustee?
+      flash[:error] = 'No Access'
+      redirect_to root_path
     end
+  end
 end

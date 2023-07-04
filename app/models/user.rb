@@ -3,7 +3,7 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :timeoutable#, :trackable
+         :recoverable, :rememberable, :validatable, :timeoutable # , :trackable
   has_many :blogs
   has_many :trades
   has_many :take_profits
@@ -17,108 +17,107 @@ class User < ApplicationRecord
   validates_uniqueness_of :alpacaTestSecret, allow_blank: true
   validates_uniqueness_of :oandaToken, allow_blank: true
 
-  
   include MediaEmbed::Handler
 
   ACCEPTEDcountries = {
-    #sprint2 check magic team from these countries
+    # sprint2 check magic team from these countries
     'au' => {
       site: 'amazon.com.au',
       currency: 'aud',
-      country: 'Australia', 
+      country: 'Australia'
     },
     'be' => {
       site: 'amazon.com.be',
       currency: 'eur',
-      country: 'Belgium',
+      country: 'Belgium'
     },
     'ca' => {
       site: 'amazon.ca',
       currency: 'cad',
-      country: 'Canada',
+      country: 'Canada'
     },
     'fr' => {
       site: 'amazon.fr',
       currency: 'eur',
-      country: 'France',
+      country: 'France'
     },
     'de' => {
       site: 'amazon.de',
       currency: 'eur',
-      country: 'Germany',
+      country: 'Germany'
     },
     'it' => {
       site: 'amazon.it',
       currency: 'eur',
-      country: 'Italy',
+      country: 'Italy'
     },
     'jp' => {
       site: 'amazon.co.jp',
       currency: 'jpy',
-      country: 'Japan',
+      country: 'Japan'
     },
     'mx' => {
       site: 'amazon.com.mx',
       currency: 'mxn',
-      country: 'Mexico',
+      country: 'Mexico'
     },
     'nl' => {
       site: 'amazon.nl',
       currency: 'eur',
-      country: 'Netherlands',
+      country: 'Netherlands'
     },
     'pl' => {
       site: 'amazon.pl',
       currency: 'pln',
-      country: 'Poland',
+      country: 'Poland'
     },
     'sg' => {
       site: 'amazon.sg',
       currency: 'sgd',
-      country: 'Singapore',
+      country: 'Singapore'
     },
     'es' => {
       site: 'amazon.es',
       currency: 'eur',
-      country: 'Spain',
+      country: 'Spain'
     },
     'se' => {
       site: 'amazon.se',
       currency: 'sek',
-      country: 'Sweden',
+      country: 'Sweden'
     },
     'ae' => {
       site: 'amazon.ae',
       currency: 'aed',
-      country: 'United Arab Emirates',
+      country: 'United Arab Emirates'
     },
     'gb' => {
       site: 'amazon.co.uk',
       currency: 'gbp',
-      country: 'United Kingdom',
+      country: 'United Kingdom'
     },
     'us' => {
       site: 'amazon.com',
       currency: 'usd',
-      country: 'United States',
-    },
-  }
+      country: 'United States'
+    }
+  }.freeze
 
-  FREEmembership = [ENV['freeMembership']] 
-  TRIALmembership = [ENV['trialTradingDaily']] 
-  TRADERmembership = [ENV['selfTradingMonthlyMembership'],ENV['selfTradingAnnualMembership'],ENV['autoTradingMonthlyMembership'],ENV['autoTradingAnnualMembership']] 
-  AFFILIATEmembership = [ENV['affiliateMonthly'],ENV['affiliateAnnual']] 
-  BUSINESSmembership = [ENV['businessMonthly'], ENV['businessAnnual']] 
-  AUTOMATIONmembership = [ENV['automationMonthly'], ENV['automationAnnual']] 
+  FREEmembership = [ENV['freeMembership']].freeze
+  TRIALmembership = [ENV['trialTradingDaily']].freeze
+  TRADERmembership = [ENV['selfTradingMonthlyMembership'], ENV['selfTradingAnnualMembership'], ENV['autoTradingMonthlyMembership'], ENV['autoTradingAnnualMembership']].freeze
+  AFFILIATEmembership = [ENV['affiliateMonthly'], ENV['affiliateAnnual']].freeze
+  BUSINESSmembership = [ENV['businessMonthly'], ENV['businessAnnual']].freeze
+  AUTOMATIONmembership = [ENV['automationMonthly'], ENV['automationAnnual']].freeze
 
   def self.renderLink(referredBy, country, asin, current_user = nil)
     @userFound = referredBy.present? ? User.find_by(uuid: referredBy) : nil
     @profile = @userFound.present? ? Stripe::Customer.retrieve(@userFound.stripeCustomerID) : nil
     @membershipDetails = @userFound.present? ? @userFound.checkMembership : nil
-    #account for current user
+    # account for current user
     affiliteLink = "https://www.#{ACCEPTEDcountries[country.downcase][:site]}/dp/product/#{asin.upcase}?&tag=#{@userFound&.amazonUUID}"
     adminLink =  "https://www.#{ACCEPTEDcountries[country.downcase][:site]}/dp/product/#{asin.upcase}?&tag=#{ENV['usAmazonTag']}"
-    #split traffic 95/5
+    # split traffic 95/5
     if @membershipDetails.present? && @membershipDetails[:membershipDetails][0]['status'] == 'active'
       if current_user&.referredBy&.split(',').present? && current_user&.referredBy&.split(',').reject(&:blank?).present?
         affiliteLink = "https://www.#{ACCEPTEDcountries[country.downcase][:site]}/dp/product/#{asin.upcase}?&tag=#{User.find_by(uuid: current_user&.referredBy)&.amazonUUID}"
@@ -129,7 +128,7 @@ class User < ApplicationRecord
         @loadedLink = adminLink
       end
 
-    else 
+    else
       @loadedLink = adminLink
     end
 
@@ -140,30 +139,30 @@ class User < ApplicationRecord
     embed(@url, options)
   end
 
-  def self.rainforestProduct(asin = nil, search_alias = nil, country = nil )
+  def self.rainforestProduct(asin = nil, search_alias = nil, country = nil)
     @validResponse = []
     if asin.present?
       res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=product&amazon_domain=#{ACCEPTEDcountries[country][:site]}&asin=#{asin}")
     else
-      #auto load
+      # auto load
       res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=product&amazon_domain=#{ACCEPTEDcountries[country][:site]}&asin=#{asin}&search_alias=#{search_alias}")
     end
     loadedData = Oj.load(res.body)['product']
-    @validResponse << {product: asin, data: loadedData}
+    @validResponse << { product: asin, data: loadedData }
 
     response = @validResponse.first[:data]
 
     if response&.present?
       {
-        'asin'=> asin,
+        'asin' => asin,
         # 'description'=> response['description'],
-        'country'=> country.upcase,
-        'tags'=> response['keywords_list'].present? ? response['keywords_list'][0..response['keywords_list'].size].join(',') : nil,
+        'country' => country.upcase,
+        'tags' => response['keywords_list'].present? ? response['keywords_list'][0..response['keywords_list'].size].join(',') : nil,
         'keywords' => response['keywords_list'].present? ? response['keywords_list'][0..9].shuffle : nil,
-        'rating' => response['rating'].present? ? response['rating'] : nil ,
+        'rating' => response['rating'].present? ? response['rating'] : nil,
         'reviews' => response['top_reviews'].present? ? response['top_reviews'].shuffle : nil,
-        'brand' => response['brand'].present? ? response['brand'] : nil , 
-        'images' => response['main_image']['link'],
+        'brand' => response['brand'].present? ? response['brand'] : nil,
+        'images' => response['main_image']['link']
       }
     else
       {}
@@ -178,9 +177,9 @@ class User < ApplicationRecord
     else
       res = Curl.get("https://api.rainforestapi.com/request?api_key=#{ENV['rainforestAPI']}&type=search&amazon_domain=#{ACCEPTEDcountries[country][:site]}&search_term=#{term.split.join('+')}")
     end
-      
+
     loadedData = Oj.load(res.body)['search_results']
-    @data << {category: term, data: loadedData}
+    @data << { category: term, data: loadedData }
     @data[0][:data]
   end
 
@@ -196,8 +195,8 @@ class User < ApplicationRecord
         published: true,
         image: [
           'https://pbs.twimg.com/profile_images/1542913048926556162/ptySop9e_400x400.jpg',
-          'https://pbs.twimg.com/profile_images/1542913048926556162/ptySop9e_400x400.jpg',
-        ],
+          'https://pbs.twimg.com/profile_images/1542913048926556162/ptySop9e_400x400.jpg'
+        ]
         # brand: [
         #   {
         #     title: ,
@@ -222,27 +221,23 @@ class User < ApplicationRecord
           'https://pyxis.nymag.com/v1/imgs/32e/7be/632c500b7d59f478f5892606d333b2147c-mario-badescu-lede.rsocial.w1200.jpg',
           'https://m.media-amazon.com/images/I/81KBMk-i+FL._AC_SL1500_.jpg',
           'https://m.media-amazon.com/images/I/81EG0Mqv6mL._AC_UF1000,1000_QL80_.jpg',
-          'https://m.media-amazon.com/images/I/81i7HXhZSmL._AC_UF1000,1000_QL80_.jpg',
-        ],
+          'https://m.media-amazon.com/images/I/81i7HXhZSmL._AC_UF1000,1000_QL80_.jpg'
+        ]
         # brand: [
         #   {
         #     title: Mario Badescu,
         #     tags: ['self care', 'self love', 'facial', 'beauty', 'cosmetics'],
         #     countries: ['us', 'es', 'de'],
         #     images: [
-                # 'asd.com/'
+        # 'asd.com/'
         #     ],
         #   }
         # ],
 
-      },
-      # 
+      }
+      #
       # Tatcha
       # Pureology
-
-
-
-
 
       # 'Luxury Beauty' => {
       #   description: '',
@@ -329,7 +324,7 @@ class User < ApplicationRecord
       # 'Tata Harper',
       # 'sony',
       # 'xbox',
-      'apple',
+      'apple'
       # 'sonos',
       # 'Dr. Barbara Sturm',
       # 'otter box'
@@ -339,26 +334,46 @@ class User < ApplicationRecord
 
   def checkMembership
     membershipValid = []
-    membershipPlans = [ENV['trialTradingDaily'],ENV['autoTradingMonthlyMembership'], ENV['autoTradingAnnualMembership'],ENV['selfTradingAnnualMembership'], ENV['selfTradingMonthlyMembership'],ENV['affiliateMonthly'], ENV['affiliateAnnual'], ENV['businessMonthly'], ENV['businessAnnual'], ENV['automationMonthly'], ENV['automationAnnual']]
-    allSubscriptions = Stripe::Subscription.list({customer: stripeCustomerID})['data'].map(&:items).map(&:data).flatten.map(&:plan).map(&:id)
-    
+    membershipPlans = [ENV['trialTradingDaily'], ENV['autoTradingMonthlyMembership'], ENV['autoTradingAnnualMembership'], ENV['selfTradingAnnualMembership'], ENV['selfTradingMonthlyMembership'], ENV['affiliateMonthly'], ENV['affiliateAnnual'], ENV['businessMonthly'], ENV['businessAnnual'], ENV['automationMonthly'], ENV['automationAnnual']]
+    allSubscriptions = Stripe::Subscription.list({ customer: stripeCustomerID })['data'].map(&:items).map(&:data).flatten.map(&:plan).map(&:id)
+
     membershipPlans.each do |planID|
       case true
       when allSubscriptions.include?(planID)
-        membershipPlan = Stripe::Subscription.list({customer: stripeCustomerID, price: planID})['data'][0]
-        membershipType = TRIALmembership.include?(planID) ? 'trial,trader' :TRADERmembership.include?(planID) ? 'trader' : AFFILIATEmembership.include?(planID) ? 'affiliate' : BUSINESSmembership.include?(planID) ? 'business': AUTOMATIONmembership.include?(planID) ? 'automation': FREEmembership.include?(planID) ? 'free' : 'free'
-        if membershipPlan['status'] == 'active' && membershipPlan['pause_collection'] == nil
-          membershipValid << {membershipDetails: membershipPlan, membershipType: membershipType}
+        membershipPlan = Stripe::Subscription.list({ customer: stripeCustomerID, price: planID })['data'][0]
+        membershipType = if TRIALmembership.include?(planID)
+                           'trial,trader'
+                         else
+                           if TRADERmembership.include?(planID)
+                             'trader'
+                           else
+                             if AFFILIATEmembership.include?(planID)
+                               'affiliate'
+                             else
+                               if BUSINESSmembership.include?(planID)
+                                 'business'
+                               else
+                                 if AUTOMATIONmembership.include?(planID)
+                                   'automation'
+                                 else
+                                   FREEmembership.include?(planID) ? 'free' : 'free'
+                             end
+  end
+                           end
+end
+end
+        if membershipPlan['status'] == 'active' && membershipPlan['pause_collection'].nil?
+          membershipValid << { membershipDetails: membershipPlan, membershipType: membershipType }
         end
       end
     end
 
-    membershipValid.present? ? membershipValid : [{membershipType: 'free', membershipDetails: {0=>{'status' => 'active', 'interval' => 'N/A'}}}]
+    membershipValid.present? ? membershipValid : [{ membershipType: 'free', membershipDetails: { 0 => { 'status' => 'active', 'interval' => 'N/A' } } }]
 
-    if Oj.load(ENV['adminUUID']).include?(self.uuid)
-      membershipValid.present? ? self.update(accessPin:"admin,#{ membershipValid.map{|d| d[:membershipType]}.join(',')}") : nil
+    if Oj.load(ENV['adminUUID']).include?(uuid)
+      membershipValid.present? ? update(accessPin: "admin,#{membershipValid.map { |d| d[:membershipType] }.join(',')}") : nil
     else
-      membershipValid.present? ? self.update(accessPin: membershipValid.map{|d| d[:membershipType]}.join(',')) : nil
+      membershipValid.present? ? update(accessPin: membershipValid.map { |d| d[:membershipType] }.join(',')) : nil
     end
 
     membershipValid
@@ -398,6 +413,4 @@ class User < ApplicationRecord
     checkMembership
     accessPin.split(',').include?('admin')
   end
-
-  private
 end

@@ -1,4 +1,4 @@
 class Product < ApplicationRecord
-	extend FriendlyId
-	friendly_id :asin, use: :slugged
+  extend FriendlyId
+  friendly_id :asin, use: :slugged
 end

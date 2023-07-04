@@ -4,15 +4,14 @@
 # and recreated between test runs. Don't rely on the data there!
 
 Rails.application.configure do
-  require "awesome_print"
+  require 'awesome_print'
   AwesomePrint.irb!
-
 
   # Settings specified here will take precedence over those in config/application.rb.
 
   config.cache_classes = false
   config.action_view.cache_template_loading = true
-  config.exceptions_app = self.routes
+  config.exceptions_app = routes
 
   # Do not eager load code on boot. This avoids loading your whole application
   # just for the purpose of running a single test. If you are using a tool that

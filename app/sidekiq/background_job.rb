@@ -1,17 +1,11 @@
 class BackgroundJob
   include Sidekiq::Job
 
-  def perform(job,tvData, apiKey = nil, secretKey = nil)
-    if job == "stop"
-      ApplicationRecord.trailStop(tvData, apiKey, secretKey)
-    end
-    
-    if job == "entry"
-      ApplicationRecord.newEntry(tvData, apiKey, secretKey)
-    end
+  def perform(job, tvData, apiKey = nil, secretKey = nil)
+    ApplicationRecord.trailStop(tvData, apiKey, secretKey) if job == 'stop'
 
-    if job == "kill"
-      ApplicationRecord.killPending(tvData, apiKey, secretKey)
-    end
+    ApplicationRecord.newEntry(tvData, apiKey, secretKey) if job == 'entry'
+
+    ApplicationRecord.killPending(tvData, apiKey, secretKey) if job == 'kill'
   end
 end

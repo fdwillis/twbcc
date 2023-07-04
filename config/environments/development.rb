@@ -1,5 +1,5 @@
 Rails.application.configure do
-  require "awesome_print"
+  require 'awesome_print'
   AwesomePrint.irb!
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -10,7 +10,7 @@ Rails.application.configure do
 
   # Do not eager load code on boot.
   config.eager_load = false
-  config.exceptions_app = self.routes
+  config.exceptions_app = routes
 
   # Show full error reports.
   config.consider_all_requests_local = false
@@ -62,8 +62,8 @@ Rails.application.configure do
   # Use an evented file watcher to asynchronously detect changes in source code,
   # routes, locales, etc. This feature depends on the listen gem.
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
-  config.action_mailer.default_url_options = { :host => 'https://beige-peas-swim.loca.lt' }
-  config.hosts << "beige-peas-swim.loca.lt"
+  config.action_mailer.default_url_options = { host: 'https://beige-peas-swim.loca.lt' }
+  config.hosts << 'beige-peas-swim.loca.lt'
 end
 
 # https://app.oarlin.com/signals?&traderID=d57307d7

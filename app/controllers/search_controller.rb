@@ -1,60 +1,54 @@
-#/discover
+# /discover
 class SearchController < ApplicationController
-	def index
-		loadMemberships
-		
-		@codes = current_user.present? ? Stripe::Coupon.list({limit: 100}).reject{|c| c['valid'] == false}.reject{|c| c['percent_off'] > 90} : Stripe::Coupon.list({limit: 100}).reject{|c| c['valid'] == false}.reject{|c| c['percent_off'] > 10}.reject{|c| c['percent_off'] > 90}
-		
-		if params['newSearch'].present? && newSearchParams[:for].present?
-			@query = newSearchParams[:for]
-			@country = newSearchParams[:country]
+  def index
+    loadMemberships
 
-			if session['search'].present?
-				if session['search'].map{|d| d[:query]}.include?(@query)
-					session['search'].each do |infox|
-						
-						if infox[:query] == @query && infox[:data].present?
-							# show cache data to paginate
-							@searchResults = infox[:data].paginate(page: params['page'], per_page: 6)
-							return
-						end
-					end
-				else
-					#paginate
+    @codes = current_user.present? ? Stripe::Coupon.list({ limit: 100 }).reject { |c| c['valid'] == false }.reject { |c| c['percent_off'] > 90 } : Stripe::Coupon.list({ limit: 100 }).reject { |c| c['valid'] == false }.reject { |c| c['percent_off'] > 10 }.reject { |c| c['percent_off'] > 90 }
 
-					
-					searchResults = User.rainforestSearch(@query, nil, @country)
-					session['search'] |= [{query: @query, data: searchResults, country: @country}]
-					@searchResults = searchResults.paginate(page: params['page'], per_page: 6)
-					return
-				end
+    if params['newSearch'].present? && newSearchParams[:for].present?
+      @query = newSearchParams[:for]
+      @country = newSearchParams[:country]
 
-			else
-				session['search'] = []
-				#paginate
-				
-				searchResults = User.rainforestSearch(@query, nil, @country)
+      if session['search'].present?
+        if session['search'].map { |d| d[:query] }.include?(@query)
+          session['search'].each do |infox|
+            next unless infox[:query] == @query && infox[:data].present?
 
-				session['search'] |= [{query: @query, data: searchResults, country: @country}]
-				@searchResults = searchResults.paginate(page: params['page'], per_page: 6)
-				return
-			end
+            # show cache data to paginate
+            @searchResults = infox[:data].paginate(page: params['page'], per_page: 6)
+            return
+          end
+        else
+          # paginate
 
+          searchResults = User.rainforestSearch(@query, nil, @country)
+          session['search'] |= [{ query: @query, data: searchResults, country: @country }]
+          @searchResults = searchResults.paginate(page: params['page'], per_page: 6)
+          nil
+        end
 
+      else
+        session['search'] = []
+        # paginate
 
-			#analytics
-			#stash results of search in session -> render when search repeats sprint2
-		else
-			@limitedPublished = Category.where(featured: true, published: true).limit(10)
-			@categories = (Category.where(published: true) - @limitedPublished).paginate(page: params['page'], per_page: 6)
-			return
-		end 
-	end
+        searchResults = User.rainforestSearch(@query, nil, @country)
 
+        session['search'] |= [{ query: @query, data: searchResults, country: @country }]
+        @searchResults = searchResults.paginate(page: params['page'], per_page: 6)
+        nil
+      end
 
-	
-	def newSearchParams
+      # analytics
+      # stash results of search in session -> render when search repeats sprint2
+    else
+      @limitedPublished = Category.where(featured: true, published: true).limit(10)
+      @categories = (Category.where(published: true) - @limitedPublished).paginate(page: params['page'], per_page: 6)
+      nil
+    end
+  end
+
+  def newSearchParams
     paramsClean = params.require(:newSearch).permit(:for, :page, :country)
-    return paramsClean.reject{|_, v| v.blank?}
+    paramsClean.reject { |_, v| v.blank? }
   end
 end

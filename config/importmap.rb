@@ -1,1 +1,1 @@
-pin "ahoy", to: "ahoy.js"
+pin 'ahoy', to: 'ahoy.js'

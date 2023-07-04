@@ -1,757 +1,699 @@
 class ApplicationController < ActionController::Base
-	before_action :authenticate_user!, only: [:loved, :list] 
-	before_action :loadMemberships
+  before_action :authenticate_user!, only: %i[loved list]
+  before_action :loadMemberships
 
-	def inquiry
-		begin
-			if params['newInquiry'].present?
-				customMade = Custominquiry.create(email: params['newInquiry']['email'], phone: params['newInquiry']['phone'])
+  def inquiry
+    if params['newInquiry'].present?
+      customMade = Custominquiry.create(email: params['newInquiry']['email'], phone: params['newInquiry']['phone'])
 
-				if customMade.present? 
-					flash[:success] = "Inquiry Submitted"
-					redirect_to membership_path
-				else
-					flash[:error] = "Something Happened"
-					redirect_to membership_path
-				end
-			else
-				flash[:error] = "Something Happened"
-				redirect_to request.referrer
-			end
-		rescue Exception => e
-      flash[:error] = "#{e}"
+      if customMade.present?
+        flash[:success] = 'Inquiry Submitted'
+        redirect_to membership_path
+      else
+        flash[:error] = 'Something Happened'
+        redirect_to membership_path
+      end
+    else
+      flash[:error] = 'Something Happened'
       redirect_to request.referrer
     end
-	end
-	
-	def update_discount
-		begin
-			membershipDetails = current_user&.checkMembership
-			subscriptions = Stripe::Subscription.list({limit: 100, customer: current_user&.stripeCustomerID})
-			subscriptions.each do |subs|
-				Stripe::Subscription.update(
-				  subs['id'],
-				  {coupon: session['coupon']},
-				)
-			end
-			flash[:success] = "Coupon Claimed"
-	    redirect_to profile_path
-		rescue Stripe::StripeError => e
-      flash[:error] = "#{e.error.message}"
-      redirect_to request.referrer
-    rescue Exception => e
-      flash[:error] = "#{e}"
-      redirect_to request.referrer
+  rescue Exception => e
+    flash[:error] = e.to_s
+    redirect_to request.referrer
+  end
+
+  def update_discount
+    membershipDetails = current_user&.checkMembership
+    subscriptions = Stripe::Subscription.list({ limit: 100, customer: current_user&.stripeCustomerID })
+    subscriptions.each do |subs|
+      Stripe::Subscription.update(
+        subs['id'],
+        { coupon: session['coupon'] }
+      )
     end
-	end
+    flash[:success] = 'Coupon Claimed'
+    redirect_to profile_path
+  rescue Stripe::StripeError => e
+    flash[:error] = e.error.message.to_s
+    redirect_to request.referrer
+  rescue Exception => e
+    flash[:error] = e.to_s
+    redirect_to request.referrer
+  end
 
-	def discounts #sprint2
-		if session['coupon'].nil? 
-			@discountsFor = current_user&.present? ? current_user&.checkMembership : nil
-			@discountList = Stripe::Coupon.list({limit: 100})['data'].reject{|c| c['valid'] == false}.reject{|c| c['duration'] == 'forever'}.reject{|c| c['max_redemptions'] == 0}
-			
-			if @discountsFor.nil? || !@discountsFor.map{|s| s[:membershipType]}.include?('free')
-				@newList = @discountList.reject{|c| c['percent_off'] > 10}.reject{|c| c['percent_off'] > 90}.size > 0 ? @discountList.reject{|c| c['percent_off'] > 10}.reject{|c| c['percent_off'] > 90}.sample['id'] : 0
-			elsif @discountsFor.map{|s| s[:membershipType]}.include?('affiliate')
-				@newList = @discountList.reject{|c| c['percent_off'] > 20 || c['percent_off'] < 10}.reject{|c| c['percent_off'] > 90}.size > 0 ? @discountList.reject{|c| c['percent_off'] > 20 || c['percent_off'] < 10}.reject{|c| c['percent_off'] > 90}.sample['id'] : 0
-			elsif @discountsFor.map{|s| s[:membershipType]}.include?('business')
-				@newList = @discountList.reject{|c| c['percent_off'] > 30 || c['percent_off'] < 20}.reject{|c| c['percent_off'] > 90}.size > 0 ? @discountList.reject{|c| c['percent_off'] > 30 || c['percent_off'] < 20}.reject{|c| c['percent_off'] > 90}.sample['id'] : 0
-			elsif @discountsFor.map{|s| s[:membershipType]}.include?('automation')
-				@newList = @discountList.reject{|c| c['percent_off'] > 40 || c['percent_off'] < 30}.reject{|c| c['percent_off'] > 90}.size > 0 ? @discountList.reject{|c| c['percent_off'] > 40 || c['percent_off'] < 30}.reject{|c| c['percent_off'] > 90}.sample['id'] : 0
-			elsif @discountsFor.map{|s| s[:membershipType]}.include?('custom')
-				@newList = @discountList.reject{|c| c['percent_off'] > 50 || c['percent_off'] < 40}.reject{|c| c['percent_off'] > 90}.size > 0 ? @discountList.reject{|c| c['percent_off'] > 50 || c['percent_off'] < 40}.reject{|c| c['percent_off'] > 90}.sample['id'] : 0
-			end
+  def discounts # sprint2
+    if session['coupon'].nil?
+      @discountsFor = current_user&.present? ? current_user&.checkMembership : nil
+      @discountList = Stripe::Coupon.list({ limit: 100 })['data'].reject { |c| c['valid'] == false }.reject { |c| c['duration'] == 'forever' }.reject { |c| c['max_redemptions'] == 0 }
 
-			session['coupon'] = @newList 
-		else
-			if Stripe::Coupon.list({limit: 100}).map(&:id).include?(session['coupon']) == true
-				@newList = session['coupon']
-			else
-				session['coupon'] = nil
-				@newList = session['coupon']
-			end
-		end
-	end
+      if @discountsFor.nil? || !@discountsFor.map { |s| s[:membershipType] }.include?('free')
+        @newList = @discountList.reject { |c| c['percent_off'] > 10 }.reject { |c| c['percent_off'] > 90 }.size > 0 ? @discountList.reject { |c| c['percent_off'] > 10 }.reject { |c| c['percent_off'] > 90 }.sample['id'] : 0
+      elsif @discountsFor.map { |s| s[:membershipType] }.include?('affiliate')
+        @newList = @discountList.reject { |c| c['percent_off'] > 20 || c['percent_off'] < 10 }.reject { |c| c['percent_off'] > 90 }.size > 0 ? @discountList.reject { |c| c['percent_off'] > 20 || c['percent_off'] < 10 }.reject { |c| c['percent_off'] > 90 }.sample['id'] : 0
+      elsif @discountsFor.map { |s| s[:membershipType] }.include?('business')
+        @newList = @discountList.reject { |c| c['percent_off'] > 30 || c['percent_off'] < 20 }.reject { |c| c['percent_off'] > 90 }.size > 0 ? @discountList.reject { |c| c['percent_off'] > 30 || c['percent_off'] < 20 }.reject { |c| c['percent_off'] > 90 }.sample['id'] : 0
+      elsif @discountsFor.map { |s| s[:membershipType] }.include?('automation')
+        @newList = @discountList.reject { |c| c['percent_off'] > 40 || c['percent_off'] < 30 }.reject { |c| c['percent_off'] > 90 }.size > 0 ? @discountList.reject { |c| c['percent_off'] > 40 || c['percent_off'] < 30 }.reject { |c| c['percent_off'] > 90 }.sample['id'] : 0
+      elsif @discountsFor.map { |s| s[:membershipType] }.include?('custom')
+        @newList = @discountList.reject { |c| c['percent_off'] > 50 || c['percent_off'] < 40 }.reject { |c| c['percent_off'] > 90 }.size > 0 ? @discountList.reject { |c| c['percent_off'] > 50 || c['percent_off'] < 40 }.reject { |c| c['percent_off'] > 90 }.sample['id'] : 0
+      end
 
-	def display_discount
-		# setcoupon code in header
-		if session['coupon'].nil?
-			codes = Stripe::Coupon.list({limit: 100})['data'].reject{|c| c['valid'] == false}.reject{|c| c['duration'] == 'forever'}.reject{|c| c['max_redemptions'] == 0}
-			if codes.size > 0
-				session['coupon'] = codes.sample['id']
-				flash[:success] = "Coupon Assigned"
-				redirect_to request.referrer
-				return
-			else
-				flash[:notice] = "Waiting For New Coupons"
-				redirect_to discounts_path
-				return
-			end
-		end
-	end
-
-	def split_session
-		redirect_to "#{request.fullpath.split("?")[0]}?&referredBy=#{params[:splitSession]}"
-	end
-
-	def cancel
-		allSubscriptions = Stripe::Subscription.list({customer: current_user&.stripeCustomerID})['data'].map(&:id)
-		allSubscriptions.each do |id|
-			Stripe::Subscription.cancel(id)
-		end
-
-		Stripe::Subscription.create({
-		  customer: current_user&.stripeCustomerID,
-		  items: [
-		    {price: ENV['freeMembership']},
-		  ],
-		})
-
-		flash[:success] = "Membership Canceled"
-		redirect_to request.referrer
-	end
-
-	def commissions
-		begin
-				affiliateFromId = User.find_by(uuid: params[:id])
-				@pulledAffiliate = Stripe::Customer.retrieve(affiliateFromId&.stripeCustomerID)
-				@pulledCommissions = Stripe::Customer.list(limit: 100)
-				@accountsFromAffiliate = @pulledCommissions['data'].reject{|e| e['metadata']['referredBy'] != params[:id]}
-				@activeSubs = []
-				@inactiveSubs = []
-				@accountItemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(affiliateFromId&.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due']
-				@accountsFromAffiliate.each do |cusID|
-			  	listofSubscriptionsFromCusID = Stripe::Subscription.list(limit: 100, customer: cusID)['data']
-			    if listofSubscriptionsFromCusID.size > 0 
-				  	listofSubscriptionsFromCusID.each do |subscriptionX| 
-					  	if subscriptionX['status'] == 'active' 
-					  		@activeSubs << subscriptionX
-					  	else
-					  		@inactiveSubs << subscriptionX
-					  	end
-				  	end
-			  	end
-				end
-				@combinedCommissions = 0
-				@monthlyCommissions = 0
-				@annualCommissions = 0
-
-				@activeSubs.map(&:items).map(&:data).flatten.map(&:plan).each do |plan|
-					if plan['interval'] == 'month'
-						@combinedCommissions += (plan['amount'] * 12) * (@pulledAffiliate['metadata']['commissionRate'].to_i * 0.01)
-						@monthlyCommissions += 1
-					end
-
-					if plan['interval'] == 'year'
-						
-						@combinedCommissions += (plan['amount']) * (@pulledAffiliate['metadata']['commissionRate'].to_i * 0.01)
-						@annualCommissions += 1
-					end
-				end
-
-				@combinedCommissions
-
-				@payouts = Stripe::Payout.list({limit: 3},{stripe_account: @pulledAffiliate['metadata']['connectAccount']})['data']
-		rescue Stripe::StripeError => e
-      flash[:error] = "#{e.error.message}"
-      redirect_to request.referrer
-    rescue Exception => e
-      flash[:error] = "#{e}"
-      redirect_to request.referrer
+      session['coupon'] = @newList
+    else
+      if Stripe::Coupon.list({ limit: 100 }).map(&:id).include?(session['coupon']) == true
+        @newList = session['coupon']
+      else
+        session['coupon'] = nil
+        @newList = session['coupon']
+      end
     end
-	end
+  end
 
-	def analytics
-		
-	end
-	def checkout
-		customFields = [
-			# {
-			# 	key: 'type',
-			# 	label: {custom: 'Account Type', type: 'custom'},
-			# 	type: 'dropdown',
-			# 	dropdown: {options: [
-			# 		{label: 'Individual', value: 'individual'},
-			# 		{label: 'Company', value: 'company'},
-			# 	]}},
-			{
-				key: 'asset',
-				label: {custom: 'Choose Your Market', type: 'custom'},
-				type: 'dropdown',
-				dropdown: {options: [
-				# {label: 'Options', value: 'options'},
-				{label: 'Crypto', value: 'crypto'},
-				{label: 'Forex', value: 'forex'},
-				{label: 'Stocks', value: 'stocks'},
-				{label: 'Options', value: 'options'},
-				]}
-			}
-		]
-		begin
-			if params['account'].present?
-				applicationFeeAmount = Stripe::Price.retrieve(params['price'],{stripe_account: params['account']})['unit_amount'] * 0.02
-				@session = Stripe::Checkout::Session.create({
-					success_url: "https://app.oarlin.com/?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",
-		      phone_number_collection: {
-			      enabled: true
-			    },
-			    payment_intent_data: {
-			    	application_fee_amount: applicationFeeAmount.to_i
-			    },
-		      line_items: [
-		        {price: params['price'], quantity: 1},
-		      ],
-		      mode: 'payment',
-		    }, {stripe_account: params['account']})
-		  else
-		  	if params['trial'] == 'true'
-		  		pullPrice = Stripe::Price.retrieve(params['price'])
+  def display_discount
+    # setcoupon code in header
+    if session['coupon'].nil?
+      codes = Stripe::Coupon.list({ limit: 100 })['data'].reject { |c| c['valid'] == false }.reject { |c| c['duration'] == 'forever' }.reject { |c| c['max_redemptions'] == 0 }
+      if codes.size > 0
+        session['coupon'] = codes.sample['id']
+        flash[:success] = 'Coupon Assigned'
+        redirect_to request.referrer
+        nil
+      else
+        flash[:notice] = 'Waiting For New Coupons'
+        redirect_to discounts_path
+        nil
+      end
+    end
+  end
 
-		  		 @session = Stripe::Checkout::Session.create({
-						success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
-			      phone_number_collection: {
-				      enabled: true
-				    },
-			      custom_fields: customFields,
-			      line_items: [
-			        {price: params['price'], quantity: 1},
-			      ],
-			      mode: 'subscription',#let stripe data determine
-			    })
-		  	else
-			  	tradeCoupon = Stripe::Coupon.list({limit: 100})['data'].reject{|c| c['max_redemptions'] == 0}.reject{|c| c['duration'] == 'forever'}
-			  	grabStripePrice = Stripe::Price.retrieve(params['price'])
+  def split_session
+    redirect_to "#{request.fullpath.split('?')[0]}?&referredBy=#{params[:splitSession]}"
+  end
 
-			  	if tradeCoupon.present?
-						@session = Stripe::Checkout::Session.create({
-							success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
-				      phone_number_collection: {
-					      enabled: true
-					    },
-				      custom_fields: customFields,
-				      line_items: [
-				        {price: params['price'], quantity: 1},
-				      ],
-				      discounts: [
-						  	coupon: tradeCoupon.first
-						  ],
-				      mode: 'subscription',#let stripe data determine,
-				    })
-				  else
-				    @session = Stripe::Checkout::Session.create({
-							success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",#let stripe data determine
-				      phone_number_collection: {
-					      enabled: true
-					    },
-				      custom_fields: customFields,
-				      line_items: [
-				        {price: params['price'], quantity: 1},
-				      ],
-				      mode: 'subscription',#let stripe data determine
-				    })
-				  end
-			  end
-			end
-	    redirect_to @session['url']
-	  rescue Stripe::StripeError => e
+  def cancel
+    allSubscriptions = Stripe::Subscription.list({ customer: current_user&.stripeCustomerID })['data'].map(&:id)
+    allSubscriptions.each do |id|
+      Stripe::Subscription.cancel(id)
+    end
+
+    Stripe::Subscription.create({
+                                  customer: current_user&.stripeCustomerID,
+                                  items: [
+                                    { price: ENV['freeMembership'] }
+                                  ]
+                                })
+
+    flash[:success] = 'Membership Canceled'
+    redirect_to request.referrer
+  end
+
+  def commissions
+    affiliateFromId = User.find_by(uuid: params[:id])
+    @pulledAffiliate = Stripe::Customer.retrieve(affiliateFromId&.stripeCustomerID)
+    @pulledCommissions = Stripe::Customer.list(limit: 100)
+    @accountsFromAffiliate = @pulledCommissions['data'].reject { |e| e['metadata']['referredBy'] != params[:id] }
+    @activeSubs = []
+    @inactiveSubs = []
+    @accountItemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(affiliateFromId&.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due']
+    @accountsFromAffiliate.each do |cusID|
+      listofSubscriptionsFromCusID = Stripe::Subscription.list(limit: 100, customer: cusID)['data']
+      next unless listofSubscriptionsFromCusID.size > 0
+
+      listofSubscriptionsFromCusID.each do |subscriptionX|
+        if subscriptionX['status'] == 'active'
+          @activeSubs << subscriptionX
+        else
+          @inactiveSubs << subscriptionX
+        end
+      end
+    end
+    @combinedCommissions = 0
+    @monthlyCommissions = 0
+    @annualCommissions = 0
+
+    @activeSubs.map(&:items).map(&:data).flatten.map(&:plan).each do |plan|
+      if plan['interval'] == 'month'
+        @combinedCommissions += (plan['amount'] * 12) * (@pulledAffiliate['metadata']['commissionRate'].to_i * 0.01)
+        @monthlyCommissions += 1
+      end
+
+      next unless plan['interval'] == 'year'
+
+      @combinedCommissions += (plan['amount']) * (@pulledAffiliate['metadata']['commissionRate'].to_i * 0.01)
+      @annualCommissions += 1
+    end
+
+    @combinedCommissions
+
+    @payouts = Stripe::Payout.list({ limit: 3 }, { stripe_account: @pulledAffiliate['metadata']['connectAccount'] })['data']
+  rescue Stripe::StripeError => e
+    flash[:error] = e.error.message.to_s
+    redirect_to request.referrer
+  rescue Exception => e
+    flash[:error] = e.to_s
+    redirect_to request.referrer
+  end
+
+  def analytics; end
+
+  def checkout
+    customFields = [
+      {
+        key: 'asset',
+        label: { custom: 'Choose Your Market', type: 'custom' },
+        type: 'dropdown',
+        dropdown: { options: [
+          # {label: 'Options', value: 'options'},
+          { label: 'Crypto', value: 'crypto' },
+          { label: 'Forex', value: 'forex' },
+          { label: 'Stocks', value: 'stocks' },
+          { label: 'Options', value: 'options' }
+        ] }
+      }
+    ]
+    begin
+      if params['account'].present?
+        applicationFeeAmount = Stripe::Price.retrieve(params['price'], { stripe_account: params['account'] })['unit_amount'] * 0.02
+        @session = Stripe::Checkout::Session.create({
+                                                      success_url: "https://app.oarlin.com/?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",
+                                                      phone_number_collection: {
+                                                        enabled: true
+                                                      },
+                                                      payment_intent_data: {
+                                                        application_fee_amount: applicationFeeAmount.to_i
+                                                      },
+                                                      line_items: [
+                                                        { price: params['price'], quantity: 1 }
+                                                      ],
+                                                      mode: 'payment'
+                                                    }, { stripe_account: params['account'] })
+      else
+        if params['trial'] == 'true'
+          pullPrice = Stripe::Price.retrieve(params['price'])
+
+          @session = Stripe::Checkout::Session.create({
+                                                        success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}", # let stripe data determine
+                                                        phone_number_collection: {
+                                                          enabled: true
+                                                        },
+                                                        custom_fields: customFields,
+                                                        line_items: [
+                                                          { price: params['price'], quantity: 1 }
+                                                        ],
+                                                        mode: 'subscription' # let stripe data determine
+                                                      })
+        else
+          tradeCoupon = Stripe::Coupon.list({ limit: 100 })['data'].reject { |c| c['max_redemptions'] == 0 }.reject { |c| c['duration'] == 'forever' }
+          grabStripePrice = Stripe::Price.retrieve(params['price'])
+
+          if tradeCoupon.present?
+            @session = Stripe::Checkout::Session.create({
+                                                          success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}", # let stripe data determine
+                                                          phone_number_collection: {
+                                                            enabled: true
+                                                          },
+                                                          custom_fields: customFields,
+                                                          line_items: [
+                                                            { price: params['price'], quantity: 1 }
+                                                          ],
+                                                          discounts: [
+                                                            coupon: tradeCoupon.first
+                                                          ],
+                                                          mode: 'subscription' # let stripe data determine,
+                                                        })
+          else
+            @session = Stripe::Checkout::Session.create({
+                                                          success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}", # let stripe data determine
+                                                          phone_number_collection: {
+                                                            enabled: true
+                                                          },
+                                                          custom_fields: customFields,
+                                                          line_items: [
+                                                            { price: params['price'], quantity: 1 }
+                                                          ],
+                                                          mode: 'subscription' # let stripe data determine
+                                                        })
+          end
+        end
+      end
+      redirect_to @session['url']
+    rescue Stripe::StripeError => e
       session['coupon'] = nil
-      flash[:error] = "#{e.error.message}"
+      flash[:error] = e.error.message.to_s
       redirect_to request.referrer
     rescue Exception => e
       session['coupon'] = nil
-      flash[:error] = "#{e}"
+      flash[:error] = e.to_s
       redirect_to request.referrer
     end
-	end
+  end
 
-	def questions
-		
-	end
+  def questions; end
 
-	
+  def autotrading
+    @codes = Stripe::Coupon.list({ limit: 100 }).reject { |c| c['valid'] == false }
+    successURL = "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}"
 
-	def autotrading
+    if session['coupon'].nil?
+      @autoTradingMonthlyMembership = Stripe::Checkout::Session.create({
+                                                                         success_url: successURL,
+                                                                         line_items: [
+                                                                           { price: ENV['autoTradingMonthlyMembership'], quantity: 1 }
+                                                                         ],
+                                                                         mode: 'subscription'
+                                                                       })
+      @autoTradingAnnualMembership = Stripe::Checkout::Session.create({
+                                                                        success_url: successURL,
+                                                                        line_items: [
+                                                                          { price: ENV['autoTradingAnnualMembership'], quantity: 1 }
+                                                                        ],
+                                                                        mode: 'subscription'
+                                                                      })
+    else
+      if @codes.map(&:id).include?(session['coupon']) == true && Stripe::Coupon.retrieve(session['coupon']).valid == true
+        # free -> build on page,
+        # affiliate,
+        @selfTradingAnnualMembership = Stripe::Checkout::Session.create({
+                                                                          success_url: successURL,
+                                                                          line_items: [
+                                                                            { price: ENV['selfTradingAnnualMembership'], quantity: 1 }
+                                                                          ],
+                                                                          mode: 'subscription',
+                                                                          discounts: [
+                                                                            coupon: session['coupon']
+                                                                          ]
+                                                                        })
+        @selfTradingMonthlyMembership = Stripe::Checkout::Session.create({
+                                                                           success_url: successURL,
+                                                                           line_items: [
+                                                                             { price: ENV['selfTradingMonthlyMembership'], quantity: 1 }
+                                                                           ],
+                                                                           mode: 'subscription',
+                                                                           discounts: [
+                                                                             coupon: session['coupon']
+                                                                           ]
+                                                                         })
+        # business,
+        @autoTradingMonthlyMembership = Stripe::Checkout::Session.create({
+                                                                           success_url: successURL,
+                                                                           line_items: [
+                                                                             { price: ENV['autoTradingMonthlyMembership'], quantity: 1 }
+                                                                           ],
+                                                                           mode: 'subscription',
+                                                                           discounts: [
+                                                                             coupon: session['coupon']
+                                                                           ]
+                                                                         })
+        @autoTradingAnnualMembership = Stripe::Checkout::Session.create({
+                                                                          success_url: successURL,
+                                                                          line_items: [
+                                                                            { price: ENV['autoTradingAnnualMembership'], quantity: 1 }
+                                                                          ],
+                                                                          mode: 'subscription',
+                                                                          discounts: [
+                                                                            coupon: session['coupon']
+                                                                          ]
+                                                                        })
+      else
+        session['coupon'] = nil
+        flash[:notice] = 'Coupon Expired'
+        redirect_to request.referrer
+        nil
+      end
+    end
+  end
 
-		@codes = Stripe::Coupon.list({limit: 100}).reject{|c| c['valid'] == false}
-	  successURL = "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}"
-		
-		if session['coupon'].nil?	
-			@autoTradingMonthlyMembership = Stripe::Checkout::Session.create({
-	      success_url: successURL,
-	      line_items: [
-	        {price: ENV['autoTradingMonthlyMembership'], quantity: 1},
-	      ],
-	      mode: 'subscription',
-	    })
-	    @autoTradingAnnualMembership = Stripe::Checkout::Session.create({
-	      success_url: successURL,
-	      line_items: [
-	        {price: ENV['autoTradingAnnualMembership'], quantity: 1},
-	      ],
-	      mode: 'subscription',
-	    }) 
-		else
-			if @codes.map(&:id).include?(session['coupon']) == true && Stripe::Coupon.retrieve(session['coupon']).valid == true
-				# free -> build on page, 
-				# affiliate, 
-				@selfTradingAnnualMembership = Stripe::Checkout::Session.create({
-		      success_url: successURL,
-		      line_items: [
-		        {price: ENV['selfTradingAnnualMembership'], quantity: 1},
-		      ],
-		      mode: 'subscription',
-		      discounts: [
-				  	coupon: session['coupon']
-				  ],
-		    })
-		    @selfTradingMonthlyMembership = Stripe::Checkout::Session.create({
-		      success_url: successURL,
-		      line_items: [
-		        {price: ENV['selfTradingMonthlyMembership'], quantity: 1},
-		      ],
-		      mode: 'subscription',
-		      discounts: [
-				  	coupon: session['coupon']
-				  ],
-		    })
-				# business,
-				@autoTradingMonthlyMembership = Stripe::Checkout::Session.create({
-		      success_url: successURL,
-		      line_items: [
-		        {price: ENV['autoTradingMonthlyMembership'], quantity: 1},
-		      ],
-		      mode: 'subscription',
-		      discounts: [
-				  	coupon: session['coupon']
-				  ],
-		    })
-		    @autoTradingAnnualMembership = Stripe::Checkout::Session.create({
-		      success_url: successURL,
-		      line_items: [
-		        {price: ENV['autoTradingAnnualMembership'], quantity: 1},
-		      ],
-		      mode: 'subscription',
-		      discounts: [
-				  	coupon: session['coupon']
-				  ],
-		    })  
-			else
-				session['coupon'] = nil
-				flash[:notice] = "Coupon Expired"
-				redirect_to request.referrer
-				return
-			end
-		end
-	end
+  def membership
+    @codes = Stripe::Coupon.list({ limit: 100 }).reject { |c| c['valid'] == false }
 
-	def membership
-		@codes = Stripe::Coupon.list({limit: 100}).reject{|c| c['valid'] == false}
+    customFields = [{
+      key: 'type',
+      label: { custom: 'Account Type', type: 'custom' },
+      type: 'dropdown',
+      dropdown: { options: [
+        { label: 'Individual', value: 'individual' },
+        { label: 'Company', value: 'company' }
+      ] }
+    }, {
+      key: 'country',
+      label: { custom: 'Country', type: 'custom' },
+      type: 'dropdown',
+      dropdown: { options: [
+        { label: 'Australia', value: 'AU' },
+        { label: 'Belgium', value: 'BE' },
+        { label: 'Canada', value: 'CA' },
+        { label: 'France', value: 'FR' },
+        { label: 'Germany', value: 'DE' },
+        { label: 'Italy', value: 'IT' },
+        { label: 'Japan', value: 'JP' },
+        { label: 'Mexico', value: 'MX' },
+        { label: 'Netherlands', value: 'NL' },
+        { label: 'Poland', value: 'PL' },
+        { label: 'Singapore', value: 'SG' },
+        { label: 'Spain', value: 'ES' },
+        { label: 'Sweden', value: 'SE' },
+        { label: 'United Arab Emirates', value: 'AE' },
+        { label: 'United Kingdom', value: 'GB' },
+        { label: 'United States', value: 'US' }
+      ] }
+    }]
+    allowedCountries = %w[
+      AU
+      BE
+      CA
+      FR
+      DE
+      IT
+      JP
+      MX
+      NL
+      PL
+      SG
+      ES
+      SE
+      AE
+      GB
+      US
+    ]
+    successURL = "https://app.oarlin.com/new-password-set?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}"
 
-		customFields = [{
-			key: 'type',
-			label: {custom: 'Account Type', type: 'custom'},
-			type: 'dropdown',
-			dropdown: {options: [
-				{label: 'Individual', value: 'individual'},
-				{label: 'Company', value: 'company'},
-			]}},{
-			key: 'country',
-			label: {custom: 'Country', type: 'custom'},
-			type: 'dropdown',
-			dropdown: {options: [
-				{label: 'Australia', value: 'AU'},
-				{label: 'Belgium', value: 'BE'},
-				{label: 'Canada', value: 'CA'},
-				{label: 'France', value: 'FR'},
-				{label: 'Germany', value: 'DE'},
-				{label: 'Italy', value: 'IT'},
-				{label: 'Japan', value: 'JP'},
-				{label: 'Mexico', value: 'MX'},
-				{label: 'Netherlands', value: 'NL'},
-				{label: 'Poland', value: 'PL'},
-				{label: 'Singapore', value: 'SG'},
-				{label: 'Spain', value: 'ES'},
-				{label: 'Sweden', value: 'SE'},
-				{label: 'United Arab Emirates', value: 'AE'},
-				{label: 'United Kingdom', value: 'GB'},
-				{label: 'United States', value: 'US'},
-			]}
-		}]
-		allowedCountries = [
-	      	'AU',
-	      	'BE',
-	      	'CA',
-	      	'FR',
-	      	'DE',
-	      	'IT',
-	      	'JP',
-	      	'MX',
-	      	'NL',
-	      	'PL',
-	      	'SG',
-	      	'ES',
-	      	'SE',
-	      	'AE',
-	      	'GB',
-	      	'US',
-	      ]
-	  successURL = "https://app.oarlin.com/new-password-set?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}"
-		
-		if session['coupon'].nil?	
-			# free -> build on page, 
-			# affiliate, 
-			@freeMembership = Stripe::Checkout::Session.create({
-	      success_url: successURL,
-	      custom_fields: customFields,
-	      phone_number_collection: {
-		      enabled: true
-		    },
-	      shipping_address_collection: {allowed_countries: allowedCountries},
-	      line_items: [
-	        {price: ENV['freeMembership'], quantity: 1},
-	      ],
-	      mode: 'subscription',
-	    })
+    if session['coupon'].nil?
+      # free -> build on page,
+      # affiliate,
+      @freeMembership = Stripe::Checkout::Session.create({
+                                                           success_url: successURL,
+                                                           custom_fields: customFields,
+                                                           phone_number_collection: {
+                                                             enabled: true
+                                                           },
+                                                           shipping_address_collection: { allowed_countries: allowedCountries },
+                                                           line_items: [
+                                                             { price: ENV['freeMembership'], quantity: 1 }
+                                                           ],
+                                                           mode: 'subscription'
+                                                         })
 
-	    @affiliateMonthly = Stripe::Checkout::Session.create({
-	      success_url: successURL,
-	      custom_fields: customFields,
-	      phone_number_collection: {
-		      enabled: true
-		    },
-	      shipping_address_collection: {allowed_countries: allowedCountries},
-	      line_items: [
-	        {price: ENV['affiliateMonthly'], quantity: 1},
-	      ],
-	      mode: 'subscription',
-	    })
-	    @affiliateAnnual = Stripe::Checkout::Session.create({
-	      success_url: successURL,
-	      custom_fields: customFields,
-	      phone_number_collection: {
-			      enabled: true
-			    },
-	      shipping_address_collection: {allowed_countries: allowedCountries},
-	      line_items: [
-	        {price: ENV['affiliateAnnual'], quantity: 1},
-	      ],
-	      mode: 'subscription',
-	    })
-			# business,
-			@businessMonthly = Stripe::Checkout::Session.create({
-	      success_url: successURL,
-	      custom_fields: customFields,
-	      phone_number_collection: {
-		      enabled: true
-		    },
-	      shipping_address_collection: {allowed_countries: allowedCountries},
-	      line_items: [
-	        {price: ENV['businessMonthly'], quantity: 1},
-	      ],
-	      mode: 'subscription',
-	    })
-	    @businessAnnual = Stripe::Checkout::Session.create({
-	      success_url: successURL,
-	      custom_fields: customFields,
-	      phone_number_collection: {
-			      enabled: true
-			    },
-	      shipping_address_collection: {allowed_countries: allowedCountries},
-	      line_items: [
-	        {price: ENV['businessAnnual'], quantity: 1},
-	      ],
-	      mode: 'subscription',
-	    }) 
+      @affiliateMonthly = Stripe::Checkout::Session.create({
+                                                             success_url: successURL,
+                                                             custom_fields: customFields,
+                                                             phone_number_collection: {
+                                                               enabled: true
+                                                             },
+                                                             shipping_address_collection: { allowed_countries: allowedCountries },
+                                                             line_items: [
+                                                               { price: ENV['affiliateMonthly'], quantity: 1 }
+                                                             ],
+                                                             mode: 'subscription'
+                                                           })
+      @affiliateAnnual = Stripe::Checkout::Session.create({
+                                                            success_url: successURL,
+                                                            custom_fields: customFields,
+                                                            phone_number_collection: {
+                                                              enabled: true
+                                                            },
+                                                            shipping_address_collection: { allowed_countries: allowedCountries },
+                                                            line_items: [
+                                                              { price: ENV['affiliateAnnual'], quantity: 1 }
+                                                            ],
+                                                            mode: 'subscription'
+                                                          })
+      # business,
+      @businessMonthly = Stripe::Checkout::Session.create({
+                                                            success_url: successURL,
+                                                            custom_fields: customFields,
+                                                            phone_number_collection: {
+                                                              enabled: true
+                                                            },
+                                                            shipping_address_collection: { allowed_countries: allowedCountries },
+                                                            line_items: [
+                                                              { price: ENV['businessMonthly'], quantity: 1 }
+                                                            ],
+                                                            mode: 'subscription'
+                                                          })
+      @businessAnnual = Stripe::Checkout::Session.create({
+                                                           success_url: successURL,
+                                                           custom_fields: customFields,
+                                                           phone_number_collection: {
+                                                             enabled: true
+                                                           },
+                                                           shipping_address_collection: { allowed_countries: allowedCountries },
+                                                           line_items: [
+                                                             { price: ENV['businessAnnual'], quantity: 1 }
+                                                           ],
+                                                           mode: 'subscription'
+                                                         })
 
-	    @automationMonthly = Stripe::Checkout::Session.create({
-	      success_url: successURL,
-	      custom_fields: customFields,
-	      phone_number_collection: {
-			      enabled: true
-			    },
-	      shipping_address_collection: {allowed_countries: allowedCountries},
-	      line_items: [
-	        {price: ENV['automationMonthly'], quantity: 1},
-	      ],
-	      mode: 'subscription',
-	    }) 
-	    @automationAnnual = Stripe::Checkout::Session.create({
-	      success_url: successURL,
-	      custom_fields: customFields,
-	      phone_number_collection: {
-			      enabled: true
-			    },
-	      shipping_address_collection: {allowed_countries: allowedCountries},
-	      line_items: [
-	        {price: ENV['automationAnnual'], quantity: 1},
-	      ],
-	      mode: 'subscription',
-	    }) 
-			# custom -> build on page, 
-		else
-			if @codes.map(&:id).include?(session['coupon']) == true && Stripe::Coupon.retrieve(session['coupon']).valid == true
-				# free -> build on page, 
-				# affiliate, 
-				@freeMembership = Stripe::Checkout::Session.create({
-		      success_url: successURL,
-		      custom_fields: customFields,
-		      phone_number_collection: {
-			      enabled: true
-			    },
-				  discounts: [
-				  	coupon: session['coupon']
-				  ],
-		      shipping_address_collection: {allowed_countries: allowedCountries},
-		      line_items: [
-		        {price: ENV['freeMembership'], quantity: 1},
-		      ],
-		      mode: 'subscription',
-		    })
+      @automationMonthly = Stripe::Checkout::Session.create({
+                                                              success_url: successURL,
+                                                              custom_fields: customFields,
+                                                              phone_number_collection: {
+                                                                enabled: true
+                                                              },
+                                                              shipping_address_collection: { allowed_countries: allowedCountries },
+                                                              line_items: [
+                                                                { price: ENV['automationMonthly'], quantity: 1 }
+                                                              ],
+                                                              mode: 'subscription'
+                                                            })
+      @automationAnnual = Stripe::Checkout::Session.create({
+                                                             success_url: successURL,
+                                                             custom_fields: customFields,
+                                                             phone_number_collection: {
+                                                               enabled: true
+                                                             },
+                                                             shipping_address_collection: { allowed_countries: allowedCountries },
+                                                             line_items: [
+                                                               { price: ENV['automationAnnual'], quantity: 1 }
+                                                             ],
+                                                             mode: 'subscription'
+                                                           })
+      # custom -> build on page,
+    else
+      if @codes.map(&:id).include?(session['coupon']) == true && Stripe::Coupon.retrieve(session['coupon']).valid == true
+        # free -> build on page,
+        # affiliate,
+        @freeMembership = Stripe::Checkout::Session.create({
+                                                             success_url: successURL,
+                                                             custom_fields: customFields,
+                                                             phone_number_collection: {
+                                                               enabled: true
+                                                             },
+                                                             discounts: [
+                                                               coupon: session['coupon']
+                                                             ],
+                                                             shipping_address_collection: { allowed_countries: allowedCountries },
+                                                             line_items: [
+                                                               { price: ENV['freeMembership'], quantity: 1 }
+                                                             ],
+                                                             mode: 'subscription'
+                                                           })
 
-		    @affiliateMonthly = Stripe::Checkout::Session.create({
-		      success_url: successURL,
-		      custom_fields: customFields,
-		      phone_number_collection: {
-			      enabled: true
-			    },
-				  discounts: [
-				  	coupon: session['coupon']
-				  ],
-		      shipping_address_collection: {allowed_countries: allowedCountries},
-		      line_items: [
-		        {price: ENV['affiliateMonthly'], quantity: 1},
-		      ],
-		      mode: 'subscription',
-		    })
-		    @affiliateAnnual = Stripe::Checkout::Session.create({
-		      success_url: successURL,
-		      custom_fields: customFields,
-		      phone_number_collection: {
-			      enabled: true
-			    },
-				  discounts: [
-				  	coupon: session['coupon']
-				  ],
-		      shipping_address_collection: {allowed_countries: allowedCountries},
-		      line_items: [
-		        {price: ENV['affiliateAnnual'], quantity: 1},
-		      ],
-		      mode: 'subscription',
-		    })
-				# business,
-				@businessMonthly = Stripe::Checkout::Session.create({
-		      success_url: successURL,
-		      custom_fields: customFields,
-		      phone_number_collection: {
-			      enabled: true
-			    },
-				  discounts: [
-				  	coupon: session['coupon']
-				  ],
-		      shipping_address_collection: {allowed_countries: allowedCountries},
-		      line_items: [
-		        {price: ENV['businessMonthly'], quantity: 1},
-		      ],
-		      mode: 'subscription',
-		    })
-		    @businessAnnual = Stripe::Checkout::Session.create({
-		      success_url: successURL,
-		      custom_fields: customFields,
-		      phone_number_collection: {
-			      enabled: true
-			    },
-				  discounts: [
-				  	coupon: session['coupon']
-				  ],
-		      shipping_address_collection: {allowed_countries: allowedCountries},
-		      line_items: [
-		        {price: ENV['businessAnnual'], quantity: 1},
-		      ],
-		      mode: 'subscription',
-		    }) 
+        @affiliateMonthly = Stripe::Checkout::Session.create({
+                                                               success_url: successURL,
+                                                               custom_fields: customFields,
+                                                               phone_number_collection: {
+                                                                 enabled: true
+                                                               },
+                                                               discounts: [
+                                                                 coupon: session['coupon']
+                                                               ],
+                                                               shipping_address_collection: { allowed_countries: allowedCountries },
+                                                               line_items: [
+                                                                 { price: ENV['affiliateMonthly'], quantity: 1 }
+                                                               ],
+                                                               mode: 'subscription'
+                                                             })
+        @affiliateAnnual = Stripe::Checkout::Session.create({
+                                                              success_url: successURL,
+                                                              custom_fields: customFields,
+                                                              phone_number_collection: {
+                                                                enabled: true
+                                                              },
+                                                              discounts: [
+                                                                coupon: session['coupon']
+                                                              ],
+                                                              shipping_address_collection: { allowed_countries: allowedCountries },
+                                                              line_items: [
+                                                                { price: ENV['affiliateAnnual'], quantity: 1 }
+                                                              ],
+                                                              mode: 'subscription'
+                                                            })
+        # business,
+        @businessMonthly = Stripe::Checkout::Session.create({
+                                                              success_url: successURL,
+                                                              custom_fields: customFields,
+                                                              phone_number_collection: {
+                                                                enabled: true
+                                                              },
+                                                              discounts: [
+                                                                coupon: session['coupon']
+                                                              ],
+                                                              shipping_address_collection: { allowed_countries: allowedCountries },
+                                                              line_items: [
+                                                                { price: ENV['businessMonthly'], quantity: 1 }
+                                                              ],
+                                                              mode: 'subscription'
+                                                            })
+        @businessAnnual = Stripe::Checkout::Session.create({
+                                                             success_url: successURL,
+                                                             custom_fields: customFields,
+                                                             phone_number_collection: {
+                                                               enabled: true
+                                                             },
+                                                             discounts: [
+                                                               coupon: session['coupon']
+                                                             ],
+                                                             shipping_address_collection: { allowed_countries: allowedCountries },
+                                                             line_items: [
+                                                               { price: ENV['businessAnnual'], quantity: 1 }
+                                                             ],
+                                                             mode: 'subscription'
+                                                           })
 
-		    @automationMonthly = Stripe::Checkout::Session.create({
-		      success_url: successURL,
-		      custom_fields: customFields,
-		      phone_number_collection: {
-			      enabled: true
-			    },
-				  discounts: [
-				  	coupon: session['coupon']
-				  ],
-		      shipping_address_collection: {allowed_countries: allowedCountries},
-		      line_items: [
-		        {price: ENV['automationMonthly'], quantity: 1},
-		      ],
-		      mode: 'subscription',
-		    }) 
-		    @automationAnnual = Stripe::Checkout::Session.create({
-		      success_url: successURL,
-		      custom_fields: customFields,
-		      phone_number_collection: {
-			      enabled: true
-			    },
-				  discounts: [
-				  	coupon: session['coupon']
-				  ],
-		      shipping_address_collection: {allowed_countries: allowedCountries},
-		      line_items: [
-		        {price: ENV['automationAnnual'], quantity: 1},
-		      ],
-		      mode: 'subscription',
-		    }) 
-				# custom -> build on page, 
-			else
-				session['coupon'] = nil
-				flash[:notice] = "Coupon Expired"
-				redirect_to request.referrer
-				return
-			end
-		end
-	end
+        @automationMonthly = Stripe::Checkout::Session.create({
+                                                                success_url: successURL,
+                                                                custom_fields: customFields,
+                                                                phone_number_collection: {
+                                                                  enabled: true
+                                                                },
+                                                                discounts: [
+                                                                  coupon: session['coupon']
+                                                                ],
+                                                                shipping_address_collection: { allowed_countries: allowedCountries },
+                                                                line_items: [
+                                                                  { price: ENV['automationMonthly'], quantity: 1 }
+                                                                ],
+                                                                mode: 'subscription'
+                                                              })
+        @automationAnnual = Stripe::Checkout::Session.create({
+                                                               success_url: successURL,
+                                                               custom_fields: customFields,
+                                                               phone_number_collection: {
+                                                                 enabled: true
+                                                               },
+                                                               discounts: [
+                                                                 coupon: session['coupon']
+                                                               ],
+                                                               shipping_address_collection: { allowed_countries: allowedCountries },
+                                                               line_items: [
+                                                                 { price: ENV['automationAnnual'], quantity: 1 }
+                                                               ],
+                                                               mode: 'subscription'
+                                                             })
+        # custom -> build on page,
+      else
+        session['coupon'] = nil
+        flash[:notice] = 'Coupon Expired'
+        redirect_to request.referrer
+        nil
+      end
+    end
+  end
 
+  def profile
+    @userFound = params['id'].present? ? User.find_by(uuid: params['id']) : current_user
+    @profile = @userFound.present? ? Stripe::Customer.retrieve(@userFound&.stripeCustomerID) : nil
+    @membershipDetails = @userFound.present? ? @userFound&.checkMembership : nil
+    @profileMetadata = @profile.present? ? @profile['metadata'] : nil
+    @accountItemsDue = @userFound.present? && Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'].present? ? Stripe::Account.retrieve(Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due'] : nil
 
-	def profile
-		@userFound = params['id'].present? ? User.find_by(uuid: params['id']) : current_user
-		@profile = @userFound.present? ? Stripe::Customer.retrieve(@userFound&.stripeCustomerID) : nil
-		@membershipDetails = @userFound.present? ? @userFound&.checkMembership : nil
-		@profileMetadata = @profile.present? ? @profile['metadata'] : nil
-		@accountItemsDue = (@userFound.present? && Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'].present?) ? Stripe::Account.retrieve(Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due'] : nil
-	
-		if @userFound.present? && Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'].present?
-			@stripeAccountUpdate = Stripe::AccountLink.create(
-			  {
-			    account: Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'],
-			    refresh_url: "https://app.oarlin.com/?&referredBy=#{@userFound&.uuid}",
-			    return_url: "https://app.oarlin.com/?&referredBy=#{@userFound&.uuid}",
-			    type: 'account_onboarding',
-			  },
-			)
+    if @userFound.present? && Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'].present?
+      @stripeAccountUpdate = Stripe::AccountLink.create(
+        {
+          account: Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'],
+          refresh_url: "https://app.oarlin.com/?&referredBy=#{@userFound&.uuid}",
+          return_url: "https://app.oarlin.com/?&referredBy=#{@userFound&.uuid}",
+          type: 'account_onboarding'
+        }
+      )
 
+      if @accountItemsDue.count == 0
+        @loginLink = Stripe::Account.create_login_link(
+          Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount']
+        )
+      end
+    end
+  end
 
-			
-			if @accountItemsDue.count == 0 
-				@loginLink = Stripe::Account.create_login_link(
-				  Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'],
-				)
-			end
-			
-			# 	@recipientAccountUpdate = Stripe::AccountLink.create(
-			# 	  {
-			# 	    account: Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'],
-			# 	    refresh_url: "http://app.oarlin.com",
-			# 	    return_url: "http://app.oarlin.com",
-			# 	    type: 'account_onboarding',
-			# 	  },
-			# 	)
+  def list
+    if current_user&.present?
+      customerToUpdate = Stripe::Customer.retrieve(current_user&.stripeCustomerID)
+      @tracking = (customerToUpdate['metadata']['tracking'].present? ? customerToUpdate['metadata']['tracking'].split('*').uniq : []).reject(&:blank?)
+      @profileMetadata = customerToUpdate['metadata']
 
-			# 	@recipientAccountItemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['recipientAccount'])['requirements']['currently_due']
-			#analytics
-			
-			# if @membershipDetails.present? && @membershipDetails[:membershipDetails][0]['status']	== 'active'
-			#   #custom profile if active
-			#   if @membershipDetails[:membershipType] == 'automation' && !@userFound
-			#   	fileToFind = ("app/views/automation/#{@userFound.uuid}.html.erb")
-			  	
-			#   	if customFile = File.exist?(fileToFind)
-			#   		render "automation/#{@userFound.uuid}"
-			#   	end
-			#   end
-			# else
-			# 	@loadedLink = 'admin'
-			# end
-		end
-	end
+    end
 
-	def list
-		if current_user&.present?
-			customerToUpdate = Stripe::Customer.retrieve(current_user&.stripeCustomerID)
-			@tracking = (customerToUpdate['metadata']['tracking'].present? ? customerToUpdate['metadata']['tracking'].split('*').uniq : []).reject(&:blank?)
-			@profileMetadata = customerToUpdate['metadata']
-			
-		end
-		
-		if params[:remove] == 'true'
-			@newMeta = @profileMetadata['tracking'].split('*').reject{|i| i == "#{params[:id]}~#{params[:country]}~#{params[:images]}"}.join('*')
-			customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID,{
-				metadata: {
-					tracking: @newMeta.nil? ? "*" : @newMeta.blank? ? "*" : @newMeta
-				}
-			})
-			
-			flash[:success] = 'Removed From Your Public List'
-			redirect_to request.referrer
-		elsif params[:id].present?
-			customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID,{
-				metadata: {
-					tracking: customerToUpdate['metadata']['tracking'].split('*').reject(&:blank?).present? ? (customerToUpdate['metadata']['tracking']+"*#{params[:id]}~#{params[:country]}~#{params[:images]}*") : "*#{params[:id]}~#{params[:country]}~#{params[:images]}*"
-				}
-			})
-			flash[:success] = 'Added To Your Public List'
-			redirect_to request.referrer
-		end
-	end
-	
-	def loved
-		if current_user&.present?
-			customerToUpdate = Stripe::Customer.retrieve(current_user&.stripeCustomerID)
-			@wishlist = (customerToUpdate['metadata']['wishlist'].present? ? customerToUpdate['metadata']['wishlist'].split('*').uniq : []).reject(&:blank?)
-			@profileMetadata = customerToUpdate['metadata']
-		end
-		if params[:remove] == 'true'
-
-			@newMeta = @profileMetadata['wishlist'].split('*').reject{|i| i == "#{params[:id]}~#{params[:country]}~#{params[:images]}"}.join('*')
-			customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID,{
-				metadata: {
-					wishlist: @newMeta.nil? ? "*" : @newMeta.blank? ? "*" : @newMeta
-				}
-			})
-			
-			flash[:success] = 'Removed From Your Love List'
-			redirect_to request.referrer
-		elsif params[:id].present?
-			
-			customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID,{
-				metadata: {
-					wishlist: customerToUpdate['metadata']['wishlist'].split('*').reject(&:blank?).present? ? (customerToUpdate['metadata']['wishlist']+"*#{params[:id]}~#{params[:country]}~#{params[:images]}*") : "*#{params[:id]}~#{params[:country]}~#{params[:images]}*"
-				}
-			})
-			#analytics
-			flash[:success] = 'Added To Your Loved List'
-			redirect_to request.referrer
-		end
-	end
-
-	def welcome
-		@codes = Stripe::Coupon.list({limit: 100}).reject{|c| c['valid'] == false}
-		
-		if session['headlines'] && session['subline']
-		else
-			@headlines = ['Real Time Trade Copying','Never Miss Trading Opportunities','Amplify Your Profits','Supercharge Your Day Trading']
-			@subline	 = ['Profit While You Sleep', 'Start Passive Trading', 'Travel More Trade Less', 'Worry Free Trading']
-
-			session['headlines'] = @headlines.sample
-			session['subline'] = @subline.sample
-		end
-	end
-
-	def loadMemberships
-		
-	end
+    if params[:remove] == 'true'
+      @newMeta = @profileMetadata['tracking'].split('*').reject { |i| i == "#{params[:id]}~#{params[:country]}~#{params[:images]}" }.join('*')
+      customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID, {
+                                                  metadata: {
+                                                    tracking: if @newMeta.nil?
+                                                                '*'
+                                                              else
+                                                                @newMeta.blank? ? '*' : @newMeta
 end
+                                                  }
+                                                })
 
+      flash[:success] = 'Removed From Your Public List'
+      redirect_to request.referrer
+    elsif params[:id].present?
+      customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID, {
+                                                  metadata: {
+                                                    tracking: customerToUpdate['metadata']['tracking'].split('*').reject(&:blank?).present? ? (customerToUpdate['metadata']['tracking'] + "*#{params[:id]}~#{params[:country]}~#{params[:images]}*") : "*#{params[:id]}~#{params[:country]}~#{params[:images]}*"
+                                                  }
+                                                })
+      flash[:success] = 'Added To Your Public List'
+      redirect_to request.referrer
+    end
+  end
 
+  def loved
+    if current_user&.present?
+      customerToUpdate = Stripe::Customer.retrieve(current_user&.stripeCustomerID)
+      @wishlist = (customerToUpdate['metadata']['wishlist'].present? ? customerToUpdate['metadata']['wishlist'].split('*').uniq : []).reject(&:blank?)
+      @profileMetadata = customerToUpdate['metadata']
+    end
+    if params[:remove] == 'true'
 
+      @newMeta = @profileMetadata['wishlist'].split('*').reject { |i| i == "#{params[:id]}~#{params[:country]}~#{params[:images]}" }.join('*')
+      customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID, {
+                                                  metadata: {
+                                                    wishlist: if @newMeta.nil?
+                                                                '*'
+                                                              else
+                                                                @newMeta.blank? ? '*' : @newMeta
+end
+                                                  }
+                                                })
 
+      flash[:success] = 'Removed From Your Love List'
+      redirect_to request.referrer
+    elsif params[:id].present?
 
+      customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID, {
+                                                  metadata: {
+                                                    wishlist: customerToUpdate['metadata']['wishlist'].split('*').reject(&:blank?).present? ? (customerToUpdate['metadata']['wishlist'] + "*#{params[:id]}~#{params[:country]}~#{params[:images]}*") : "*#{params[:id]}~#{params[:country]}~#{params[:images]}*"
+                                                  }
+                                                })
+      # analytics
+      flash[:success] = 'Added To Your Loved List'
+      redirect_to request.referrer
+    end
+  end
 
+  def welcome
+    @codes = Stripe::Coupon.list({ limit: 100 }).reject { |c| c['valid'] == false }
 
+    if session['headlines'] && session['subline']
+    else
+      @headlines = ['Real Time Trade Copying', 'Never Miss Trading Opportunities', 'Amplify Your Profits', 'Supercharge Your Day Trading']
+      @subline = ['Profit While You Sleep', 'Start Passive Trading', 'Travel More Trade Less', 'Worry Free Trading']
 
+      session['headlines'] = @headlines.sample
+      session['subline'] = @subline.sample
+    end
+  end
 
-
-
-
-
-
-
-
+  def loadMemberships; end
+end

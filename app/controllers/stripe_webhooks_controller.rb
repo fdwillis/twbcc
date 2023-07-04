@@ -1,30 +1,32 @@
 class StripeWebhooksController < ApplicationController
   protect_from_forgery with: :null_session
-  
+
   def update
     event = params['stripe_webhook']['type']
     stripeObject = params['data']['object']
-    validMemberships = User::AUTOMATIONmembership+User::BUSINESSmembership+User::AFFILIATEmembership
+    validMemberships = User::AUTOMATIONmembership + User::BUSINESSmembership + User::AFFILIATEmembership
 
     if event == 'invoice.paid'
-      #pay affiliate -> if affilaite active & usd base
+      # pay affiliate -> if affilaite active & usd base
       stripeCustomer = Stripe::Customer.retrieve(stripeObject['customer'])
       loadedAffililate = User.find_by(uuid: stripeCustomer['metadata']['referredBy'])
       if loadedAffililate.present? && Stripe::Customer.retrieve(stripeObject['customer'])['metadata']['referredBy'].present? && Stripe::Customer.retrieve(stripeObject['customer'])['metadata']['referredBy'].split(',').reject(&:blank?)[0].present?
-        subscriptionList = Stripe::Subscription.list({customer: loadedAffililate.stripeCustomerID})['data'].map(&:plan)
+        subscriptionList = Stripe::Subscription.list({ customer: loadedAffililate.stripeCustomerID })['data'].map(&:plan)
         stripeAffiliate = Stripe::Customer.retrieve(loadedAffililate.stripeCustomerID)
         affiliateConnectAccount = stripeAffiliate['metadata']['connectAccount']
 
         subscriptionList.each do |subscription|
-          if validMemberships.include?(subscription['id']) && subscription['active'] == true && loadedAffililate&.amazonCountry == 'US'
-            Stripe::Transfer.create({
-              amount: (subscription['amount']*(stripeAffiliate['metadata']['commissionRate'].to_f/100)).to_i,
-              currency: 'usd',
-              destination: affiliateConnectAccount,
-              description: "Membership Commission",
-              source_transaction: stripeObject['charge']
-            })
+          unless validMemberships.include?(subscription['id']) && subscription['active'] == true && loadedAffililate&.amazonCountry == 'US'
+            next
           end
+
+          Stripe::Transfer.create({
+                                    amount: (subscription['amount'] * (stripeAffiliate['metadata']['commissionRate'].to_f / 100)).to_i,
+                                    currency: 'usd',
+                                    destination: affiliateConnectAccount,
+                                    description: 'Membership Commission',
+                                    source_transaction: stripeObject['charge']
+                                  })
         end
       end
     end
@@ -33,6 +35,5 @@ class StripeWebhooksController < ApplicationController
       # send sessionLinkEmail: after payment
       ApplicationMailer.sessionLink(stripeObject['id']).deliver_now
     end
-
   end
 end
