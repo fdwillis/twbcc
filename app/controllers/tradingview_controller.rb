@@ -291,7 +291,7 @@ class TradingviewController < ApplicationController
 		          end
 		        when trade&.broker == 'OANDA'
 		        	traderFoundD&.oandaList.split(",")&.reject(&:blank?).each do |accountID|
-		            requestK = Oanda.oandaOrder(oandaToken, traderFoundD&.oandaToken, accountID)
+		            requestK = Oanda.oandaOrder(traderFoundD&.oandaToken, accountID,trade.uuid)
 
 			          if requestK['order']['state'] == "CANCELLED"
 			            if trade.status == 'canceled'

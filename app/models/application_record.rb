@@ -20,14 +20,17 @@ class ApplicationRecord < ActiveRecord::Base
 		case true
 		when tvData['broker'] == 'KRAKEN'
 			@currentOpenAllocation = Kraken.pendingTrades(apiKey, secretKey)
+			keys = @currentOpenAllocation.keys
+
 			@currentOpenAllocation.each do |tradeX|
-				if tradeX[tradeX[0]]['descr']['type'] == tvData['direction']
-				krakenOrderParams = {
-			    "txid" 			=> tradeX[0],
-			  }
-		  	routeToKraken = "/0/private/CancelOrder"
-		  	
-		  	cancel = Kraken.request(routeToKraken, krakenOrderParams, apiKey, secretKey)
+				if @currentOpenAllocation[tradeX[0]]['descr']['type'] == tvData['direction']
+					krakenOrderParams = {
+				    "txid" 			=> tradeX[0],
+				  }
+			  	routeToKraken = "/0/private/CancelOrder"
+			  	
+			  	cancel = Kraken.request(routeToKraken, krakenOrderParams, apiKey, secretKey)
+				end
 			end
 		when tvData['broker'] == 'OANDA'
 		end
