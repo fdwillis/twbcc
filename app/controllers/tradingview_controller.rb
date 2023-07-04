@@ -9,12 +9,12 @@ class TradingviewController < ApplicationController
 		forexAssets = 0
 		stocksAssets = 0
 		optionsAssets = 0
-		@currentTrades24 = Trade.all.where(finalTakeProfit: nil, status: 'closed').where('created_at < ?', 24.hours.ago )&.size
+		@currentTrades24 = Trade.all.where(finalTakeProfit: nil, status: 'closed').where('created_at < ?', 24.hours.ago )
 		@entriesTrades24 = Trade.all.where(status: 'closed').where('created_at < ?', 24.hours.ago )
-		@exitsTrades24 = Trade.all.where.not(finalTakeProfit: nil).where(status: 'closed').where('created_at < ?', 24.hours.ago )&.size 
-		@currentTrades = Trade.all.where(finalTakeProfit: nil, status: 'closed').where('created_at < ?', 30.days.ago )&.size
+		@exitsTrades24 = Trade.all.where.not(finalTakeProfit: nil).where(status: 'closed').where('created_at < ?', 24.hours.ago ) 
+		@currentTrades = Trade.all.where(finalTakeProfit: nil, status: 'closed').where('created_at < ?', 30.days.ago )
 		@entriesTrades = Trade.all.where(status: 'closed').where('created_at < ?', 30.days.ago )
-		@exitsTrades = Trade.all.where.not(finalTakeProfit: nil).where(status: 'closed').where('created_at < ?', 30.days.ago )&.size 
+		@exitsTrades = Trade.all.where.not(finalTakeProfit: nil).where(status: 'closed').where('created_at < ?', 30.days.ago ) 
 		@profitTotal = 0
 		@partialClose = 0
 		@costTotal = 0
