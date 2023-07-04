@@ -135,7 +135,7 @@ class TradingviewController < ApplicationController
 						validPlansToParse.each do |planXinfo|
 							traderFoundForCopy = User.find_by(stripeCustomerID: planXinfo['customer'])
 							listToTrade = traderFoundForCopy&.authorizedList&.delete(' ')
-							if traderFoundForCopy.trader? && !listToTrade.blank?
+							if traderFoundForCopy.trader?
 								puts "\n-- Started For #{traderFoundForCopy.uuid} --\n"
 								listToTrade.split(",")&.reject(&:blank?).each do |assetX|
 									if assetX.upcase == params['ticker']
