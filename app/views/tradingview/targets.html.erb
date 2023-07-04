@@ -24,7 +24,7 @@
 		<div class="content">
 			<h2 class="font-30 color-highlight text-center mb-4">Total Growth</h2>
 			<h6 class="font-12 font-800 text-uppercase opacity-30 mb-4 text-center"><%= pluralize(@allTrades.map(&:user).uniq.size, "Traders") %></h6>
-			<h6 class="font-24 font-800 text-uppercase opacity-30 mb-4 text-center">
+			<h6 class="font-40 font-800 text-uppercase opacity-30 mb-4 text-center">
 				<%= number_to_percentage( growth * 100, precision: 2)%>
 			</h6>
 			<div class="text-center">
