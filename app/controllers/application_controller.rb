@@ -80,7 +80,6 @@ class ApplicationController < ActionController::Base
 			if codes.size > 0
 				session['coupon'] = codes.sample['id']
 				flash[:success] = "Coupon Assigned"
-				ahoy.track "Coupon Clicked", previousPage: request.referrer, coupon: session['coupon']
 				redirect_to request.referrer
 				return
 			else
@@ -92,7 +91,6 @@ class ApplicationController < ActionController::Base
 	end
 
 	def split_session
-		ahoy.track "Split Session", uuid: @userFound.uuid, previousPage: request.referrer
 		redirect_to "#{request.fullpath.split("?")[0]}?&referredBy=#{params[:splitSession]}"
 	end
 
@@ -345,7 +343,6 @@ class ApplicationController < ActionController::Base
 				return
 			end
 		end
-		ahoy.track "Trader Membership Visited", previousPage: request.referrer
 	end
 
 	def membership
@@ -612,7 +609,6 @@ class ApplicationController < ActionController::Base
 				return
 			end
 		end
-		ahoy.track "Membership Visited", previousPage: request.referrer
 	end
 
 
@@ -652,7 +648,6 @@ class ApplicationController < ActionController::Base
 
 			# 	@recipientAccountItemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['recipientAccount'])['requirements']['currently_due']
 			#analytics
-			ahoy.track "Profile Visit", uuid: @userFound.uuid, previousPage: request.referrer
 			
 			# if @membershipDetails.present? && @membershipDetails[:membershipDetails][0]['status']	== 'active'
 			#   #custom profile if active
@@ -703,7 +698,6 @@ class ApplicationController < ActionController::Base
 			customerToUpdate = Stripe::Customer.retrieve(current_user&.stripeCustomerID)
 			@wishlist = (customerToUpdate['metadata']['wishlist'].present? ? customerToUpdate['metadata']['wishlist'].split('*').uniq : []).reject(&:blank?)
 			@profileMetadata = customerToUpdate['metadata']
-			ahoy.track "Added To Loved List", asin: params[:id], uuid: current_user&.uuid, previousPage: request.referrer
 		end
 		if params[:remove] == 'true'
 
@@ -740,7 +734,6 @@ class ApplicationController < ActionController::Base
 			session['headlines'] = @headlines.sample
 			session['subline'] = @subline.sample
 		end
-		ahoy.track "How It Works Visited", previousPage: request.referrer, title: session['howITWOrks']
 	end
 
 	def loadMemberships

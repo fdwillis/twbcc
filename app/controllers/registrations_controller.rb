@@ -227,12 +227,6 @@ class RegistrationsController < ApplicationController
 				      },
 			      )
 		      end
-		      
-	      	ahoy.track "Membership Signup", headline: session['howITWOrks'], previousPage: request.referrer, uuid: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).uuid, referredBy: setSessionVarParams['referredBy'].present? ? setSessionVarParams['referredBy'] : 'admin'
-		      
-		      if session['coupon'].present?
-			      ahoy.track "Membership Coupon Applied", coupon: session['coupon'], membershipType: User.find_by(stripeCustomerID: stripeSessionInfo['customer']).checkMembership.map{|d| d[:membershipType]}
-		      end
 
 		      flash[:success] = "Your Account Setup Is Complete!"
 
@@ -301,7 +295,6 @@ class RegistrationsController < ApplicationController
 		      	loadedCustomer.update(authorizedList:  stripeSessionInfo['custom_fields'][0]['dropdown']['value'])
 		      end
 
-	      	ahoy.track "Trader Signup", previousPage: request.referrer, uuid: loadedCustomer.uuid, referredBy: newTraderParams['referredBy'].present? ? newTraderParams['referredBy'] : 'admin'
 
 		      flash[:success] = "Your Account Is Setup!"
 		      redirect_to request.referrer

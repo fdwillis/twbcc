@@ -21,12 +21,10 @@ class ProductsController < ApplicationController
     @products = Product.all.where(country: params['country']).paginate(page: params['page'], per_page: 6)
     @callToRain = []
 
-    ahoy.track "Product Page Results", previousPage: request.referrer, currentPage: params['page']
   end
 
   def amazon
     #analytics
-    ahoy.track "Product Purchase Intent", previousPage: request.referrer, asin: params['asin'], referredBy: params['referredBy'].present? ? params['referredBy'] : current_user&.present? ? current_user&.uuid : ENV['usAmazonTag']
     
     if params['fromProfile'].present?
       redirect_to User.renderLink(params['referredBy'].present? ? params['referredBy'] : nil, params['country'], params['asin'], current_user&.present? ? current_user : nil)
@@ -45,35 +43,23 @@ class ProductsController < ApplicationController
         session['products'].each do |info|
           if info[:product] == @product && info[:data].present?
             # show cache data to paginate
-            ahoy.track "Cache Product Visit", pageNumber: params['page'], previousPage: request.referrer, product: @product, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
-            ahoy.track "Product Visit",pageNumber: params['page'], previousPage: request.referrer, product: @product, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
             
             @callToRain = info[:data]
           end
         end
       else
-        ahoy.track "Product Visit",pageNumber: params['page'], previousPage: request.referrer, product: @product, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
         @callToRain = User.rainforestProduct(params['asin'], nil, @country)
         session['products'] |= [{product: @product, data: @callToRain, country: @country}]
       end
     else
       session['products'] = []
       #paginate
-      ahoy.track "Product Visit",pageNumber: params['page'], previousPage: request.referrer, product: @product, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
       @callToRain = User.rainforestProduct(params['asin'], nil, @country)
       session['products'] |= [{product: params['asin'], data: @callToRain, country: @country}]
     end
 
     @posts = Blog.where("asins like ?", "%#{params['asin']}%")
     @profileMetadata = current_user.present? ? Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata'] : []
-
-   if params['recommended'].present?
-      #analytics
-      ahoy.track "Recommended Product Found", previousPage: request.referrer, asin: params['id'], referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
-    else
-      #analytics
-      ahoy.track "Searched For Product", previousPage: request.referrer, asin: params['id'], referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
-    end
   end
 
   # GET /products/new

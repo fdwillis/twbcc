@@ -15,7 +15,6 @@ class SearchController < ApplicationController
 						
 						if infox[:query] == @query && infox[:data].present?
 							# show cache data to paginate
-							ahoy.track "Cache Search Term", pageNumber: params['page'], previousPage: request.referrer, query: @query, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
 							@searchResults = infox[:data].paginate(page: params['page'], per_page: 6)
 							return
 						end
@@ -23,7 +22,6 @@ class SearchController < ApplicationController
 				else
 					#paginate
 
-					ahoy.track "New Search Term",pageNumber: params['page'], previousPage: request.referrer, query: @query, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
 					
 					searchResults = User.rainforestSearch(@query, nil, @country)
 					session['search'] |= [{query: @query, data: searchResults, country: @country}]
@@ -34,7 +32,6 @@ class SearchController < ApplicationController
 			else
 				session['search'] = []
 				#paginate
-				ahoy.track "New Search Term",pageNumber: params['page'], previousPage: request.referrer, query: @query, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
 				
 				searchResults = User.rainforestSearch(@query, nil, @country)
 

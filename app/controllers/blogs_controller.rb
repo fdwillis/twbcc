@@ -8,13 +8,11 @@ class BlogsController < ApplicationController
     @featured = []
     @blogs = Blog.all.reject{|blog| blog['tags'].nil? == true }.paginate(page: params['page'], per_page: 6)
     @blogs.map{|blog| blog['tags'].split(',').reject(&:blank?).include?('featured') ? @featured << blog : nil}
-    ahoy.track "Blog Page Results", previousPage: request.referrer, currentPage: params['page']
   end
 
   # GET /blogs/1 or /blogs/1.json
   def show
     #analytics
-    ahoy.track "Blog Page Visit", previousPage: request.referrer, title: @blog.title, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user&.present? ? current_user&.uuid : ENV['usAmazonTag'], uuid: @blog&.user&.uuid
   end
 
   # GET /blogs/new

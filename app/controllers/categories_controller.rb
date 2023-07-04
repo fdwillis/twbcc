@@ -16,7 +16,6 @@ class CategoriesController < ApplicationController
   # GET /categories/1 or /categories/1.json
   def show
     @brands = Brand.where("categories like ?", @category.title).paginate(page: params['page'], per_page: 6)
-    ahoy.track "Recommended Category Visited", category: @category.title, previousPage: request.referrer
   end
 
   # GET /categories/new
@@ -80,7 +79,6 @@ class CategoriesController < ApplicationController
   def checkAdmin
     unless current_user&.admin? || current_user&.trustee?
       flash[:error] = "Admin Only"
-      ahoy.track "Admin Restricted", previousPage: request.referrer
       redirect_to root_path
     end
   end

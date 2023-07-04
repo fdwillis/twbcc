@@ -9,7 +9,6 @@ class BrandsController < ApplicationController
 
   # GET /brands/1 or /brands/1.json
   def show
-    ahoy.track "Recommended Brand Visited", brand: @brand.title, previousPage: request.referrer
     #call to rain for product with search_alias / amazonCategory
     @query = @brand.title
     @country = @brand.countries.split(',').sample
@@ -22,14 +21,12 @@ class BrandsController < ApplicationController
           
           if info[:query] == @query && info[:data].present?
             # show cache data to paginate
-            ahoy.track "Recommended Cache Term", pageNumber: params['page'], previousPage: request.referrer, query: @query, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
             @searchResults = info[:data].shuffle.paginate(page: params['page'], per_page: 6)
           end
         end
       else
         #paginate
 
-        ahoy.track "Recommended Search Term",pageNumber: params['page'], previousPage: request.referrer, query: @query, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
         searchResults = User.rainforestSearch(@query, thisAmazonCat, @country)
         @searchResults = searchResults.paginate(page: params['page'], per_page: 6)
         session['search'] |= [{amazonCategory: thisAmazonCat, query: @query, data: searchResults, country: @country}]
@@ -38,7 +35,6 @@ class BrandsController < ApplicationController
     else
       session['search'] = []
       #paginate
-      ahoy.track "Recommended Search Term",pageNumber: params['page'], previousPage: request.referrer, query: @query, referredBy: params['referredBy'].present? ? params['referredBy'] : current_user.present? ? current_user.uuid : 'admin'
       searchResults = User.rainforestSearch(@query, thisAmazonCat, @country)
       @searchResults = searchResults.paginate(page: params['page'], per_page: 6)
       session['search'] |= [{amazonCategory: thisAmazonCat, query: @query, data: @searchResults, country: @country}]
@@ -108,7 +104,6 @@ class BrandsController < ApplicationController
   def checkAdmin
     unless current_user&.admin? || current_user&.trustee?
       flash[:error] = "Admin Only"
-      ahoy.track "Admin Restricted", previousPage: request.referrer
       redirect_to root_path
     end
   end

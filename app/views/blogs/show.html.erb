@@ -60,7 +60,6 @@
             <div class="flex-grow-1 p-1">
               <h1 class="font-20">
                 <%= @blog.title %><br>
-                <i class="font-20 px-1 fa fa-eye"></i> <%= Ahoy::Event.where_event("Blog Page Visit", title: @blog.title).count %>
               </h1>
               <% @blog&.tags.present? && @blog&.tags.split(',').shuffle.each do |tag| %>
                 <%if tag.present? %>
