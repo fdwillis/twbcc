@@ -40,24 +40,22 @@
 <div class="card card-style">
 	<div class="content mb-4">
 		<div class="row m-4 content">
-			<h6 class="font-20 font-800 text-uppercase opacity-30 text-center mb-4 "><u><em>24 Hour Basis</em></u></h6>
-			<div class="col-12 text-center">
+			<div class="col-6 text-center">
+				<h6 class="font-20 font-800 text-uppercase opacity-30 text-center mb-4 "><u><em>24 Hour Basis</em></u></h6>
 				<div class="mx-0 mb-3">
 					<h6 class="font-12 font-800 text-uppercase opacity-30 text-center">Targets Hit</h6>
 					<h3 class="color-highlight-dark font-30 mb-0 text-center"><%= number_to_percentage((@partialClose24.to_f/@entriesTrades24.size.to_f) * 100, precision: 2) %></h3>
 				</div>
+				<h6 class="font-12 font-800 text-uppercase opacity-30 text-center mb-4 ">Oarlin protected <%= number_to_percentage((@partialClose24.to_f/@entriesTrades24.size.to_f) * 100, precision: 2) %> of the <%= @entriesTrades24&.size %> trades based on the risk &amp; reward traders chose.</h6>
 			</div>
-			<h6 class="font-12 font-800 text-uppercase opacity-30 text-center mb-4 ">Oarlin protected <%= number_to_percentage((@partialClose24.to_f/@entriesTrades24.size.to_f) * 100, precision: 2) %> of the <%= @entriesTrades24&.size %> trades based on the risk &amp; reward traders chose in the last 24 hours.</h6>
-		</div>
-		<div class="row m-4 content">
-			<h6 class="font-20 font-800 text-uppercase opacity-30 text-center mb-4 "><u><em>30 Day Basis</em></u></h6>
-			<div class="col-12 text-center">
+			<div class="col-6 text-center">
+				<h6 class="font-20 font-800 text-uppercase opacity-30 text-center mb-4 "><u><em>30 Day Basis</em></u></h6>
 				<div class="mx-0 mb-3">
 					<h6 class="font-12 font-800 text-uppercase opacity-30 text-center">Targets Hit</h6>
 					<h3 class="color-highlight-dark font-30 mb-0 text-center"><%= number_to_percentage((@partialClose.to_f/@entriesTrades.size.to_f) * 100, precision: 2) %></h3>
 				</div>
+				<h6 class="font-12 font-800 text-uppercase opacity-30 text-center mb-4 ">Oarlin protected <%= number_to_percentage((@partialClose.to_f/@entriesTrades.size.to_f) * 100, precision: 2) %> of the <%= @entriesTrades&.size %> trades based on the risk &amp; reward traders chose.</h6>
 			</div>
-			<h6 class="font-12 font-800 text-uppercase opacity-30 text-center mb-4 ">Oarlin protected <%= number_to_percentage((@partialClose.to_f/@entriesTrades.size.to_f) * 100, precision: 2) %> of the <%= @entriesTrades&.size %> trades based on the risk &amp; reward traders chose over the last 30 days.</h6>
 		</div>
 		<div class="content">
 			<h2 class="font-30 color-highlight">Trade Stats</h2>
