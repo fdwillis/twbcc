@@ -164,7 +164,6 @@ class ApplicationController < ActionController::Base
 	def analytics
 		
 	end
-# <%= Ahoy::Event.where_event("Search Terms").count %>
 	def checkout
 		customFields = [
 			# {

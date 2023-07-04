@@ -21,7 +21,6 @@ gem 'oanda_api_v20'
 # bitly predict clicks, ratios, and income #sprint2
 gem 'social-share-button'
 gem 'flag-icons-rails'
-gem "ahoy_matey"
 gem 'activerecord-session_store'
 gem 'mimemagic', github: 'mimemagicrb/mimemagic', ref: '01f92d86d15d85cfd0f20dabd025dcbd36a8a60f'
 

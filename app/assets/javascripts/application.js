@@ -12,7 +12,6 @@
 //
 //= require rails-ujs
 //= require social-share-button
-//= require ahoy
 //= require custom
 //= require jquery_ujs
 //= require_tree .
