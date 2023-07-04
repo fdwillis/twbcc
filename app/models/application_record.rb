@@ -218,14 +218,16 @@ class ApplicationRecord < ActiveRecord::Base
         @baseTicker = "Z#{ISO3166::Country[@traderFound&.amazonCountry&.downcase].currency_code}"
         @tickerForAllocation = @pairCall['result'][@resultKey]['altname']
 
-        @amountToRisk = Kraken.krakenBalance(apiKey, secretKey)
+        @amountToRisk = Kraken.krakenRisk(tvData, apiKey, secretKey)
         @currentOpenAllocation = Kraken.pendingTrades(apiKey, secretKey)
+        pendingTradesValue = @currentOpenAllocation.map { |d| d[1] }.reject { |d| d['descr']['type'] != tvData['direction'] }.reject { |d| d['descr']['pair'] != @tickerForAllocation }.map { |d| d['vol'].to_f * d['descr']['price'].to_f }.sum 
+        amountToRisk = @amountToRisk * tvData['currentPrice'].to_f
 
         @tradeBalanceCall = Kraken.tradeBalance(@baseTicker, apiKey, secretKey)
 
         @accountTotal = @tradeBalanceCall['result']['eb'].to_f
-
-        @currentRisk = ((@currentOpenAllocation.map { |d| d[1] }.reject { |d| d['descr']['type'] != tvData['direction'] }.reject { |d| d['descr']['pair'] != @tickerForAllocation }.map { |d| d['vol'].to_f * d['descr']['price'].to_f }.sum + (@amountToRisk['result'][@baseTicker].to_f * tvData['currentPrice'].to_f)) / (@accountTotal * tvData['currentPrice'].to_f)) * 100
+        
+        @currentRisk = ((pendingTradesValue + amountToRisk ) / (@accountTotal.to_f)) * 100
       end
     elsif tvData['broker'] == 'OANDA'
       @amountToRisk = Oanda.oandaRisk(tvData, apiKey, secretKey)
