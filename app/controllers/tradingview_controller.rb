@@ -281,6 +281,7 @@ class TradingviewController < ApplicationController
 			end
 		rescue StandardError => e
 			puts e
+			Sidekiq.redis(&:flushdb)
 		end
 	end
 
