@@ -6,9 +6,9 @@ class TradingviewController < ApplicationController
 		#pull all closed trades -> build result to display
 		#pull all open trades -> build result to display
 		@allTrades = Trade.all
-		@currentTradesall = Trade.all.where(finalTakeProfit: nil, status: 'closed')
-		@entriesTradesall = Trade.all.where(status: 'closed')
-		@exitsTradesall = Trade.all.where.not(finalTakeProfit: nil).where(status: 'closed') 
+		@currentTradesall = @allTrades.where(finalTakeProfit: nil, status: 'closed')
+		@entriesTradesall = @allTrades.where(status: 'closed')
+		@exitsTradesall = @allTrades.where.not(finalTakeProfit: nil).where(status: 'closed') 
 
 
 		cryptoAssets = 0
@@ -17,9 +17,9 @@ class TradingviewController < ApplicationController
 		optionsAssets = 0
 
 
-		@currentTrades24 = @currentTradesall.where('created_at > ?', 24.hours.ago )
-		@entriesTrades24 = @entriesTradesall.where('created_at > ?', 24.hours.ago )
-		@exitsTrades24 = @exitsTradesall.where('created_at > ?', 24.hours.ago ) 
+		@currentTrades24 = @currentTradesall.where('created_at > ?', 7.days.ago )
+		@entriesTrades24 = @entriesTradesall.where('created_at > ?', 7.days.ago )
+		@exitsTrades24 = @exitsTradesall.where('created_at > ?', 7.days.ago ) 
 
 		@currentTrades = @currentTradesall.where('created_at > ?', 30.days.ago )
 		@entriesTrades = @entriesTradesall.where('created_at > ?', 30.days.ago )
