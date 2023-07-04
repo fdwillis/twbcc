@@ -730,6 +730,8 @@ class ApplicationController < ActionController::Base
 	end
 
 	def welcome
+		@codes = Stripe::Coupon.list({limit: 100}).reject{|c| c['valid'] == false}
+		
 		if session['headlines'] && session['subline']
 		else
 			@headlines = ['Real Time Trade Copying','Never Miss Trading Opportunities','Amplify Your Profits','Supercharge Your Day Trading']
