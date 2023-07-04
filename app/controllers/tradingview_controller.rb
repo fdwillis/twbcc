@@ -17,13 +17,13 @@ class TradingviewController < ApplicationController
 		optionsAssets = 0
 
 
-		@currentTrades24 = @currentTradesall.where('created_at < ?', 24.hours.ago )
-		@entriesTrades24 = @entriesTradesall.where('created_at < ?', 24.hours.ago )
-		@exitsTrades24 = @exitsTradesall.where('created_at < ?', 24.hours.ago ) 
+		@currentTrades24 = @currentTradesall.where('created_at > ?', 24.hours.ago )
+		@entriesTrades24 = @entriesTradesall.where('created_at > ?', 24.hours.ago )
+		@exitsTrades24 = @exitsTradesall.where('created_at > ?', 24.hours.ago ) 
 
-		@currentTrades = @currentTradesall.where('created_at < ?', 30.days.ago )
-		@entriesTrades = @entriesTradesall.where('created_at < ?', 30.days.ago )
-		@exitsTrades = @exitsTradesall.where('created_at < ?', 30.days.ago ) 
+		@currentTrades = @currentTradesall.where('created_at > ?', 30.days.ago )
+		@entriesTrades = @entriesTradesall.where('created_at > ?', 30.days.ago )
+		@exitsTrades = @exitsTradesall.where('created_at > ?', 30.days.ago ) 
 
 		@profitTotal = 0
 		@partialClose = 0
