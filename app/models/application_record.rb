@@ -233,9 +233,10 @@ class ApplicationRecord < ActiveRecord::Base
 			@unitsToTrade = Kraken.krakenRisk(tvData, apiKey, secretKey)
 	  	
 	  	if @unitsToTrade > 0 
-
+				@pairCall = Kraken.publicPair(tvData, apiKey, secretKey)
+		  	
+				@resultKey = @pairCall['result'].keys.first
 				@baseTicker = "Z#{ISO3166::Country[@traderFound&.amazonCountry&.downcase].currency_code}"
-
 				@tickerForAllocation = @pairCall['result'][@resultKey]['altname']
 				
 				@amountToRisk = Kraken.krakenBalance(apiKey, secretKey)
