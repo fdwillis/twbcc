@@ -9,14 +9,20 @@ class TradingviewController < ApplicationController
 		forexAssets = 0
 		stocksAssets = 0
 		optionsAssets = 0
-		@currentTrades24 = Trade.all.where(finalTakeProfit: nil, status: 'closed').where('created_at < ?', 24.hours.ago )
-		@entriesTrades24 = Trade.all.where(status: 'closed').where('created_at < ?', 24.hours.ago )
-		@exitsTrades24 = Trade.all.where.not(finalTakeProfit: nil).where(status: 'closed').where('created_at < ?', 24.hours.ago ) 
-		@currentTrades = Trade.all.where(finalTakeProfit: nil, status: 'closed').where('created_at < ?', 30.days.ago )
-		@entriesTrades = Trade.all.where(status: 'closed').where('created_at < ?', 30.days.ago )
-		@exitsTrades = Trade.all.where.not(finalTakeProfit: nil).where(status: 'closed').where('created_at < ?', 30.days.ago ) 
+		@currentTradesall = Trade.all.where(finalTakeProfit: nil, status: 'closed')
+		@entriesTradesall = Trade.all.where(status: 'closed')
+		@exitsTradesall = Trade.all.where.not(finalTakeProfit: nil).where(status: 'closed') 
+
+
+		@currentTrades24 = @currentTradesall.where('created_at < ?', 24.hours.ago )
+		@entriesTrades24 = @entriesTradesall.where('created_at < ?', 24.hours.ago )
+		@exitsTrades24 = @exitsTradesall.where('created_at < ?', 24.hours.ago ) 
+		@currentTrades = @currentTradesall.where('created_at < ?', 30.days.ago )
+		@entriesTrades = @entriesTradesall.where('created_at < ?', 30.days.ago )
+		@exitsTrades = @exitsTradesall.where('created_at < ?', 30.days.ago ) 
 		@profitTotal = 0
 		@partialClose = 0
+		@partialClose24 = 0
 		@costTotal = 0
 		@assetsUM = 0
 		@initalBalance = ApplicationRecord::INITALBALANCE.map{|d|d['initialDepopsit']}.sum
@@ -24,6 +30,12 @@ class TradingviewController < ApplicationController
 		@entriesTrades.each do |entry|
 			if entry.take_profits.size > 0
 				@partialClose += 1
+			end
+		end
+
+		@entriesTrades24.each do |entry|
+			if entry.take_profits.size > 0
+				@partialClose24 += 1
 			end
 		end
 
