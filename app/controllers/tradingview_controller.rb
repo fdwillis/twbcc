@@ -17,12 +17,16 @@ class TradingviewController < ApplicationController
 		@currentTrades24 = @currentTradesall.where('created_at < ?', 24.hours.ago )
 		@entriesTrades24 = @entriesTradesall.where('created_at < ?', 24.hours.ago )
 		@exitsTrades24 = @exitsTradesall.where('created_at < ?', 24.hours.ago ) 
+
 		@currentTrades = @currentTradesall.where('created_at < ?', 30.days.ago )
 		@entriesTrades = @entriesTradesall.where('created_at < ?', 30.days.ago )
 		@exitsTrades = @exitsTradesall.where('created_at < ?', 30.days.ago ) 
+
 		@profitTotal = 0
 		@partialClose = 0
 		@partialClose24 = 0
+		@partialCloseall = 0
+		
 		@costTotal = 0
 		@assetsUM = 0
 		@initalBalance = ApplicationRecord::INITALBALANCE.map{|d|d['initialDepopsit']}.sum
@@ -36,6 +40,12 @@ class TradingviewController < ApplicationController
 		@entriesTrades24.each do |entry|
 			if entry.take_profits.size > 0
 				@partialClose24 += 1
+			end
+		end
+
+		@entriesTradesall.each do |entry|
+			if entry.take_profits.size > 0
+				@partialCloseall += 1
 			end
 		end
 

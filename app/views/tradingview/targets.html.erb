@@ -44,7 +44,7 @@
 				<h6 class="font-20 font-800 text-uppercase opacity-30 text-center mb-4 "><u><em>24 Hour Basis</em></u></h6>
 				<div class="mx-0 mb-3">
 					<h6 class="font-12 font-800 text-uppercase opacity-30 text-center">Targets Hit</h6>
-					<h3 class="color-highlight-dark font-30 mb-0 text-center"><%= number_to_percentage((@partialClose24&.size.to_f/@entriesTrades24.size.to_f) * 100, precision: 2) %></h3>
+					<h3 class="color-highlight-dark font-30 mb-0 text-center"><%= ((@partialClose24&.size.to_f/@entriesTrades24&.size.to_f) * 100) %></h3>
 				</div>
 				<h6 class="font-12 font-800 text-uppercase opacity-30 text-center mb-4 ">Oarlin protected <%= number_to_percentage((@partialClose24&.size.to_f/@entriesTrades24&.size.to_f) * 100, precision: 2) %> of the <%= @entriesTrades24&.size %> trades based on the risk &amp; reward traders chose.</h6>
 			</div>
@@ -52,7 +52,7 @@
 				<h6 class="font-20 font-800 text-uppercase opacity-30 text-center mb-4 "><u><em>30 Day Basis</em></u></h6>
 				<div class="mx-0 mb-3">
 					<h6 class="font-12 font-800 text-uppercase opacity-30 text-center">Targets Hit</h6>
-					<h3 class="color-highlight-dark font-30 mb-0 text-center"><%= number_to_percentage((@partialClose&.size.to_f/@entriesTrades.size.to_f) * 100, precision: 2) %></h3>
+					<h3 class="color-highlight-dark font-30 mb-0 text-center"><%= number_to_percentage((@partialClose&.size.to_f/@entriesTrades&.size.to_f) * 100, precision: 2) %></h3>
 				</div>
 				<h6 class="font-12 font-800 text-uppercase opacity-30 text-center mb-4 ">Oarlin protected <%= number_to_percentage((@partialClose&.size.to_f/@entriesTrades&.size.to_f) * 100, precision: 2) %> of the <%= @entriesTrades&.size %> trades based on the risk &amp; reward traders chose.</h6>
 			</div>
@@ -63,14 +63,14 @@
 		</div>
 		<div class="d-flex">
 			<div class="w-100 align-self-center ps-3">
-				<h6 class="font-20 font-700"><i class="fa fa-check color-highlight-dark me-2"></i>Entries<span class="float-end color-highlight-dark"><%= @entriesTrades.size %></span></h6>
+				<h6 class="font-20 font-700"><i class="fa fa-check color-highlight-dark me-2"></i>Entries<span class="float-end color-highlight-dark"><%= @entriesTradesall.size %></span></h6>
 				<p>This number shows how many times Oarlin executed entry trades (Buy & Sell). Oarlin will make sure that the trades executed match your risk &amp; reward settings.</p>
 				<div class="divider mb-2 mt-1"></div>
-				<h6 class="font-20 font-700"><i class="fa fa-unlock color-highlight-dark me-2"></i>Open Trades<span class="float-end color-highlight-dark"><%= @currentTrades&.size %></span></h6>
+				<h6 class="font-20 font-700"><i class="fa fa-unlock color-highlight-dark me-2"></i>Open Trades<span class="float-end color-highlight-dark"><%= @currentTradesall&.size %></span></h6>
 				<p>This number tells us how many trades are still open &amp; running. This includes trades that have been partially protected, but still need to be fully closed.</p>
 				<div class="divider mb-2 mt-1"></div>
 
-				<h6 class="font-20 font-700"><i class="fa fa-bullseye icon icon-xxl color-highlight-dark me-2"></i> Targets<span class="float-end color-highlight-dark"><%= @partialClose&.size %></span></h6>
+				<h6 class="font-20 font-700"><i class="fa fa-bullseye icon icon-xxl color-highlight-dark me-2"></i> Targets<span class="float-end color-highlight-dark"><%= @partialCloseall&.size %></span></h6>
 				<p>When a trade has reached your profit target, Oarlin will start to reduce the trade by however much you want. We can fully close the position or partially. This is how we make sure you reach your exact profit targets matching your risk tolerance.</p>
 			</div>
 		</div>
