@@ -18,18 +18,15 @@ class BackgroundJob
 
     if allTrades.present? && allTrades.size > 0 
       allTrades.each do |trade|
-        traderFound = User.find(trade&.user_id)
         case true
         when trade&.broker == 'KRAKEN'
-          requestK = Kraken.orderInfo(trade.uuid, traderFound.krakenLiveAPI, traderFound.krakenLiveSecret)
+          requestK = Kraken.orderInfo(trade.uuid, krakenLiveAPI, krakenLiveSecret)
           trade.update(status: requestK['status'])
           if trade.status == 'canceled'
             trade.destroy
           end
         when trade&.broker == 'OANDA'
-          traderFound&.oandaList&.split(",")&.reject(&:blank?).each do |accountID|
-            requestK = Oanda.oandaOrder(traderFound.oandaToken, accountID, trade.uuid)
-          end
+            requestK = Oanda.oandaOrder(oandaToken, accountID, trade.uuid)
 
           if requestK['order']['state'] == "CANCELLED"
             if trade.status == 'canceled'
