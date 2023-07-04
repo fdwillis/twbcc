@@ -45,7 +45,6 @@ gem 'clockwork'
 gem 'faker'
 gem 'oj'
 gem 'byebug'
-gem 'rails_12factor', group: :production
 
 
 # 
