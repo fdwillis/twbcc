@@ -236,7 +236,7 @@ class ApplicationRecord < ActiveRecord::Base
 				@pairCall = Kraken.publicPair(tvData, apiKey, secretKey)
 		  	
 				@resultKey = @pairCall['result'].keys.first
-				@baseTicker = @pairCall['result'][@resultKey]['base']
+				@baseTicker = @pairCall['result'][@resultKey]['quote']
 				@tickerForAllocation = @pairCall['result'][@resultKey]['altname']
 				
 				@amountToRisk = Kraken.krakenBalance(apiKey, secretKey)

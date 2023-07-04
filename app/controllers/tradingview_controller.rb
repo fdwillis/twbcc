@@ -68,7 +68,6 @@ class TradingviewController < ApplicationController
 				krakenResult.except(baseCurrency).each do |resultX|
 					baseTicker = resultX[0]
 					assetInfo = Kraken.assetInfo({'ticker' => baseTicker},  user&.krakenLiveAPI, user&.krakenLiveSecret)
-					tradeBalanceCall = Kraken.tradeBalance(baseTicker, user&.krakenLiveAPI, user&.krakenLiveSecret)
 					units = balanceX['result'][baseTicker].to_f
 					altName = assetInfo['result'][baseTicker]['altname']
 					tickerInfo = Kraken.tickerInfo({'ticker' => "#{altName}#{baseCurrency.delete("Z")}"}, user&.krakenLiveAPI, user&.krakenLiveSecret)
