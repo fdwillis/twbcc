@@ -66,76 +66,14 @@
 				<h6 class="font-20 font-700"><i class="fa fa-check color-highlight-dark me-2"></i>Entries<span class="float-end color-highlight-dark"><%= @entriesTrades.size %></span></h6>
 				<p>This number shows how many times Oarlin executed entry trades (Buy & Sell). Oarlin will make sure that the trades executed match your risk &amp; reward settings.</p>
 				<div class="divider mb-2 mt-1"></div>
-				<h6 class="font-20 font-700"><i class="fa fa-unlock color-highlight-dark me-2"></i>Open Trades<span class="float-end color-highlight-dark"><%= @currentTrades %></span></h6>
+				<h6 class="font-20 font-700"><i class="fa fa-unlock color-highlight-dark me-2"></i>Open Trades<span class="float-end color-highlight-dark"><%= @currentTrades&.size %></span></h6>
 				<p>This number tells us how many trades are still open &amp; running. This includes trades that have been partially protected, but still need to be fully closed.</p>
 				<div class="divider mb-2 mt-1"></div>
 
-				<h6 class="font-20 font-700"><i class="fa fa-bullseye icon icon-xxl color-highlight-dark me-2"></i> Targets<span class="float-end color-highlight-dark"><%= @partialClose %></span></h6>
+				<h6 class="font-20 font-700"><i class="fa fa-bullseye icon icon-xxl color-highlight-dark me-2"></i> Targets<span class="float-end color-highlight-dark"><%= @partialClose&.size %></span></h6>
 				<p>When a trade has reached your profit target, Oarlin will start to reduce the trade by however much you want. We can fully close the position or partially. This is how we make sure you reach your exact profit targets matching your risk tolerance.</p>
 			</div>
 		</div>
 		
 	</div>
-</div>
-<!-- 
-<div class="card card-style bg-theme pb-0">
-	<div id="tab-group-1">
-		<div class="tab-controls tabs-small" data-highlight="bg-highlight-dark">
-			<a href="#" data-active="" data-bs-toggle="collapse" data-bs-target="#tab-1" class="bg-highlight-dark no-click" aria-expanded="true">Closed</a>
-			<a href="#" data-bs-toggle="collapse" data-bs-target="#tab-2" class="collapsed" aria-expanded="false">Open</a>
-		</div>
-		<div data-bs-parent="#tab-group-1" class="pt-3 collapse show" id="tab-1" style="">
-			<div class="mx-3 list-group list-custom-large">
-				<a href="#" class="mt-n3">
-					<i class="fab fa-apple rounded-xl shadow-xl bg-gray-dark"></i>
-					<span>Apple Music</span>
-					<strong>Monthly Subscription</strong>
-					<span class="badge bg-red-light font-11">25.00 USD</span>
-					<i class="fa fa-angle-right"></i>
-				</a>
-				<a href="#">
-					<i class="fa fa-user rounded-xl shadow-xl bg-blue-dark"></i>
-					<span class="left-10">Affiliate Earnings</span>
-					<strong class="left-10">Comission Payment Salary</strong>
-					<span class="badge bg-green-dark font-11">99.00 USD</span>
-					<i class="fa fa-angle-right"></i>
-				</a>
-				<a href="#">
-					<i class="fab fa-spotify rounded-xl shadow-xl bg-dark-dark"></i>
-					<span class="left-10">Spotify Premium</span>
-					<strong class="left-10">Monthly Subscription</strong>
-					<span class="badge bg-red-light font-11">25.00 USD</span>
-					<i class="fa fa-angle-right"></i>
-				</a>
-				<a href="#">
-					<i class="fa fa-heart rounded-xl shadow-xl bg-red-dark"></i>
-					<span class="left-10">Gym Membership</span>
-					<strong class="left-10">Monthly Subsciption</strong>
-					<span class="badge bg-red-light font-11">15.00 USD</span>
-					<i class="fa fa-angle-right"></i>
-				</a>
-				<a href="#">
-					<i class="fa fa-dollar-sign rounded-xl shadow-xl bg-green-dark"></i>
-					<span class="left-10">Bank Added Funds</span>
-					<strong class="left-10">Manual Payment Adusted</strong>
-					<span class="badge bg-green-dark font-11">1500.00 USD</span>
-					<i class="fa fa-angle-right"></i>
-				</a>
-			</div>
-		</div>
-		<div data-bs-parent="#tab-group-1" class="pt-3 collapse" id="tab-2" style="">
-			<p class="content mt-0">
-			A graphical view of your wallet. The expenses, incomes and available funds in your account.
-			These are created using the powerful charts.js plugin.
-			</p>
-			<div class="divider divider-margins"></div>
-			<div class="chart-container mb-4" style="height:300px;">
-			<canvas class="graph" id="wallet-chart" height="300" style="display: block; box-sizing: border-box; height: 300px; width: 348px;" width="348">
-			</canvas></div>
-		</div>
-	</div>
-</div> -->
-
-<div class="card card-style">
-
 </div>
