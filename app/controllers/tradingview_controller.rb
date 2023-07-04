@@ -8,7 +8,7 @@ class TradingviewController < ApplicationController
 		@allTrades = Trade.all
 		@currentTradesall = @allTrades.where(finalTakeProfit: nil, status: 'closed')
 		@entriesTradesall = @allTrades.where(status: 'closed')
-
+		
 
 		cryptoAssets = 0
 		forexAssets = 0
