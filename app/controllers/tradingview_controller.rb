@@ -93,9 +93,7 @@ class TradingviewController < ApplicationController
 			if traderFound.trader?
 				
 				if Oj.load(ENV['adminUUID']).include?(traderFound.uuid)
-					case true
-					when params['tradeForAdmin'] == 'true'
-						
+					if params['tradeForAdmin'] == 'true'
 						case true
 						when params['type'].include?('Stop')
 							case true
@@ -124,7 +122,10 @@ class TradingviewController < ApplicationController
 								BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFound.oandaToken, nil)
 							end
 						end
-					when  params['adminOnly'] == 'false'
+						puts "\n-- Finished Admin Trades --\n"
+					end
+
+					if  params['adminOnly'] == 'false'
 						puts "\n-- Starting To Copy Trades --\n"
 						#pull those with done for you plan
 						monthlyAuto = Stripe::Subscription.list({limit: 100, price: ENV['autoTradingMonthlyMembership']})['data'].reject{|d| d['status'] != 'active'}
@@ -201,10 +202,12 @@ class TradingviewController < ApplicationController
 									end
 								end
 							end
+							puts "\n-- Finished Copying Trades --\n"
 						end
+
 					end
 
-					puts "\n-- Finished Copying Trades --\n"
+					
 				else
 					case true
 					when params['type'].include?('Stop')
