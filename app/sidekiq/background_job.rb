@@ -20,13 +20,13 @@ class BackgroundJob
       allTrades.each do |trade|
         case true
         when trade&.broker == 'KRAKEN'
-          requestK = Kraken.orderInfo(trade.uuid, krakenLiveAPI, krakenLiveSecret)
+          requestK = Kraken.orderInfo(trade.uuid, apiKey, secretKey)
           trade.update(status: requestK['status'])
           if trade.status == 'canceled'
             trade.destroy
           end
         when trade&.broker == 'OANDA'
-            requestK = Oanda.oandaOrder(oandaToken, accountID, trade.uuid)
+            requestK = Oanda.oandaOrder(oandaToken, apiKey, trade.uuid)
 
           if requestK['order']['state'] == "CANCELLED"
             if trade.status == 'canceled'
