@@ -448,10 +448,10 @@ class ApplicationRecord < ActiveRecord::Base
         requestK = Kraken.orderInfo(trade.uuid, apiKey, secretKey)
         p requestK
         
-        if requestK['result'][trade.uuid].present? && requestK['result'][trade.uuid]['status'].present? && requestK['result'][trade.uuid]['cost'].present?
+        if requestK['result'].present? && requestK['result'][trade.uuid]['status'].present? && requestK['result'][trade.uuid]['cost'].present?
           trade.update(status: requestK['result'][trade.uuid]['status'], cost: requestK['result'][trade.uuid]['cost'].to_f)
         end
-        
+
         if trade.status == 'canceled'
           trade.destroy! 
         end
