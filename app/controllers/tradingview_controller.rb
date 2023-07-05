@@ -269,6 +269,8 @@ class TradingviewController < ApplicationController
           end
         end
 
+       
+
         render json: { success: true }
       else
         puts "\n-- No Trader Found --\n"
