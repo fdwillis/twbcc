@@ -80,7 +80,7 @@ class Kraken < ApplicationRecord
       'txid' => orderID,
       'trades' => true
     }
-    request(routeToKraken, orderParams, apiKey, secretKey)['result'][orderID]
+    request(routeToKraken, orderParams, apiKey, secretKey)
   end
 
   def self.newTrail(tvData, tradeInfo, apiKey, secretKey, tradeX)

@@ -50,8 +50,8 @@ class ApplicationRecord < ActiveRecord::Base
     if @openTrades.present? && @openTrades.size > 0
       @openTrades.each do |trade|
         if tvData['broker'] == 'KRAKEN'
-          requestK = Kraken.orderInfo(trade.uuid, apiKey, secretKey)
-          trade.update(status: requestK['status'])
+          requestK = Kraken.orderInfo(trade.uuid, apiKey, secretKey)['result']
+          trade.update(status: requestK[trade.uuid]['status'])
           trade.destroy! if trade.status == 'canceled'
         elsif tvData['broker'] == 'OANDA'
           requestK = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
@@ -75,9 +75,9 @@ class ApplicationRecord < ActiveRecord::Base
     if afterUpdates.present? && afterUpdates.size > 0
       afterUpdates.each do |tradeX|
         if tvData['broker'] == 'KRAKEN'
-          requestOriginalE = Kraken.orderInfo(tradeX.uuid, apiKey, secretKey)
-          originalPrice = requestOriginalE['price'].to_f
-          originalVolume = requestOriginalE['vol'].to_f
+          requestOriginalE = Kraken.orderInfo(tradeX.uuid, apiKey, secretKey)['result']
+          originalPrice = requestOriginalE[tradeX.uuid]['price'].to_f
+          originalVolume = requestOriginalE[tradeX.uuid]['vol'].to_f
         elsif tvData['broker'] == 'OANDA'
           requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
           if requestExecution['order']['state'] == 'CANCELLED'
@@ -122,10 +122,10 @@ class ApplicationRecord < ActiveRecord::Base
 
               tradeX.take_profits.each do |profitTrade|
                 if tvData['broker'] == 'KRAKEN'
-                  requestProfitTradex = Kraken.orderInfo(profitTrade.uuid, apiKey, secretKey)
-                  profitTrade.update(status: requestProfitTradex['status'])
-                  volumeForProfit = requestProfitTradex['vol'].to_f
-                  priceToBeat = requestProfitTradex['descr']['price2'].to_f
+                  requestProfitTradex = Kraken.orderInfo(profitTrade.uuid, apiKey, secretKey)['result']
+                  profitTrade.update(status: requestProfitTradex[profitTrade.uuid]['status'])
+                  volumeForProfit = requestProfitTradex[profitTrade.uuid]['vol'].to_f
+                  priceToBeat = requestProfitTradex[profitTrade.uuid]['descr']['price2'].to_f
                 elsif tvData['broker'] == 'OANDA'
                   requestProfitTradex = Oanda.oandaOrder(apiKey, secretKey, profitTrade.uuid)
 
@@ -187,13 +187,13 @@ class ApplicationRecord < ActiveRecord::Base
                 end
               else
                 if tvData['broker'] == 'KRAKEN'
-                  checkFill = Kraken.orderInfo(tradeX.take_profits.last.uuid, apiKey, secretKey)
-                  tradeX.take_profits.last.update(status: checkFill['status'])
-                  if checkFill['status'] == 'closed'
+                  checkFill = Kraken.orderInfo(tradeX.take_profits.last.uuid, apiKey, secretKey)['result']
+                  tradeX.take_profits.last.update(status: checkFill[tradeX.take_profits.last.uuid]['status'])
+                  if checkFill[tradeX.take_profits.last.uuid]['status'] == 'closed'
                     tradeX.update(finalTakeProfit: tradeX.take_profits.last.uuid)
                     puts "\n-- Position Closed #{tradeX.uuid} --\n"
                     puts "\n-- Last Profit Taken #{tradeX.take_profits.last.uuid} --\n"
-                  elsif checkFill['status'] == 'open'
+                  elsif checkFill[tradeX.take_profits.last.uuid]['status'] == 'open'
                     tradeX.update(finalTakeProfit: nil)
                     puts "\n-- Waiting To Close Last Position --\n"
                   end
@@ -227,7 +227,7 @@ class ApplicationRecord < ActiveRecord::Base
     if currentFilledListToSum.where(broker: tvData['broker']).size > 0 
       currentFilledListToSum.where(broker: tvData['broker']).each do |trade|
         if trade&.broker == 'KRAKEN'
-          requestK = Kraken.orderInfo(trade.uuid, apiKey, secretKey)
+          requestK = Kraken.orderInfo(trade.uuid, apiKey, secretKey)['result'][trade.uuid]
           
           if requestK['status'].present?
             trade.update(status: requestK['status'], cost: requestK['cost'].to_f)
@@ -445,6 +445,7 @@ class ApplicationRecord < ActiveRecord::Base
             else
               if requestK['error'][0].present? && requestK['error'][0].include?('Insufficient')
                 puts "\n-- MORE CASH FOR ENTRIES --\n"
+                puts "\n-- #{ @currentRisk.round(2)} --\n"
               end
             end
           elsif tvData['broker'] == 'OANDA'
