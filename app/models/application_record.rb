@@ -442,7 +442,7 @@ class ApplicationRecord < ActiveRecord::Base
 
 
 
-    @traderFound.trades.each do |trade|
+    @traderFound.trades.where(finalTakeProfit: nil).each do |trade|
       puts trade.uuid
       if trade&.broker == 'KRAKEN'
 
