@@ -22,7 +22,7 @@ class ApplicationRecord < ActiveRecord::Base
       keys = @currentOpenAllocation.keys
       @currentOpenAllocation.each do |tradeX|
         sleep 1
-        next unless @currentOpenAllocation[tradeX[0]]['descr']['type'] == tvData['direction']
+        next unless @currentOpenAllocation[tradeX[0]].present? && @currentOpenAllocation[tradeX[0]]['descr']['type'] == tvData['direction']
 
         krakenOrderParams = {
           'txid' => tradeX[0]
