@@ -284,7 +284,7 @@ class ApplicationRecord < ActiveRecord::Base
       @unitsFiltered = (@unitsToTrade > 0.0001 ? @unitsToTrade : 0.0001)
     end
     
-    if @currentRisk.round(2) <= @traderFound&.maxRisk && @currentRisk.round(2) > 0
+    if @currentRisk.round(2) < @traderFound&.maxRisk && @currentRisk.round(2) > 0
 
       # market order
       if @traderFound&.allowMarketOrder == 'true'
