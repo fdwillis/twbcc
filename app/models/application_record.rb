@@ -20,8 +20,8 @@ class ApplicationRecord < ActiveRecord::Base
     if tvData['broker'] == 'KRAKEN'
       @currentOpenAllocation = Kraken.pendingTrades(apiKey, secretKey)
       keys = @currentOpenAllocation.keys
-
       @currentOpenAllocation.each do |tradeX|
+        sleep 1
         next unless @currentOpenAllocation[tradeX[0]]['descr']['type'] == tvData['direction']
 
         krakenOrderParams = {
