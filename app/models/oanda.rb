@@ -1,5 +1,5 @@
 class Oanda < ApplicationRecord
-  def self.oandaRequest(token, _accountID)
+  def self.oandaRequest(token, accountID)
     @oanda = OandaApiV20.new(access_token: token)
   end
 

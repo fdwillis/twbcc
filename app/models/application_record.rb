@@ -119,10 +119,23 @@ class ApplicationRecord < ActiveRecord::Base
                 end
               end
             else
+
               tradeX.take_profits.each do |profitTrade|
                 if tvData['broker'] == 'KRAKEN'
                   requestProfitTradex = Kraken.orderInfo(profitTrade.uuid, apiKey, secretKey)
                   profitTrade.update(status: requestProfitTradex['status'])
+                  volumeForProfit = requestProfitTradex['vol'].to_f
+                  priceToBeat = requestProfitTradex['descr']['price2'].to_f
+                elsif tvData['broker'] == 'OANDA'
+                  requestProfitTradex = Oanda.oandaOrder(apiKey, secretKey, profitTrade.uuid)
+                  debugger
+                  return
+
+                  if requestProfitTradex['order']['state'] == 'FILLED'
+                    profitTrade.update(status: 'closed')
+                  elsif requestProfitTradex['order']['state'] == 'PENDING'
+                    profitTrade.update(status: 'open')
+                  end
                   volumeForProfit = requestProfitTradex['vol'].to_f
                   priceToBeat = requestProfitTradex['descr']['price2'].to_f
                 end
@@ -146,6 +159,7 @@ class ApplicationRecord < ActiveRecord::Base
                       if !@protectTrade.empty? && @protectTrade['result']['txid'].present?
                         puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
                       end
+                    elsif tvData['broker'] == 'OANDA'
                     end
                   end
                 elsif profitTrade.status == 'closed' # or other status from oanda/alpaca
@@ -164,6 +178,7 @@ class ApplicationRecord < ActiveRecord::Base
                     if !@protectTrade.empty? && @protectTrade['result']['txid'].present?
                       puts "\n-- Additional Take Profit #{@protectTrade['result']['txid'][0]} --\n"
                     end
+                  elsif tvData['broker'] == 'OANDA'
                   end
                 else
                   puts "\n-- Waiting To Close Open Take Profit --\n"
@@ -180,13 +195,14 @@ class ApplicationRecord < ActiveRecord::Base
                     tradeX.update(finalTakeProfit: nil)
                     puts "\n-- Waiting To Close Last Position --\n"
                   end
+                elsif tvData['broker'] == 'OANDA'
                 end
               end
 
             end
           end
         elsif tvData['direction'] == 'buy'
-
+          # protect Oanda sell orders
         end
       end
     end
@@ -221,22 +237,21 @@ class ApplicationRecord < ActiveRecord::Base
 
         @amountToRisk = Kraken.krakenRisk(tvData, apiKey, secretKey)
         @currentOpenAllocation = Kraken.pendingTrades(apiKey, secretKey)
-        pendingTradesValue = @currentOpenAllocation.map { |d| d[1] }.reject { |d| d['descr']['type'] != tvData['direction'] }.reject { |d| d['descr']['pair'] != @tickerForAllocation }.map { |d| d['vol'].to_f * d['descr']['price'].to_f }.sum 
+        pendingTradesValue = @currentOpenAllocation.map { |d| d[1] }.reject { |d| d['descr']['type'] != tvData['direction'] }.reject { |d| d['descr']['pair'] != @tickerForAllocation }.map { |d| d['vol'].to_f * d['descr']['price'].to_f }.sum
         amountToRisk = @amountToRisk * tvData['currentPrice'].to_f
-        
 
         @tradeBalanceCall = Kraken.tradeBalance(@baseTicker, apiKey, secretKey)
 
         @accountTotal = @tradeBalanceCall['result']['eb'].to_f
-        
-        @traderFound&.allowMarketOrder ? orderforMulti += 1 : orderforMulti += 0
+
+        orderforMulti += @traderFound&.allowMarketOrder ? 1 : 0
         tvData['entries'].reject(&:blank?).size > 0 ? orderforMulti += tvData['entries'].reject(&:blank?).size : orderforMulti += 0
-        
+
         @currentRisk = calculateRiskAfterTrade(pendingTradesValue, (amountToRisk * orderforMulti), @accountTotal.to_f)
       end
     elsif tvData['broker'] == 'OANDA'
       @amountToRisk = Oanda.oandaRisk(tvData, apiKey, secretKey)
-      
+
       oandaAccount = Oanda.oandaAccount(apiKey, secretKey)
       cleanTickers = oandaAccount['account']['positions'].map { |d| d['instrument'].tr!('_', '') }
 
@@ -246,12 +261,12 @@ class ApplicationRecord < ActiveRecord::Base
       marginUsed = foundTickerPosition.present? && foundTickerPosition['marginUsed'].present? ? foundTickerPosition['marginUsed'].to_f : 0
 
       @openOrders = (oandaAccount['account']['marginRate'].to_f * foundTickerOrders.map { |d| d['units'].to_i }.sum)
-      pendingTradesValue =  @openOrders
+      pendingTradesValue = @openOrders
       accountBalance = ((marginUsed + @openOrders) + oandaAccount['account']['marginAvailable'].to_f)
 
-      @traderFound&.allowMarketOrder ? orderforMulti += 1 : orderforMulti += 0
+      orderforMulti += @traderFound&.allowMarketOrder ? 1 : 0
       tvData['entries'].reject(&:blank?).size > 0 ? orderforMulti += tvData['entries'].reject(&:blank?).size : orderforMulti += 0
-      
+
       @currentRisk = calculateRiskAfterTrade(pendingTradesValue, (@amountToRisk * orderforMulti), accountBalance)
     end
 
@@ -415,10 +430,8 @@ class ApplicationRecord < ActiveRecord::Base
     end
   end
 
-  private
-
   def self.calculateRiskAfterTrade(openOrdersPending, amountToRisk, accountBalance)
-    ((openOrdersPending + amountToRisk ) / (accountBalance)) * 100
+    ((openOrdersPending + amountToRisk) / accountBalance) * 100
   end
 
   # combine limit and market into one 'entry' call with logic to determine wich

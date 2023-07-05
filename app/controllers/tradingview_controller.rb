@@ -158,6 +158,7 @@ class TradingviewController < ApplicationController
                 assetList = listToTrade.present? ? listToTrade : []
                 if assetList.size > 0
                   assetList.split(',').each do |assetX|
+                    debugger
                     if assetX.upcase == params['ticker']
                       # execute trade
                       case true
@@ -188,11 +189,18 @@ class TradingviewController < ApplicationController
                           BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFoundForCopy.oandaToken, nil)
                         end
                       end
-                    elsif DateTime.now.strftime('%a') != 'Sun' && DateTime.now.strftime('%a') != 'Sat' && (if current_user&.authorizedList == 'crypto'
-                                                                                                             "BTC#{ISO3166::Country[current_user.amazonCountry.downcase].currency_code}"
-                                                                                                           else
-                                                                                                             current_user&.authorizedList == 'forex' ? "EUR#{ISO3166::Country[current_user.amazonCountry.downcase].currency_code}" : nil
-end) == params['ticker']
+                    elsif (DateTime.now.strftime('%a') != 'Sun' && DateTime.now.strftime('%a') != 'Sat')
+                      if (current_user&.authorizedList == 'crypto')
+                        tickerForTrial = "BTC#{ISO3166::Country[current_user.amazonCountry.downcase].currency_code}"
+                      else (current_user&.authorizedList == 'forex')
+                        tickerForTrial = "EUR#{ISO3166::Country[current_user.amazonCountry.downcase].currency_code}"
+                      end
+
+                      tradingviewKeysparams['ticker'] = tickerForTrial
+                      debugger
+                      return
+                     
+
                       case true
                       when params['type'].include?('Stop')
                         case true

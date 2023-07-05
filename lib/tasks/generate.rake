@@ -26,23 +26,23 @@ namespace :generate do
 
     freePercentages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     freePercentages.each do |num|
-      coupon = Stripe::Coupon.create({
-                                       percent_off: num,
-                                       duration: 'once',
-                                       max_redemptions: 500,
-                                       redeem_by: (Date.today + 2.days).to_time.to_i
-                                     })
+      Stripe::Coupon.create({
+                              percent_off: num,
+                              duration: 'once',
+                              max_redemptions: 500,
+                              redeem_by: (Date.today + 2.days).to_time.to_i
+                            })
     end
 
     affiliatePercentages = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
     affiliatePercentages.each do |num|
-      coupon = Stripe::Coupon.create({
-                                       percent_off: num,
-                                       duration: 'once',
-                                       max_redemptions: 400,
-                                       redeem_by: (Date.today + 2.days).to_time.to_i
-                                     })
+      Stripe::Coupon.create({
+                              percent_off: num,
+                              duration: 'once',
+                              max_redemptions: 400,
+                              redeem_by: (Date.today + 2.days).to_time.to_i
+                            })
     end
 
     businessPercentages = [21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
