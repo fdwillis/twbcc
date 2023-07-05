@@ -217,14 +217,35 @@ class ApplicationRecord < ActiveRecord::Base
     # if entries.count > 0 -> limit order
 
     if tvData['broker'] == 'KRAKEN'
-      @openTrades = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'open', broker: tvData['broker'])
       @traderFound = User.find_by(krakenLiveAPI: apiKey)
     elsif tvData['broker'] == 'OANDA'
-      @openTrades = User.find_by(oandaToken: apiKey).trades.where(status: 'open', broker: tvData['broker'])
       @traderFound = User.find_by(oandaToken: apiKey)
     end
 
     currentFilledListToSum =  @traderFound&.trades
+
+    if currentFilledListToSum.where(broker: tvData['broker']).size > 0 
+      currentFilledListToSum.where(broker: tvData['broker']).each do |trade|
+        if trade&.broker == 'KRAKEN'
+          requestK = Kraken.orderInfo(trade.uuid, apiKey, secretKey)
+          
+          if requestK['status'].present?
+            trade.update(status: requestK['status'], cost: requestK['cost'].to_f)
+          else
+            trade.update(status: 'canceled')
+          end
+          trade.destroy! if trade.status == 'canceled'
+        elsif trade&.broker == 'OANDA'
+          requestK = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
+
+          if requestK['order']['state'] == 'CANCELLED'
+            trade.destroy! if trade.status == 'canceled'
+          end
+
+          trade.update(status: 'closed') if requestK['order']['state'] == 'FILLED'
+        end
+      end
+    end
 
     # variables
     orderforMulti = 0
@@ -349,7 +370,7 @@ class ApplicationRecord < ActiveRecord::Base
           else
             if requestK['error'][0].present? && requestK['error'][0].include?('Insufficient')
               puts "\n-- MORE CASH FOR ENTRIES --\n"
-              puts "\n-- RISK #{@currentRisk.round(2)} --\n"
+              puts "\n-- #{ @currentRisk.round(2)} --\n"
             end
           end
         elsif tvData['broker'] == 'OANDA'
@@ -424,7 +445,6 @@ class ApplicationRecord < ActiveRecord::Base
             else
               if requestK['error'][0].present? && requestK['error'][0].include?('Insufficient')
                 puts "\n-- MORE CASH FOR ENTRIES --\n"
-                puts "\n-- RISK #{@currentRisk.round(2)} --\n"
               end
             end
           elsif tvData['broker'] == 'OANDA'
