@@ -442,13 +442,13 @@ class ApplicationRecord < ActiveRecord::Base
 
 
 
-    Trade.all.each do |trade|
+    @traderFound.trades.each do |trade|
       puts trade.uuid
       if trade&.broker == 'KRAKEN'
 
         requestK = Kraken.orderInfo(trade.uuid, trade.user.krakenLiveAPI, trade.user.krakenLiveSecret)
         p requestK
-        sleep 2
+        sleep 1
         if requestK['result'].present? && requestK['result'][trade.uuid]['status'].present? && requestK['result'][trade.uuid]['cost'].present?
           trade.update(status: requestK['result'][trade.uuid]['status'], cost: requestK['result'][trade.uuid]['cost'].to_f)
         end
