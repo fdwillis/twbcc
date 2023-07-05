@@ -450,9 +450,8 @@ class ApplicationRecord < ActiveRecord::Base
         
         if requestK['result'][trade.uuid].present? && requestK['result'][trade.uuid]['status'].present? && requestK['result'][trade.uuid]['cost'].present?
           trade.update(status: requestK['result'][trade.uuid]['status'], cost: requestK['result'][trade.uuid]['cost'].to_f)
-        else
-          trade.update(status:  requestK['result'][trade.uuid]['status'])
         end
+        
         if trade.status == 'canceled'
           trade.destroy! 
         end
