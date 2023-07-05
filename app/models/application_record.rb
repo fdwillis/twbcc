@@ -273,7 +273,7 @@ class ApplicationRecord < ActiveRecord::Base
     
     if tvData['broker'] == 'KRAKEN'
      filledOrders = (@balanceCall[@base].to_f * tvData['currentPrice'].to_f)
-     @currentRisk = calculateRiskAfterTrade(filledOrders,openOrdersPending, amountToRisk,  @accountTotal)
+     @currentRisk = calculateRiskAfterTrade(filledOrders,openOrdersPending, (amountToRisk * orderforMulti),  @accountTotal)
     elsif tvData['broker'] == 'OANDA'
      @currentRisk = 0
     end
