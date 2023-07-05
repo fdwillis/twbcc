@@ -341,7 +341,7 @@ class ApplicationRecord < ActiveRecord::Base
           else
             if requestK['error'][0].present? && requestK['error'][0].include?('Insufficient')
               puts "\n-- MORE CASH FOR ENTRIES --\n"
-              puts "\n-- #{ @currentRisk.round(2)} --\n"
+              puts "\n-- Current Risk #{ @currentRisk.round(2)} --\n"
             end
           end
         elsif tvData['broker'] == 'OANDA'
@@ -416,7 +416,7 @@ class ApplicationRecord < ActiveRecord::Base
             else
               if requestK['error'][0].present? && requestK['error'][0].include?('Insufficient')
                 puts "\n-- MORE CASH FOR ENTRIES --\n"
-                puts "\n-- #{ @currentRisk.round(2)} --\n"
+                puts "\n-- Current Risk #{ @currentRisk.round(2)} --\n"
               end
             end
           elsif tvData['broker'] == 'OANDA'
