@@ -237,15 +237,16 @@ class ApplicationRecord < ActiveRecord::Base
         @resultKey = @pairCall['result'].keys.first
         @baseTicker = "Z#{ISO3166::Country[@traderFound&.amazonCountry&.downcase].currency_code}"
         @tickerForAllocation = @pairCall['result'][@resultKey]['altname']
+        @base = @pairCall['result'][@resultKey]['base']
 
         @amountToRisk = Kraken.krakenRisk(tvData, apiKey, secretKey)
         @currentOpenAllocation = Kraken.pendingTrades(apiKey, secretKey)
-        pendingTradesValue = @currentOpenAllocation.map { |d| d[1] }.reject { |d| d['descr']['type'] != tvData['direction'] }.reject { |d| d['descr']['pair'] != @tickerForAllocation }.map { |d| d['vol'].to_f * d['descr']['price'].to_f }.sum
+        openOrdersPending = @currentOpenAllocation.map { |d| d[1] }.reject { |d| d['descr']['type'] != tvData['direction'] }.reject { |d| d['descr']['pair'] != @tickerForAllocation }.map { |d| d['vol'].to_f * d['descr']['price'].to_f }.sum
         amountToRisk = @amountToRisk * tvData['currentPrice'].to_f
 
-        @tradeBalanceCall = Kraken.tradeBalance(@baseTicker, apiKey, secretKey)
+        @balanceCall = Kraken.krakenBalance(apiKey, secretKey)['result']
 
-        @accountTotal = @tradeBalanceCall['result']['eb'].to_f
+        @accountTotal = @balanceCall[ @baseTicker].to_f + (tvData['currentPrice'].to_f * @balanceCall[@base].to_f)
 
         orderforMulti += @traderFound&.allowMarketOrder ? 1 : 0
         tvData['entries'].reject(&:blank?).size > 0 ? orderforMulti += tvData['entries'].reject(&:blank?).size : orderforMulti += 0
@@ -271,18 +272,10 @@ class ApplicationRecord < ActiveRecord::Base
 
     
     if tvData['broker'] == 'KRAKEN'
-      if  currentFilledListToSum.where(broker: tvData['broker']).where(finalTakeProfit: nil).size > 0
-        filledRisk = @traderFound.trades.where(broker: tvData['broker']).where(finalTakeProfit: nil).map(&:cost).sum
-         @currentRisk = calculateRiskAfterTrade(filledRisk, pendingTradesValue, (amountToRisk * orderforMulti), @accountTotal.to_f)
-       else
-        @currentRisk = 0
-      end
+     filledOrders = @traderFound&.trades.where.not(finalTakeProfit: nil).map(&:cost).sum
+     @currentRisk = calculateRiskAfterTrade(filledOrders,openOrdersPending, amountToRisk,  @accountTotal)
     elsif tvData['broker'] == 'OANDA'
-      if  currentFilledListToSum.where(broker: tvData['broker']).where(finalTakeProfit: nil).size > 0
-         @currentRisk = calculateRiskAfterTrade(pendingTradesValue, (@amountToRisk * orderforMulti), accountBalance)
-       else
-        @currentRisk = 0
-      end
+     @currentRisk = 0
     end
 
     # ticker specific
@@ -449,30 +442,28 @@ class ApplicationRecord < ActiveRecord::Base
 
 
 
-    if currentFilledListToSum.where(broker: tvData['broker']).size > 0 
-      currentFilledListToSum.where(broker: tvData['broker']).each do |trade|
-        puts trade.uuid
-        if trade&.broker == 'KRAKEN'
-          requestK = Kraken.orderInfo(trade.uuid, apiKey, secretKey)
-          p requestK
-          sleep
-          if requestK['result'][trade.uuid].present? && requestK['result'][trade.uuid]['status'].present? && requestK['result'][trade.uuid]['cost'].present?
-            trade.update(status: requestK['result'][trade.uuid]['status'], cost: requestK['result'][trade.uuid]['cost'].to_f)
-          else
-            trade.update(status:  requestK['result'][trade.uuid]['status'])
-          end
-          if trade.status == 'canceled'
-            trade.destroy! 
-          end
-        # elsif trade&.broker == 'OANDA'
-        #   requestK = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
-
-        #   if requestK['order']['state'] == 'CANCELLED'
-        #     trade.destroy! if trade.status == 'canceled'
-        #   end
-
-        #   trade.update(status: 'closed') if requestK['order']['state'] == 'FILLED'
+    Trade.all.each do |trade|
+      puts trade.uuid
+      if trade&.broker == 'KRAKEN'
+        requestK = Kraken.orderInfo(trade.uuid, apiKey, secretKey)
+        p requestK
+        
+        if requestK['result'][trade.uuid].present? && requestK['result'][trade.uuid]['status'].present? && requestK['result'][trade.uuid]['cost'].present?
+          trade.update(status: requestK['result'][trade.uuid]['status'], cost: requestK['result'][trade.uuid]['cost'].to_f)
+        else
+          trade.update(status:  requestK['result'][trade.uuid]['status'])
         end
+        if trade.status == 'canceled'
+          trade.destroy! 
+        end
+      # elsif trade&.broker == 'OANDA'
+      #   requestK = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
+
+      #   if requestK['order']['state'] == 'CANCELLED'
+      #     trade.destroy! if trade.status == 'canceled'
+      #   end
+
+      #   trade.update(status: 'closed') if requestK['order']['state'] == 'FILLED'
       end
     end
   end
