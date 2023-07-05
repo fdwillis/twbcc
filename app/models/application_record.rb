@@ -361,7 +361,7 @@ class ApplicationRecord < ActiveRecord::Base
           if requestK.present? && requestK['result'].present?
 
             if requestK['result']['txid'].present?
-              User.find_by(krakenLiveAPI: apiKey).trades.create(uuid: requestK['result']['txid'][0], broker: tvData['broker'], direction: tvData['direction'], status: 'open')
+              User.find_by(krakenLiveAPI: apiKey).trades.create(uuid: requestK['result']['txid'][0], broker: tvData['broker'], direction: tvData['direction'], status: 'open', cost: requestK['result']['cost'].to_f)
               puts "\n-- #{tvData['broker']} Entry Submitted --\n"
             end
           else
@@ -435,7 +435,7 @@ class ApplicationRecord < ActiveRecord::Base
           if tvData['broker'] == 'KRAKEN'
             if requestK.present? && requestK['result'].present?
               if requestK['result']['txid'].present?
-                User.find_by(krakenLiveAPI: apiKey).trades.create(uuid: requestK['result']['txid'][0], broker: tvData['broker'], direction: tvData['direction'], status: 'open')
+                User.find_by(krakenLiveAPI: apiKey).trades.create(uuid: requestK['result']['txid'][0], broker: tvData['broker'], direction: tvData['direction'], status: 'open', cost: requestK['result']['cost'].to_f)
                 puts "\n-- Kraken Entry Submitted --\n"
               end
             else
