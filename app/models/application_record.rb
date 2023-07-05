@@ -337,6 +337,7 @@ class ApplicationRecord < ActiveRecord::Base
             if requestK['result']['txid'].present?
               User.find_by(krakenLiveAPI: apiKey).trades.create(uuid: requestK['result']['txid'][0], broker: tvData['broker'], direction: tvData['direction'], status: 'open', cost: requestK['result']['cost'].to_f)
               puts "\n-- #{tvData['broker']} Entry Submitted --\n"
+              puts "\n-- Current Risk #{@currentRisk.round(2)} --\n"
             end
           else
             if requestK['error'][0].present? && requestK['error'][0].include?('Insufficient')
@@ -351,6 +352,7 @@ class ApplicationRecord < ActiveRecord::Base
           else
             User.find_by(oandaToken: apiKey).trades.create(uuid: requestK['orderCreateTransaction']['id'], broker: tvData['broker'], direction: tvData['direction'], status: 'closed')
             puts "\n-- #{tvData['broker']} Entry Submitted --\n"
+            puts "\n-- Current Risk #{@currentRisk.round(2)} --\n"
           end
         end
       end
@@ -411,7 +413,8 @@ class ApplicationRecord < ActiveRecord::Base
             if requestK.present? && requestK['result'].present?
               if requestK['result']['txid'].present?
                 User.find_by(krakenLiveAPI: apiKey).trades.create(uuid: requestK['result']['txid'][0], broker: tvData['broker'], direction: tvData['direction'], status: 'open', cost: requestK['result']['cost'].to_f)
-                puts "\n-- Kraken Entry Submitted --\n"
+                puts "\n-- #{tvData['broker']} Entry Submitted --\n"
+                puts "\n-- Current Risk #{@currentRisk.round(2)} --\n"
               end
             else
               if requestK['error'][0].present? && requestK['error'][0].include?('Insufficient')
@@ -423,6 +426,7 @@ class ApplicationRecord < ActiveRecord::Base
             if requestK.present?
               User.find_by(oandaToken: apiKey).trades.create(uuid: requestK['orderCreateTransaction']['id'], broker: tvData['broker'], direction: tvData['direction'], status: 'open')
               puts "\n-- #{tvData['broker']} Entry Submitted --\n"
+              puts "\n-- Current Risk #{@currentRisk.round(2)} --\n"
             else
               puts "\n-- NOTHING --\n"
             end
