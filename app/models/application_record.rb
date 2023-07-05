@@ -160,8 +160,8 @@ class ApplicationRecord < ActiveRecord::Base
                         puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
                       end
                     elsif tvData['broker'] == 'OANDA'
-                      debugger
-                      return
+                      # debugger
+                      # return
                     end
                   end
                 elsif profitTrade.status == 'closed' # or other status from oanda/alpaca
@@ -272,7 +272,7 @@ class ApplicationRecord < ActiveRecord::Base
 
     
     if tvData['broker'] == 'KRAKEN'
-     filledOrders = @traderFound&.trades.where.not(finalTakeProfit: nil).map(&:cost).sum
+     filledOrders = (@balanceCall[@base].to_f * tvData['currentPrice'].to_f)
      @currentRisk = calculateRiskAfterTrade(filledOrders,openOrdersPending, amountToRisk,  @accountTotal)
     elsif tvData['broker'] == 'OANDA'
      @currentRisk = 0
@@ -469,7 +469,7 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def self.calculateRiskAfterTrade(filledOrders,openOrdersPending, amountToRisk, accountBalance)
-    ((filledOrders + openOrdersPending + amountToRisk) / accountBalance) * 100
+    ((filledOrders + openOrdersPending ) / accountBalance) * 100
   end
 
   # combine limit and market into one 'entry' call with logic to determine wich
