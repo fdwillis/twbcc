@@ -262,9 +262,9 @@ class ApplicationRecord < ActiveRecord::Base
 
       marginUsed = foundTickerPosition.present? && foundTickerPosition['marginUsed'].present? ? foundTickerPosition['marginUsed'].to_f : 0
 
-      @openOrders = (oandaAccount['account']['marginRate'].to_f * foundTickerOrders.map { |d| d['units'].to_i }.sum)
-      pendingTradesValue = @openOrders
-      accountBalance = ((marginUsed + @openOrders) + oandaAccount['account']['marginAvailable'].to_f)
+      openOrders = (oandaAccount['account']['marginRate'].to_f * foundTickerOrders.map { |d| d['units'].to_i }.sum)
+      openOrdersPending = openOrders
+      accountBalance = ((marginUsed + openOrders) + oandaAccount['account']['marginAvailable'].to_f)
 
       orderforMulti += @traderFound&.allowMarketOrder ? 1 : 0
       tvData['entries'].reject(&:blank?).size > 0 ? orderforMulti += tvData['entries'].reject(&:blank?).size : orderforMulti += 0
@@ -275,7 +275,7 @@ class ApplicationRecord < ActiveRecord::Base
      filledOrders = (@balanceCall[@base].to_f * tvData['currentPrice'].to_f)
      @currentRisk = calculateRiskAfterTrade(filledOrders,openOrdersPending, (amountToRisk * orderforMulti),  @accountTotal)
     elsif tvData['broker'] == 'OANDA'
-     @currentRisk = 0
+     @currentRisk = calculateRiskAfterTrade(marginUsed,openOrdersPending, (@amountToRisk * orderforMulti),  accountBalance)
     end
 
     # ticker specific
