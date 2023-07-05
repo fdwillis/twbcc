@@ -215,6 +215,7 @@ class ApplicationRecord < ActiveRecord::Base
   def self.newEntry(tvData, apiKey = nil, secretKey = nil)
     # if allowMarketOrder -> market order
     # if entries.count > 0 -> limit order
+    currentFilledListToSum =  @traderFound&.trades
 
     if tvData['broker'] == 'KRAKEN'
       @traderFound = User.find_by(krakenLiveAPI: apiKey)
@@ -438,39 +439,41 @@ class ApplicationRecord < ActiveRecord::Base
       else
         puts "\n-- No Limit Orders Set --\n"
       end
-      currentFilledListToSum =  @traderFound&.trades
 
-      if currentFilledListToSum.where(broker: tvData['broker']).size > 0 
-        currentFilledListToSum.where(broker: tvData['broker']).each do |trade|
-          puts trade.uuid
-          if trade&.broker == 'KRAKEN'
-            requestK = Kraken.orderInfo(trade.uuid, apiKey, secretKey)
-            p requestK
-            sleep 1
-            if requestK['result'][trade.uuid].present? && requestK['result'][trade.uuid]['status'].present? && requestK['result'][trade.uuid]['cost'].present?
-              trade.update(status: requestK['result'][trade.uuid]['status'], cost: requestK['result'][trade.uuid]['cost'].to_f)
-            else
-              trade.update(status:  requestK['result'][trade.uuid]['status'])
-            end
-            if trade.status == 'canceled'
-              trade.destroy! 
-            end
-          # elsif trade&.broker == 'OANDA'
-          #   requestK = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
-
-          #   if requestK['order']['state'] == 'CANCELLED'
-          #     trade.destroy! if trade.status == 'canceled'
-          #   end
-
-          #   trade.update(status: 'closed') if requestK['order']['state'] == 'FILLED'
-          end
-        end
-      end
     else
       puts "\n-- Max Risk Met (#{tvData['timeframe']} Minute) --\n"
       puts "\n-- Trader #{@traderFound.uuid} --\n"
       puts "\n-- Current Risk (#{@currentRisk.round(2)}%) --\n"
       puts "\n-- Trader #{@traderFound.uuid} --\n"
+    end
+
+
+
+    if currentFilledListToSum.where(broker: tvData['broker']).size > 0 
+      currentFilledListToSum.where(broker: tvData['broker']).each do |trade|
+        puts trade.uuid
+        if trade&.broker == 'KRAKEN'
+          requestK = Kraken.orderInfo(trade.uuid, apiKey, secretKey)
+          p requestK
+          sleep
+          if requestK['result'][trade.uuid].present? && requestK['result'][trade.uuid]['status'].present? && requestK['result'][trade.uuid]['cost'].present?
+            trade.update(status: requestK['result'][trade.uuid]['status'], cost: requestK['result'][trade.uuid]['cost'].to_f)
+          else
+            trade.update(status:  requestK['result'][trade.uuid]['status'])
+          end
+          if trade.status == 'canceled'
+            trade.destroy! 
+          end
+        # elsif trade&.broker == 'OANDA'
+        #   requestK = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
+
+        #   if requestK['order']['state'] == 'CANCELLED'
+        #     trade.destroy! if trade.status == 'canceled'
+        #   end
+
+        #   trade.update(status: 'closed') if requestK['order']['state'] == 'FILLED'
+        end
+      end
     end
   end
 
