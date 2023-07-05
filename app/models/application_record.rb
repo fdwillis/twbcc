@@ -207,6 +207,7 @@ class ApplicationRecord < ActiveRecord::Base
     end
 
     # variables
+    orderforMulti = 0
 
     if tvData['broker'] == 'KRAKEN'
       @unitsToTrade = Kraken.krakenRisk(tvData, apiKey, secretKey)
@@ -222,15 +223,20 @@ class ApplicationRecord < ActiveRecord::Base
         @currentOpenAllocation = Kraken.pendingTrades(apiKey, secretKey)
         pendingTradesValue = @currentOpenAllocation.map { |d| d[1] }.reject { |d| d['descr']['type'] != tvData['direction'] }.reject { |d| d['descr']['pair'] != @tickerForAllocation }.map { |d| d['vol'].to_f * d['descr']['price'].to_f }.sum 
         amountToRisk = @amountToRisk * tvData['currentPrice'].to_f
+        
 
         @tradeBalanceCall = Kraken.tradeBalance(@baseTicker, apiKey, secretKey)
 
         @accountTotal = @tradeBalanceCall['result']['eb'].to_f
         
-        @currentRisk = ((pendingTradesValue + amountToRisk ) / (@accountTotal.to_f)) * 100
+        @traderFound&.allowMarketOrder ? orderforMulti += 1 : orderforMulti += 0
+        tvData['entries'].reject(&:blank?).size > 0 ? orderforMulti += tvData['entries'].reject(&:blank?).size : orderforMulti += 0
+        
+        @currentRisk = calculateRiskAfterTrade(pendingTradesValue, (amountToRisk * orderforMulti), @accountTotal.to_f)
       end
     elsif tvData['broker'] == 'OANDA'
       @amountToRisk = Oanda.oandaRisk(tvData, apiKey, secretKey)
+      
       oandaAccount = Oanda.oandaAccount(apiKey, secretKey)
       cleanTickers = oandaAccount['account']['positions'].map { |d| d['instrument'].tr!('_', '') }
 
@@ -240,8 +246,13 @@ class ApplicationRecord < ActiveRecord::Base
       marginUsed = foundTickerPosition.present? && foundTickerPosition['marginUsed'].present? ? foundTickerPosition['marginUsed'].to_f : 0
 
       @openOrders = (oandaAccount['account']['marginRate'].to_f * foundTickerOrders.map { |d| d['units'].to_i }.sum)
+      pendingTradesValue =  @openOrders
+      accountBalance = ((marginUsed + @openOrders) + oandaAccount['account']['marginAvailable'].to_f)
 
-      @currentRisk = (marginUsed + @openOrders) / ((marginUsed + @openOrders) + oandaAccount['account']['marginAvailable'].to_f) * 100
+      @traderFound&.allowMarketOrder ? orderforMulti += 1 : orderforMulti += 0
+      tvData['entries'].reject(&:blank?).size > 0 ? orderforMulti += tvData['entries'].reject(&:blank?).size : orderforMulti += 0
+      
+      @currentRisk = calculateRiskAfterTrade(pendingTradesValue, (@amountToRisk * orderforMulti), accountBalance)
     end
 
     # ticker specific
@@ -402,6 +413,12 @@ class ApplicationRecord < ActiveRecord::Base
       puts "\n-- Current Risk (#{@currentRisk.round(2)}%) --\n"
       puts "\n-- Trader #{@traderFound.uuid} --\n"
     end
+  end
+
+  private
+
+  def self.calculateRiskAfterTrade(openOrdersPending, amountToRisk, accountBalance)
+    ((openOrdersPending + amountToRisk ) / (accountBalance)) * 100
   end
 
   # combine limit and market into one 'entry' call with logic to determine wich
