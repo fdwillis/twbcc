@@ -226,24 +226,6 @@ class ApplicationRecord < ActiveRecord::Base
 
     currentFilledListToSum =  @traderFound&.trades
 
-    if currentFilledListToSum.where(broker: tvData['broker']).size > 0 
-      currentFilledListToSum.where(broker: tvData['broker']).each do |trade|
-        if trade&.broker == 'KRAKEN'
-          requestK = Kraken.orderInfo(trade.uuid, apiKey, secretKey)
-          trade.update(status: requestK['status'], cost: requestK['cost'].to_f)
-          trade.destroy! if trade.status == 'canceled'
-        elsif trade&.broker == 'OANDA'
-          requestK = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
-
-          if requestK['order']['state'] == 'CANCELLED'
-            trade.destroy! if trade.status == 'canceled'
-          end
-
-          trade.update(status: 'closed') if requestK['order']['state'] == 'FILLED'
-        end
-      end
-    end
-
     # variables
     orderforMulti = 0
 
