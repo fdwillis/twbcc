@@ -128,13 +128,13 @@ class ApplicationRecord < ActiveRecord::Base
                   priceToBeat = requestProfitTradex['descr']['price2'].to_f
                 elsif tvData['broker'] == 'OANDA'
                   requestProfitTradex = Oanda.oandaOrder(apiKey, secretKey, profitTrade.uuid)
-                  debugger
-                  return
 
                   if requestProfitTradex['order']['state'] == 'FILLED'
                     profitTrade.update(status: 'closed')
                   elsif requestProfitTradex['order']['state'] == 'PENDING'
                     profitTrade.update(status: 'open')
+                  elsif requestProfitTradex['order']['state'] == 'CANCELLED'
+                    profitTrade.update(status: 'canceled')
                   end
                   volumeForProfit = requestProfitTradex['vol'].to_f
                   priceToBeat = requestProfitTradex['descr']['price2'].to_f
@@ -160,6 +160,8 @@ class ApplicationRecord < ActiveRecord::Base
                         puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
                       end
                     elsif tvData['broker'] == 'OANDA'
+                      debugger
+                      return
                     end
                   end
                 elsif profitTrade.status == 'closed' # or other status from oanda/alpaca
