@@ -447,7 +447,7 @@ class ApplicationRecord < ActiveRecord::Base
       if trade&.broker == 'KRAKEN'
         requestK = Kraken.orderInfo(trade.uuid, apiKey, secretKey)
         p requestK
-        
+        sleep 2
         if requestK['result'].present? && requestK['result'][trade.uuid]['status'].present? && requestK['result'][trade.uuid]['cost'].present?
           trade.update(status: requestK['result'][trade.uuid]['status'], cost: requestK['result'][trade.uuid]['cost'].to_f)
         end
