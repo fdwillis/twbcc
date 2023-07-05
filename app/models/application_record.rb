@@ -442,30 +442,7 @@ class ApplicationRecord < ActiveRecord::Base
 
 
 
-    @traderFound.trades.where(finalTakeProfit: nil).each do |trade|
-      puts trade.uuid
-      if trade&.broker == 'KRAKEN'
-
-        requestK = Kraken.orderInfo(trade.uuid, trade.user.krakenLiveAPI, trade.user.krakenLiveSecret)
-        p requestK
-        sleep 1
-        if requestK['result'].present? && requestK['result'][trade.uuid]['status'].present? && requestK['result'][trade.uuid]['cost'].present?
-          trade.update(status: requestK['result'][trade.uuid]['status'], cost: requestK['result'][trade.uuid]['cost'].to_f)
-        end
-
-        if trade.status == 'canceled'
-          trade.destroy! 
-        end
-      # elsif trade&.broker == 'OANDA'
-      #   requestK = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
-
-      #   if requestK['order']['state'] == 'CANCELLED'
-      #     trade.destroy! if trade.status == 'canceled'
-      #   end
-
-      #   trade.update(status: 'closed') if requestK['order']['state'] == 'FILLED'
-      end
-    end
+    
   end
 
   def self.calculateRiskAfterTrade(filledOrders,openOrdersPending, amountToRisk, accountBalance)
