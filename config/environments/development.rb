@@ -62,9 +62,9 @@ Rails.application.configure do
   # Use an evented file watcher to asynchronously detect changes in source code,
   # routes, locales, etc. This feature depends on the listen gem.
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
-  config.action_mailer.default_url_options = { host: 'https://beige-peas-swim.loca.lt' }
-  config.hosts << 'beige-peas-swim.loca.lt'
+  config.action_mailer.default_url_options = { host: 'https://calm-knives-care.loca.lt' }
+  config.hosts << 'calm-knives-care.loca.lt'
 end
 
 # https://app.oarlin.com/signals?&traderID=d57307d7
-# https://beige-peas-swim.loca.lt/signals?&traderID=b10da5fc
+# https://calm-knives-care.loca.lt/signals?&traderID=b10da5fc
