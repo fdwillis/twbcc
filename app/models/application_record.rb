@@ -75,18 +75,18 @@ class ApplicationRecord < ActiveRecord::Base
     if afterUpdates.present? && afterUpdates.size > 0
       afterUpdates.each do |tradeX|
         if tvData['broker'] == 'KRAKEN'
-          requestOriginalE = Kraken.orderInfo(tradeX.uuid, apiKey, secretKey)['result']
-          originalPrice = requestOriginalE[tradeX.uuid]['price'].to_f
-          originalVolume = requestOriginalE[tradeX.uuid]['vol'].to_f
+          @requestOriginalE = Kraken.orderInfo(tradeX.uuid, apiKey, secretKey)['result']
+          originalPrice = @requestOriginalE[tradeX.uuid]['price'].to_f
+          originalVolume = @requestOriginalE[tradeX.uuid]['vol'].to_f
         elsif tvData['broker'] == 'OANDA'
           requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
           if requestExecution['order']['state'] == 'CANCELLED'
             tradeX.destroy!
             next
           end
-          requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, requestExecution['order']['fillingTransactionID'])
-          originalPrice = requestOriginalE['trade']['price'].present? ? requestOriginalE['trade']['price'].to_f : 0
-          originalVolume = requestOriginalE['trade']['initialUnits'].to_f
+          @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, requestExecution['order']['fillingTransactionID'])
+          originalPrice = @requestOriginalE['trade']['price'].present? ? @requestOriginalE['trade']['price'].to_f : 0
+          originalVolume = @requestOriginalE['trade']['initialUnits'].to_f
         end
 
         profitTrigger = originalPrice * (0.01 * @traderFound&.profitTrigger)
@@ -107,7 +107,7 @@ class ApplicationRecord < ActiveRecord::Base
               if tvData['currentPrice'].to_f > profitTriggerPassed + ((0.01 * tvData['trail'].to_f) * profitTriggerPassed)
 
                 if tvData['broker'] == 'KRAKEN'
-                  @protectTrade = Kraken.newTrail(tvData, requestOriginalE, apiKey, secretKey, tradeX)
+                  @protectTrade = Kraken.newTrail(tvData, @requestOriginalE, apiKey, secretKey, tradeX)
                   if !@protectTrade.empty? && @protectTrade['result']['txid'].present?
                     puts 	"\n-- Taking Profit #{@protectTrade['result']['txid'][0]} --\n"
                   end
@@ -155,7 +155,7 @@ class ApplicationRecord < ActiveRecord::Base
                       profitTrade.destroy!
                       puts "\n-- Old Take Profit Canceled --\n"
 
-                      @protectTrade = Kraken.newTrail(tvData, requestOriginalE, apiKey, secretKey, tradeX)
+                      @protectTrade = Kraken.newTrail(tvData, @requestOriginalE, apiKey, secretKey, tradeX)
                       if !@protectTrade.empty? && @protectTrade['result']['txid'].present?
                         puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
                       end
@@ -176,7 +176,7 @@ class ApplicationRecord < ActiveRecord::Base
               if volumeTallyForTradex < originalVolume
                 if openProfitCount == 0
                   if tvData['broker'] == 'KRAKEN'
-                    @protectTrade = Kraken.newTrail(tvData, requestOriginalE, apiKey, secretKey, tradeX)
+                    @protectTrade = Kraken.newTrail(tvData, @requestOriginalE, apiKey, secretKey, tradeX)
                     if !@protectTrade.empty? && @protectTrade['result']['txid'].present?
                       puts "\n-- Additional Take Profit #{@protectTrade['result']['txid'][0]} --\n"
                     end
