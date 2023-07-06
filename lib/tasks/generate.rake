@@ -140,10 +140,10 @@ namespace :generate do
     TakeProfit.where(status: 'open').each do |takeProfitX|
       puts takeProfitX.uuid
       if takeProfitX&.broker == 'KRAKEN'
+        userForLoad = takeProfitX.user
 
-        requestK = Kraken.orderInfo(takeProfitX.uuid, takeProfitX.user.krakenLiveAPI, takeProfitX.user.krakenLiveSecret)
+        requestK = Kraken.orderInfo(takeProfitX.uuid, userForLoad.krakenLiveAPI, userForLoad.krakenLiveSecret)
         p requestK
-        sleep 1
         if requestK['result'].present? && requestK['result'][takeProfitX.uuid]['status'].present? && requestK['result'][takeProfitX.uuid]['cost'].present?
           takeProfitX.update(status: requestK['result'][takeProfitX.uuid]['status'], cost: requestK['result'][takeProfitX.uuid]['cost'].to_f)
         end
