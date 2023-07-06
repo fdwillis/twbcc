@@ -74,12 +74,12 @@ class ApplicationRecord < ActiveRecord::Base
     # protect closed/filled bot trades
     if afterUpdates.present? && afterUpdates.size > 0
       afterUpdates.each do |tradeX|
-        if tvData['broker'] == 'KRAKEN'
+        if tradeX&.broker == 'KRAKEN'
           @requestOriginalE = Kraken.orderInfo(tradeX.uuid, apiKey, secretKey)['result'][tradeX.uuid]
           
           originalPrice = @requestOriginalE['price'].to_f
           originalVolume = @requestOriginalE['vol'].to_f
-        elsif tvData['broker'] == 'OANDA'
+        elsif tradeX&.broker == 'OANDA'
           requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
           if requestExecution['order']['state'] == 'CANCELLED'
             tradeX.destroy!
