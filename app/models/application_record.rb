@@ -157,12 +157,18 @@ class ApplicationRecord < ActiveRecord::Base
                       puts "\n-- Old Take Profit Canceled --\n"
 
                       @protectTrade = Kraken.newTrail(tvData, @requestOriginalE, apiKey, secretKey, tradeX)
+                      
                       if !@protectTrade.empty? && @protectTrade['result']['txid'].present?
                         puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
                       end
                     elsif tvData['broker'] == 'OANDA'
-                      debugger
-                      # return
+                      cancel = Oanda.oandaCancel(apiKey, secretKey, profitTrade.uuid)
+                      profitTrade.destroy!
+                      puts "\n-- Old Take Profit Canceled --\n"
+                      @protectTrade = Oanda.oandaTrail(tvData, requestExecution, apiKey, secretKey, tradeX)
+                      if !@protectTrade.empty? && @protectTrade['orderCreateTransaction']['id'].present?
+                        puts  "\n-- Repainting Take Profit #{@protectTrade['orderCreateTransaction']['id']} --\n"
+                      end
                     end
                   end
                 elsif profitTrade.status == 'closed' # or other status from oanda/alpaca
@@ -182,6 +188,10 @@ class ApplicationRecord < ActiveRecord::Base
                       puts "\n-- Additional Take Profit #{@protectTrade['result']['txid'][0]} --\n"
                     end
                   elsif tvData['broker'] == 'OANDA'
+                    @protectTrade = Oanda.oandaTrail(tvData, requestExecution, apiKey, secretKey, tradeX)
+                    if !@protectTrade.empty? && @protectTrade['orderCreateTransaction']['id'].present?
+                      puts  "\n-- Additional Take Profit #{@protectTrade['orderCreateTransaction']['id']} --\n"
+                    end
                   end
                 else
                   puts "\n-- Waiting To Close Open Take Profit --\n"

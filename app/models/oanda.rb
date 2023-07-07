@@ -17,6 +17,10 @@ class Oanda < ApplicationRecord
     oandaRequest(token, accountID).account(accountID).order(orderParams).create
   end
 
+  def self.oandaCancel(token, accountID, orderID)
+    oandaRequest(token, accountID).account(accountID).order(orderID).cancel
+  end
+
   def self.oandaOrder(token, accountID, orderID)
     oandaRequest(token, accountID).account(accountID).order(orderID).show
   end
