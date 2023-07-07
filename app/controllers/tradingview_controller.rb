@@ -232,6 +232,7 @@ class TradingviewController < ApplicationController
                 end
               end
               puts "\n-- Finished Copying Trades --\n"
+              return
             end
 
           end
