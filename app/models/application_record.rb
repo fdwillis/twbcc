@@ -37,11 +37,13 @@ class ApplicationRecord < ActiveRecord::Base
 
   def self.trailStop(tvData, apiKey = nil, secretKey = nil)
     if tvData['broker'] == 'KRAKEN'
-      @openTrades = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'open', broker: tvData['broker'])
-      @traderFound = User.find_by(krakenLiveAPI: apiKey)
+      @userX = User.find_by(krakenLiveAPI: apiKey)
+      @openTrades = @userX.trades.where(status: 'open', broker: 'KRAKEN')
+      @traderFound = @userX
     elsif tvData['broker'] == 'OANDA'
-      @openTrades = User.find_by(oandaToken: apiKey).trades.where(status: 'open', broker: tvData['broker'])
-      @traderFound = User.find_by(oandaToken: apiKey)
+      @userX = User.find_by(oandaToken: apiKey)
+      @openTrades = @userX.trades.where(status: 'open', broker: 'OANDA')
+      @traderFound = @userX
     end
 
     puts "\n-- Current Price: #{tvData['currentPrice'].to_f} --\n"
@@ -49,11 +51,11 @@ class ApplicationRecord < ActiveRecord::Base
     # update trade status
     if @openTrades.present? && @openTrades.size > 0
       @openTrades.each do |trade|
-        if tvData['broker'] == 'KRAKEN'
+        if trade&.broker == 'KRAKEN' && tvData['broker'] == 'KRAKEN'
           requestK = Kraken.orderInfo(trade.uuid, apiKey, secretKey)['result']
           trade.update(status: requestK[trade.uuid]['status'])
           trade.destroy! if trade.status == 'canceled'
-        elsif tvData['broker'] == 'OANDA'
+        elsif trade&.broker == 'OANDA' && tvData['broker'] == 'OANDA'
           requestK = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
 
           if requestK['order']['state'] == 'CANCELLED'
@@ -66,9 +68,9 @@ class ApplicationRecord < ActiveRecord::Base
     end
     # pull closed/filled bot trades
     if tvData['broker'] == 'KRAKEN'
-      afterUpdates = User.find_by(krakenLiveAPI: apiKey).trades.where(status: 'closed', broker: tvData['broker'], finalTakeProfit: nil)
+      afterUpdates =  @userX.trades.where(status: 'closed', broker: 'KRAKEN', finalTakeProfit: nil)
     elsif tvData['broker'] == 'OANDA'
-      afterUpdates = User.find_by(oandaToken: apiKey).trades.where(status: 'closed', broker: tvData['broker'], finalTakeProfit: nil)
+      afterUpdates =  @userX.trades.where(status: 'closed', broker: 'OANDA', finalTakeProfit: nil)
     end
 
     # protect closed/filled bot trades
@@ -94,9 +96,9 @@ class ApplicationRecord < ActiveRecord::Base
         volumeTallyForTradex = 0
         openProfitCount = 0
 
-        if tvData['broker'] == 'KRAKEN'
+        if tradeX&.broker == 'KRAKEN'
           profitTriggerPassed = (originalPrice + profitTrigger).round(1).to_f
-        elsif tvData['broker'] == 'OANDA'
+        elsif tradeX&.broker == 'OANDA'
           profitTriggerPassed = (originalPrice + profitTrigger).round(5).to_f
         end
 
