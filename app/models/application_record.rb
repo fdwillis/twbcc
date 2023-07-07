@@ -47,22 +47,23 @@ class ApplicationRecord < ActiveRecord::Base
     end
 
     puts "\n-- Current Price: #{tvData['currentPrice'].to_f} --\n"
-
     # update trade status
     if @openTrades.present? && @openTrades.size > 0
       @openTrades.each do |trade|
-        if trade&.broker == 'KRAKEN' && tvData['broker'] == 'KRAKEN'
+        if trade&.broker == 'KRAKEN' 
           requestK = Kraken.orderInfo(trade.uuid, apiKey, secretKey)['result']
           trade.update(status: requestK[trade.uuid]['status'])
           trade.destroy! if trade.status == 'canceled'
-        elsif trade&.broker == 'OANDA' && tvData['broker'] == 'OANDA'
+        elsif trade&.broker == 'OANDA'
           requestK = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
-
+          
           if requestK['order']['state'] == 'CANCELLED'
-            trade.destroy! if trade.status == 'canceled'
+            trade.destroy!
+          elsif requestK['order']['state'] == 'PENDING'
+            trade.update(status: 'open')
+          elsif requestK['order']['state'] == 'FILLED'
+            trade.update(status: 'closed')
           end
-
-          trade.update(status: 'closed') if requestK['order']['state'] == 'FILLED'
         end
       end
     end
@@ -72,6 +73,7 @@ class ApplicationRecord < ActiveRecord::Base
     elsif tvData['broker'] == 'OANDA'
       afterUpdates =  @userX.trades.where(status: 'closed', broker: 'OANDA', finalTakeProfit: nil)
     end
+
 
     # protect closed/filled bot trades
     if afterUpdates.present? && afterUpdates.size > 0
@@ -83,10 +85,6 @@ class ApplicationRecord < ActiveRecord::Base
           originalVolume = @requestOriginalE['vol'].to_f
         elsif tradeX&.broker == 'OANDA'
           requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
-          if requestExecution['order']['state'] == 'CANCELLED'
-            tradeX.destroy!
-            next
-          end
           @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, requestExecution['order']['fillingTransactionID'])
           originalPrice = @requestOriginalE['trade']['price'].present? ? @requestOriginalE['trade']['price'].to_f : 0
           originalVolume = @requestOriginalE['trade']['initialUnits'].to_f
@@ -163,7 +161,7 @@ class ApplicationRecord < ActiveRecord::Base
                         puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
                       end
                     elsif tvData['broker'] == 'OANDA'
-                      # debugger
+                      debugger
                       # return
                     end
                   end
