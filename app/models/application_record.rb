@@ -209,6 +209,12 @@ class ApplicationRecord < ActiveRecord::Base
                     puts "\n-- Waiting To Close Last Position --\n"
                   end
                 elsif tvData['broker'] == 'OANDA'
+                  checkFill = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
+                  if checkFill['order']['state'] == 'PENDING'
+                    tradeX.update(finalTakeProfit: nil)
+                  elsif checkFill['order']['state'] == 'FILLED'
+                    tradeX.take_profits.last.update(status: 'closed')
+                  end
                 end
               end
 
