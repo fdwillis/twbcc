@@ -352,7 +352,7 @@ class ApplicationRecord < ActiveRecord::Base
           if requestK.present? && requestK['result'].present?
 
             if requestK['result']['txid'].present?
-              User.find_by(krakenLiveAPI: apiKey).trades.create(uuid: requestK['result']['txid'][0], broker: tvData['broker'], direction: tvData['direction'], status: 'open', cost: requestK['result']['cost'].to_f)
+              User.find_by(krakenLiveAPI: apiKey).trades.create(traderID: tvData['traderID'], uuid: requestK['result']['txid'][0], broker: tvData['broker'], direction: tvData['direction'], status: 'open', cost: requestK['result']['cost'].to_f)
               puts "\n-- #{tvData['broker']} Entry Submitted --\n"
               puts "\n-- Current Risk #{@currentRisk.round(2)} --\n"
             end
@@ -367,7 +367,7 @@ class ApplicationRecord < ActiveRecord::Base
           if requestK['orderCancelTransaction'].present? && requestK['orderCancelTransaction']['reason'].present?
             puts "\n-- #{requestK['orderCancelTransaction']['reason']} --\n"
           else
-            User.find_by(oandaToken: apiKey).trades.create(uuid: requestK['orderCreateTransaction']['id'], broker: tvData['broker'], direction: tvData['direction'], status: 'closed')
+            User.find_by(oandaToken: apiKey).trades.create(traderID: tvData['traderID'], uuid: requestK['orderCreateTransaction']['id'], broker: tvData['broker'], direction: tvData['direction'], status: 'closed')
             puts "\n-- #{tvData['broker']} Entry Submitted --\n"
             puts "\n-- Current Risk #{@currentRisk.round(2)} --\n"
           end
@@ -429,7 +429,7 @@ class ApplicationRecord < ActiveRecord::Base
           if tvData['broker'] == 'KRAKEN'
             if requestK.present? && requestK['result'].present?
               if requestK['result']['txid'].present?
-                User.find_by(krakenLiveAPI: apiKey).trades.create(uuid: requestK['result']['txid'][0], broker: tvData['broker'], direction: tvData['direction'], status: 'open', cost: requestK['result']['cost'].to_f)
+                User.find_by(krakenLiveAPI: apiKey).trades.create(traderID: tvData['traderID'], uuid: requestK['result']['txid'][0], broker: tvData['broker'], direction: tvData['direction'], status: 'open', cost: requestK['result']['cost'].to_f)
                 puts "\n-- #{tvData['broker']} Entry Submitted --\n"
                 puts "\n-- Current Risk #{@currentRisk.round(2)} --\n"
               end
@@ -441,7 +441,7 @@ class ApplicationRecord < ActiveRecord::Base
             end
           elsif tvData['broker'] == 'OANDA'
             if requestK.present?
-              User.find_by(oandaToken: apiKey).trades.create(uuid: requestK['orderCreateTransaction']['id'], broker: tvData['broker'], direction: tvData['direction'], status: 'open')
+              User.find_by(oandaToken: apiKey).trades.create(traderID: tvData['traderID'], uuid: requestK['orderCreateTransaction']['id'], broker: tvData['broker'], direction: tvData['direction'], status: 'open')
               puts "\n-- #{tvData['broker']} Entry Submitted --\n"
               puts "\n-- Current Risk #{@currentRisk.round(2)} --\n"
             else
