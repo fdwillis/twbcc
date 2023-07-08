@@ -2,7 +2,6 @@ class Tradiers < ApplicationRecord
 
   def self.tradierRequest(token)
 		@tradier = Tradier::Client.new(access_token: ENV['tradierToken'])
-
   end
 
 	def self.optionsThisFriday(symbol,token)

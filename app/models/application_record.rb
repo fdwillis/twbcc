@@ -32,6 +32,7 @@ class ApplicationRecord < ActiveRecord::Base
         cancel = Kraken.request(routeToKraken, krakenOrderParams, apiKey, secretKey)
       end
     elsif tvData['broker'] == 'OANDA'
+    elsif tvData['broker'] == 'TRADIER'
     end
   end
 
@@ -44,6 +45,7 @@ class ApplicationRecord < ActiveRecord::Base
       @userX = User.find_by(oandaToken: apiKey)
       @openTrades = @userX.trades.where(status: 'open', broker: 'OANDA')
       @traderFound = @userX
+    elsif tvData['broker'] == 'TRADIER'
     end
 
     puts "\n-- Current Price: #{tvData['currentPrice'].to_f} --\n"
@@ -64,6 +66,7 @@ class ApplicationRecord < ActiveRecord::Base
           elsif requestK['order']['state'] == 'FILLED'
             trade.update(status: 'closed')
           end
+        elsif trade&.broker == 'TRADIER'
         end
       end
     end
@@ -72,6 +75,7 @@ class ApplicationRecord < ActiveRecord::Base
       afterUpdates =  @userX.trades.where(status: 'closed', broker: 'KRAKEN', finalTakeProfit: nil)
     elsif tvData['broker'] == 'OANDA'
       afterUpdates =  @userX.trades.where(status: 'closed', broker: 'OANDA', finalTakeProfit: nil)
+    elsif tvData['broker'] == 'TRADIER'
     end
 
 
@@ -88,6 +92,7 @@ class ApplicationRecord < ActiveRecord::Base
           @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, requestExecution['order']['fillingTransactionID'])
           originalPrice = @requestOriginalE['trade']['price'].present? ? @requestOriginalE['trade']['price'].to_f : 0
           originalVolume = @requestOriginalE['trade']['initialUnits'].to_f
+        elsif tradeX&.broker == 'TRADIER'
         end
 
         profitTrigger = originalPrice * (0.01 * @traderFound&.profitTrigger)
@@ -98,6 +103,7 @@ class ApplicationRecord < ActiveRecord::Base
           profitTriggerPassed = (originalPrice + profitTrigger).round(1).to_f
         elsif tradeX&.broker == 'OANDA'
           profitTriggerPassed = (originalPrice + profitTrigger).round(5).to_f
+        elsif tradeX&.broker == 'TRADIER'
         end
 
         if tvData['direction'] == 'sell'
@@ -117,6 +123,7 @@ class ApplicationRecord < ActiveRecord::Base
                   if !@protectTrade.empty? && @protectTrade['orderCreateTransaction']['id'].present?
                     puts 	"\n-- Taking Profit #{@protectTrade['orderCreateTransaction']['id']} --\n"
                   end
+                elsif tvData['broker'] == 'TRADIER'
                 end
               end
             else
@@ -139,6 +146,7 @@ class ApplicationRecord < ActiveRecord::Base
                   end
                   volumeForProfit = requestProfitTradex['vol'].to_f
                   priceToBeat = requestProfitTradex['descr']['price2'].to_f
+                elsif tvData['broker'] == 'TRADIER'
                 end
 
                 if profitTrade.status == 'open' # or other status from oanda/alpaca
@@ -169,6 +177,7 @@ class ApplicationRecord < ActiveRecord::Base
                       if !@protectTrade.empty? && @protectTrade['orderCreateTransaction']['id'].present?
                         puts  "\n-- Repainting Take Profit #{@protectTrade['orderCreateTransaction']['id']} --\n"
                       end
+                    elsif tvData['broker'] == 'TRADIER'
                     end
                   end
                 elsif profitTrade.status == 'closed' # or other status from oanda/alpaca
@@ -192,6 +201,7 @@ class ApplicationRecord < ActiveRecord::Base
                     if !@protectTrade.empty? && @protectTrade['orderCreateTransaction']['id'].present?
                       puts  "\n-- Additional Take Profit #{@protectTrade['orderCreateTransaction']['id']} --\n"
                     end
+                  elsif tvData['broker'] == 'TRADIER'
                   end
                 else
                   puts "\n-- Waiting To Close Open Take Profit --\n"
@@ -215,6 +225,7 @@ class ApplicationRecord < ActiveRecord::Base
                   elsif checkFill['order']['state'] == 'FILLED'
                     tradeX.take_profits.last.update(status: 'closed')
                   end
+                elsif tvData['broker'] == 'TRADIER'
                 end
               end
 
@@ -238,6 +249,7 @@ class ApplicationRecord < ActiveRecord::Base
       @traderFound = User.find_by(krakenLiveAPI: apiKey)
     elsif tvData['broker'] == 'OANDA'
       @traderFound = User.find_by(oandaToken: apiKey)
+    elsif tvData['broker'] == 'TRADIER'
     end
 
 
@@ -285,6 +297,7 @@ class ApplicationRecord < ActiveRecord::Base
 
       orderforMulti += @traderFound&.allowMarketOrder ? 1 : 0
       tvData['entries'].reject(&:blank?).size > 0 ? orderforMulti += tvData['entries'].reject(&:blank?).size : orderforMulti += 0
+    elsif tvData['broker'] == 'TRADIER'
     end
 
     
@@ -293,6 +306,7 @@ class ApplicationRecord < ActiveRecord::Base
      @currentRisk = calculateRiskAfterTrade(filledOrders,openOrdersPending, (amountToRisk * orderforMulti),  @accountTotal)
     elsif tvData['broker'] == 'OANDA'
      @currentRisk = calculateRiskAfterTrade(marginUsed,openOrdersPending, (@amountToRisk * orderforMulti),  accountBalance)
+    elsif tvData['broker'] == 'TRADIER'
     end
 
     # ticker specific
@@ -324,6 +338,7 @@ class ApplicationRecord < ActiveRecord::Base
               'positionFill' => 'DEFAULT'
             }
           }
+        elsif tvData['broker'] == 'TRADIER'
         end
 
         # call order
@@ -333,6 +348,7 @@ class ApplicationRecord < ActiveRecord::Base
             requestK = Kraken.request('/0/private/AddOrder', krakenOrderParams, apiKey, secretKey)
           elsif tvData['broker'] == 'OANDA'
             requestK = Oanda.oandaEntry(apiKey, secretKey, oandaOrderParams)
+          elsif tvData['broker'] == 'TRADIER'
           end
         end
 
@@ -343,6 +359,7 @@ class ApplicationRecord < ActiveRecord::Base
             requestK = Kraken.request('/0/private/AddOrder', krakenOrderParams, apiKey, secretKey)
           elsif tvData['broker'] == 'OANDA'
             requestK = Oanda.oandaEntry(apiKey, secretKey, oandaOrderParams)
+          elsif tvData['broker'] == 'TRADIER'
           end
         end
 
@@ -371,6 +388,7 @@ class ApplicationRecord < ActiveRecord::Base
             puts "\n-- #{tvData['broker']} Entry Submitted --\n"
             puts "\n-- Current Risk #{@currentRisk.round(2)} --\n"
           end
+        elsif tvData['broker'] == 'TRADIER'
         end
       end
 
@@ -381,6 +399,7 @@ class ApplicationRecord < ActiveRecord::Base
             priceToSet = (tvData['direction'] == 'sell' ? tvData['highPrice'].to_f + (tvData['highPrice'].to_f * (0.01 * entryPercentage.to_f)) : tvData['lowPrice'].to_f - (tvData['lowPrice'].to_f * (0.01 * entryPercentage.to_f))).round(1)
           elsif tvData['broker'] == 'OANDA'
             priceToSet = (tvData['direction'] == 'sell' ? tvData['highPrice'].to_f + (tvData['highPrice'].to_f * (0.01 * entryPercentage.to_f)) : tvData['lowPrice'].to_f - (tvData['lowPrice'].to_f * (0.01 * entryPercentage.to_f))).round(5)
+          elsif tvData['broker'] == 'TRADIER'
           end
           # set order params
 
@@ -403,6 +422,7 @@ class ApplicationRecord < ActiveRecord::Base
                 'positionFill' => 'DEFAULT'
               }
             }
+          elsif tvData['broker'] == 'TRADIER'
 
           end
           # call order
@@ -412,6 +432,7 @@ class ApplicationRecord < ActiveRecord::Base
               requestK = Kraken.request('/0/private/AddOrder', krakenParams0, apiKey, secretKey)
             elsif tvData['broker'] == 'OANDA'
               requestK = Oanda.oandaEntry(apiKey, secretKey, oandaOrderParams)
+            elsif tvData['broker'] == 'TRADIER'
             end
           end
           # put order
@@ -421,6 +442,7 @@ class ApplicationRecord < ActiveRecord::Base
               requestK = Kraken.request('/0/private/AddOrder', krakenParams0, apiKey, secretKey)
             elsif tvData['broker'] == 'OANDA'
               requestK = Oanda.oandaEntry(apiKey, secretKey, oandaOrderParams)
+            elsif tvData['broker'] == 'TRADIER'
             end
           end
 
@@ -447,6 +469,7 @@ class ApplicationRecord < ActiveRecord::Base
             else
               puts "\n-- NOTHING --\n"
             end
+          elsif tvData['broker'] == 'TRADIER'
 
           end
         end
