@@ -27,6 +27,11 @@ class Kraken < ApplicationRecord
     Oj.load(response.body)
   end
 
+  def self.krakenDeposits(apiKey, secretKey)
+    routeToKraken = '/0/private/DepositStatus'
+    request(routeToKraken, nil, apiKey, secretKey)
+  end
+
   def self.krakenBalance(apiKey, secretKey)
     routeToKraken = '/0/private/Balance'
     request(routeToKraken, nil, apiKey, secretKey)
