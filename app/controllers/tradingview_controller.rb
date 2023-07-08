@@ -117,6 +117,7 @@ class TradingviewController < ApplicationController
                   BackgroundJob.perform_async('stop', tradingviewKeysparams.to_h, traderFound&.oandaToken, accountID)
                 end
               when params['broker'] == 'TRADIER'
+                BackgroundJob.perform_async('stop', tradingviewKeysparams.to_h, traderFound&.tradierToken, nil)
               end
             when params['type'] == 'entry'
               case true
@@ -127,6 +128,7 @@ class TradingviewController < ApplicationController
                   BackgroundJob.perform_async('entry', tradingviewKeysparams.to_h, traderFound&.oandaToken, accountID)
                 end
               when params['broker'] == 'TRADIER'
+                BackgroundJob.perform_async('entry', tradingviewKeysparams.to_h, traderFound&.tradierToken, nil)
               end
             when params['type'].include?('profit')
             when params['type'] == 'kill'
@@ -138,6 +140,7 @@ class TradingviewController < ApplicationController
                   BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFound&.oandaToken, accountID)
                 end
               when params['broker'] == 'TRADIER'
+                BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFound&.tradierToken, nil)
               end
             end
             puts "\n-- Finished Admin Trades --\n"
@@ -173,6 +176,7 @@ class TradingviewController < ApplicationController
                             BackgroundJob.perform_async('stop', tradingviewKeysparams.to_h, traderFoundForCopy.oandaToken, accountID)
                           end
                         when params['broker'] == 'TRADIER'
+                          BackgroundJob.perform_async('stop', tradingviewKeysparams.to_h, traderFound&.tradierToken, nil)
                         end
                       when params['type'] == 'entry'
                         case true
@@ -183,6 +187,7 @@ class TradingviewController < ApplicationController
                             BackgroundJob.perform_async('entry', tradingviewKeysparams.to_h, traderFoundForCopy.oandaToken, accountID)
                           end
                         when params['broker'] == 'TRADIER'
+                          BackgroundJob.perform_async('entry', tradingviewKeysparams.to_h, traderFound&.tradierToken, nil)
                         end
                       when params['type'].include?('profit')
                       when params['type'] == 'kill'
@@ -192,6 +197,7 @@ class TradingviewController < ApplicationController
                         when params['broker'] == 'OANDA'
                           BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFoundForCopy.oandaToken, nil)
                         when params['broker'] == 'TRADIER'
+                          BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFound&.tradierToken, nil)
                         end
                       end
                     elsif (DateTime.now.strftime('%a') != 'Sun' && DateTime.now.strftime('%a') != 'Sat') && traderFoundForCopy.trial?
@@ -212,6 +218,7 @@ class TradingviewController < ApplicationController
                               BackgroundJob.perform_async('stop', tradingviewKeysparams.to_h, traderFoundForCopy&.oandaToken, accountID)
                             end
                           when params['broker'] == 'TRADIER'
+                            BackgroundJob.perform_async('stop', tradingviewKeysparams.to_h, traderFound&.tradierToken, nil)
                           end
                         when params['type'] == 'entry'
                           case true
@@ -222,6 +229,7 @@ class TradingviewController < ApplicationController
                               BackgroundJob.perform_async('entry', tradingviewKeysparams.to_h, traderFoundForCopy&.oandaToken, accountID)
                             end
                           when params['broker'] == 'TRADIER'
+                            BackgroundJob.perform_async('entry', tradingviewKeysparams.to_h, traderFound&.tradierToken, nil)
                           end
                         when params['type'].include?('profit')
                         when params['type'] == 'kill'
@@ -231,6 +239,7 @@ class TradingviewController < ApplicationController
                           when params['broker'] == 'OANDA'
                             BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFoundForCopy&.oandaToken, nil)
                           when params['broker'] == 'TRADIER'
+                            BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFound&.tradierToken, nil)
                           end
                         end
                       else
@@ -257,6 +266,7 @@ class TradingviewController < ApplicationController
                 BackgroundJob.perform_async('stop', tradingviewKeysparams.to_h, traderFound&.oandaToken, accountID)
               end
             when params['broker'] == 'TRADIER'
+              BackgroundJob.perform_async('stop', tradingviewKeysparams.to_h, traderFound&.tradierToken, accountID)
             end
           when params['type'] == 'entry'
             case true
@@ -267,6 +277,7 @@ class TradingviewController < ApplicationController
                 BackgroundJob.perform_async('entry', tradingviewKeysparams.to_h, traderFound&.oandaToken, accountID)
               end
             when params['broker'] == 'TRADIER'
+              BackgroundJob.perform_async('entry', tradingviewKeysparams.to_h, traderFound&.tradierToken, accountID)
             end
           when params['type'].include?('profit')
           when params['type'] == 'kill'
@@ -278,6 +289,7 @@ class TradingviewController < ApplicationController
                 BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFound&.oandaToken, accountID)
               end
             when params['broker'] == 'TRADIER'
+              BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFound&.tradierToken, accountID)
             end
           end
         end
