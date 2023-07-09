@@ -82,6 +82,7 @@ class ApplicationRecord < ActiveRecord::Base
     # protect closed/filled bot trades
     if afterUpdates.present? && afterUpdates.size > 0
       afterUpdates.each do |tradeX|
+        puts "\n-- Starting For #{tradeX.uuid} --\n"
         if tradeX&.broker == 'KRAKEN'
           @requestOriginalE = Kraken.orderInfo(tradeX.uuid, apiKey, secretKey)
           
