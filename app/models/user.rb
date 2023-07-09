@@ -358,10 +358,11 @@ class User < ApplicationRecord
                                  else
                                    FREEmembership.include?(planID) ? 'free' : 'free'
                                  end
-                              end
+                               end
+                             end
                            end
                          end
-        end
+                         
         if membershipPlan['status'] == 'active' && membershipPlan['pause_collection'].nil?
           membershipValid << { membershipDetails: membershipPlan, membershipType: membershipType }
         end

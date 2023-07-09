@@ -144,14 +144,25 @@
               </div>
             </div>
           <% end %>
+          
           <div class="card card-style">
             <div class="content my-0">
-              <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Company</h5>
+              <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Memberships</h5>
               <% if Stripe::Coupon.list({limit: 100})['data'].size > 0 %>
                 <div class="list-group list-custom-small list-icon-0">
-                  <a href="/discounts?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                    <i class="fa font-12 fa-percent bg-red-dark rounded-sm color-white"></i>
-                    <span>Discounts</span>
+                  <a href="/traders?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
+                    <i class="fa font-12 fa-star bg-highlight-dark rounded-sm color-white"></i>
+                    <span>Traders</span>
+                    <i class="fa fa-angle-right"></i>
+                  </a>
+                  <a href="/influencers?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
+                    <i class="fa font-12 fa-bolt bg-highlight-dark rounded-sm color-white"></i>
+                    <span>Influencers</span>
+                    <i class="fa fa-angle-right"></i>
+                  </a>
+                   <a href="/users?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
+                    <i class="fa font-12 fa-users bg-highlight-dark rounded-sm color-white"></i>
+                    <span>Users</span>
                     <i class="fa fa-angle-right"></i>
                   </a>
                 </div>
@@ -161,18 +172,27 @@
           <div class="card card-style">
             <div class="content my-0">
               <% if !current_user %>
-                <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Autotrade</h5>
+                <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Company</h5>
                 <div class="list-group list-custom-small list-icon-0">
                   <a href="/auto-trading?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                    <i class="fa font-12 fa-signal bg-highlight rounded-sm color-white"></i>
+                    <i class="fa font-12 fa-signal bg-blue-dark rounded-sm color-white"></i>
                     <span>Membership</span>
                     <i class="fa fa-angle-right"></i>
                   </a>
                   <a href="/targets?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                    <i class="fa font-12 fa-bullseye bg-blue-dark rounded-sm color-white"></i>
+                    <i class="fa font-12 fa-signal bg-blue-dark rounded-sm color-white"></i>
                     <span>Targets</span>
                     <i class="fa fa-angle-right"></i>
                   </a>
+                  <% if Stripe::Coupon.list({limit: 100})['data'].size > 0 %>
+                    <div class="list-group list-custom-small list-icon-0">
+                      <a href="/discounts?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
+                        <i class="fa font-12 fa-percent bg-blue-dark rounded-sm color-white"></i>
+                        <span>Discounts</span>
+                        <i class="fa fa-angle-right"></i>
+                      </a>
+                    </div>
+                  <% end %>
                   <a href="/questions?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
                     <i class="fa font-12 fa-question bg-yellow-dark rounded-sm color-white"></i>
                     <span>FAQ</span>
