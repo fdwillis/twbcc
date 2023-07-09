@@ -83,10 +83,10 @@ class ApplicationRecord < ActiveRecord::Base
     if afterUpdates.present? && afterUpdates.size > 0
       afterUpdates.each do |tradeX|
         if tradeX&.broker == 'KRAKEN'
-          @requestOriginalE = Kraken.orderInfo(tradeX.uuid, apiKey, secretKey)['result'][tradeX.uuid]
+          @requestOriginalE = Kraken.orderInfo(tradeX.uuid, apiKey, secretKey)
           
-          originalPrice = @requestOriginalE['price'].to_f
-          originalVolume = @requestOriginalE['vol'].to_f
+          originalPrice = @requestOriginalE['result'][tradeX.uuid]['price'].to_f
+          originalVolume = @requestOriginalE['result'][tradeX.uuid]['vol'].to_f
         elsif tradeX&.broker == 'OANDA'
           requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
           @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, requestExecution['order']['fillingTransactionID'])
@@ -130,10 +130,10 @@ class ApplicationRecord < ActiveRecord::Base
 
               tradeX.take_profits.each do |profitTrade|
                 if tvData['broker'] == 'KRAKEN'
-                  requestProfitTradex = Kraken.orderInfo(profitTrade.uuid, apiKey, secretKey)['result']
-                  profitTrade.update(status: requestProfitTradex[profitTrade.uuid]['status'])
-                  volumeForProfit = requestProfitTradex[profitTrade.uuid]['vol'].to_f
-                  priceToBeat = requestProfitTradex[profitTrade.uuid]['descr']['price2'].to_f
+                  requestProfitTradex = Kraken.orderInfo(profitTrade.uuid, apiKey, secretKey)
+                  profitTrade.update(status: requestProfitTradex['result'][profitTrade.uuid]['status'])
+                  volumeForProfit = requestProfitTradex['result'][profitTrade.uuid]['vol'].to_f
+                  priceToBeat = requestProfitTradex['result'][profitTrade.uuid]['descr']['price2'].to_f
                 elsif tvData['broker'] == 'OANDA'
                   requestProfitTradex = Oanda.oandaOrder(apiKey, secretKey, profitTrade.uuid)
 
@@ -208,13 +208,13 @@ class ApplicationRecord < ActiveRecord::Base
                 end
               else
                 if tvData['broker'] == 'KRAKEN'
-                  checkFill = Kraken.orderInfo(tradeX.take_profits.last.uuid, apiKey, secretKey)['result']
-                  tradeX.take_profits.last.update(status: checkFill[tradeX.take_profits.last.uuid]['status'])
-                  if checkFill[tradeX.take_profits.last.uuid]['status'] == 'closed'
+                  checkFill = Kraken.orderInfo(tradeX.take_profits.last.uuid, apiKey, secretKey)
+                  tradeX.take_profits.last.update(status: checkFill['result'][tradeX.take_profits.last.uuid]['status'])
+                  if checkFill['result'][tradeX.take_profits.last.uuid]['status'] == 'closed'
                     tradeX.update(finalTakeProfit: tradeX.take_profits.last.uuid)
                     puts "\n-- Position Closed #{tradeX.uuid} --\n"
                     puts "\n-- Last Profit Taken #{tradeX.take_profits.last.uuid} --\n"
-                  elsif checkFill[tradeX.take_profits.last.uuid]['status'] == 'open'
+                  elsif checkFill['result'][tradeX.take_profits.last.uuid]['status'] == 'open'
                     tradeX.update(finalTakeProfit: nil)
                     puts "\n-- Waiting To Close Last Position --\n"
                   end

@@ -51,27 +51,29 @@ class TradingviewController < ApplicationController
         end
       end
 
-      next unless user&.krakenLiveAPI.present? && user&.krakenLiveSecret.present?
+      if user&.krakenLiveAPI.present? && user&.krakenLiveSecret.present? && !user&.trial?
 
-      balanceX = Kraken.krakenBalance(user&.krakenLiveAPI, user&.krakenLiveSecret)
-      krakenResult = balanceX['result'].reject { |_d, f| f.to_f == 0 }
-      baseCurrency = krakenResult.reject { |d, _f| !d.include?('Z') }.keys[0]
-      @assetsUM += krakenResult[baseCurrency].to_f
+        balanceX = Kraken.krakenBalance(user&.krakenLiveAPI, user&.krakenLiveSecret)
+        krakenResult = balanceX['result'].reject { |_d, f| f.to_f == 0 }
+        baseCurrency = krakenResult.reject { |d, _f| !d.include?('Z') }.keys[0]
+        realCurrencyBase = ISO3166::Country[user&.amazonCountry.downcase].currency_code
+        @assetsUM += krakenResult[baseCurrency].to_f
+        krakenResult.except(baseCurrency).each do |resultX|
+          baseTicker = resultX[0]
+          assetInfo = Kraken.assetInfo({ 'ticker' => baseTicker }, user&.krakenLiveAPI, user&.krakenLiveSecret)
+          units = balanceX['result'][baseTicker].to_f
+          altName = assetInfo['result'][baseTicker]['altname']
 
-      krakenResult.except(baseCurrency).each do |resultX|
-        baseTicker = resultX[0]
-        assetInfo = Kraken.assetInfo({ 'ticker' => baseTicker }, user&.krakenLiveAPI, user&.krakenLiveSecret)
-        units = balanceX['result'][baseTicker].to_f
-        altName = assetInfo['result'][baseTicker]['altname']
-        tickerInfo = Kraken.tickerInfo({ 'ticker' => "#{altName}#{baseCurrency.delete('Z')}" }, user&.krakenLiveAPI, user&.krakenLiveSecret)
+          tickerInfo = Kraken.tickerInfo({ 'ticker' => "#{altName}#{realCurrencyBase}" }, user&.krakenLiveAPI, user&.krakenLiveSecret)
 
-        ask = tickerInfo['result']["#{baseTicker}#{baseCurrency}"]['a'][0].to_f
-        bid = tickerInfo['result']["#{baseTicker}#{baseCurrency}"]['b'][0].to_f
+          ask = tickerInfo['result']["#{baseTicker}#{baseCurrency}"]['a'][0].to_f
+          bid = tickerInfo['result']["#{baseTicker}#{baseCurrency}"]['b'][0].to_f
 
-        averagePrice = (ask + bid) / 2
+          averagePrice = (ask + bid) / 2
 
-        risked = averagePrice * units
-        @assetsUM += risked
+          risked = averagePrice * units
+          @assetsUM += risked
+        end
       end
     end
   end
