@@ -19,9 +19,9 @@ Rails.application.routes.draw do
   get '/discounts', to: 'application#discounts', as: 'discounts' # sprint2
   get '/membership', to: 'application#membership', as: 'membership'
   get '/auto-trading', to: 'application#autotrading', as: 'autotrading'
-  get '/traders', to: 'application#autotrading', as: 'traders'
-  get '/influencers', to: 'application#autotrading', as: 'influencers'
-  get '/users', to: 'application#autotrading', as: 'users'
+  get '/traders', to: 'application#traders', as: 'traders'
+  get '/influencers', to: 'application#influencers', as: 'influencers'
+  get '/users', to: 'application#users', as: 'users'
   get '/view-on-amazon/:asin/:country', to: 'products#amazon', as: 'amazon'
   get '/list', to: 'application#list', as: 'list'
   get '/loved', to: 'application#loved', as: 'loved'
