@@ -103,7 +103,7 @@ class Kraken < ApplicationRecord
       }
       sleep 1
       requestProfit = request(routeToKraken, orderParams, apiKey, secretKey)
-    elsif tvtraderFound&.reduceBy.present? && traderFound&.reduceBy == 100
+    elsif traderFound&.reduceBy.present? && traderFound&.reduceBy == 100
       routeToKraken1 = '/0/private/AddOrder'
 
       orderParams1 = {
