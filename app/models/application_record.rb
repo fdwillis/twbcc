@@ -165,7 +165,7 @@ class ApplicationRecord < ActiveRecord::Base
                       profitTrade.destroy!
                       puts "\n-- Old Take Profit Canceled --\n"
 
-                      @protectTrade = Kraken.newTrail(tvData, @requestOriginalE, apiKey, secretKey, tradeX)
+                      @protectTrade = Kraken.newTrail(tvData, @requestOriginalE['result'][tradeX.uuid], apiKey, secretKey, tradeX)
                       
                       if !@protectTrade.empty? && @protectTrade['result']['txid'].present?
                         puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
@@ -193,7 +193,7 @@ class ApplicationRecord < ActiveRecord::Base
               if volumeTallyForTradex < originalVolume
                 if openProfitCount == 0
                   if tvData['broker'] == 'KRAKEN'
-                    @protectTrade = Kraken.newTrail(tvData, @requestOriginalE, apiKey, secretKey, tradeX)
+                    @protectTrade = Kraken.newTrail(tvData, @requestOriginalE['result'][tradeX.uuid], apiKey, secretKey, tradeX)
                     if !@protectTrade.empty? && @protectTrade['result']['txid'].present?
                       puts "\n-- Additional Take Profit #{@protectTrade['result']['txid'][0]} --\n"
                     end
