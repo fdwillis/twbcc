@@ -115,7 +115,7 @@ class ApplicationRecord < ActiveRecord::Base
               if tvData['currentPrice'].to_f > profitTriggerPassed + ((0.01 * tvData['trail'].to_f) * profitTriggerPassed)
                 
                 if tvData['broker'] == 'KRAKEN'
-                  @protectTrade = Kraken.newTrail(tvData, @requestOriginalE, apiKey, secretKey, tradeX)
+                  @protectTrade = Kraken.newTrail(tvData, @requestOriginalE['result'][tradeX.uuid], apiKey, secretKey, tradeX)
                   if !@protectTrade.empty? && @protectTrade['result']['txid'].present?
                     puts 	"\n-- Taking Profit #{@protectTrade['result']['txid'][0]} --\n"
                   end
