@@ -68,6 +68,6 @@ class Oanda < ApplicationRecord
     marginRate = Oanda.oandaAccount(token, accountID)['account']['marginRate'].to_f
 
     # return units
-    unitsRisk = ((traderFound&.perEntry * 0.01) * accountBalance).to_f > marginRate ? (traderFound&.perEntry * 0.01) * accountBalance).to_f / marginRate : 1.to_f * marginRate)
+    unitsRisk = (((traderFound&.perEntry * 0.01) * accountBalance).to_f > marginRate ? ((traderFound&.perEntry * 0.01) * accountBalance).to_f / marginRate : 1.to_f * marginRate)
   end
 end
