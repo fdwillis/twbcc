@@ -362,11 +362,7 @@ class User < ApplicationRecord
 
     membershipValid.present? ? membershipValid : [{ membershipType: 'free', membershipDetails: { 0 => { 'status' => 'active', 'interval' => 'N/A' } } }]
 
-    if Oj.load(ENV['adminUUID']).include?(uuid)
-      membershipValid.present? ? update(accessPin: "admin,#{membershipValid.map { |d| d[:membershipType] }.join(',')}") : nil
-    else
-      membershipValid.present? ? update(accessPin: membershipValid.map { |d| d[:membershipType] }.join(',')) : nil
-    end
+    membershipValid.present? ? update(accessPin: membershipValid.map { |d| d[:membershipType] }.join(',')) : nil
 
     membershipValid
   end
