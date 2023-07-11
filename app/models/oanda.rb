@@ -1,6 +1,6 @@
 class Oanda < ApplicationRecord
   def self.oandaRequest(token, accountID)
-    @oanda = OandaApiV20.new(access_token: token)
+    @oanda = OandaApiV20.new(access_token: token, practice: true)
   end
 
   def self.oandaAccount(token, accountID)
@@ -29,6 +29,10 @@ class Oanda < ApplicationRecord
     oandaRequest(token, accountID).account(accountID).trade(tradeID).show
   end
 
+   def self.oandaUpdateTrade(token, accountID, tradeID, orderParams)
+    oandaRequest(token, accountID).account(accountID).trade(tradeID, orderParams).update
+  end
+
   def self.takeProfit(token, accountID)
     id = client.account(accountID).open_trades.show['trades'][0]['id']
     options = { 'units' => '10' }
@@ -44,7 +48,7 @@ class Oanda < ApplicationRecord
         'units' => tvData['type'] == 'sellStop' ?  tradeInfo['order']['units'] : "-#{tradeInfo['order']['units']}",
         'instrument' => tvData['ticker'].insert(3, '_'),
         'timeInForce' => 'GTC',
-        'type' => 'LIMIT',
+        'type' => 'TAKE_PROFIT',
         'positionFill' => 'DEFAULT'
       }
     }
@@ -60,12 +64,14 @@ class Oanda < ApplicationRecord
 
   def self.oandaRisk(tvData, token, accountID)
     # return number of units to buy
+    traderFound = User.find_by(oandaToken: token)
+
     currentPrice = tvData['currentPrice'].to_f
 
     accountBalance = Oanda.oandaBalance(token, accountID)
     marginRate = Oanda.oandaAccount(token, accountID)['account']['marginRate'].to_f
 
     # return units
-    unitsRisk = (((tvData['perEntry'].to_f * 0.01) * accountBalance).to_f > marginRate ? ((tvData['perEntry'].to_f * 0.01) * accountBalance).to_f / marginRate : 1.to_f * marginRate)
+    unitsRisk = (((traderFound&.perEntry * 0.01) * accountBalance).to_f > marginRate ? ((traderFound&.perEntry * 0.01) * accountBalance).to_f / marginRate : 1.to_f * marginRate)
   end
 end

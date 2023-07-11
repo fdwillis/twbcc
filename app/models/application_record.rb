@@ -316,7 +316,8 @@ class ApplicationRecord < ActiveRecord::Base
       @unitsFiltered = (@unitsToTrade > 0.0001 ? @unitsToTrade : 0.0001)
     end
     
-    if @currentRisk.round(2) < @traderFound&.maxRisk && @currentRisk.round(2) > 0
+    if @currentRisk.round(2) < @traderFound&.maxRisk && @currentRisk.round(2) >= 0
+     priceForProfit = (tvData['direction'] == 'sell' ? tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * @traderFound&.profitTrigger)) : tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * @traderFound&.profitTrigger))).round(5)
 
       # market order
       if @traderFound&.allowMarketOrder == 'true'
@@ -337,6 +338,13 @@ class ApplicationRecord < ActiveRecord::Base
               'timeInForce' => 'FOK',
               'type' => 'MARKET',
               'positionFill' => 'DEFAULT'
+            }
+          }
+
+          takeProfit = {
+            'takeProfit' => {
+              'timeInForce' => 'GTC',
+              'price' => priceForProfit.to_s
             }
           }
         elsif tvData['broker'] == 'TRADIER'
@@ -421,6 +429,13 @@ class ApplicationRecord < ActiveRecord::Base
                 'timeInForce' => 'GTC',
                 'type' => 'LIMIT',
                 'positionFill' => 'DEFAULT'
+              }
+            }
+            
+            takeProfit = {
+              'takeProfit' => {
+                'timeInForce' => 'GTC',
+                'price' => priceForProfit.to_s
               }
             }
           elsif tvData['broker'] == 'TRADIER'
