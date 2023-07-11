@@ -362,7 +362,7 @@ class User < ApplicationRecord
 
     membershipValid.present? ? membershipValid : [{ membershipType: 'free', membershipDetails: { 0 => { 'status' => 'active', 'interval' => 'N/A' } } }]
 
-    membershipValid.present? ? update(accessPin: membershipValid.map { |d| d[:membershipType] }.join(',')) : nil
+    self.update(accessPin: membershipValid.map { |d| d[:membershipType] }.join(','))
 
     membershipValid
   end
