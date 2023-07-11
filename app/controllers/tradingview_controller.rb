@@ -40,7 +40,7 @@ class TradingviewController < ApplicationController
       @partialCloseall += 1 if entry.take_profits.size > 0
     end
 
-    User.all.each do |user|
+    User.where.not(authorizedList: nil).each do |user|
       # assets under management (tally together crypto, forex, stocks, options)
       if user&.oandaToken.present? && user&.oandaList.present?
         oandaAccounts = user&.oandaList.split(',')
