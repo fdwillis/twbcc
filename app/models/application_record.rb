@@ -232,7 +232,130 @@ class ApplicationRecord < ActiveRecord::Base
             end
           end
         elsif tvData['direction'] == 'buy'
-          # protect Oanda sell orders
+          puts "Profit Trigger Price: #{(profitTriggerPassed - ((0.01 * tvData['trail'].to_f) * profitTriggerPassed)).round(5)}"
+
+          if tvData['currentPrice'].to_f < profitTriggerPassed
+            if tradeX.take_profits.empty?
+              if tvData['currentPrice'].to_f < profitTriggerPassed - ((0.01 * tvData['trail'].to_f) * profitTriggerPassed)
+                
+                if tvData['broker'] == 'KRAKEN'
+                  @protectTrade = Kraken.newTrail(tvData, @requestOriginalE['result'][tradeX.uuid], apiKey, secretKey, tradeX)
+                  if !@protectTrade.empty? && @protectTrade['result']['txid'].present?
+                    puts  "\n-- Taking Profit #{@protectTrade['result']['txid'][0]} --\n"
+                  end
+                elsif tvData['broker'] == 'OANDA'
+                  @protectTrade = Oanda.oandaTrail(tvData, requestExecution, apiKey, secretKey, tradeX)
+                  if !@protectTrade.empty? && @protectTrade['orderCreateTransaction']['id'].present?
+                    puts  "\n-- Taking Profit #{@protectTrade['orderCreateTransaction']['id']} --\n"
+                  end
+                elsif tvData['broker'] == 'TRADIER'
+                end
+              end
+            else
+
+              tradeX.take_profits.each do |profitTrade|
+                if tvData['broker'] == 'KRAKEN'
+                  requestProfitTradex = Kraken.orderInfo(profitTrade.uuid, apiKey, secretKey)
+                  profitTrade.update(status: requestProfitTradex['result'][profitTrade.uuid]['status'])
+                  volumeForProfit = requestProfitTradex['result'][profitTrade.uuid]['vol'].to_f
+                  priceToBeat = requestProfitTradex['result'][profitTrade.uuid]['descr']['price2'].to_f
+                elsif tvData['broker'] == 'OANDA'
+                  requestProfitTradex = Oanda.oandaOrder(apiKey, secretKey, profitTrade.uuid)
+
+                  if requestProfitTradex['order']['state'] == 'FILLED'
+                    profitTrade.update(status: 'closed')
+                  elsif requestProfitTradex['order']['state'] == 'PENDING'
+                    profitTrade.update(status: 'open')
+                  elsif requestProfitTradex['order']['state'] == 'CANCELLED'
+                    profitTrade.update(status: 'canceled')
+                  end
+                  volumeForProfit = requestProfitTradex['order']['units'].to_f
+                  priceToBeat = requestProfitTradex['order']['price'].to_f
+                elsif tvData['broker'] == 'TRADIER'
+                end
+
+                if profitTrade.status == 'open' # or other status from oanda/alpaca
+                  volumeTallyForTradex += volumeForProfit
+                  openProfitCount += 1
+
+                  if (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) < priceToBeat - ((0.01 * tvData['trail'].to_f) * priceToBeat.round(1).to_f)
+                    if tvData['broker'] == 'KRAKEN'
+                      krakenOrderParams = {
+                        'txid' => profitTrade.uuid
+                      }
+                      routeToKraken = '/0/private/CancelOrder'
+
+                      cancel = Kraken.request(routeToKraken, krakenOrderParams, apiKey, secretKey)
+                      profitTrade.destroy!
+                      puts "\n-- Old Take Profit Canceled --\n"
+
+                      @protectTrade = Kraken.newTrail(tvData, @requestOriginalE['result'][tradeX.uuid], apiKey, secretKey, tradeX)
+                      
+                      if !@protectTrade.empty? && @protectTrade['result']['txid'].present?
+                        puts "\n-- Repainting Take Profit #{@protectTrade['result']['txid'][0]} --\n"
+                      end
+                    elsif tvData['broker'] == 'OANDA'
+                      cancel = Oanda.oandaCancel(apiKey, secretKey, profitTrade.uuid)
+                      profitTrade.destroy!
+                      puts "\n-- Old Take Profit Canceled --\n"
+                      @protectTrade = Oanda.oandaTrail(tvData, requestExecution, apiKey, secretKey, tradeX)
+                      if !@protectTrade.empty? && @protectTrade['orderCreateTransaction']['id'].present?
+                        puts  "\n-- Repainting Take Profit #{@protectTrade['orderCreateTransaction']['id']} --\n"
+                      end
+                    elsif tvData['broker'] == 'TRADIER'
+                    end
+                  end
+                elsif profitTrade.status == 'closed' # or other status from oanda/alpaca
+                  volumeTallyForTradex += volumeForProfit
+                elsif profitTrade.status == 'canceled' # or other status from oanda/alpaca
+                  puts "\n-- Removing Canceled Order #{profitTrade.uuid} --\n"
+                  profitTrade.destroy!
+                  next
+                end
+              end
+
+              if volumeTallyForTradex > originalVolume
+                if openProfitCount == 0
+                  if tvData['broker'] == 'KRAKEN'
+                    @protectTrade = Kraken.newTrail(tvData, @requestOriginalE['result'][tradeX.uuid], apiKey, secretKey, tradeX)
+                    if !@protectTrade.empty? && @protectTrade['result']['txid'].present?
+                      puts "\n-- Additional Take Profit #{@protectTrade['result']['txid'][0]} --\n"
+                    end
+                  elsif tvData['broker'] == 'OANDA'
+                    @protectTrade = Oanda.oandaTrail(tvData, requestExecution, apiKey, secretKey, tradeX)
+                    if !@protectTrade.empty? && @protectTrade['orderCreateTransaction']['id'].present?
+                      puts  "\n-- Additional Take Profit #{@protectTrade['orderCreateTransaction']['id']} --\n"
+                    end
+                  elsif tvData['broker'] == 'TRADIER'
+                  end
+                else
+                  puts "\n-- Waiting To Close Open Take Profit --\n"
+                end
+              else
+                if tvData['broker'] == 'KRAKEN'
+                  checkFill = Kraken.orderInfo(tradeX.take_profits.last.uuid, apiKey, secretKey)
+                  tradeX.take_profits.last.update(status: checkFill['result'][tradeX.take_profits.last.uuid]['status'])
+                  if checkFill['result'][tradeX.take_profits.last.uuid]['status'] == 'closed'
+                    tradeX.update(finalTakeProfit: tradeX.take_profits.last.uuid)
+                    puts "\n-- Position Closed #{tradeX.uuid} --\n"
+                    puts "\n-- Last Profit Taken #{tradeX.take_profits.last.uuid} --\n"
+                  elsif checkFill['result'][tradeX.take_profits.last.uuid]['status'] == 'open'
+                    tradeX.update(finalTakeProfit: nil)
+                    puts "\n-- Waiting To Close Last Position --\n"
+                  end
+                elsif tvData['broker'] == 'OANDA'
+                  checkFill = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
+                  if checkFill['order']['state'] == 'PENDING'
+                    tradeX.update(finalTakeProfit: nil)
+                  elsif checkFill['order']['state'] == 'FILLED'
+                    tradeX.take_profits.last.update(status: 'closed')
+                  end
+                elsif tvData['broker'] == 'TRADIER'
+                end
+              end
+
+            end
+          end
         end
       end
     end
@@ -483,10 +606,6 @@ class ApplicationRecord < ActiveRecord::Base
       puts "\n-- Current Risk (#{@currentRisk.round(2)}%) --\n"
       puts "\n-- Trader #{@traderFound.uuid} --\n"
     end
-
-
-
-    
   end
 
   def self.calculateRiskAfterTrade(filledOrders,openOrdersPending, amountToRisk, accountBalance)
