@@ -39,9 +39,8 @@ class TradingviewController < ApplicationController
     @entriesTradesall.each do |entry|
       @partialCloseall += 1 if entry.take_profits.size > 0
     end
-        
 
-    User.where.not(authorizedList: nil).where.not(authorizedList: 'forex').where.not(authorizedList: 'crypto').each do |user|
+    User.where.not(authorizedList: nil).each do |user|
       # assets under management (tally together crypto, forex, stocks, options)
       if user&.oandaToken.present? && user&.oandaList.present?
         oandaAccounts = user&.oandaList.split(',')
@@ -59,7 +58,6 @@ class TradingviewController < ApplicationController
         baseCurrency = krakenResult.reject { |d, _f| !d.include?('Z') }.keys[0]
         realCurrencyBase = ISO3166::Country[user&.amazonCountry.downcase].currency_code
         @assetsUM += krakenResult[baseCurrency].to_f
-
         krakenResult.except(baseCurrency).each do |resultX|
           baseTicker = resultX[0]
           assetInfo = Kraken.assetInfo({ 'ticker' => baseTicker }, user&.krakenLiveAPI, user&.krakenLiveSecret)
