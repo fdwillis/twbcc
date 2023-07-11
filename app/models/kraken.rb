@@ -23,7 +23,7 @@ class Kraken < ApplicationRecord
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     response = http.request(req)
-    sleep 1
+    sleep 3
     Oj.load(response.body)
   end
 
@@ -101,7 +101,6 @@ class Kraken < ApplicationRecord
         # "price2" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
         'volume' => (tradeInfo['vol'].to_f * (0.01 * traderFound&.reduceBy)) > 0.0001 ? format('%.10f', (tradeInfo['vol'].to_f * (0.01 * traderFound&.reduceBy))) : '0.0001'
       }
-      sleep 1
       requestProfit = request(routeToKraken, orderParams, apiKey, secretKey)
     elsif traderFound&.reduceBy.present? && traderFound&.reduceBy == 100
       routeToKraken1 = '/0/private/AddOrder'
@@ -114,7 +113,6 @@ class Kraken < ApplicationRecord
         # "price2" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
         'volume' => tradeInfo['vol']
       }
-      sleep 1
       requestProfit = request(routeToKraken1, orderParams1, apiKey, secretKey)
 
     end
