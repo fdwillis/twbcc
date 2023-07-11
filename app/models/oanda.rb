@@ -60,12 +60,14 @@ class Oanda < ApplicationRecord
 
   def self.oandaRisk(tvData, token, accountID)
     # return number of units to buy
+    traderFound = User.find_by(oandaToken: apiKey)
+
     currentPrice = tvData['currentPrice'].to_f
 
     accountBalance = Oanda.oandaBalance(token, accountID)
     marginRate = Oanda.oandaAccount(token, accountID)['account']['marginRate'].to_f
 
     # return units
-    unitsRisk = (((tvData['perEntry'].to_f * 0.01) * accountBalance).to_f > marginRate ? ((tvData['perEntry'].to_f * 0.01) * accountBalance).to_f / marginRate : 1.to_f * marginRate)
+    unitsRisk = ((traderFound&.perEntry * 0.01) * accountBalance).to_f > marginRate ? (traderFound&.perEntry * 0.01) * accountBalance).to_f / marginRate : 1.to_f * marginRate)
   end
 end
