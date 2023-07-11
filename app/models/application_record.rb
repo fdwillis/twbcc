@@ -145,8 +145,8 @@ class ApplicationRecord < ActiveRecord::Base
                   elsif requestProfitTradex['order']['state'] == 'CANCELLED'
                     profitTrade.update(status: 'canceled')
                   end
-                  volumeForProfit = requestProfitTradex['vol'].to_f
-                  priceToBeat = requestProfitTradex['descr']['price2'].to_f
+                  volumeForProfit = requestProfitTradex['order']['units'].to_f
+                  priceToBeat = requestProfitTradex['order']['price'].to_f
                 elsif tvData['broker'] == 'TRADIER'
                 end
 
