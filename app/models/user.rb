@@ -343,25 +343,17 @@ class User < ApplicationRecord
         membershipPlan = Stripe::Subscription.list({ customer: stripeCustomerID, price: planID })['data'][0]
         membershipType = if TRIALmembership.include?(planID)
                            'trial,trader'
+                         elsif TRADERmembership.include?(planID)
+                           'trader'
+                         elsif AFFILIATEmembership.include?(planID)
+                           'affiliate'
+                         elsif BUSINESSmembership.include?(planID)
+                           'business'
+                         elsif AUTOMATIONmembership.include?(planID)
+                           'automation'
                          else
-                           if TRADERmembership.include?(planID)
-                             'trader'
-                           else
-                             if AFFILIATEmembership.include?(planID)
-                               'affiliate'
-                             else
-                               if BUSINESSmembership.include?(planID)
-                                 'business'
-                               else
-                                 if AUTOMATIONmembership.include?(planID)
-                                   'automation'
-                                 else
-                                   FREEmembership.include?(planID) ? 'free' : 'free'
-                                 end
-                              end
-                           end
+                             FREEmembership.include?(planID) ? 'free' : 'free'
                          end
-        end
         if membershipPlan['status'] == 'active' && membershipPlan['pause_collection'].nil?
           membershipValid << { membershipDetails: membershipPlan, membershipType: membershipType }
         end
