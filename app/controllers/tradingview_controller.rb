@@ -42,7 +42,7 @@ class TradingviewController < ApplicationController
 
     User.where.not(authorizedList: nil).each do |user|
       # assets under management (tally together crypto, forex, stocks, options)
-      if user&.oandaToken.present? && user&.oandaList.present?
+      if user&.oandaToken.present? && user&.oandaList.present? && !user&.trial?
         oandaAccounts = user&.oandaList.split(',')
         oandaAccounts.each do |accountID|
           oandaX = Oanda.oandaRequest(user&.oandaToken, accountID)
@@ -50,6 +50,7 @@ class TradingviewController < ApplicationController
           @assetsUM += balanceX
         end
       end
+
 
       if user&.krakenLiveAPI.present? && user&.krakenLiveSecret.present? && !user&.trial?
 
