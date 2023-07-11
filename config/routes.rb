@@ -30,6 +30,7 @@ Rails.application.routes.draw do
   get '/checkout/:price/:account', to: 'application#checkout'
   get '/checkout/:price', to: 'application#checkout'
   get '/product/:asin', to: 'products#show'
+  get '/travel-and-trade', to: 'application#travel_trade', as: 'travel_trade'
   get '/split-session', to: 'application#split_session', as: 'split_session'
   get '/display-discount', to: 'application#display_discount', as: 'display_discount'
   get '/update-discount', to: 'application#update_discount', as: 'update_discount'
