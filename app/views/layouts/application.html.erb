@@ -168,6 +168,11 @@
                     <span>Membership</span>
                     <i class="fa fa-angle-right"></i>
                   </a>
+                  <a href="/travel-and-trade?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
+                    <i class="fa font-12 fa-plane bg-orange-dark rounded-sm color-white"></i>
+                    <span>Travel &amp; Trade</span>
+                    <i class="fa fa-angle-right"></i>
+                  </a>
                   <a href="/targets?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
                     <i class="fa font-12 fa-bullseye bg-blue-dark rounded-sm color-white"></i>
                     <span>Targets</span>

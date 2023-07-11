@@ -2,6 +2,10 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!, only: %i[loved list]
   before_action :loadMemberships
 
+  def travel_trade
+    
+  end
+
   def inquiry
     if params['newInquiry'].present?
       customMade = Custominquiry.create(email: params['newInquiry']['email'], phone: params['newInquiry']['phone'])
