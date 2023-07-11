@@ -45,10 +45,10 @@ class Oanda < ApplicationRecord
     oandaOrderParams = {
       'order' => {
         'price' => trailPrice,
-        'units' => tvData['type'] == 'sellStop' ?  tradeInfo['order']['units'] : "-#{tradeInfo['order']['units']}",
+        'units' => tvData['type'] == 'sellStop' ?  tradeInfo['trade']['initialUnits'] : "-#{tradeInfo['trade']['initialUnits']}",
         'instrument' => tvData['ticker'].insert(3, '_'),
         'timeInForce' => 'GTC',
-        'type' => 'TAKE_PROFIT',
+        'type' => 'LIMIT',
         'positionFill' => 'DEFAULT'
       }
     }
