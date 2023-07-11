@@ -331,7 +331,7 @@ class ApplicationRecord < ActiveRecord::Base
         elsif tvData['broker'] == 'OANDA'
           oandaOrderParams = {
             'order' => {
-              'units' => (@amountToRisk == oandaAccount['account']['marginRate'].to_f ? 1 : @amountToRisk.round).to_s,
+              'units' => tvData['direction'] == 'buy' ? (@amountToRisk == oandaAccount['account']['marginRate'].to_f ? 1 : @amountToRisk.round).to_s : (@amountToRisk == oandaAccount['account']['marginRate'].to_f ? -1 : -@amountToRisk.round).to_s,
               'instrument' => "#{tvData['ticker'][0..2]}_#{tvData['ticker'][3..5]}",
               'timeInForce' => 'FOK',
               'type' => 'MARKET',
@@ -415,7 +415,7 @@ class ApplicationRecord < ActiveRecord::Base
             oandaOrderParams = {
               'order' => {
                 'price' => priceToSet.to_s,
-                'units' => (@amountToRisk == oandaAccount['account']['marginRate'].to_f ? 1 : @amountToRisk.round).to_s,
+                'units' => tvData['direction'] == 'buy' ? (@amountToRisk == oandaAccount['account']['marginRate'].to_f ? 1 : @amountToRisk.round).to_s : (@amountToRisk == oandaAccount['account']['marginRate'].to_f ? -1 : -@amountToRisk.round).to_s,
                 'instrument' => "#{tvData['ticker'][0..2]}_#{tvData['ticker'][3..5]}",
                 'timeInForce' => 'GTC',
                 'type' => 'LIMIT',
