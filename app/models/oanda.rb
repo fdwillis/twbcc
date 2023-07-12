@@ -53,7 +53,7 @@ class Oanda < ApplicationRecord
       }
     }
 
-debugger
+
     # FINAL TESTING
     requestProfit = Oanda.oandaEntry(token, accountID, oandaOrderParams)
 

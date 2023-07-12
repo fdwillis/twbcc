@@ -39,11 +39,11 @@ class ApplicationRecord < ActiveRecord::Base
   def self.trailStop(tvData, apiKey = nil, secretKey = nil)
     if tvData['broker'] == 'KRAKEN'
       @userX = User.find_by(krakenLiveAPI: apiKey)
-      @openTrades = @userX.trades.where(status: 'open', broker: 'KRAKEN')
+      @openTrades = @userX.trades.where(broker: 'KRAKEN', finalTakeProfit:nil)
       @traderFound = @userX
     elsif tvData['broker'] == 'OANDA'
       @userX = User.find_by(oandaToken: apiKey)
-      @openTrades = @userX.trades.where(status: 'open', broker: 'OANDA')
+      @openTrades = @userX.trades.where(broker: 'KRAKEN', finalTakeProfit:nil)
       @traderFound = @userX
     elsif tvData['broker'] == 'TRADIER'
     end
