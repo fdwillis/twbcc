@@ -120,7 +120,7 @@ namespace :generate do
         p requestK
         sleep 1
         if requestK['result'].present? && requestK['result'][trade.uuid]['status'].present? && requestK['result'][trade.uuid]['cost'].present?
-          trade.update(status: requestK['result'][trade.uuid]['status'], cost: requestK['result'][trade.uuid]['cost'].to_f)
+          trade.update(status: requestK['result'][trade.uuid]['status'], cost: requestK['result'][trade.uuid]['cost'].to_f, traderID: 'd57307d7')
         end
 
         if trade.status == 'canceled'
@@ -138,7 +138,7 @@ namespace :generate do
       end
     end
 
-    TakeProfit.where(status: 'open').each do |takeProfitX|
+    TakeProfit.each do |takeProfitX|
       puts takeProfitX.uuid
       if takeProfitX&.broker == 'KRAKEN'
         userForLoad = takeProfitX.user
@@ -146,7 +146,7 @@ namespace :generate do
         requestK = Kraken.orderInfo(takeProfitX.uuid, userForLoad.krakenLiveAPI, userForLoad.krakenLiveSecret)
         p requestK
         if requestK['result'].present? && requestK['result'][takeProfitX.uuid]['status'].present? && requestK['result'][takeProfitX.uuid]['cost'].present?
-          takeProfitX.update(status: requestK['result'][takeProfitX.uuid]['status'], cost: requestK['result'][takeProfitX.uuid]['cost'].to_f)
+          takeProfitX.update(status: requestK['result'][takeProfitX.uuid]['status'], cost: requestK['result'][takeProfitX.uuid]['cost'].to_f, traderID: 'd57307d7')
         end
 
         if takeProfitX.status == 'canceled'

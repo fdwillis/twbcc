@@ -117,9 +117,9 @@ class Kraken < ApplicationRecord
 
     end
     puts "\n-- Trail Request #{requestProfit} --\n"
-
+    pullRequestK = Kraken.orderInfo(requestProfit['result']['txid'][0], traderFound.krakenLiveAPI, traderFound.krakenLiveSecret)
     if !requestProfit.empty? && requestProfit['result']['txid'].present?
-      tradeX.take_profits.create!(traderID: tvData['traderID'], uuid: requestProfit['result']['txid'][0], status: 'open', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(krakenLiveAPI: apiKey).id, cost: requestProfit['result']['cost'].to_f)
+      tradeX.take_profits.create!(traderID: tvData['traderID'], uuid: requestProfit['result']['txid'][0], status: 'open', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(krakenLiveAPI: apiKey).id, cost: pullRequestK['result'][requestProfit['result']['txid'][0]]['cost'].to_f)
       requestProfit
     else
       []
