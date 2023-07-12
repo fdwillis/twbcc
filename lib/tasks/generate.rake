@@ -126,14 +126,15 @@ namespace :generate do
         if trade.status == 'canceled'
           trade.destroy! 
         end
-      # elsif trade&.broker == 'OANDA'
-      #   requestK = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
+      elsif trade&.broker == 'OANDA'
+        trade&.user&.oandaList.split(',').each do |idForX|
+          requestK = Oanda.oandaOrder(trade&.user&.oandaToken, idForX, trade.uuid)
+        end
+        if requestK['order']['state'] == 'CANCELLED'
+          trade.destroy! if trade.status == 'canceled'
+        end
 
-      #   if requestK['order']['state'] == 'CANCELLED'
-      #     trade.destroy! if trade.status == 'canceled'
-      #   end
-
-      #   trade.update(status: 'closed') if requestK['order']['state'] == 'FILLED'
+        trade.update(status: 'closed') if requestK['order']['state'] == 'FILLED'
       end
     end
 
