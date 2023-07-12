@@ -138,7 +138,7 @@ namespace :generate do
       end
     end
 
-    TakeProfit.each do |takeProfitX|
+    TakeProfit.all.each do |takeProfitX|
       puts takeProfitX.uuid
       if takeProfitX&.broker == 'KRAKEN'
         userForLoad = takeProfitX.user
