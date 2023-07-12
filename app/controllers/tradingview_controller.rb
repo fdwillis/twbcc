@@ -8,6 +8,7 @@ class TradingviewController < ApplicationController
     @allTrades = Trade.all
     @entriesTradesall = @allTrades.where(status: 'closed')
     @currentTradesall = @entriesTradesall.where(finalTakeProfit: nil)
+    usersForMap = @allTrades.map(&:user).uniq
 
     cryptoAssets = 0
     forexAssets = 0
@@ -28,19 +29,13 @@ class TradingviewController < ApplicationController
     @assetsUM = 0
     @initalBalance = ApplicationRecord::INITALBALANCE.map { |d| d['initialDepopsit'] }.sum
 
-    @entriesTrades.each do |entry|
-      @partialClose += 1 if entry.take_profits.size > 0
-    end
+    @partialClose += @entriesTrades.map(&:take_profits).count
 
-    @entriesTrades24.each do |entry|
-      @partialClose24 += 1 if entry.take_profits.size > 0
-    end
+    @partialClose24 += @entriesTrades24.map(&:take_profits).count
 
-    @entriesTradesall.each do |entry|
-      @partialCloseall += 1 if entry.take_profits.size > 0
-    end
+    @partialCloseall += @entriesTradesall.map(&:take_profits).count
 
-    User.where.not(authorizedList: nil).each do |user|
+    usersForMap.each do |user|
       # assets under management (tally together crypto, forex, stocks, options)
       if user&.oandaToken.present? && user&.oandaList.present? && user&.trader?
         oandaAccounts = user&.oandaList.split(',')
