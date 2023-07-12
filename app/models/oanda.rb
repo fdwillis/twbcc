@@ -53,11 +53,12 @@ class Oanda < ApplicationRecord
       }
     }
 
+debugger
     # FINAL TESTING
     requestProfit = Oanda.oandaEntry(token, accountID, oandaOrderParams)
 
     if requestProfit.present? && requestProfit['orderCreateTransaction'].present?
-      tradeX.take_profits.create!(uuid: requestProfit['orderCreateTransaction']['id'], status: 'open', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(oandaToken: token).id)
+      tradeX.take_profits.create!(traderID: tvData['traderID'], uuid: requestProfit['orderCreateTransaction']['id'], status: 'open', direction: tvData['direction'], broker: tvData['broker'], cost: requestProfit['orderFillTransaction']['tradeOpened']['initialMarginRequired'].to_f, user_id: User.find_by(oandaToken: token).id)
       requestProfit
      end
   end

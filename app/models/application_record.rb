@@ -394,7 +394,8 @@ class ApplicationRecord < ActiveRecord::Base
           if requestK['orderCancelTransaction'].present? && requestK['orderCancelTransaction']['reason'].present?
             puts "\n-- #{requestK['orderCancelTransaction']['reason']} --\n"
           else
-            User.find_by(oandaToken: apiKey).trades.create(traderID: tvData['traderID'], uuid: requestK['orderCreateTransaction']['id'], broker: tvData['broker'], direction: tvData['direction'], status: 'closed')
+            
+            User.find_by(oandaToken: apiKey).trades.create(traderID: tvData['traderID'], uuid: requestK['orderCreateTransaction']['id'], broker: tvData['broker'], direction: tvData['direction'], status: 'closed', cost: requestK['orderFillTransaction']['tradeOpened']['initialMarginRequired'].to_f)
             puts "\n-- #{tvData['broker']} Entry Submitted --\n"
             puts "\n-- Current Risk #{@currentRisk.round(2)} --\n"
           end
@@ -480,7 +481,7 @@ class ApplicationRecord < ActiveRecord::Base
             end
           elsif tvData['broker'] == 'OANDA'
             if requestK.present?
-              User.find_by(oandaToken: apiKey).trades.create(traderID: tvData['traderID'], uuid: requestK['orderCreateTransaction']['id'], broker: tvData['broker'], direction: tvData['direction'], status: 'open')
+              User.find_by(oandaToken: apiKey).trades.create(traderID: tvData['traderID'], uuid: requestK['orderCreateTransaction']['id'], broker: tvData['broker'], direction: tvData['direction'], status: 'open', cost: requestK['orderFillTransaction']['tradeOpened']['initialMarginRequired'].to_f)
               puts "\n-- #{tvData['broker']} Entry Submitted --\n"
               puts "\n-- Current Risk #{@currentRisk.round(2)} --\n"
             else
