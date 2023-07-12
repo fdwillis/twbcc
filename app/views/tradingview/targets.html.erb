@@ -72,15 +72,6 @@
 				<p>When a trade has reached your profit target, Oarlin will start to reduce the trade by however much you want. We can fully close the position or partially. This is how we make sure you reach your exact profit targets matching your risk tolerance.</p>
 			</div>
 		</div>
-		
 	</div>
 	<div class="divider mb-2 mt-1"></div>
-	<div class="col-12 text-center">
-		<h6 class="font-20 font-800 text-uppercase opacity-30 text-center mb-4 "><u><em>All Time</em></u></h6>
-		<div class="mx-0 mb-3">
-			<h6 class="font-12 font-800 text-uppercase opacity-30 text-center">Targets Hit</h6>
-			<!-- <h6 class="font-10 font-800 text-uppercase opacity-30 text-center mb-4 ">Oarlin protected <%= (@partialClose > 0 ? @partialClose : 0 ) %> of <%= @entriesTrades&.size %> trades.</h6> -->
-			<h3 class="color-highlight-dark font-30 mb-0 text-center"><%= number_to_percentage((((@partialCloseall.to_f/@entriesTrades&.size) * 100) > 0 ? ((@partialCloseall.to_f/@entriesTradesall&.size) * 100) : 0 ), precision: 2) %></h3>
-		</div>
-	</div>
 </div>
