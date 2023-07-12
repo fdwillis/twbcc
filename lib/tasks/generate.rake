@@ -163,4 +163,8 @@ namespace :generate do
       end
     end
   end
+
+  task profitInvoice: :environment do 
+
+  end
 end
