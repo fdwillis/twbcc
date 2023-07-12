@@ -1,6 +1,6 @@
 class Oanda < ApplicationRecord
   def self.oandaRequest(token, accountID)
-    @oanda = OandaApiV20.new(access_token: token)
+    @oanda = OandaApiV20.new(access_token: token, practice: true)
   end
 
   def self.oandaAccount(token, accountID)
@@ -29,6 +29,10 @@ class Oanda < ApplicationRecord
     oandaRequest(token, accountID).account(accountID).trade(tradeID).show
   end
 
+   def self.oandaUpdateTrade(token, accountID, tradeID, orderParams)
+    oandaRequest(token, accountID).account(accountID).trade(tradeID, orderParams).update
+  end
+
   def self.takeProfit(token, accountID)
     id = client.account(accountID).open_trades.show['trades'][0]['id']
     options = { 'units' => '10' }
@@ -41,7 +45,7 @@ class Oanda < ApplicationRecord
     oandaOrderParams = {
       'order' => {
         'price' => trailPrice,
-        'units' => tvData['type'] == 'sellStop' ?  tradeInfo['order']['units'] : "-#{tradeInfo['order']['units']}",
+        'units' => tvData['type'] == 'sellStop' ?  tradeInfo['trade']['initialUnits'] : "-#{tradeInfo['trade']['initialUnits']}",
         'instrument' => tvData['ticker'].insert(3, '_'),
         'timeInForce' => 'GTC',
         'type' => 'LIMIT',
@@ -49,18 +53,19 @@ class Oanda < ApplicationRecord
       }
     }
 
+
     # FINAL TESTING
     requestProfit = Oanda.oandaEntry(token, accountID, oandaOrderParams)
 
     if requestProfit.present? && requestProfit['orderCreateTransaction'].present?
-      tradeX.take_profits.create!(uuid: requestProfit['orderCreateTransaction']['id'], status: 'open', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(oandaToken: token).id)
+      tradeX.take_profits.create!(traderID: tvData['traderID'], uuid: requestProfit['orderCreateTransaction']['id'], status: 'open', direction: tvData['direction'], broker: tvData['broker'], cost: requestProfit['orderFillTransaction']['tradeOpened']['initialMarginRequired'].to_f, user_id: User.find_by(oandaToken: token).id)
       requestProfit
      end
   end
 
   def self.oandaRisk(tvData, token, accountID)
     # return number of units to buy
-    traderFound = User.find_by(oandaToken: apiKey)
+    traderFound = User.find_by(oandaToken: token)
 
     currentPrice = tvData['currentPrice'].to_f
 
