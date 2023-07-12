@@ -368,37 +368,30 @@ class User < ApplicationRecord
   end
 
   def customer?
-    checkMembership
     accessPin.split(',').include?('customer')
   end
 
   def trader?
-    checkMembership
     accessPin.split(',').include?('trader')
   end
 
   def trial?
-    checkMembership
     accessPin.split(',').include?('trial')
   end
 
   def connectAccount?
-    checkMembership
     accessPin.split(',').include?('connectAccount') || accessPin.split(',').include?('affilite') || accessPin.split(',').include?('business') || accessPin.split(',').include?('automation')
   end
 
   def trustee?
-    checkMembership
     accessPin.split(',').include?('trustee')
   end
 
   def manager?
-    checkMembership
     accessPin.split(',').include?('manager')
   end
 
   def admin?
-    checkMembership
     accessPin.split(',').include?('admin')
   end
 end
