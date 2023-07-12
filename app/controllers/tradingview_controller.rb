@@ -5,9 +5,10 @@ class TradingviewController < ApplicationController
   def targets
     # pull all closed trades -> build result to display
     # pull all open trades -> build result to display
-    @allTrades = Trade.all
+    @allTrades = Trade.all.where('created_at > ?', 7.days.ago)
     @entriesTradesall = @allTrades.where(status: 'closed')
     @currentTradesall = @entriesTradesall.where(finalTakeProfit: nil)
+    
     usersForMap = @allTrades.map(&:user).uniq
 
     cryptoAssets = 0
@@ -18,8 +19,8 @@ class TradingviewController < ApplicationController
     @currentTrades24 = @currentTradesall.where('created_at > ?', 7.days.ago)
     @entriesTrades24 = @entriesTradesall.where('created_at > ?', 7.days.ago)
 
-    @currentTrades = @currentTradesall.where('created_at > ?', 30.days.ago)
-    @entriesTrades = @entriesTradesall.where('created_at > ?', 30.days.ago)
+    @currentTrades = @currentTradesall
+    @entriesTrades = @entriesTradesall
 
     @profitTotal = 0
     @partialClose = 0
@@ -29,15 +30,9 @@ class TradingviewController < ApplicationController
     @assetsUM = 0
     @initalBalance = ApplicationRecord::INITALBALANCE.map { |d| d['initialDepopsit'] }.sum
 
-    @partialClose += @entriesTrades.map(&:take_profits).count
-
-    @partialClose24 += @entriesTrades24.map(&:take_profits).count
-
-    @partialCloseall += @entriesTradesall.map(&:take_profits).count
-
     usersForMap.each do |user|
       # assets under management (tally together crypto, forex, stocks, options)
-      if user&.oandaToken.present? && user&.oandaList.present? && user&.trader?
+      if user&.oandaToken.present? && user&.oandaList.present?
         oandaAccounts = user&.oandaList.split(',')
         oandaAccounts.each do |accountID|
           oandaX = Oanda.oandaRequest(user&.oandaToken, accountID)
@@ -47,7 +42,7 @@ class TradingviewController < ApplicationController
       end
 
 
-      if user&.krakenLiveAPI.present? && user&.krakenLiveSecret.present? && user&.trader?
+      if user&.krakenLiveAPI.present? && user&.krakenLiveSecret.present?
 
         balanceX = Kraken.krakenBalance(user&.krakenLiveAPI, user&.krakenLiveSecret)
         krakenResult = balanceX['result'].reject { |_d, f| f.to_f == 0 }
@@ -72,6 +67,12 @@ class TradingviewController < ApplicationController
         end
       end
     end
+
+    @partialClose += @entriesTrades.map(&:take_profits).count
+
+    @partialClose24 += @entriesTrades24.map(&:take_profits).count
+
+    @partialCloseall += @entriesTradesall.map(&:take_profits).count
   end
 
   def manage_trading_keys
