@@ -5,7 +5,7 @@ class TradingviewController < ApplicationController
   def targets
     # pull all closed trades -> build result to display
     # pull all open trades -> build result to display
-    @allTrades = Trade.all.where('created_at > ?', 7.days.ago)
+    @allTrades = Trade.all.where('created_at > ?', 30.days.ago)
     @entriesTradesall = @allTrades.where(status: 'closed')
     @currentTradesall = @entriesTradesall.where(finalTakeProfit: nil)
     
