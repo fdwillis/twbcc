@@ -42,7 +42,7 @@ class ApplicationRecord < ActiveRecord::Base
       @traderFound = @userX
     elsif tvData['broker'] == 'OANDA'
       @userX = User.find_by(oandaToken: apiKey)
-      @openTrades = @userX.trades.where(broker: 'KRAKEN', finalTakeProfit:nil)
+      @openTrades = @userX.trades.where(broker: 'OANDA', finalTakeProfit:nil)
       @traderFound = @userX
     elsif tvData['broker'] == 'TRADIER'
     end
