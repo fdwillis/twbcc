@@ -85,9 +85,14 @@ class ApplicationRecord < ActiveRecord::Base
         puts "\n-- Starting For #{tradeX.uuid} --\n"
         if tradeX&.broker == 'KRAKEN'
           @requestOriginalE = Kraken.orderInfo(tradeX.uuid, apiKey, secretKey)
-          
-          originalPrice = @requestOriginalE['result'][tradeX.uuid]['price'].to_f
-          originalVolume = @requestOriginalE['result'][tradeX.uuid]['vol'].to_f
+
+          if @requestOriginalE['result'].present?
+            originalPrice = @requestOriginalE['result'][tradeX.uuid]['price'].to_f
+            originalVolume = @requestOriginalE['result'][tradeX.uuid]['vol'].to_f
+          else
+            tradeX.destroy!
+            next
+          end
         elsif tradeX&.broker == 'OANDA'
           requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
           @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, requestExecution['order']['fillingTransactionID'])
