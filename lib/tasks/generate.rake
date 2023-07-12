@@ -112,7 +112,7 @@ namespace :generate do
   end
 
   task cleanTrades: :environment do
-    Trade.where(finalTakeProfit: nil).each do |trade|
+    Trade.all.each do |trade|
       puts trade.uuid
       if trade&.broker == 'KRAKEN'
 
