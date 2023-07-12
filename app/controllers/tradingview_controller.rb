@@ -6,8 +6,8 @@ class TradingviewController < ApplicationController
     # pull all closed trades -> build result to display
     # pull all open trades -> build result to display
     @allTrades = Trade.all
-    @currentTradesall = @allTrades.where(finalTakeProfit: nil, status: 'closed')
     @entriesTradesall = @allTrades.where(status: 'closed')
+    @currentTradesall = @entriesTradesall.where(finalTakeProfit: nil)
 
     cryptoAssets = 0
     forexAssets = 0
