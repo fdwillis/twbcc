@@ -52,8 +52,8 @@ class ApplicationRecord < ActiveRecord::Base
     if @openTrades.present? && @openTrades.size > 0
       @openTrades.each do |trade|
         if trade&.broker == 'KRAKEN' 
-          requestK = Kraken.orderInfo(trade.uuid, apiKey, secretKey)['result']
-          trade.update(status: requestK[trade.uuid]['status'])
+          requestK = Kraken.orderInfo(trade.uuid, apiKey, secretKey)
+          trade.update(status: requestK['result'][trade.uuid]['status'])
           trade.destroy! if trade.status == 'canceled'
         elsif trade&.broker == 'OANDA'
           
@@ -442,9 +442,9 @@ class ApplicationRecord < ActiveRecord::Base
         openOrdersPending = @currentOpenAllocation.map { |d| d[1] }.reject { |d| d['descr']['type'] != tvData['direction'] }.reject { |d| d['descr']['pair'] != @tickerForAllocation }.map { |d| d['vol'].to_f * d['descr']['price'].to_f }.sum
         amountToRisk = @amountToRisk * tvData['currentPrice'].to_f
 
-        @balanceCall = Kraken.krakenBalance(apiKey, secretKey)['result']
+        @balanceCall = Kraken.krakenBalance(apiKey, secretKey)
 
-        @accountTotal = @balanceCall[ @baseTicker].to_f + (tvData['currentPrice'].to_f * @balanceCall[@base].to_f)
+        @accountTotal = @balanceCall['result'][ @baseTicker].to_f + (tvData['currentPrice'].to_f * @balanceCall['result'][@base].to_f)
 
         orderforMulti += @traderFound&.allowMarketOrder ? 1 : 0
         tvData['entries'].reject(&:blank?).size > 0 ? orderforMulti += tvData['entries'].reject(&:blank?).size : orderforMulti += 0
@@ -471,7 +471,7 @@ class ApplicationRecord < ActiveRecord::Base
 
     
     if tvData['broker'] == 'KRAKEN'
-     filledOrders = (@balanceCall[@base].to_f * tvData['currentPrice'].to_f)
+     filledOrders = (@balanceCall['result'][@base].to_f * tvData['currentPrice'].to_f)
      @currentRisk = calculateRiskAfterTrade(filledOrders,openOrdersPending, (amountToRisk * orderforMulti),  @accountTotal)
     elsif tvData['broker'] == 'OANDA'
      @currentRisk = calculateRiskAfterTrade(marginUsed,openOrdersPending, (@amountToRisk * orderforMulti),  accountBalance)
