@@ -9,7 +9,7 @@ class Tradiers < ApplicationRecord
   end
 
 	def self.optionsXFriday(symbol,token, interval)
-		 tradierRequest(token).chain(symbol.upcase, expiration: Tradiers.upcomingFriday(interval))
+		 optionsPulled = tradierRequest(token).chain(symbol.upcase, expiration: Tradiers.upcomingFriday(interval))
 	end
 
 	def self.upcomingFriday(interval)

@@ -1,6 +1,6 @@
 class Oanda < ApplicationRecord
   def self.oandaRequest(token, accountID)
-    @oanda = OandaApiV20.new(access_token: token, practice: true)
+    @oanda = OandaApiV20.new(access_token: token)
   end
 
   def self.oandaAccount(token, accountID)
@@ -29,9 +29,10 @@ class Oanda < ApplicationRecord
     oandaRequest(token, accountID).account(accountID).trade(tradeID).show
   end
 
-   def self.oandaUpdateTrade(token, accountID, tradeID, orderParams, tradeX)
+   def self.oandaUpdateTrade(tvData, token, accountID, tradeID, orderParams, tradeX)
     trailSet = oandaRequest(token, accountID).account(accountID).trade(tradeID, orderParams).update
-    debugger
+    madeRecord = tradeX.take_profits.create!(traderID: tvData['traderID'], uuid: trailSet['trailingStopLossOrderTransaction']['id'], status: 'open', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(oandaToken: token).id)
+    trailSet
   end
 
   def self.takeProfit(token, accountID)
