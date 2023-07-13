@@ -202,7 +202,7 @@ class ApplicationRecord < ActiveRecord::Base
                           puts  "\n-- Repainting Take Profit #{@protectTrade['trailingStopLossOrderTransaction']['id']} --\n"
                         end
                         profitTrade.destroy!
-                        return
+                        break
                       end
 
                     elsif tvData['broker'] == 'TRADIER'
@@ -213,7 +213,7 @@ class ApplicationRecord < ActiveRecord::Base
                 elsif profitTrade.status == 'canceled' # or other status from oanda/alpaca
                   puts "\n-- Removing Canceled Order #{profitTrade.uuid} --\n"
                   profitTrade.destroy!
-                  return
+                  break
                 end
               end
 
