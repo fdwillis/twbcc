@@ -562,7 +562,7 @@ class ApplicationRecord < ActiveRecord::Base
           end
         elsif tvData['broker'] == 'OANDA'
 
-          if @requestK.present? && @requestK['orderCreateTransaction'].present?
+          if @requestK.present? && !@requestK['orderCancelTransaction'].present?
             User.find_by(oandaToken: apiKey).trades.create(traderID: tvData['traderID'], uuid: @requestK['orderCreateTransaction']['id'], broker: tvData['broker'], direction: tvData['direction'], status: 'closed', cost: @requestK['orderFillTransaction']['tradeOpened']['initialMarginRequired'].to_f)
             @costForLimit = @requestK['orderFillTransaction']['tradeOpened']['initialMarginRequired'].to_f
             puts "\n-- #{tvData['broker']} Entry Submitted --\n"
@@ -654,7 +654,8 @@ class ApplicationRecord < ActiveRecord::Base
               end
             end
           elsif tvData['broker'] == 'OANDA'
-            if requestK.present? && requestK['orderCreateTransaction'].present?
+            
+            if  requestK.present? && !requestK['orderCancelTransaction'].present?
               User.find_by(oandaToken: apiKey).trades.create(traderID: tvData['traderID'], uuid: requestK['orderCreateTransaction']['id'], broker: tvData['broker'], direction: tvData['direction'], status: 'open', cost: @costForLimit)
               puts "\n-- #{tvData['broker']} Entry Submitted --\n"
               puts "\n-- Current Risk #{@currentRisk.round(2)} --\n"
