@@ -112,8 +112,9 @@ namespace :generate do
   end
 
   task cleanTrades: :environment do
-    Trade.all.each do |trade|
+    Trade.all.reverse.each do |trade|
       puts trade.uuid
+      userForLoad = trade.user
       if trade&.broker == 'KRAKEN'
 
         requestK = Kraken.orderInfo(trade.uuid, trade.user.krakenLiveAPI, trade.user.krakenLiveSecret)
@@ -127,18 +128,22 @@ namespace :generate do
           trade.destroy! 
         end
       elsif trade&.broker == 'OANDA'
-        trade&.user&.oandaList.split(',').each do |idForX|
-          requestK = Oanda.oandaOrder(trade&.user&.oandaToken, idForX, trade.uuid)
+        trade&.user&.oandaList.split(',').each do |accountID|
+          @requestK = Oanda.oandaOrder(trade&.user&.oandaToken, accountID, trade.uuid)
+          @requestTTrade = Oanda.oandaTrade(userForLoad.oandaToken, accountID, @requestK['order']['tradeOpenedID'])
         end
-        if requestK['order']['state'] == 'CANCELLED'
+        if @requestK['order']['state'] == 'CANCELLED'
           trade.destroy! if trade.status == 'canceled'
         end
-
-        trade.update(status: 'closed') if requestK['order']['state'] == 'FILLED'
+        
+        if @requestK['order']['type'] != 'LIMIT'
+          trade.update(cost: @requestTTrade['trade']['initialMarginRequired'].to_f)
+          trade.update(status: 'closed') if @requestK['order']['state'] == 'FILLED'
+        end
       end
     end
 
-    TakeProfit.all.each do |takeProfitX|
+    TakeProfit.all.reverse.each do |takeProfitX|
       puts takeProfitX.uuid
       userForLoad = takeProfitX.user
       if takeProfitX&.broker == 'KRAKEN'
@@ -155,14 +160,14 @@ namespace :generate do
       elsif takeProfitX&.broker == 'OANDA'
         userForLoad.oandaList.split(",").each do |accountID|
           @requestK = Oanda.oandaOrder(userForLoad.oandaToken, accountID, takeProfitX.uuid)
-          @requestKTrade = Oanda.oandaTrade(userForLoad.oandaToken, accountID, @requestK['order']['tradeID'])
+          @requestTTrade = Oanda.oandaTrade(userForLoad.oandaToken, accountID, @requestK['order']['tradeID'])
         end
 
         if @requestK['order']['state'] == 'CANCELLED'
           takeProfitX.destroy! if takeProfitX.status == 'canceled'
         end
 
-        takeProfitX.update(cost: @requestKTrade['trade']['marginUsed'].to_f)
+        takeProfitX.update(cost: @requestTTrade['trade']['marginUsed'].to_f)
 
         takeProfitX.update(status: 'closed') if @requestK['order']['state'] == 'FILLED'
       end
