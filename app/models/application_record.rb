@@ -116,7 +116,7 @@ class ApplicationRecord < ActiveRecord::Base
         if tradeX&.broker == 'OANDA'
           oandaOrderParams = {
             'stopLoss' => {
-              'distance' => (tvData['type'] == 'sellStop' ? (profitTriggerPassed + ((0.01 * tvData['trail'].to_f) * profitTriggerPassed) + tvData['currentPrice'].to_f) : ( tvData['currentPrice'].to_f - profitTriggerPassed + ((0.01 * tvData['trail'].to_f) * profitTriggerPassed))).round(3) ,
+              'distance' => (tvData['type'] == 'sellStop' ? (((0.01 * tvData['trail'].to_f) *  tvData['currentPrice'].to_f) + tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f)) : (tvData['currentPrice'].to_f) - ( tvData['currentPrice'].to_f - ((0.01 * tvData['trail'].to_f) *  tvData['currentPrice'].to_f))).round(3),
             }
           }
         end
@@ -170,7 +170,6 @@ class ApplicationRecord < ActiveRecord::Base
                 elsif tvData['broker'] == 'TRADIER'
                 end
                 
-
                 if profitTrade.status == 'open' # or other status from oanda/alpaca
                   volumeTallyForTradex += volumeForProfit
                   openProfitCount += 1
