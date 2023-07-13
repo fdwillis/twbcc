@@ -483,7 +483,11 @@ class ApplicationRecord < ActiveRecord::Base
 
           if tvData['broker'] == 'KRAKEN'
             requestK = Kraken.request('/0/private/AddOrder', krakenOrderParams, apiKey, secretKey)
-            pullRequestK = Kraken.orderInfo(requestK['result']['txid'][0], @traderFound.krakenLiveAPI, @traderFound.krakenLiveSecret)
+            if requestK['result']
+              pullRequestK = Kraken.orderInfo(requestK['result']['txid'][0], @traderFound.krakenLiveAPI, @traderFound.krakenLiveSecret)
+            else
+              return
+            end
           elsif tvData['broker'] == 'OANDA'
             requestK = Oanda.oandaEntry(apiKey, secretKey, oandaOrderParams)
           elsif tvData['broker'] == 'TRADIER'
@@ -495,7 +499,11 @@ class ApplicationRecord < ActiveRecord::Base
 
           if tvData['broker'] == 'KRAKEN'
             requestK = Kraken.request('/0/private/AddOrder', krakenOrderParams, apiKey, secretKey)
-            pullRequestK = Kraken.orderInfo(requestK['result']['txid'][0], @traderFound.krakenLiveAPI, @traderFound.krakenLiveSecret)
+            if requestK['result']
+              pullRequestK = Kraken.orderInfo(requestK['result']['txid'][0], @traderFound.krakenLiveAPI, @traderFound.krakenLiveSecret)
+            else
+              return
+            end
           elsif tvData['broker'] == 'OANDA'
             requestK = Oanda.oandaEntry(apiKey, secretKey, oandaOrderParams)
           elsif tvData['broker'] == 'TRADIER'
@@ -577,7 +585,11 @@ class ApplicationRecord < ActiveRecord::Base
 
             if tvData['broker'] == 'KRAKEN'
               requestK = Kraken.request('/0/private/AddOrder', krakenParams0, apiKey, secretKey)
-              pullRequestK = Kraken.orderInfo(requestK['result']['txid'][0], @traderFound.krakenLiveAPI, @traderFound.krakenLiveSecret)
+              if requestK['result']
+                pullRequestK = Kraken.orderInfo(requestK['result']['txid'][0], @traderFound.krakenLiveAPI, @traderFound.krakenLiveSecret)
+              else
+                return
+              end
             elsif tvData['broker'] == 'OANDA'
               requestK = Oanda.oandaEntry(apiKey, secretKey, oandaOrderParams)
             elsif tvData['broker'] == 'TRADIER'
@@ -588,7 +600,11 @@ class ApplicationRecord < ActiveRecord::Base
 
             if tvData['broker'] == 'KRAKEN'
               requestK = Kraken.request('/0/private/AddOrder', krakenParams0, apiKey, secretKey)
-              pullRequestK = Kraken.orderInfo(requestK['result']['txid'][0], @traderFound.krakenLiveAPI, @traderFound.krakenLiveSecret)
+              if requestK['result']
+                pullRequestK = Kraken.orderInfo(requestK['result']['txid'][0], @traderFound.krakenLiveAPI, @traderFound.krakenLiveSecret)
+              else
+                return
+              end
             elsif tvData['broker'] == 'OANDA'
               requestK = Oanda.oandaEntry(apiKey, secretKey, oandaOrderParams)
             elsif tvData['broker'] == 'TRADIER'
