@@ -31,7 +31,7 @@ class Oanda < ApplicationRecord
 
    def self.oandaUpdateTrade(tvData, token, accountID, tradeID, orderParams, tradeX)
     trailSet = oandaRequest(token, accountID).account(accountID).trade(tradeID, orderParams).update
-    madeRecord = tradeX.take_profits.create!(traderID: tvData['traderID'], uuid: trailSet['trailingStopLossOrderTransaction']['id'], status: 'open', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(oandaToken: token).id)
+    madeRecord = tradeX.take_profits.create!(traderID: tvData['traderID'], uuid: trailSet['stopLossOrderTransaction']['id'], status: 'open', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(oandaToken: token).id)
     trailSet
   end
 
