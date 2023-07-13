@@ -296,7 +296,7 @@ class ApplicationRecord < ActiveRecord::Base
       openOrdersPending = openOrders
       accountBalance = ((marginUsed + openOrders) + oandaAccount['account']['marginAvailable'].to_f)
 
-      orderforMulti += @traderFound&.allowMarketOrder ? 1 : 0
+      orderforMulti += @traderFound&.allowMarketOrder == 'true' ? 1 : 0
       tvData['entries'].reject(&:blank?).size > 0 ? orderforMulti += tvData['entries'].reject(&:blank?).size : orderforMulti += 0
     elsif tvData['broker'] == 'TRADIER'
     end
@@ -314,8 +314,6 @@ class ApplicationRecord < ActiveRecord::Base
     end
     
     if @currentRisk.round(2) < @traderFound&.maxRisk && @currentRisk.round(2) >= 0
-     priceForProfit = (tvData['direction'] == 'sell' ? tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * @traderFound&.profitTrigger)) : tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * @traderFound&.profitTrigger))).round(5)
-
       # market order
       if @traderFound&.allowMarketOrder == 'true'
         # set order params
