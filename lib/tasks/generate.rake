@@ -140,8 +140,8 @@ namespace :generate do
 
     TakeProfit.all.each do |takeProfitX|
       puts takeProfitX.uuid
+      userForLoad = takeProfitX.user
       if takeProfitX&.broker == 'KRAKEN'
-        userForLoad = takeProfitX.user
 
         requestK = Kraken.orderInfo(takeProfitX.uuid, userForLoad.krakenLiveAPI, userForLoad.krakenLiveSecret)
         p requestK
@@ -152,14 +152,19 @@ namespace :generate do
         if takeProfitX.status == 'canceled'
           takeProfitX.destroy! 
         end
-      # elsif trade&.broker == 'OANDA'
-      #   requestK = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
+      elsif takeProfitX&.broker == 'OANDA'
+        userForLoad.oandaList.split(",").each do |accountID|
+          @requestK = Oanda.oandaOrder(userForLoad.oandaToken, accountID, takeProfitX.uuid)
+          @requestKTrade = Oanda.oandaTrade(userForLoad.oandaToken, accountID, @requestK['order']['tradeID'])
+        end
 
-      #   if requestK['order']['state'] == 'CANCELLED'
-      #     trade.destroy! if trade.status == 'canceled'
-      #   end
+        if @requestK['order']['state'] == 'CANCELLED'
+          takeProfitX.destroy! if takeProfitX.status == 'canceled'
+        end
 
-      #   trade.update(status: 'closed') if requestK['order']['state'] == 'FILLED'
+        takeProfitX.update(cost: @requestKTrade['trade']['marginUsed'].to_f)
+
+        takeProfitX.update(status: 'closed') if @requestK['order']['state'] == 'FILLED'
       end
     end
   end
