@@ -43,11 +43,13 @@ class Oanda < ApplicationRecord
 
   def self.oandaTrail(tvData, tradeInfo, token, accountID, tradeX)
     requestProfit = nil
-    trailPrice =  (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(5) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(5)).to_s
+    traderFound = User.find_by(oandaToken: token)
+    trailPrice =  (tvData['type'] == 'sellStop' ? (((0.01 * tvData['trail'].to_f) *  tvData['currentPrice'].to_f) + tvData['currentPrice'].to_f) : (( tvData['currentPrice'].to_f - ((0.01 * tvData['trail'].to_f) *  tvData['currentPrice'].to_f)))).round(5).to_s
+    
     oandaOrderParams = {
       'order' => {
         'price' => trailPrice,
-        'units' => tvData['type'] == 'sellStop' ?  tradeInfo['trade']['initialUnits'] : "-#{tradeInfo['trade']['initialUnits']}",
+        'units' => tvData['type'] == 'sellStop' ?  (tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round : "-#{(tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round}",
         'instrument' => tvData['ticker'].insert(3, '_'),
         'timeInForce' => 'GTC',
         'type' => 'LIMIT',
@@ -55,15 +57,15 @@ class Oanda < ApplicationRecord
       }
     }
 
-
-    # FINAL TESTING
     requestProfit = Oanda.oandaEntry(token, accountID, oandaOrderParams)
 
     if requestProfit.present? && requestProfit['orderCreateTransaction'].present?
       # cost: requestProfit['orderFillTransaction']['tradeOpened']['initialMarginRequired'].to_f,
       tradeX.take_profits.create!(traderID: tvData['traderID'], uuid: requestProfit['orderCreateTransaction']['id'], status: 'open', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(oandaToken: token).id)
-      requestProfit
+      
+      tvData['ticker'] = tvData['ticker'].delete("_")
      end
+    requestProfit
   end
 
   def self.oandaRisk(tvData, token, accountID)
