@@ -115,7 +115,7 @@ class ApplicationRecord < ActiveRecord::Base
 
         if tradeX&.broker == 'OANDA'
           oandaOrderParams = {
-            'trailingStopLoss' => {
+            'stopLoss' => {
               'distance' => (tvData['type'] == 'sellStop' ? (profitTriggerPassed + ((0.01 * tvData['trail'].to_f) * profitTriggerPassed) + tvData['currentPrice'].to_f) : ( tvData['currentPrice'].to_f - profitTriggerPassed + ((0.01 * tvData['trail'].to_f) * profitTriggerPassed))).round(3) ,
             }
           }
@@ -140,7 +140,7 @@ class ApplicationRecord < ActiveRecord::Base
                     @protectTrade = Oanda.oandaUpdateTrade(tvData, apiKey, secretKey, @requestOriginalE['trade']['id'], oandaOrderParams, tradeX)
                     
                     if @protectTrade.present? && !@protectTrade.empty?&& !@protectTrade.nil?# && @protectTrade['orderCreateTransaction']['id'].present?
-                      puts 	"\n-- Taking Profit #{@protectTrade['trailingStopLossOrderTransaction']['id']} --\n"
+                      puts 	"\n-- Taking Profit #{@protectTrade['stopLossOrderTransaction']['id']} --\n"
                     end
                   end
 
@@ -199,7 +199,7 @@ class ApplicationRecord < ActiveRecord::Base
                         @protectTrade = Oanda.oandaUpdateTrade(tvData, apiKey, secretKey, @requestOriginalE['trade']['id'], oandaOrderParams, tradeX)
                         
                         if @protectTrade.present? && !@protectTrade.empty?&& !@protectTrade.nil?# && @protectTrade['orderCreateTransaction']['id'].present?
-                          puts  "\n-- Repainting Take Profit #{@protectTrade['trailingStopLossOrderTransaction']['id']} --\n"
+                          puts  "\n-- Repainting Take Profit #{@protectTrade['stopLossOrderTransaction']['id']} --\n"
                         end
                         profitTrade.destroy!
                         break
@@ -230,7 +230,7 @@ class ApplicationRecord < ActiveRecord::Base
                       @protectTrade = Oanda.oandaUpdateTrade(tvData, apiKey, secretKey, @requestOriginalE['trade']['id'], oandaOrderParams, tradeX)
                       
                       if @protectTrade.present? && !@protectTrade.empty?&& !@protectTrade.nil?# && @protectTrade['orderCreateTransaction']['id'].present?
-                        puts  "\n-- Additional Take Profit #{@protectTrade['trailingStopLossOrderTransaction']['id']} --\n"
+                        puts  "\n-- Additional Take Profit #{@protectTrade['stopLossOrderTransaction']['id']} --\n"
                       end
                     end
 
@@ -282,7 +282,7 @@ class ApplicationRecord < ActiveRecord::Base
                     @protectTrade = Oanda.oandaUpdateTrade(tvData, apiKey, secretKey, @requestOriginalE['trade']['id'], oandaOrderParams, tradeX)
                     
                     if @protectTrade.present? && !@protectTrade.empty?&& !@protectTrade.nil?# && @protectTrade['orderCreateTransaction']['id'].present?
-                      puts  "\n-- Taking Profit #{@protectTrade['trailingStopLossOrderTransaction']['id']} --\n"
+                      puts  "\n-- Taking Profit #{@protectTrade['stopLossOrderTransaction']['id']} --\n"
                     end
                   end
 
@@ -341,7 +341,7 @@ class ApplicationRecord < ActiveRecord::Base
                         @protectTrade = Oanda.oandaUpdateTrade(tvData, apiKey, secretKey, @requestOriginalE['trade']['id'], oandaOrderParams, tradeX)
                         
                         if @protectTrade.present? && !@protectTrade.empty?&& !@protectTrade.nil?# && @protectTrade['orderCreateTransaction']['id'].present?
-                          puts  "\n-- Repainting Take Profit #{@protectTrade['trailingStopLossOrderTransaction']['id']} --\n"
+                          puts  "\n-- Repainting Take Profit #{@protectTrade['stopLossOrderTransaction']['id']} --\n"
                         end
                       end
                     elsif tvData['broker'] == 'TRADIER'
@@ -369,7 +369,7 @@ class ApplicationRecord < ActiveRecord::Base
                       @protectTrade = Oanda.oandaUpdateTrade(tvData, apiKey, secretKey, @requestOriginalE['trade']['id'], oandaOrderParams, tradeX)
 
                       if @protectTrade.present? && !@protectTrade.empty?&& !@protectTrade.nil?# && @protectTrade['orderCreateTransaction']['id'].present?
-                        puts  "\n-- Additional Take Profit #{@protectTrade['trailingStopLossOrderTransaction']['id']} --\n"
+                        puts  "\n-- Additional Take Profit #{@protectTrade['stopLossOrderTransaction']['id']} --\n"
                       end
                     end
                   elsif tvData['broker'] == 'TRADIER'
@@ -654,7 +654,7 @@ class ApplicationRecord < ActiveRecord::Base
               end
             end
           elsif tvData['broker'] == 'OANDA'
-            
+
             if  requestK.present? && !requestK['orderCancelTransaction'].present?
               User.find_by(oandaToken: apiKey).trades.create(traderID: tvData['traderID'], uuid: requestK['orderCreateTransaction']['id'], broker: tvData['broker'], direction: tvData['direction'], status: 'open', cost: @costForLimit)
               puts "\n-- #{tvData['broker']} Entry Submitted --\n"
