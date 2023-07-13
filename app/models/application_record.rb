@@ -16,7 +16,7 @@ class ApplicationRecord < ActiveRecord::Base
   def self.trailStop(tvData, apiKey = nil, secretKey = nil)
     if tvData['broker'] == 'OANDA'
       @userX = User.find_by(oandaToken: apiKey)
-      @openTrades = @userX.trades.where(broker: 'OANDA', finalTakeProfit:nil)
+      @openTrades = @userX.trades.where(broker: 'OANDA', finalTakeProfit:nil, direction: tvData['direction'] == 'sell' ? 'buy' : 'sell')
       @traderFound = @userX
     elsif tvData['broker'] == 'TRADIER'
     end
@@ -26,7 +26,6 @@ class ApplicationRecord < ActiveRecord::Base
     if @openTrades.present? && @openTrades.size > 0
       @openTrades.each do |trade|
         if trade&.broker == 'OANDA'
-          
           requestK = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
           
           if requestK['order']['state'] == 'CANCELLED'
@@ -42,7 +41,7 @@ class ApplicationRecord < ActiveRecord::Base
     end
     # pull closed/filled bot trades
     if tvData['broker'] == 'OANDA'
-      afterUpdates =  @userX.trades.where(status: 'closed', broker: 'OANDA', finalTakeProfit: nil)
+      afterUpdates =  @userX.trades.where(status: 'closed', broker: 'OANDA', finalTakeProfit: nil, direction: tvData['direction'] == 'sell' ? 'buy' : 'sell')
     elsif tvData['broker'] == 'TRADIER'
     end
 
@@ -263,7 +262,7 @@ class ApplicationRecord < ActiveRecord::Base
           end
         else
           if @requestOriginalE['trade']['currentUnits'].to_f.abs == 0
-            tradeX.update(finalTakeProfit: tradeX.take_profits.last.uuid)
+            tradeX.update(finalTakeProfit: tradeX.take_profits.present? ? tradeX.take_profits.last.uuid : 'closed')
           else
             puts "\n-- Waiting For Profit --\n"
           end
