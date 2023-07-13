@@ -1,6 +1,6 @@
 class Oanda < ApplicationRecord
   def self.oandaRequest(token, accountID)
-    @oanda = OandaApiV20.new(access_token: token)
+    @oanda = OandaApiV20.new(access_token: token, practice: true)
   end
 
   def self.oandaAccount(token, accountID)
@@ -29,8 +29,9 @@ class Oanda < ApplicationRecord
     oandaRequest(token, accountID).account(accountID).trade(tradeID).show
   end
 
-   def self.oandaUpdateTrade(token, accountID, tradeID, orderParams)
-    oandaRequest(token, accountID).account(accountID).trade(tradeID, orderParams).update
+   def self.oandaUpdateTrade(token, accountID, tradeID, orderParams, tradeX)
+    trailSet = oandaRequest(token, accountID).account(accountID).trade(tradeID, orderParams).update
+    debugger
   end
 
   def self.takeProfit(token, accountID)
