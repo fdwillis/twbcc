@@ -1,12 +1,11 @@
-<% growth = ((@assetsUM - @initalBalance)/@initalBalance) %>
 <div class="page-content header-clear-medium">
 	<div data-card-height="230" class="card card-style rounded-m shadow-xl preload-img entered loaded" data-src="/assets/TAFX1.jpg" data-ll-status="loaded" style="height: 230px; background-image: url(/assets/TAFX1.jpg);">
 		<div class="card-top mt-4 me-3">
 			<a href="/auto-trading?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="mt-1 float-end text-uppercase font-900 font-11 btn btn-s rounded-s shadow-l bg-highlight">JOIN NOW</a>
 		</div>
 		<div class="card-bottom text-center col-12">
-			<h1 class="color-white fa-4x mb-4"><%= number_to_currency(@assetsUM, precision: 2) %></h1>
-			<p class="color-white opacity-70 font-22 mb-4">Assets Under Management</p>
+			<h1 class="color-white fa-4x mb-4"></h1>
+			<p class="color-white opacity-70 font-22 mb-4">Trading as a Service With Oarlin</p>
 		</div>
 
 		<!-- <div class="card-bottom">
@@ -22,18 +21,11 @@
 <div class="card card-style">
 	<div class="content mb-4">
 		<div class="content">
-			<h2 class="font-30 color-highlight text-center mb-4">Total Growth</h2>
-			<h6 class="font-12 font-800 text-uppercase opacity-30 mb-4 text-center"><%= pluralize(@allTrades.map(&:user).uniq.size, "Trader") %></h6>
+			<h2 class="font-30 color-highlight text-center mb-4">Assets Under Management</h2>
 			<h6 class="font-40 font-800 text-uppercase opacity-30 mb-4 text-center">
-				<%= number_to_percentage( growth * 100, precision: 2)%>
+				<%= number_to_currency(@assetsUM , precision: 2)%>
 			</h6>
-			<div class="text-center">
-				<% if growth > 0%>
-					<i class="fa fa-chevron-up color-green-dark font-30"></i>
-				<% else %>
-					<i class="fa fa-chevron-down color-red-dark font-30"></i>
-				<% end %>
-			</div>
+			<h6 class="font-12 font-800 text-uppercase opacity-30 mb-4 text-center"><%= pluralize(@allTrades.map(&:user).uniq.size, "Trader") %></h6>
 		</div>
 	</div>
 </div>

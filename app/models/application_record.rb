@@ -1,21 +1,6 @@
 class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
 
-  INITALBALANCE = [
-    {
-      'uuid' => 'd57307d7',
-      'initialDepopsit' => 169
-    },
-    {
-      'uuid' => '728f1600',
-      'initialDepopsit' => 1500
-    },
-    {
-      'uuid' => 'dbff2194',
-      'initialDepopsit' => 500
-    }
-  ].freeze
-
   def self.killPending(tvData, apiKey = nil, secretKey = nil)
     if tvData['broker'] == 'KRAKEN'
       @currentOpenAllocation = Kraken.pendingTrades(apiKey, secretKey)

@@ -28,7 +28,6 @@ class TradingviewController < ApplicationController
     @partialCloseall = 0
 
     @assetsUM = 0
-    @initalBalance = ApplicationRecord::INITALBALANCE.map { |d| d['initialDepopsit'] }.sum
 
     usersForMap.each do |user|
       # assets under management (tally together crypto, forex, stocks, options)
