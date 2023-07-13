@@ -91,7 +91,7 @@ class ApplicationRecord < ActiveRecord::Base
             originalVolume = @requestOriginalE['result'][tradeX.uuid]['vol'].to_f
           else
             tradeX.destroy!
-            next
+            break
           end
         elsif tradeX&.broker == 'OANDA'
           requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
@@ -351,7 +351,7 @@ class ApplicationRecord < ActiveRecord::Base
                 elsif profitTrade.status == 'canceled' # or other status from oanda/alpaca
                   puts "\n-- Removing Canceled Order #{profitTrade.uuid} --\n"
                   profitTrade.destroy!
-                  next
+                  break
                 end
               end
 
