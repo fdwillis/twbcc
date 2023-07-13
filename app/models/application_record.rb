@@ -316,7 +316,7 @@ class ApplicationRecord < ActiveRecord::Base
                   volumeTallyForTradex += volumeForProfit
                   openProfitCount += 1
 
-                  if (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) < priceToBeat - ((0.01 * tvData['trail'].to_f) * priceToBeat.round(1).to_f)
+                  if (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(5) < priceToBeat - ((0.01 * tvData['trail'].to_f) * priceToBeat.round(5).to_f)
                     if tvData['broker'] == 'KRAKEN'
                       krakenOrderParams = {
                         'txid' => profitTrade.uuid
