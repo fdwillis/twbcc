@@ -41,6 +41,8 @@ class ApplicationRecord < ActiveRecord::Base
 
     elsif tvData['broker'] == 'TRADIER'
     end
+
+    puts "\n-- KILL COMPLETE --\n"
   end
 
   def self.trailStop(tvData, apiKey = nil, secretKey = nil)
