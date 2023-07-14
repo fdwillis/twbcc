@@ -8,30 +8,28 @@ class ApplicationRecord < ActiveRecord::Base
       @openTrades = @userX.trades.where(broker: tvData['broker'], finalTakeProfit:nil)
       @traderFound = @userX
 
-      @traderFound.oandaList.split(',').each do |accountID|
-        requestP = Oanda.oandaPendingOrders(apiKey, accountID)
-        if tvData['direction'] == 'sell'
+      requestP = Oanda.oandaPendingOrders(apiKey, secretKey)
+      if tvData['direction'] == 'sell'
 
 
-          if tvData['killType'] == 'all'
-            ordersToKill = requestP['orders'].reject{|d|!d['units'].to_f.negative?}
-            ordersToKill.each do |oandaData|
-              cancel = Oanda.oandaCancel(apiKey, secretKey, oandaData['id'])
-              Trade.find_by(uuid: oandaData['id']).destroy!
-            end
-          elsif tvData['killType'] == 'profit'
+        if tvData['killType'] == 'all'
+          ordersToKill = requestP['orders'].reject{|d|!d['units'].to_f.negative?}
+          ordersToKill.each do |oandaData|
+            cancel = Oanda.oandaCancel(apiKey, secretKey, oandaData['id'])
+            Trade.find_by(uuid: oandaData['id']).destroy!
           end
+        elsif tvData['killType'] == 'profit'
         end
+      end
 
-        if tvData['direction'] == 'buy'
-          if tvData['killType'] == 'all'
-            ordersToKill = requestP['orders'].reject{|d|!d['units'].to_f.positive?}
-            ordersToKill.each do |oandaData|
-              cancel = Oanda.oandaCancel(apiKey, secretKey, oandaData['id'])
-              Trade.find_by(uuid: oandaData['id']).destroy!
-            end
-          elsif tvData['killType'] == 'profit'
+      if tvData['direction'] == 'buy'
+        if tvData['killType'] == 'all'
+          ordersToKill = requestP['orders'].reject{|d|!d['units'].to_f.positive?}
+          ordersToKill.each do |oandaData|
+            cancel = Oanda.oandaCancel(apiKey, secretKey, oandaData['id'])
+            Trade.find_by(uuid: oandaData['id']).destroy!
           end
+        elsif tvData['killType'] == 'profit'
         end
       end
 
