@@ -25,6 +25,11 @@ class ApplicationRecord < ActiveRecord::Base
 
         if tvData['direction'] == 'buy'
           if tvData['killType'] == 'all'
+            ordersToKill = requestP['orders'].reject{|d|!d['units'].to_f.positive?}
+            ordersToKill.each do |oandaData|
+              cancel = Oanda.oandaCancel(apiKey, secretKey, oandaData['id'])
+              Trade.find_by(uuid: oandaData['id']).destroy!
+            end
           elsif tvData['killType'] == 'profit'
           end
         end
