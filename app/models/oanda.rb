@@ -53,7 +53,7 @@ class Oanda < ApplicationRecord
     oandaOrderParams = {
       'order' => {
         'price' => trailPrice,
-        'units' => tvData['type'] == 'sellStop' ?  (tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round : "-#{(tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round}",
+        'units' => tvData['type'] == 'sellStop' ?  (tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round.abs.to_s : "-#{(tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round}",
         'instrument' => tvData['ticker'].insert(3, '_'),
         'timeInForce' => 'GTC',
         'type' => 'LIMIT',
