@@ -17,6 +17,7 @@ class ApplicationRecord < ActiveRecord::Base
           ordersToKill.each do |oandaData|
             cancel = Oanda.oandaCancel(apiKey, secretKey, oandaData['id'])
             Trade.find_by(uuid: oandaData['id']).destroy!
+            puts "\n-- KILLED #{oandaData['id']} --\n"
           end
         elsif tvData['killType'] == 'profit'
         end
@@ -28,6 +29,7 @@ class ApplicationRecord < ActiveRecord::Base
           ordersToKill.each do |oandaData|
             cancel = Oanda.oandaCancel(apiKey, secretKey, oandaData['id'])
             Trade.find_by(uuid: oandaData['id']).destroy!
+            puts "\n-- KILLED #{oandaData['id']} --\n"
           end
         elsif tvData['killType'] == 'profit'
         end
