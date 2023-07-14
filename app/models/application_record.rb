@@ -2,10 +2,35 @@ class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
 
   def self.killType(tvData, apiKey = nil, secretKey = nil)
+
     if tvData['broker'] == 'OANDA'
       @userX = User.find_by(oandaToken: apiKey)
-      @openTrades = @userX.trades.where(broker: 'OANDA', finalTakeProfit:nil)
+      @openTrades = @userX.trades.where(broker: tvData['broker'], finalTakeProfit:nil)
       @traderFound = @userX
+
+      @traderFound.oandaList.split(',').each do |accountID|
+        requestP = Oanda.oandaPendingOrders(apiKey, accountID)
+        if tvData['direction'] == 'sell'
+
+
+          if tvData['killType'] == 'all'
+            ordersToKill = requestP['orders'].reject{|d|!d['units'].to_f.negative?}
+            ordersToKill.each do |oandaData|
+              cancel = Oanda.oandaCancel(apiKey, secretKey, oandaData['id'])
+              Trade.find_by(uuid: oandaData['id']).destroy!
+            end
+          elsif tvData['killType'] == 'profit'
+          end
+        end
+
+        if tvData['direction'] == 'buy'
+          if tvData['killType'] == 'all'
+          elsif tvData['killType'] == 'profit'
+          end
+        end
+      end
+
+
       # killall 
       # killprofitable
 

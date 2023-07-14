@@ -13,6 +13,10 @@ class Oanda < ApplicationRecord
     accountBalance = accountToFind['account']['balance'].to_f
   end
 
+  def self.oandaPendingOrders(token, accountID)
+    oandaRequest(token, accountID).account(accountID).pending_orders.show
+  end
+
   def self.oandaEntry(token, accountID, orderParams)
     oandaRequest(token, accountID).account(accountID).order(orderParams).create
   end
