@@ -174,7 +174,7 @@ class TradingviewController < ApplicationController
                             BackgroundJob.perform_async('stop', tradingviewKeysparams.to_h, traderFoundForCopy.oandaToken, accountID)
                           end
                         when params['broker'] == 'TRADIER'
-                          BackgroundJob.perform_async('stop', tradingviewKeysparams.to_h, traderFound&.tradierToken, nil)
+                          BackgroundJob.perform_async('stop', tradingviewKeysparams.to_h, traderFoundForCopy&.tradierToken, nil)
                         end
                       when params['type'] == 'entry'
                         case true
@@ -185,7 +185,7 @@ class TradingviewController < ApplicationController
                             BackgroundJob.perform_async('entry', tradingviewKeysparams.to_h, traderFoundForCopy.oandaToken, accountID)
                           end
                         when params['broker'] == 'TRADIER'
-                          BackgroundJob.perform_async('entry', tradingviewKeysparams.to_h, traderFound&.tradierToken, nil)
+                          BackgroundJob.perform_async('entry', tradingviewKeysparams.to_h, traderFoundForCopy&.tradierToken, nil)
                         end
                       when params['type'].include?('profit')
                       when params['type'] == 'kill'
@@ -193,9 +193,11 @@ class TradingviewController < ApplicationController
                         when params['broker'] == 'KRAKEN'
                           BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFoundForCopy.krakenLiveAPI, traderFoundForCopy.krakenLiveSecret)
                         when params['broker'] == 'OANDA'
-                          BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFoundForCopy.oandaToken, nil)
+                          traderFoundForCopy&.oandaList.split(',')&.reject(&:blank?).each do |accountID|
+                            BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFoundForCopy.oandaToken, accountID)
+                          end
                         when params['broker'] == 'TRADIER'
-                          BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFound&.tradierToken, nil)
+                          BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFoundForCopy&.tradierToken, nil)
                         end
                       end
                     elsif (DateTime.now.strftime('%a') != 'Sun' && DateTime.now.strftime('%a') != 'Sat') && traderFoundForCopy.trial?
@@ -216,7 +218,7 @@ class TradingviewController < ApplicationController
                               BackgroundJob.perform_async('stop', tradingviewKeysparams.to_h, traderFoundForCopy&.oandaToken, accountID)
                             end
                           when params['broker'] == 'TRADIER'
-                            BackgroundJob.perform_async('stop', tradingviewKeysparams.to_h, traderFound&.tradierToken, nil)
+                            BackgroundJob.perform_async('stop', tradingviewKeysparams.to_h, traderFoundForCopy&.tradierToken, nil)
                           end
                         when params['type'] == 'entry'
                           case true
@@ -227,7 +229,7 @@ class TradingviewController < ApplicationController
                               BackgroundJob.perform_async('entry', tradingviewKeysparams.to_h, traderFoundForCopy&.oandaToken, accountID)
                             end
                           when params['broker'] == 'TRADIER'
-                            BackgroundJob.perform_async('entry', tradingviewKeysparams.to_h, traderFound&.tradierToken, nil)
+                            BackgroundJob.perform_async('entry', tradingviewKeysparams.to_h, traderFoundForCopy&.tradierToken, nil)
                           end
                         when params['type'].include?('profit')
                         when params['type'] == 'kill'
@@ -235,9 +237,11 @@ class TradingviewController < ApplicationController
                           when params['broker'] == 'KRAKEN'
                             BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFoundForCopy&.krakenLiveAPI, traderFoundForCopy&.krakenLiveSecret)
                           when params['broker'] == 'OANDA'
-                            BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFoundForCopy&.oandaToken, nil)
+                            traderFoundForCopy&.oandaList.split(',')&.reject(&:blank?).each do |accountID|
+                              BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFoundForCopy&.oandaToken, accountID)
+                            end
                           when params['broker'] == 'TRADIER'
-                            BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFound&.tradierToken, nil)
+                            BackgroundJob.perform_async('kill', tradingviewKeysparams.to_h, traderFoundForCopy&.tradierToken, nil)
                           end
                         end
                       else
