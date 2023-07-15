@@ -176,9 +176,9 @@ namespace :generate do
 
       if userX.trader?
         if userX&.take_profits.present? && userX&.take_profits.map(&:stripePI).include?(nil)
-          validTakeProfits = userX&.take_profits.where(stripePI: nil).where('created_at > ?', 28.days.ago).sort_by(&:created_at)
+          validTakeProfits = userX&.take_profits.where(stripePI: nil).where('created_at > ?', 30.days.ago).sort_by(&:created_at)
           profitTallyForUserX += validTakeProfits.map(&:profitLoss).sum 
-          
+
           if Date.today.strftime("%d").to_i == 1
             unless userX&.accessPin.include?('profit')
                 permissionPass = true
@@ -187,9 +187,11 @@ namespace :generate do
               userXIntents = Stripe::PaymentIntent.list(limit: 100, customer: userX.stripeCustomerID)
               if userXIntents['has_more'] == true
               else
-                userXIntents['data'].reject{|d|!d['metadata'][:profitPaid].present?}.each do |paymentIntent|
+                cleanedIntents = userXIntents['data'].reject{|d|!d['metadata'][:profitPaid].present?}
+
+                cleanedIntents.each do |paymentIntent|
                   unless paymentIntent['cancellation_reason'].present?
-                    if Time.at(paymentIntent.created) > 28.days.ago
+                    if Time.at(cleanedIntents.last.created) < 28.days.ago
                       permissionPass = true
                     end
                   end
