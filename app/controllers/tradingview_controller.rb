@@ -100,6 +100,8 @@ class TradingviewController < ApplicationController
   def signals
     traderID = params['traderID']
     traderFound = User.find_by(uuid: traderID)
+    traderFound&.checkMembership
+
     if params['tradingDays'].present? && params['tradingDays'].map { |d| d.downcase }.include?(Date.today.strftime('%a').downcase)
       if traderFound.trader?
 
@@ -154,10 +156,11 @@ class TradingviewController < ApplicationController
 
             validPlansToParse.each do |planXinfo|
               traderFoundForCopy = User.find_by(stripeCustomerID: planXinfo['customer'])
-              listToTrade = traderFoundForCopy&.authorizedList.present? ? traderFoundForCopy&.authorizedList&.delete(' ').split(",") : []
+              traderFoundForCopy&.checkMembership
 
-              unless traderFoundForCopy.admin?
+              if  traderFoundForCopy.trader?
                 puts "\n-- Started For #{traderFoundForCopy.uuid} --\n"
+                listToTrade = traderFoundForCopy&.authorizedList.present? ? traderFoundForCopy&.authorizedList&.delete(' ').split(",") : []
                 assetList = listToTrade.present? ? listToTrade : []
                 if assetList.size > 0
                   assetList.each do |assetX|

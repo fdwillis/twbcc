@@ -332,11 +332,17 @@ class User < ApplicationRecord
     approvedProducts.map(&:titleize)
   end
 
+  def currencyBase
+    ISO3166::Country[amazonCountry.downcase].currency_code
+  end
+
   def checkMembership
     membershipValid = []
     membershipPlans = [ENV['trialTradingDaily'], ENV['autoTradingMonthlyMembership'], ENV['autoTradingAnnualMembership'], ENV['selfTradingAnnualMembership'], ENV['selfTradingMonthlyMembership'], ENV['affiliateMonthly'], ENV['affiliateAnnual'], ENV['businessMonthly'], ENV['businessAnnual'], ENV['automationMonthly'], ENV['automationAnnual']]
     allSubscriptions = Stripe::Subscription.list({ customer: stripeCustomerID })['data'].map(&:items).map(&:data).flatten.map(&:plan).map(&:id)
 
+    #check for payment of membership
+    # when checking for addOns us addOnPaid or addOnPending
     membershipPlans.each do |planID|
       case true
       when allSubscriptions.include?(planID)
@@ -362,9 +368,34 @@ class User < ApplicationRecord
 
     membershipValid.present? ? membershipValid : [{ membershipType: 'free', membershipDetails: { 0 => { 'status' => 'active', 'interval' => 'N/A' } } }]
 
-    self.update(accessPin: membershipValid.map { |d| d[:membershipType] }.join(','))
+    #logic checking for profits us profitPaid or profitPending
+
+    paymentIntents = Stripe::PaymentIntent.list({limit: 100, customer: stripeCustomerID})
+
+    if paymentIntents['has_more'] == true
+    else
+      paymentIntents['data'].each do |stripePI|
+        if stripePI['metadata'].present?
+          if stripePI['metadata']['profitPaid'] == 'false'
+            membershipValid << { membershipDetails: stripePI['id'], membershipType: 'profitPending' }
+          elsif stripePI['metadata']['profitPaid'] == 'true'
+            membershipValid << { membershipDetails: stripePI['id'], membershipType: 'profitPaid' }
+          end
+        end
+      end
+    end
+
+    self.update(accessPin: membershipValid.map { |d| d[:membershipType] }.uniq.join(','))
 
     membershipValid
+  end
+
+  def profitPaid?
+    accessPin.split(',').include?('profitPaid')
+  end
+
+  def profitPending?
+    accessPin.split(',').include?('profitPending')
   end
 
   def customer?

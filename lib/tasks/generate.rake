@@ -113,7 +113,6 @@ namespace :generate do
 
   task cleanTrades: :environment do
     Trade.all.sort_by(&:created_at).each do |trade|
-      puts trade.uuid
       userForLoad = trade.user
       if trade&.broker == 'KRAKEN'
           trade.destroy! 
@@ -134,7 +133,6 @@ namespace :generate do
     end
 
     TakeProfit.all.sort_by(&:created_at).each do |takeProfitX|
-      puts takeProfitX.uuid
       userForLoad = takeProfitX.user
 
       if takeProfitX&.broker == 'KRAKEN'
@@ -151,7 +149,7 @@ namespace :generate do
               @requestTTrade = Oanda.oandaTrade(userForLoad.oandaToken, accountID, tradeID)
             end
           end
-          
+
           if @requestK['order']['state'] == 'FILLED' && @requestTTrade['trade'].present?
             takeProfitX.update(status: 'closed')
             takeProfitX.update(profitLoss: @requestTTrade['trade']['realizedPL'].to_f)
@@ -161,13 +159,74 @@ namespace :generate do
             takeProfitX.destroy!
           end
         end
-
-
       end
     end
   end
 
   task profitInvoice: :environment do 
+    # allSubscriptions.include?(planID)
+    # membershipPlan = Stripe::Subscription.list({ customer: stripeCustomerID, price: planID })['data'][0]
+    puts "cleaning database..."
+    Rake::Task['generate:cleanTrades'].invoke
 
+    User.all.each do |userX|
+      profitTallyForUserX = 0
+      permissionPass = false
+      
+
+      if userX.trader?
+        if userX&.take_profits.present? && userX&.take_profits.map(&:stripePI).include?(nil)
+          validTakeProfits = userX&.take_profits.where(stripePI: nil).where('created_at > ?', 28.days.ago).sort_by(&:created_at)
+          profitTallyForUserX += validTakeProfits.map(&:profitLoss).sum 
+          
+          if Date.today.strftime("%d").to_i == 1
+            unless userX&.accessPin.include?('profit')
+                permissionPass = true
+            else
+              # only run if last charge was at least 28 days ago
+              userXIntents = Stripe::PaymentIntent.list(limit: 100, customer: userX.stripeCustomerID)
+              if userXIntents['has_more'] == true
+              else
+                userXIntents['data'].reject{|d|!d['metadata'][:profitPaid].present?}.each do |paymentIntent|
+                  unless paymentIntent['cancellation_reason'].present?
+                    if Time.at(paymentIntent.created) > 28.days.ago
+                      permissionPass = true
+                    end
+                  end
+                end
+              end
+            end
+            
+            if permissionPass && profitTallyForUserX > 0
+              createPaymentIntent = Stripe::PaymentIntent.create(
+                amount: ((profitTallyForUserX * 100).to_i * (3 * 0.01)),
+                currency: userX.currencyBase,
+                customer: userX.stripeCustomerID,
+                metadata: {
+                  profitPaid: false
+                }
+
+              )
+
+              validTakeProfits.each do |takeProfitX|
+                takeProfitX.update(stripePI: createPaymentIntent)
+                takeProfitX.trade.update(stripePI: createPaymentIntent)
+              end
+
+              if userX&.autoProfitPay
+                Stripe::PaymentIntent.capture(createPaymentIntent['id'])
+                Stripe::PaymentIntent.update(createPaymentIntent['id'], {
+                  metadata: {
+                    profitPaid: true
+                  } 
+                })
+              end
+            end
+          else
+            puts "not the day"
+          end
+        end
+      end
+    end
   end
 end

@@ -45,15 +45,21 @@ class Oanda < ApplicationRecord
     oandaRequest(token, accountID).account(accountID).trade(id, options).close
   end
 
-  def self.oandaTrail(tvData, tradeInfo, token, accountID, tradeX)
+  def self.oandaTakeProfit(tvData, tradeInfo, token, accountID, tradeX, reduceOrKill)
     requestProfit = nil
     traderFound = User.find_by(oandaToken: token)
-    trailPrice =  (tvData['type'] == 'sellStop' ? (((0.01 * tvData['trail'].to_f) *  tvData['currentPrice'].to_f) + tvData['currentPrice'].to_f) : (( tvData['currentPrice'].to_f - ((0.01 * tvData['trail'].to_f) *  tvData['currentPrice'].to_f)))).round(5).to_s
-    
+    trailPrice = tvData['currentPrice'].to_f.round(5) 
+
+    if reduceOrKill == 'reduce'
+      unitsForOrder = (tvData['type'] == 'sellStop' ?  (tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round.abs.to_s : "-#{(tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round}")
+    elsif reduceOrKill == 'kill'      
+      unitsForOrder = (tvData['type'] == 'sellStop' ?  (tradeInfo['trade']['currentUnits'].to_f * (0.01 * traderFound&.reduceBy)).round.abs.to_s : "-#{(tradeInfo['trade']['currentUnits'].to_f * (0.01 * traderFound&.reduceBy)).round}")
+    end
+
     oandaOrderParams = {
       'order' => {
         'price' => trailPrice,
-        'units' => tvData['type'] == 'sellStop' ?  (tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round.abs.to_s : "-#{(tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round}",
+        'units' => unitsForOrder,
         'instrument' => tvData['ticker'].insert(3, '_'),
         'timeInForce' => 'GTC',
         'type' => 'LIMIT',
