@@ -112,21 +112,11 @@ namespace :generate do
   end
 
   task cleanTrades: :environment do
-    Trade.all.reverse.each do |trade|
+    Trade.all.sort_by(&:created_at).each do |trade|
       puts trade.uuid
       userForLoad = trade.user
       if trade&.broker == 'KRAKEN'
-
-        requestK = Kraken.orderInfo(trade.uuid, trade.user.krakenLiveAPI, trade.user.krakenLiveSecret)
-        p requestK
-        sleep 1
-        if requestK['result'].present? && requestK['result'][trade.uuid]['status'].present? && requestK['result'][trade.uuid]['cost'].present?
-          trade.update(status: requestK['result'][trade.uuid]['status'], cost: requestK['result'][trade.uuid]['cost'].to_f, traderID: 'd57307d7')
-        end
-
-        if trade.status == 'canceled'
           trade.destroy! 
-        end
       elsif trade&.broker == 'OANDA'
         trade&.user&.oandaList.split(',').each do |accountID|
           @requestK = Oanda.oandaOrder(trade&.user&.oandaToken, accountID, trade.uuid)
@@ -143,33 +133,36 @@ namespace :generate do
       end
     end
 
-    TakeProfit.all.reverse.each do |takeProfitX|
+    TakeProfit.all.sort_by(&:created_at).each do |takeProfitX|
       puts takeProfitX.uuid
       userForLoad = takeProfitX.user
+
       if takeProfitX&.broker == 'KRAKEN'
-
-        requestK = Kraken.orderInfo(takeProfitX.uuid, userForLoad.krakenLiveAPI, userForLoad.krakenLiveSecret)
-        p requestK
-        if requestK['result'].present? && requestK['result'][takeProfitX.uuid]['status'].present? && requestK['result'][takeProfitX.uuid]['cost'].present?
-          takeProfitX.update(status: requestK['result'][takeProfitX.uuid]['status'], cost: requestK['result'][takeProfitX.uuid]['cost'].to_f, traderID: 'd57307d7')
-        end
-
-        if takeProfitX.status == 'canceled'
           takeProfitX.destroy! 
-        end
       elsif takeProfitX&.broker == 'OANDA'
+
         userForLoad.oandaList.split(",").each do |accountID|
           @requestK = Oanda.oandaOrder(userForLoad.oandaToken, accountID, takeProfitX.uuid)
-          @requestTTrade = Oanda.oandaTrade(userForLoad.oandaToken, accountID, @requestK['order']['tradeID'])
+
+          if @requestK['order']['tradeReducedID'].present?
+            @requestTTrade = Oanda.oandaTrade(userForLoad.oandaToken, accountID, @requestK['order']['tradeReducedID'])
+          elsif  @requestK['order']['tradeClosedIDs'].present?
+            @requestK['order']['tradeClosedIDs'].each do |tradeID|
+              @requestTTrade = Oanda.oandaTrade(userForLoad.oandaToken, accountID, tradeID)
+            end
+          end
+          
+          if @requestK['order']['state'] == 'FILLED' && @requestTTrade['trade'].present?
+            takeProfitX.update(status: 'closed')
+            takeProfitX.update(profitLoss: @requestTTrade['trade']['realizedPL'].to_f)
+          elsif @requestK['order']['state'] == 'PENDING'
+            takeProfitX.update(status: 'open')
+          elsif @requestK['order']['state'] == 'CANCELLED'
+            takeProfitX.destroy!
+          end
         end
 
-        if @requestK['order']['state'] == 'CANCELLED'
-          takeProfitX.destroy! if takeProfitX.status == 'canceled'
-        end
 
-        takeProfitX.update(cost: @requestTTrade['trade']['marginUsed'].to_f)
-
-        takeProfitX.update(status: 'closed') if @requestK['order']['state'] == 'FILLED'
       end
     end
   end
