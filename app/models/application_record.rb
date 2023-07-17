@@ -34,10 +34,8 @@ class ApplicationRecord < ActiveRecord::Base
           @traderFound.trades.each do |tradeX|
             requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
             @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, requestExecution['order']['fillingTransactionID'])
-            if @requestOriginalE['trade']['unrealizedPL'].to_f > 0
-              takeProfitX = Oanda.oandaTakeProfit(tvData, @requestOriginalE, apiKey, secretKey, tradeX, 'kill')
-              puts takeProfitX
-            end
+            takeProfitX = Oanda.oandaTakeProfit(tvData, @requestOriginalE, apiKey, secretKey, tradeX, 'kill')
+            puts takeProfitX
           end
         end
       end
@@ -66,10 +64,8 @@ class ApplicationRecord < ActiveRecord::Base
           @traderFound.trades.each do |tradeX|
             requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
             @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, requestExecution['order']['fillingTransactionID'])
-            if @requestOriginalE['trade']['unrealizedPL'].to_f > 0
-              takeProfitX = Oanda.oandaTakeProfit(tvData, @requestOriginalE, apiKey, secretKey, tradeX, 'kill')
-              puts takeProfitX
-            end
+            takeProfitX = Oanda.oandaTakeProfit(tvData, @requestOriginalE, apiKey, secretKey, tradeX, 'kill')
+            puts takeProfitX
           end
         end
       end
