@@ -110,6 +110,25 @@ class User < ApplicationRecord
   BUSINESSmembership = [ENV['businessMonthly'], ENV['businessAnnual']].freeze
   AUTOMATIONmembership = [ENV['automationMonthly'], ENV['automationAnnual']].freeze
 
+  def self.twilioText(number, message)
+    if ENV['stripeLivePublish'].include?("pk_live_") && Rails.env.production? && number
+      account_sid = ENV['twilioAccounSID']
+      auth_token = ENV['twilioAuthToken']
+      client = Twilio::REST::Client.new(account_sid, auth_token)
+      
+      from = '+18335152633'
+      to = number
+
+      client.messages.create(
+        from: from,
+        to: to,
+        body: message
+      )
+    else
+      :testing_mode
+    end
+  end
+
   def self.renderLink(referredBy, country, asin, current_user = nil)
     @userFound = referredBy.present? ? User.find_by(uuid: referredBy) : nil
     @profile = @userFound.present? ? Stripe::Customer.retrieve(@userFound.stripeCustomerID) : nil

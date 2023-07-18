@@ -2,6 +2,10 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!, only: %i[loved list]
   before_action :loadMemberships
 
+  def invite
+    
+  end
+
   def travel_trade
     
   end
@@ -12,7 +16,10 @@ class ApplicationController < ActionController::Base
 
       if customMade.present?
         flash[:success] = 'Inquiry Submitted'
-        redirect_to membership_path
+        # text me
+        oarlinMessage = "#{params['newInquiry']['email']} Joined The Waiting List!"
+        textSent = User.twilioText(params['newInquiry']['phone'], "#{oarlinMessage}")
+        redirect_to request.referrer
       else
         flash[:error] = 'Something Happened'
         redirect_to membership_path
