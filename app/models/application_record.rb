@@ -9,11 +9,8 @@ class ApplicationRecord < ActiveRecord::Base
       @closedTrades = @userX.trades.where(broker: tvData['broker'], finalTakeProfit:nil, status: 'closed', direction: tvData['direction'])
       @traderFound = @userX
 
-      requestP = Oanda.oandaPendingOrders(apiKey, secretKey)
-      
       if tvData['direction'] == 'sell'
         if tvData['killType'] == 'pending'
-          ordersToKill = requestP['orders'].reject{|d|!d['units'].to_f.negative?}
           @openTrades.each do |oandaData|
             cancel = Oanda.oandaCancel(apiKey, secretKey, oandaData['id'])
             Trade.find_by(uuid: oandaData['id']).destroy! if Trade.find_by(uuid: oandaData['id']).present?
@@ -22,7 +19,7 @@ class ApplicationRecord < ActiveRecord::Base
         elsif tvData['killType'] == 'profit'
           # reject traDES that have collected profit invoice
           @closedTrades.each do |tradeX|
-            debugger
+            
             requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
             @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, requestExecution['order']['fillingTransactionID'])
             if @requestOriginalE['trade']['unrealizedPL'].to_f > 0
@@ -33,9 +30,8 @@ class ApplicationRecord < ActiveRecord::Base
         elsif tvData['killType'] == 'all'
           # position.close v20 gem
           # mark close as tp
-          ordersToKill = requestP['orders'].reject{|d|!d['units'].to_f.negative?}
-          (@closedTrades + @openTrades).each do |oandaData|
-            debugger
+          (@closedTrades + @openTrades).each do |tradeX|
+            
             requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
             @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, requestExecution['order']['fillingTransactionID'])
             takeProfitX = Oanda.oandaTakeProfit(tvData, @requestOriginalE, apiKey, secretKey, tradeX, 'kill')
@@ -46,7 +42,6 @@ class ApplicationRecord < ActiveRecord::Base
 
       if tvData['direction'] == 'buy'
         if tvData['killType'] == 'pending'
-          ordersToKill = requestP['orders'].reject{|d|!d['units'].to_f.positive?}
           @openTrades.each do |oandaData|
             cancel = Oanda.oandaCancel(apiKey, secretKey, oandaData['id'])
             Trade.find_by(uuid: oandaData['id']).destroy! if Trade.find_by(uuid: oandaData['id']).present?
@@ -55,7 +50,7 @@ class ApplicationRecord < ActiveRecord::Base
         elsif tvData['killType'] == 'profit'
           # reject traDES that have collected profit invoice
            @closedTrades.each do |tradeX|
-            debugger
+            
             requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
             @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, requestExecution['order']['fillingTransactionID'])
             if @requestOriginalE['trade']['unrealizedPL'].to_f > 0
@@ -66,9 +61,8 @@ class ApplicationRecord < ActiveRecord::Base
         elsif tvData['killType'] == 'all'
           # position.close v20 gem
           # mark close as tp
-          ordersToKill = requestP['orders'].reject{|d|!d['units'].to_f.positive?}
-          (@closedTrades + @openTrades).each do |oandaData|
-            debugger
+          (@closedTrades + @openTrades).each do |tradeX|
+            
             requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
             @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, requestExecution['order']['fillingTransactionID'])
             takeProfitX = Oanda.oandaTakeProfit(tvData, @requestOriginalE, apiKey, secretKey, tradeX, 'kill')
