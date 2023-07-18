@@ -25,6 +25,10 @@ class Oanda < ApplicationRecord
     oandaRequest(token, accountID).account(accountID).order(orderID).cancel
   end
 
+  def self.oandaCancelTrade(token, accountID, tradeID)
+    oandaRequest(token, accountID).account(accountID).trade(tradeID).cancel
+  end
+
   def self.oandaOrder(token, accountID, orderID)
     oandaRequest(token, accountID).account(accountID).order(orderID).show
   end
@@ -39,10 +43,24 @@ class Oanda < ApplicationRecord
     trailSet
   end
 
-  def self.takeProfit(token, accountID)
-    id = client.account(accountID).open_trades.show['trades'][0]['id']
-    options = { 'units' => '10' }
-    oandaRequest(token, accountID).account(accountID).trade(id, options).close
+  def self.closePosition(token, accountID, oandaTicker, tvData)
+    if tvData['direction'] == 'sell'
+      options = {'shortUnits' => 'ALL'}
+    end
+
+    if tvData['direction'] == 'buy'
+      options = {'longUnits' => 'ALL'}
+    end
+    requestProfit = oandaRequest(token, accountID).account(accountID).position(oandaTicker, options).close
+
+    if requestProfit.present? && requestProfit['orderCreateTransaction'].present?
+      # cost: requestProfit['orderFillTransaction']['tradeOpened']['initialMarginRequired'].to_f,
+      tradeX.take_profits.create!(traderID: tvData['traderID'], uuid: requestProfit['orderCreateTransaction']['id'], status: 'open', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(oandaToken: token).id)
+      
+      tvData['ticker'] = tvData['ticker'].delete("_")
+     end
+    requestProfit
+
   end
 
   def self.oandaTakeProfit(tvData, tradeInfo, token, accountID, tradeX, reduceOrKill)

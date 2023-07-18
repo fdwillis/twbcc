@@ -40,31 +40,6 @@ class TradingviewController < ApplicationController
         end
       end
 
-
-      if user&.krakenLiveAPI.present? && user&.krakenLiveSecret.present?
-
-        balanceX = Kraken.krakenBalance(user&.krakenLiveAPI, user&.krakenLiveSecret)
-        krakenResult = balanceX['result'].reject { |_d, f| f.to_f == 0 }
-        baseCurrency = krakenResult.reject { |d, _f| !d.include?('Z') }.keys[0]
-        realCurrencyBase = ISO3166::Country[user&.amazonCountry.downcase].currency_code
-        @assetsUM += krakenResult[baseCurrency].to_f
-        krakenResult.except(baseCurrency).each do |resultX|
-          baseTicker = resultX[0]
-          assetInfo = Kraken.assetInfo({ 'ticker' => baseTicker }, user&.krakenLiveAPI, user&.krakenLiveSecret)
-          units = balanceX['result'][baseTicker].to_f
-          altName = assetInfo['result'][baseTicker]['altname']
-
-          tickerInfo = Kraken.tickerInfo({ 'ticker' => "#{altName}#{realCurrencyBase}" }, user&.krakenLiveAPI, user&.krakenLiveSecret)
-
-          ask = tickerInfo['result']["#{baseTicker}#{baseCurrency}"]['a'][0].to_f
-          bid = tickerInfo['result']["#{baseTicker}#{baseCurrency}"]['b'][0].to_f
-
-          averagePrice = (ask + bid) / 2
-
-          risked = averagePrice * units
-          @assetsUM += risked
-        end
-      end
     end
 
     @partialClose += @entriesTrades.map(&:take_profits).count
@@ -106,6 +81,7 @@ class TradingviewController < ApplicationController
         if traderFound.trader?
 
           if Oj.load(ENV['adminUUID']).include?(traderFound.uuid)
+            
             if sequence['tradeForAdmin'] == 'true'
       
               case true
@@ -136,8 +112,6 @@ class TradingviewController < ApplicationController
               when sequence['type'] == 'kill'
                 puts "\n-- Starting Kill --\n"
                 case true
-                when sequence['broker'] == 'KRAKEN'
-                  BackgroundJob.perform_async('kill', sequence.to_enum.to_h, traderFound&.krakenLiveAPI, traderFound&.krakenLiveSecret)
                 when sequence['broker'] == 'OANDA'
                   traderFound&.oandaList.split(',')&.reject(&:blank?).each do |accountID|
                     BackgroundJob.perform_async('kill', sequence.to_enum.to_h, traderFound&.oandaToken, accountID)
