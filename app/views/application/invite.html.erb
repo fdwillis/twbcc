@@ -1,0 +1,41 @@
+<div class="card bg-17" style="height:100vh; width:100vw;">
+      <div class="card-center ms-5 me-5">
+         <h1 class="color-white text-center mb-3 font-40">Trading as a Service with Oarlin</h1>
+         <p class="color-white text-center font-35 mt-4 opacity-50">(TAAS)</p>
+         <%= form_for(:newInquiry, url: inquiry_path) do |f| %>
+            <div class="col-xl-12 p-3">
+              <div class="field">
+                <%= f.label "Email" %><br />
+                <%= f.email_field :email, class: "form-control form-control-lg form-control-alt py-3", placeholder: 'Email', required: true %>
+
+                <%= f.label "Phone" %><br />
+                <%= f.text_field :phone, class: "form-control form-control-lg form-control-alt py-3", placeholder: 'Phone Number', required: true, maxlength: 10 %>
+                
+              </div>
+              <br>
+              <%= f.submit "JOIN WAITLIST", class: "form-control btn btn-full btn-m rounded-m bg-highlight-dark font-700 text-uppercase mb-4 mt-4" %>
+              
+            </div>
+         <% end %>
+         <div class="row text-center">
+                  
+         <p class="color-white text-center opacity-50 mt-n1 mb-0 font-20">Are you ready to elevate your investment goals? Trading as a Service with Oarlin (TAAS) is specifically designed for profitable traders to share their success with the general public. But how will users find trading pros? That's where the purple star comes in! With the exclusive purple star, traders stand out from other non-trading users. Also, non-trading users won't be able to post on Oarlin. Instead, enjoy the benefit of following star traders in two exciting ways: lifestyle and trades. When you follow a trader's lifestyle, immerse yourself in their world through captivating photos, neatly organized. But that's not all! Want to emulate their trading success? Follow their trades too! Every time a trader executes a trade on the Oarlin platform, it will automatically execute for you in your personal (or business) brokerage account. Imagine having your own personal trading expert by your side, guiding your every move, allowing you to replicate their success. Get paid for following the experts!</p>
+            <div class="row mt-4">
+               <i class="fa fa-star fa-4x mb-4"></i>
+               <h1 class="color-white text-center opacity-50 mt-n1 mb-0">
+                  TRADERS
+               </h1>
+               <p class="color-white text-center font-14 mt-2 opacity-50 mt-n1 mb-4">Leverage More Capital</p>
+               <br>
+               <i class="fa fa-bolt fa-4x mb-4"></i>
+               <h1 class="color-white text-center opacity-50 mt-n1 mb-0">CAPTAINS</h1>
+               <p class="color-white text-center font-14 mt-2 opacity-50 mt-n1 mb-4">Get Paid For Sharing</p>
+               <br>
+               <i class="fa fa-users fa-4x mb-4"></i>
+               <h1 class="color-white text-center opacity-50 mt-n1 mb-0">USERS</h1>
+               <p class="color-white text-center font-14 mt-2 opacity-50 mt-n1 mb-4">Get Paid For Following</p>
+            </div>
+         </div>
+      </div>
+      <div class="card-overlay bg-black opacity-90"></div>
+   </div>
