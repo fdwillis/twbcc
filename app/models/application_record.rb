@@ -52,26 +52,11 @@ class ApplicationRecord < ActiveRecord::Base
             end
           end
         elsif tvData['killType'] == 'all'
-              cancel = Oanda.closePosition(apiKey, secretKey, "#{tvData['ticker'][0..2]}_#{tvData['ticker'][3..5]}", tvData)
-          # (@closedTrades + @openTrades).each do |tradeX|
-          #   begin 
-          #     # requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
-          #     # if requestExecution['order']['state'] == 'PENDING'
-          #     #   puts "\n-- KILLED #{tradeX.uuid} --\n"
-          #     #   cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX.uuid)
-          #     #   tradeID = tradeX.uuid
-          #     # else
-          #     #   Trade.find_by(uuid: tradeID).destroy! if Trade.find_by(uuid: tradeID).present?
-          #     #   @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, requestExecution['order']['fillingTransactionID'])
-          #     #   takeProfitX = Oanda.oandaTakeProfit(tvData, @requestOriginalE, apiKey, secretKey, tradeX, 'kill')
-          #     #   puts takeProfitX
-          #     # end
-          #   rescue Exception => e
-          #     tradeID = tradeX.uuid
-          #     cancel = Oanda.closePosition(apiKey, secretKey, "#{tvData['ticker'][0..2]}_#{tvData['ticker'][3..5]}", tvData)
-          #     Trade.find_by(uuid: tradeID).destroy! if Trade.find_by(uuid: tradeID).present?
-          #   end
-          # end
+          
+          acctPositions = Oanda.oandaAccount(apiKey, secretKey)['account']['positions'].reject{|d| d['instrument'] != "#{tvData['ticker'][0..2]}_#{tvData['ticker'][3..5]}"}
+          if acctPositions.first['short']['units'].to_i.abs > 0
+            cancel = Oanda.closePosition(apiKey, secretKey, "#{tvData['ticker'][0..2]}_#{tvData['ticker'][3..5]}", tvData)
+          end
         end
       end
 
@@ -101,27 +86,11 @@ class ApplicationRecord < ActiveRecord::Base
             end
           end
         elsif tvData['killType'] == 'all'
-          cancel = Oanda.closePosition(apiKey, secretKey, "#{tvData['ticker'][0..2]}_#{tvData['ticker'][3..5]}", tvData)
-          # (@closedTrades + @openTrades).each do |tradeX|
-          #   begin
-          #     # requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
-          #     # if requestExecution['order']['state'] == 'PENDING'
-          #     #   cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX.uuid)
-          #     #   tradeID = tradeX.uuid
-          #     #   puts "\n-- KILLED #{tradeX.uuid} --\n"
-          #     #   Trade.find_by(uuid: tradeID).destroy! if Trade.find_by(uuid: tradeID).present?
-          #     # else
-          #     #   @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, requestExecution['order']['fillingTransactionID'])
-          #     #   takeProfitX = Oanda.oandaTakeProfit(tvData, @requestOriginalE, apiKey, secretKey, tradeX, 'kill')
-          #     #   puts takeProfitX
-          #     # end
-          #   rescue Exception => e
-          #     tradeID = tradeX.uuid
-          #     cancel = Oanda.closePosition(apiKey, secretKey, "#{tvData['ticker'][0..2]}_#{tvData['ticker'][3..5]}", tvData)
-          #     Trade.find_by(uuid: tradeID).destroy! if Trade.find_by(uuid: tradeID).present?
-              
-          #   end
-          # end
+          
+          acctPositions = Oanda.oandaAccount(apiKey, secretKey)['account']['positions'].reject{|d| d['instrument'] != "#{tvData['ticker'][0..2]}_#{tvData['ticker'][3..5]}"}
+          if acctPositions.first['long']['units'].to_i.abs > 0
+            cancel = Oanda.closePosition(apiKey, secretKey, "#{tvData['ticker'][0..2]}_#{tvData['ticker'][3..5]}", tvData)
+          end
         end
       end
 
