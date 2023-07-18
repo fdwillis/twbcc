@@ -22,23 +22,19 @@ class ApplicationRecord < ActiveRecord::Base
             tradeX.update(status: 'closed')
           end
         rescue Exception => e
-          # debugger
-          # if e.to_s.include?('error')
-            tradeX.destroy!
-            next
-          # end
+          tradeID = tradeX.uuid
+          Trade.find_by(uuid: tradeID).destroy! if Trade.find_by(uuid: tradeID).present?
         end
       end
 
       if tvData['direction'] == 'sell'
         if tvData['killType'] == 'pending'
           @openTrades.each do |tradeX|
+            tradeID = tradeX.uuid
             cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX.uuid)
-            Trade.find_by(uuid: tradeX.uuid).destroy! if Trade.find_by(uuid: tradeX.uuid).present?
             puts "\n-- KILLED #{tradeX.uuid} --\n"
           end
         elsif tvData['killType'] == 'profit'
-          # reject traDES that have collected profit invoice
           @closedTrades.each do |tradeX|
             begin
               requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
@@ -48,35 +44,28 @@ class ApplicationRecord < ActiveRecord::Base
                 puts takeProfitX
               end
             rescue Exception => e
-              # debugger
-              # if e.to_s.include?('error')
-                tradeX.destroy!
-                next
-              # end
+              tradeID = tradeX.uuid
+              cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX.uuid)
+                
             end
           end
         elsif tvData['killType'] == 'all'
-          # position.close v20 gem
-          # mark close as tp
+          
           (@closedTrades + @openTrades).each do |tradeX|
             begin 
               requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
               if requestExecution['order']['state'] == 'PENDING'
-                # CANCEL
-                cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX.uuid)
-                Trade.find_by(uuid: tradeX.uuid).destroy! if Trade.find_by(uuid: tradeX.uuid).present?
                 puts "\n-- KILLED #{tradeX.uuid} --\n"
+                cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX.uuid)
+                tradeID = tradeX.uuid
               else
                 @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, requestExecution['order']['fillingTransactionID'])
                 takeProfitX = Oanda.oandaTakeProfit(tvData, @requestOriginalE, apiKey, secretKey, tradeX, 'kill')
                 puts takeProfitX
               end
             rescue Exception => e
-            # debugger
-            # if e.to_s.include?('error')
-              tradeX.destroy!
-              next
-            # end
+              tradeID = tradeX.uuid
+              cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX.uuid)
             end
           end
         end
@@ -85,12 +74,11 @@ class ApplicationRecord < ActiveRecord::Base
       if tvData['direction'] == 'buy'
         if tvData['killType'] == 'pending'
           @openTrades.each do |tradeX|
-            Trade.find_by(uuid: tradeX.uuid).destroy! if Trade.find_by(uuid: tradeX.uuid).present?
+            tradeID = tradeX.uuid
             cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX.uuid)
             puts "\n-- KILLED #{tradeX.uuid} --\n"
           end
         elsif tvData['killType'] == 'profit'
-          # reject traDES that have collected profit invoice
            @closedTrades.each do |tradeX|
             begin 
               requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
@@ -100,36 +88,30 @@ class ApplicationRecord < ActiveRecord::Base
                 puts takeProfitX
               end
             rescue Exception => e
-            # debugger
-            # if e.to_s.include?('error')
-              tradeX.destroy!
-              next
+              tradeID = tradeX.uuid
+              cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX.uuid)
+              
             # end
             end
           end
         elsif tvData['killType'] == 'all'
-          # position.close v20 gem
-          # mark close as tp
+          
           (@closedTrades + @openTrades).each do |tradeX|
             begin
               requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
               if requestExecution['order']['state'] == 'PENDING'
-                # CANCEL
-                Trade.find_by(uuid: tradeX.uuid).destroy! if Trade.find_by(uuid: tradeX.uuid).present?
                 cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX.uuid)
+                tradeID = tradeX.uuid
                 puts "\n-- KILLED #{tradeX.uuid} --\n"
               else
                 @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, requestExecution['order']['fillingTransactionID'])
-                debugger
                 takeProfitX = Oanda.oandaTakeProfit(tvData, @requestOriginalE, apiKey, secretKey, tradeX, 'kill')
                 puts takeProfitX
               end
             rescue Exception => e
-            # debugger
-            # if e.to_s.include?('error')
-              tradeX.destroy!
-              next
-            # end
+              tradeID = tradeX.uuid
+              cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX.uuid)
+              
             end
           end
         end
