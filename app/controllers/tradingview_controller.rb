@@ -184,7 +184,7 @@ class TradingviewController < ApplicationController
                             BackgroundJob.perform_async('stop', sequence.to_enum.to_h, traderFoundForCopy&.tradierToken, nil)
                           end
                         when sequence['type'] == 'entry'
-                          puts "\n-- Starting Entry  #{sequence.to_enum.to_h['direction']}--\n"
+                          puts "\n-- Starting Entry #{sequence.to_enum.to_h['type']} #{sequence.to_enum.to_h['direction']} --\n"
                           case true
                           when sequence['broker'] == 'KRAKEN'
                             BackgroundJob.perform_async('entry', sequence.to_enum.to_h, traderFoundForCopy.krakenLiveAPI, traderFoundForCopy.krakenLiveSecret)
@@ -231,7 +231,7 @@ class TradingviewController < ApplicationController
                               BackgroundJob.perform_async('stop', sequence.to_enum.to_h, traderFoundForCopy&.tradierToken, nil)
                             end
                           when sequence['type'] == 'entry'
-                            puts "\n-- Starting Entry  #{sequence.to_enum.to_h['direction']}--\n"
+                            puts "\n-- Starting Entry #{sequence.to_enum.to_h['type']} #{sequence.to_enum.to_h['direction']} --\n"
                             case true
                             when sequence['broker'] == 'KRAKEN'
                               BackgroundJob.perform_async('entry', sequence.to_enum.to_h, traderFoundForCopy&.krakenLiveAPI, traderFoundForCopy&.krakenLiveSecret)
@@ -283,7 +283,7 @@ class TradingviewController < ApplicationController
                 BackgroundJob.perform_async('stop', sequence.to_enum.to_h, traderFound&.tradierToken, accountID)
               end
             when sequence['type'] == 'entry'
-              puts "\n-- Starting Entry  #{sequence.to_enum.to_h['direction']}--\n"
+              puts "\n-- Starting Entry #{sequence.to_enum.to_h['type']} #{sequence.to_enum.to_h['direction']} --\n"
               case true
               when sequence['broker'] == 'KRAKEN'
                 BackgroundJob.perform_async('entry', sequence.to_enum.to_h, traderFound&.krakenLiveAPI, traderFound&.krakenLiveSecret)
