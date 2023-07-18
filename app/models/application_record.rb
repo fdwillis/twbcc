@@ -406,7 +406,7 @@ class ApplicationRecord < ActiveRecord::Base
       @unitsFiltered = (@unitsToTrade > 0.0001 ? @unitsToTrade : 0.0001)
     end
     
-    if (@currentRisk.abs.round(2) <= 50 && @currentRisk.abs.round(2) >= 0 && tvData['broker'] == 'OANDA') || (@currentRisk.abs.round(2) < @traderFound&.maxRisk && @currentRisk.abs.round(2) >= 0)
+    if (@currentRisk.abs.round(2) < @traderFound&.maxRisk && @currentRisk.abs.round(2) >= 0)
       # market order
       if @traderFound&.allowMarketOrder == 'true'
         # set order params
