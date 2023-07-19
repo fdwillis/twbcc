@@ -43,7 +43,7 @@ class Oanda < ApplicationRecord
     trailSet
   end
 
-  def self.closePosition(token, accountID, oandaTicker, tvData)
+  def self.closePosition(token, accountID, oandaTicker, tvData, tradeX)
     if tvData['direction'] == 'sell'
       options = {'shortUnits' => 'ALL'}
     end
