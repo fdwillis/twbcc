@@ -91,7 +91,7 @@ class TradingviewController < ApplicationController
                 when sequence['broker'] == 'KRAKEN'
                   BackgroundJob.perform_async('stop', sequence.to_enum.to_h, traderFound&.krakenLiveAPI, traderFound&.krakenLiveSecret)
                 when sequence['broker'] == 'OANDA'
-                  traderFound&.oandaList.split(',')&.reject(&:blank?).reject{|d|d.upcase != sequence.to_enum.to_h['ticker']}.each do |accountID|
+                  traderFound&.oandaList.split(',')&.reject(&:blank?).each do |accountID|
                     BackgroundJob.perform_async('stop', sequence.to_enum.to_h, traderFound&.oandaToken, accountID)
                   end
                 when sequence['broker'] == 'TRADIER'
@@ -102,7 +102,7 @@ class TradingviewController < ApplicationController
                 when sequence['broker'] == 'KRAKEN'
                   BackgroundJob.perform_async('entry', sequence.to_enum.to_h, traderFound&.krakenLiveAPI, traderFound&.krakenLiveSecret)
                 when sequence['broker'] == 'OANDA'
-                  traderFound&.oandaList.split(',')&.reject(&:blank?).reject{|d|d.upcase != sequence.to_enum.to_h['ticker']}.each do |accountID|
+                  traderFound&.oandaList.split(',')&.reject(&:blank?).each do |accountID|
                     BackgroundJob.perform_async('entry', sequence.to_enum.to_h, traderFound&.oandaToken, accountID)
                   end
                 when sequence['broker'] == 'TRADIER'
@@ -113,7 +113,7 @@ class TradingviewController < ApplicationController
                 puts "\n-- Starting Kill --\n"
                 case true
                 when sequence['broker'] == 'OANDA'
-                  traderFound&.oandaList.split(',')&.reject(&:blank?).reject{|d|d.upcase != sequence.to_enum.to_h['ticker']}.each do |accountID|
+                  traderFound&.oandaList.split(',')&.reject(&:blank?).each do |accountID|
                     BackgroundJob.perform_async('kill', sequence.to_enum.to_h, traderFound&.oandaToken, accountID)
                   end
                 when sequence['broker'] == 'TRADIER'
@@ -151,7 +151,7 @@ class TradingviewController < ApplicationController
                           when sequence['broker'] == 'KRAKEN'
                             BackgroundJob.perform_async('stop', sequence.to_enum.to_h, traderFoundForCopy.krakenLiveAPI, traderFoundForCopy.krakenLiveSecret)
                           when sequence['broker'] == 'OANDA'
-                            traderFoundForCopy&.oandaList.split(',')&.reject(&:blank?).reject{|d|d.upcase != sequence.to_enum.to_h['ticker']}.each do |accountID|
+                            traderFoundForCopy&.oandaList.split(',')&.reject(&:blank?).each do |accountID|
                               BackgroundJob.perform_async('stop', sequence.to_enum.to_h, traderFoundForCopy.oandaToken, accountID)
                             end
                           when sequence['broker'] == 'TRADIER'
@@ -163,7 +163,7 @@ class TradingviewController < ApplicationController
                           when sequence['broker'] == 'KRAKEN'
                             BackgroundJob.perform_async('entry', sequence.to_enum.to_h, traderFoundForCopy.krakenLiveAPI, traderFoundForCopy.krakenLiveSecret)
                           when sequence['broker'] == 'OANDA'
-                            traderFoundForCopy&.oandaList.split(',')&.reject(&:blank?).reject{|d|d.upcase != sequence.to_enum.to_h['ticker']}.each do |accountID|
+                            traderFoundForCopy&.oandaList.split(',')&.reject(&:blank?).each do |accountID|
                               BackgroundJob.perform_async('entry', sequence.to_enum.to_h, traderFoundForCopy.oandaToken, accountID)
                             end
                           when sequence['broker'] == 'TRADIER'
@@ -176,7 +176,7 @@ class TradingviewController < ApplicationController
                           when sequence['broker'] == 'KRAKEN'
                             BackgroundJob.perform_async('kill', sequence.to_enum.to_h, traderFoundForCopy.krakenLiveAPI, traderFoundForCopy.krakenLiveSecret)
                           when sequence['broker'] == 'OANDA'
-                            traderFoundForCopy&.oandaList.split(',')&.reject(&:blank?).reject{|d|d.upcase != sequence.to_enum.to_h['ticker']}.each do |accountID|
+                            traderFoundForCopy&.oandaList.split(',')&.reject(&:blank?).each do |accountID|
                               BackgroundJob.perform_async('kill', sequence.to_enum.to_h, traderFoundForCopy.oandaToken, accountID)
                             end
                           when sequence['broker'] == 'TRADIER'
@@ -198,7 +198,7 @@ class TradingviewController < ApplicationController
                             when sequence['broker'] == 'KRAKEN'
                               BackgroundJob.perform_async('stop', sequence.to_enum.to_h, traderFoundForCopy&.krakenLiveAPI, traderFoundForCopy&.krakenLiveSecret)
                             when sequence['broker'] == 'OANDA'
-                              traderFoundForCopy&.oandaList.split(',')&.reject(&:blank?).reject{|d|d.upcase != sequence.to_enum.to_h['ticker']}.each do |accountID|
+                              traderFoundForCopy&.oandaList.split(',')&.reject(&:blank?).each do |accountID|
                                 BackgroundJob.perform_async('stop', sequence.to_enum.to_h, traderFoundForCopy&.oandaToken, accountID)
                               end
                             when sequence['broker'] == 'TRADIER'
@@ -210,7 +210,7 @@ class TradingviewController < ApplicationController
                             when sequence['broker'] == 'KRAKEN'
                               BackgroundJob.perform_async('entry', sequence.to_enum.to_h, traderFoundForCopy&.krakenLiveAPI, traderFoundForCopy&.krakenLiveSecret)
                             when sequence['broker'] == 'OANDA'
-                              traderFoundForCopy&.oandaList.split(',')&.reject(&:blank?).reject{|d|d.upcase != sequence.to_enum.to_h['ticker']}.each do |accountID|
+                              traderFoundForCopy&.oandaList.split(',')&.reject(&:blank?).each do |accountID|
                                 BackgroundJob.perform_async('entry', sequence.to_enum.to_h, traderFoundForCopy&.oandaToken, accountID)
                               end
                             when sequence['broker'] == 'TRADIER'
@@ -223,7 +223,7 @@ class TradingviewController < ApplicationController
                             when sequence['broker'] == 'KRAKEN'
                               BackgroundJob.perform_async('kill', sequence.to_enum.to_h, traderFoundForCopy&.krakenLiveAPI, traderFoundForCopy&.krakenLiveSecret)
                             when sequence['broker'] == 'OANDA'
-                              traderFoundForCopy&.oandaList.split(',')&.reject(&:blank?).reject{|d|d.upcase != sequence.to_enum.to_h['ticker']}.each do |accountID|
+                              traderFoundForCopy&.oandaList.split(',')&.reject(&:blank?).each do |accountID|
                                 BackgroundJob.perform_async('kill', sequence.to_enum.to_h, traderFoundForCopy&.oandaToken, accountID)
                               end
                             when sequence['broker'] == 'TRADIER'
@@ -250,7 +250,7 @@ class TradingviewController < ApplicationController
               when sequence['broker'] == 'KRAKEN'
                 BackgroundJob.perform_async('stop', sequence.to_enum.to_h, traderFound&.krakenLiveAPI, traderFound&.krakenLiveSecret)
               when sequence['broker'] == 'OANDA'
-                traderFound&.oandaList.split(',')&.reject(&:blank?).reject{|d|d.upcase != sequence.to_enum.to_h['ticker']}.each do |accountID|
+                traderFound&.oandaList.split(',')&.reject(&:blank?).each do |accountID|
                   BackgroundJob.perform_async('stop', sequence.to_enum.to_h, traderFound&.oandaToken, accountID)
                 end
               when sequence['broker'] == 'TRADIER'
@@ -262,7 +262,7 @@ class TradingviewController < ApplicationController
               when sequence['broker'] == 'KRAKEN'
                 BackgroundJob.perform_async('entry', sequence.to_enum.to_h, traderFound&.krakenLiveAPI, traderFound&.krakenLiveSecret)
               when sequence['broker'] == 'OANDA'
-                traderFound&.oandaList.split(',')&.reject(&:blank?).reject{|d|d.upcase != sequence.to_enum.to_h['ticker']}.each do |accountID|
+                traderFound&.oandaList.split(',')&.reject(&:blank?).each do |accountID|
                   BackgroundJob.perform_async('entry', sequence.to_enum.to_h, traderFound&.oandaToken, accountID)
                 end
               when sequence['broker'] == 'TRADIER'
@@ -275,7 +275,7 @@ class TradingviewController < ApplicationController
               when sequence['broker'] == 'KRAKEN'
                 BackgroundJob.perform_async('kill', sequence.to_enum.to_h, traderFound&.krakenLiveAPI, traderFound&.krakenLiveSecret)
               when sequence['broker'] == 'OANDA'
-                traderFound&.oandaList.split(',')&.reject(&:blank?).reject{|d|d.upcase != sequence.to_enum.to_h['ticker']}.each do |accountID|
+                traderFound&.oandaList.split(',')&.reject(&:blank?).each do |accountID|
                   BackgroundJob.perform_async('kill', sequence.to_enum.to_h, traderFound&.oandaToken, accountID)
                 end
               when sequence['broker'] == 'TRADIER'

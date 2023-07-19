@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_07_15_133211) do
+ActiveRecord::Schema.define(version: 2023_07_19_043100) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -147,6 +147,7 @@ ActiveRecord::Schema.define(version: 2023_07_15_133211) do
     t.float "profitLoss", default: 0.0
     t.string "traderID"
     t.string "stripePI"
+    t.string "ticker"
     t.index ["trade_id"], name: "index_take_profits_on_trade_id"
     t.index ["user_id"], name: "index_take_profits_on_user_id"
   end
@@ -166,6 +167,7 @@ ActiveRecord::Schema.define(version: 2023_07_15_133211) do
     t.string "stripeInvoiceID"
     t.string "traderID"
     t.string "stripePI"
+    t.string "ticker"
     t.index ["user_id"], name: "index_trades_on_user_id"
   end
 
@@ -203,6 +205,7 @@ ActiveRecord::Schema.define(version: 2023_07_15_133211) do
     t.string "allowMarketOrder"
     t.string "tradierToken"
     t.boolean "autoProfitPay"
+    t.string "username"
     t.index ["alpacaKey"], name: "index_users_on_alpacaKey", unique: true
     t.index ["alpacaSecret"], name: "index_users_on_alpacaSecret", unique: true
     t.index ["alpacaTestKey"], name: "index_users_on_alpacaTestKey", unique: true

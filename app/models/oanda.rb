@@ -66,14 +66,14 @@ class Oanda < ApplicationRecord
   def self.oandaTakeProfit(tvData, tradeInfo, token, accountID, tradeX, reduceOrKill)
     requestProfit = nil
     traderFound = User.find_by(oandaToken: token)
-    trailPrice = tvData['currentPrice'].to_f.round(5) 
+    trailPrice = tvData['currentPrice'].to_f.round(4) 
 
     if reduceOrKill == 'reduce'
-      unitsForOrder = (tvData['direction'] == 'buy' ?  (tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round.abs.to_s : "-#{(tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round}")
+      unitsForOrder = (tvData['direction'] == 'sell' ?  (tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round.abs : "-#{(tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round}")
     elsif reduceOrKill == 'kill'      
-      unitsForOrder = (tvData['direction'] == 'buy' ?  (tradeInfo['trade']['currentUnits'].to_f * (0.01 * traderFound&.reduceBy)).round.abs.to_s : "-#{(tradeInfo['trade']['currentUnits'].to_f * (0.01 * traderFound&.reduceBy)).round}")
+      unitsForOrder = (tvData['direction'] == 'sell' ?  (tradeInfo['trade']['currentUnits'].to_f * (0.01 * traderFound&.reduceBy)).round.abs : "-#{(tradeInfo['trade']['currentUnits'].to_f * (0.01 * traderFound&.reduceBy)).round}")
     end
-debugger
+
     oandaOrderParams = {
       'order' => {
         'price' => trailPrice,
@@ -84,12 +84,12 @@ debugger
         'positionFill' => 'DEFAULT'
       }
     }
-
     requestProfit = Oanda.oandaEntry(token, accountID, oandaOrderParams)
+debugger
 
     if requestProfit.present? && requestProfit['orderCreateTransaction'].present?
       # cost: requestProfit['orderFillTransaction']['tradeOpened']['initialMarginRequired'].to_f,
-      tradeX.take_profits.create!(traderID: tvData['traderID'], uuid: requestProfit['orderCreateTransaction']['id'], status: 'open', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(oandaToken: token).id)
+      tradeX.take_profits.create!(ticker:tvData['ticker'], traderID: tvData['traderID'], uuid: requestProfit['orderCreateTransaction']['id'], status: 'open', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(oandaToken: token).id)
       
       tvData['ticker'] = tvData['ticker'].delete("_")
      end
