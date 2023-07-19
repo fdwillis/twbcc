@@ -77,6 +77,7 @@ class TradingviewController < ApplicationController
       traderID = sequence['traderID']
       traderFound = User.find_by(uuid: traderID)
       traderFound&.checkMembership
+      
       if sequence['tradingDays'].present? && sequence['tradingDays'].map { |d| d.downcase }.include?(Date.today.strftime('%a').downcase)
         if traderFound.trader?
 

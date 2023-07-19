@@ -39,26 +39,35 @@ class Oanda < ApplicationRecord
 
    def self.oandaUpdateTrade(tvData, token, accountID, tradeID, orderParams, tradeX)
     trailSet = oandaRequest(token, accountID).account(accountID).trade(tradeID, orderParams).update
-    madeRecord = tradeX.take_profits.create!(traderID: tvData['traderID'], uuid: trailSet['stopLossOrderTransaction']['id'], status: 'open', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(oandaToken: token).id)
+    madeRecord = tradeX.take_profits.create!(ticker: tvData['ticker'], traderID: tvData['traderID'], uuid: trailSet['stopLossOrderTransaction']['id'], status: 'open', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(oandaToken: token).id)
     trailSet
   end
 
-  def self.closePosition(token, accountID, oandaTicker, tvData, tradeX)
+  def self.closePosition(token, accountID, tvData, tradeX, tradeInfo, reduceOrKill)
+    oandaTicker = "#{tvData['ticker'][0..2]}_#{tvData['ticker'][3..5]}"
     if tvData['direction'] == 'sell'
-      options = {'shortUnits' => 'ALL'}
+      if reduceOrKill == 'reduce'
+        unitsForOrder = (tvData['direction'] == 'sell' ?  (tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round.abs : "-#{(tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round}")
+        options = {'shortUnits' => unitsForOrder}
+      elsif reduceOrKill == 'kill'      
+        options = {'shortUnits' => 'ALL'}
+      end
     end
 
     if tvData['direction'] == 'buy'
-      options = {'longUnits' => 'ALL'}
+      if reduceOrKill == 'reduce'
+        unitsForOrder = (tvData['direction'] == 'sell' ?  (tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round.abs : "-#{(tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round}")
+        options = {'longUnits' => unitsForOrder}
+      elsif reduceOrKill == 'kill'      
+        options = {'longUnits' => 'ALL'}
+      end
     end
     requestProfit = oandaRequest(token, accountID).account(accountID).position(oandaTicker, options).close
 
     if requestProfit.present? && requestProfit['orderCreateTransaction'].present?
-      # cost: requestProfit['orderFillTransaction']['tradeOpened']['initialMarginRequired'].to_f,
-      tradeX.take_profits.create!(traderID: tvData['traderID'], uuid: requestProfit['orderCreateTransaction']['id'], status: 'open', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(oandaToken: token).id)
-      
-      tvData['ticker'] = tvData['ticker'].delete("_")
+      tradeX.take_profits.create!(ticker: tvData['ticker'], profitLoss: tvData['direction'] == 'sell' ?  requestProfit['shortOrderFillTransaction']['pl'] : requestProfit['longOrderFillTransaction']['pl'], traderID: tvData['traderID'], uuid: tvData['direction'] == 'sell' ?  requestProfit['shortOrderFillTransaction']['id'] : requestProfit['longOrderFillTransaction']['id'], status: 'closed', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(oandaToken: token).id)
      end
+     
     requestProfit
 
   end
@@ -78,20 +87,16 @@ class Oanda < ApplicationRecord
       'order' => {
         'price' => trailPrice,
         'units' => unitsForOrder,
-        'instrument' => tvData['ticker'].insert(3, '_'),
+        'instrument' => "#{tvData['ticker'][0..2]}_#{tvData['ticker'][3..5]}",
         'timeInForce' => 'GTC',
         'type' => 'LIMIT',
         'positionFill' => 'DEFAULT'
       }
     }
     requestProfit = Oanda.oandaEntry(token, accountID, oandaOrderParams)
-debugger
 
     if requestProfit.present? && requestProfit['orderCreateTransaction'].present?
-      # cost: requestProfit['orderFillTransaction']['tradeOpened']['initialMarginRequired'].to_f,
       tradeX.take_profits.create!(ticker:tvData['ticker'], traderID: tvData['traderID'], uuid: requestProfit['orderCreateTransaction']['id'], status: 'open', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(oandaToken: token).id)
-      
-      tvData['ticker'] = tvData['ticker'].delete("_")
      end
     requestProfit
   end

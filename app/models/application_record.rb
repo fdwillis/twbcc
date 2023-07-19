@@ -42,7 +42,7 @@ class ApplicationRecord < ActiveRecord::Base
             begin
               @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, tradeX.uuid.to_i)
               if @requestOriginalE['trade']['unrealizedPL'].to_f > 0.05  && @requestOriginalE['trade']['initialUnits'].to_i.negative? #and proper units
-                takeProfitX = Oanda.oandaTakeProfit(tvData, @requestOriginalE, apiKey, secretKey, tradeX, 'reduce')
+                takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'reduce')
                 puts takeProfitX
               end   
             rescue Exception => e
@@ -59,7 +59,7 @@ class ApplicationRecord < ActiveRecord::Base
             begin
               @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, tradeX.uuid.to_i - 1)
               if @requestOriginalE['trade']['unrealizedPL'].to_f > 0.05  && @requestOriginalE['trade']['initialUnits'].to_i.negative? #and proper units
-                takeProfitX = Oanda.oandaTakeProfit(tvData, @requestOriginalE, apiKey, secretKey, tradeX, 'kill')
+                takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'kill')
                 puts takeProfitX
               end
             rescue Exception => e
@@ -87,7 +87,7 @@ class ApplicationRecord < ActiveRecord::Base
             begin 
               @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, tradeX.uuid.to_i)
               if @requestOriginalE['trade']['unrealizedPL'].to_f > 0.05 && @requestOriginalE['trade']['initialUnits'].to_i.positive?#and proper units
-                takeProfitX = Oanda.oandaTakeProfit(tvData, @requestOriginalE, apiKey, secretKey, tradeX, 'reduce')
+                takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'reduce')
                 puts takeProfitX
               end              
             rescue Exception => e
@@ -103,7 +103,7 @@ class ApplicationRecord < ActiveRecord::Base
             begin
               @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, tradeX.uuid.to_i - 1)
               if @requestOriginalE['trade']['unrealizedPL'].to_f > 0.05 && @requestOriginalE['trade']['initialUnits'].to_i.positive?#and proper units
-                takeProfitX = Oanda.oandaTakeProfit(tvData, @requestOriginalE, apiKey, secretKey, tradeX, 'kill')
+                takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'kill')
                 puts takeProfitX
               end
             rescue Exception => e
