@@ -81,7 +81,7 @@ class TradingviewController < ApplicationController
       if sequence['tradingDays'].present? && sequence['tradingDays'].map { |d| d.downcase }.include?(Date.today.strftime('%a').downcase)
         if traderFound.trader?
 
-          if Oj.load(ENV['adminUUID']).include?(traderFound.uuid)
+          if (ENV['adminUUID']).include?(traderFound.uuid)
             
             if sequence['tradeForAdmin'] == 'true'
       
