@@ -69,11 +69,11 @@ class Oanda < ApplicationRecord
     trailPrice = tvData['currentPrice'].to_f.round(5) 
 
     if reduceOrKill == 'reduce'
-      unitsForOrder = (tvData['type'] == 'sellStop' ?  (tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round.abs.to_s : "-#{(tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round}")
+      unitsForOrder = (tvData['direction'] == 'buy' ?  (tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round.abs.to_s : "-#{(tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round}")
     elsif reduceOrKill == 'kill'      
-      unitsForOrder = (tvData['type'] == 'sellStop' ?  (tradeInfo['trade']['currentUnits'].to_f * (0.01 * traderFound&.reduceBy)).round.abs.to_s : "-#{(tradeInfo['trade']['currentUnits'].to_f * (0.01 * traderFound&.reduceBy)).round}")
+      unitsForOrder = (tvData['direction'] == 'buy' ?  (tradeInfo['trade']['currentUnits'].to_f * (0.01 * traderFound&.reduceBy)).round.abs.to_s : "-#{(tradeInfo['trade']['currentUnits'].to_f * (0.01 * traderFound&.reduceBy)).round}")
     end
-
+debugger
     oandaOrderParams = {
       'order' => {
         'price' => trailPrice,
