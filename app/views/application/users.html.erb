@@ -134,7 +134,7 @@
        </a>
        <div class="text-center col-12 mt-2">
           <a href="/invite?interval=month&memberType=user&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark">Join Monthly Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
-          <a href="/skip-waitlist?&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Skip Monthly Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
+          <a href="/skip-waitlist?&interval=month&memberType=user&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Skip Monthly Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
           
         </div>
        <a href="index-components.html" class="col-12 mt-2" style='pointer-events: none;'>
@@ -160,7 +160,7 @@
        </a>
         <div class="text-center col-12 mt-2">
             <a href="/invite?interval=annual&memberType=user&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark">Join Annual Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
-            <a href="/skip-waitlist?&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Skip Annual Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
+            <a href="/skip-waitlist?&interval=month&memberType=user&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Skip Annual Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
             
         </div>
     <% else %>
@@ -207,12 +207,12 @@
      <% else %>
         <div class="text-center col-6">
           <a href="/invite?interval=month&memberType=user&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark">Join Monthly Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
-          <a href="/skip-waitlist?&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Skip Monthly Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
+          <a href="/skip-waitlist?&interval=month&memberType=user&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Skip Monthly Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
           
         </div>
         <div class="text-center col-6">
             <a href="/invite?interval=annual&memberType=user&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark">Join Annual Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
-            <a href="/skip-waitlist?&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Skip Annual Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
+            <a href="/skip-waitlist?&interval=month&memberType=user&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Skip Annual Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
             
         </div>
       <% end %>
