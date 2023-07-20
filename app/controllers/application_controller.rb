@@ -648,7 +648,8 @@ class ApplicationController < ActionController::Base
       {prob:'Too Busy Working?', solu: "Oarlin stays active 24/7 to reach your financial goals while you are busy"},
       {prob:'Too Busy With Home?', solu: "Oarlin stays active 24/7 to reach your financial goals while you are busy"},
       {prob:'Too Busy For Investing?', solu: 'Oarlin secures your investment goals so that you can secure your life goals'},
-      {prob:'Volitility Making You Hesitate?', solu: 'Oarlin will only trade when the time is right'},
+      {prob:'Volatility Making You Hesitate?', solu: 'Oarlin will only trade when the time is right'},
+      {prob:'Invest Today Like You Know You Should', solu: '3 minutes is all it takes to start trading automatically with Oarlin'},
       {prob:"Still Learning About Investing?", solu: 'Oarlin will make you money while you learn to invest'},
       {prob:"The Only Social Platform For Trading", solu: 'Oarlin is the home all traders have been waiting for'},
     ] 
