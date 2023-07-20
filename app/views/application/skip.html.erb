@@ -57,30 +57,59 @@
 </div>
 
 <div class="row text-center mb-0">
-   <a href="index.html" class="col-6" style='pointer-events: none;'>
-      <div class="card card-style me-2 mb-2">
-         <i class="fa fa-users color-highlight-dark fa-3x mt-5"></i>
-         <h1 class="pt-4">Captain Expectations</h1>
-         <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and recieve continued education related to trading financial markets successfully</p>
-         <p><i class="fa fa-check color-green-dark"></i> Single Shooter</p>
-         <p><i class="fa fa-check color-green-dark"></i> Video Shooters</p>
-         <p><i class="fa fa-check color-green-dark"></i> 100 Photographs</p>
-         <p><i class="fa fa-check color-green-dark"></i> 20 Digital Adustments</p>
-         <p><i class="fa fa-check color-green-dark"></i> Online Digital Library</p>
-      </div>
-   </a>
-   <a href="index-components.html" class="col-6 ps-0">
-      <div class="card card-style ms-2 mb-3">
-          <div class="ps-2 align-self-center">
-            <img src="/assets/Oarlin_free-file.jpg" data-src="/assets/Oarlin_free-file.png" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
+   <% if request.user_agent.include?('Mobile') %>
+      <a href="index.html" class="col-12" style='pointer-events: none;'>
+         <div class="card card-style me-2 mb-2">
+            <i class="fa fa-users color-highlight-dark fa-3x mt-5"></i>
+            <h1 class="pt-4">Captain Expectations</h1>
+            <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and recieve continued education related to trading financial markets successfully</p>
+            <p><i class="fa fa-check color-green-dark"></i> Single Shooter</p>
+            <p><i class="fa fa-check color-green-dark"></i> Video Shooters</p>
+            <p><i class="fa fa-check color-green-dark"></i> 100 Photographs</p>
+            <p><i class="fa fa-check color-green-dark"></i> 20 Digital Adustments</p>
+            <p><i class="fa fa-check color-green-dark"></i> Online Digital Library</p>
          </div>
-         <h1 class="pt-4">Join Oarlin</h1>
-         <p class="font-11 opacity-50 mt-n1">Built to Feel like Apps</p>
-         <p class="mb-0 pb-0 font-10 opacity-40">Click To Start</p>
-         <div class="list-group list-custom-small">
-          
-            
-        </div>
-      </div>
-   </a>
+      </a>
+      <a href="index-components.html" class="col-12 ps-0">
+         <div class="card card-style ms-2 mb-3">
+             <div class="ps-2 align-self-center">
+               <img src="/assets/Oarlin_free-file.jpg" data-src="/assets/Oarlin_free-file.png" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
+            </div>
+            <h1 class="pt-4">Join Oarlin</h1>
+            <p class="font-11 opacity-50 mt-n1">Built to Feel like Apps</p>
+            <p class="mb-0 pb-0 font-10 opacity-40">Click To Start</p>
+            <div class="list-group list-custom-small">
+             
+               
+           </div>
+         </div>
+      </a>
+   <% else %>
+      <a href="index.html" class="col-6" style='pointer-events: none;'>
+         <div class="card card-style me-2 mb-2">
+            <i class="fa fa-users color-highlight-dark fa-3x mt-5"></i>
+            <h1 class="pt-4">Captain Expectations</h1>
+            <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and recieve continued education related to trading financial markets successfully</p>
+            <p><i class="fa fa-check color-green-dark"></i> Single Shooter</p>
+            <p><i class="fa fa-check color-green-dark"></i> Video Shooters</p>
+            <p><i class="fa fa-check color-green-dark"></i> 100 Photographs</p>
+            <p><i class="fa fa-check color-green-dark"></i> 20 Digital Adustments</p>
+            <p><i class="fa fa-check color-green-dark"></i> Online Digital Library</p>
+         </div>
+      </a>
+      <a href="index-components.html" class="col-6 ps-0">
+         <div class="card card-style ms-2 mb-3">
+             <div class="ps-2 align-self-center">
+               <img src="/assets/Oarlin_free-file.jpg" data-src="/assets/Oarlin_free-file.png" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
+            </div>
+            <h1 class="pt-4">Join Oarlin</h1>
+            <p class="font-11 opacity-50 mt-n1">Built to Feel like Apps</p>
+            <p class="mb-0 pb-0 font-10 opacity-40">Click To Start</p>
+            <div class="list-group list-custom-small">
+             
+               
+           </div>
+         </div>
+      </a>
+   <% end %>
 </div>
