@@ -7,6 +7,7 @@ class User < ApplicationRecord
   has_many :blogs, dependent: :delete_all
   has_many :trades, dependent: :delete_all
   has_many :take_profits, dependent: :delete_all
+  has_many :legs, dependent: :delete_all
 
   validates_uniqueness_of :krakenLiveSecret, allow_blank: true
   validates_uniqueness_of :krakenTestAPI, allow_blank: true
@@ -109,6 +110,25 @@ class User < ApplicationRecord
   AFFILIATEmembership = [ENV['affiliateMonthly'], ENV['affiliateAnnual']].freeze
   BUSINESSmembership = [ENV['businessMonthly'], ENV['businessAnnual']].freeze
   AUTOMATIONmembership = [ENV['automationMonthly'], ENV['automationAnnual']].freeze
+
+  def self.twilioText(number, message)
+    if ENV['stripeLivePublish'].include?("pk_live_") && Rails.env.production? && number
+      account_sid = ENV['twilioAccounSID']
+      auth_token = ENV['twilioAuthToken']
+      client = Twilio::REST::Client.new(account_sid, auth_token)
+      
+      from = '+18335152633'
+      to = number
+
+      client.messages.create(
+        from: from,
+        to: to,
+        body: message
+      )
+    else
+      :testing_mode
+    end
+  end
 
   def self.renderLink(referredBy, country, asin, current_user = nil)
     @userFound = referredBy.present? ? User.find_by(uuid: referredBy) : nil
@@ -332,18 +352,33 @@ class User < ApplicationRecord
     approvedProducts.map(&:titleize)
   end
 
+  def currencyBase
+    ISO3166::Country[amazonCountry.downcase].currency_code
+  end
+
   def checkMembership
     membershipValid = []
     membershipPlans = [ENV['trialTradingDaily'], ENV['autoTradingMonthlyMembership'], ENV['autoTradingAnnualMembership'], ENV['selfTradingAnnualMembership'], ENV['selfTradingMonthlyMembership'], ENV['affiliateMonthly'], ENV['affiliateAnnual'], ENV['businessMonthly'], ENV['businessAnnual'], ENV['automationMonthly'], ENV['automationAnnual']]
     allSubscriptions = Stripe::Subscription.list({ customer: stripeCustomerID })['data'].map(&:items).map(&:data).flatten.map(&:plan).map(&:id)
 
+    #check for payment of membership
+    # when checking for addOns us addOnPaid or addOnPending
     membershipPlans.each do |planID|
       case true
       when allSubscriptions.include?(planID)
         membershipPlan = Stripe::Subscription.list({ customer: stripeCustomerID, price: planID })['data'][0]
         membershipType = if TRIALmembership.include?(planID)
                            'trial,trader'
+                         elsif TRADERmembership.include?(planID)
+                           'trader'
+                         elsif AFFILIATEmembership.include?(planID)
+                           'affiliate'
+                         elsif BUSINESSmembership.include?(planID)
+                           'business'
+                         elsif AUTOMATIONmembership.include?(planID)
+                           'automation'
                          else
+                          
                            if TRADERmembership.include?(planID)
                              'trader'
                            else
@@ -371,47 +406,61 @@ class User < ApplicationRecord
 
     membershipValid.present? ? membershipValid : [{ membershipType: 'free', membershipDetails: { 0 => { 'status' => 'active', 'interval' => 'N/A' } } }]
 
-    if Oj.load(ENV['adminUUID']).include?(uuid)
-      membershipValid.present? ? update(accessPin: "admin,#{membershipValid.map { |d| d[:membershipType] }.join(',')}") : nil
+    #logic checking for profits us profitPaid or profitPending
+
+    paymentIntents = Stripe::PaymentIntent.list({limit: 100, customer: stripeCustomerID})
+
+    if paymentIntents['has_more'] == true
     else
-      membershipValid.present? ? update(accessPin: membershipValid.map { |d| d[:membershipType] }.join(',')) : nil
+      paymentIntents['data'].each do |stripePI|
+        if stripePI['metadata'].present?
+          if stripePI['metadata']['profitPaid'] == 'false'
+            membershipValid << { membershipDetails: stripePI['id'], membershipType: 'profitPending' }
+          elsif stripePI['metadata']['profitPaid'] == 'true'
+            membershipValid << { membershipDetails: stripePI['id'], membershipType: 'profitPaid' }
+          end
+        end
+      end
     end
+
+    self.update(accessPin: membershipValid.map { |d| d[:membershipType] }.uniq.join(','))
 
     membershipValid
   end
 
+  def profitPaid?
+    accessPin.split(',').include?('profitPaid')
+  end
+
+  def profitPending?
+    accessPin.split(',').include?('profitPending')
+  end
+
   def customer?
-    checkMembership
     accessPin.split(',').include?('customer')
   end
 
   def trader?
-    checkMembership
     accessPin.split(',').include?('trader')
   end
 
   def trial?
-    checkMembership
     accessPin.split(',').include?('trial')
   end
 
   def connectAccount?
-    checkMembership
     accessPin.split(',').include?('connectAccount') || accessPin.split(',').include?('affilite') || accessPin.split(',').include?('business') || accessPin.split(',').include?('automation')
   end
 
   def trustee?
-    checkMembership
     accessPin.split(',').include?('trustee')
   end
 
   def manager?
-    checkMembership
     accessPin.split(',').include?('manager')
   end
 
   def admin?
-    checkMembership
     accessPin.split(',').include?('admin')
   end
 end

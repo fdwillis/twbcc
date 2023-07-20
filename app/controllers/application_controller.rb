@@ -1,23 +1,37 @@
 class ApplicationController < ActionController::Base
   before_action :authenticate_user!, only: %i[loved list]
-  before_action :loadMemberships
+
+  def external
+    @link = 'https://oarlin.com/learn-trading' 
+  end
 
   def traders
   end
 
-  def influencers
+  def captains
   end
 
   def users
+    
+  end
+
+  def invite
+    
+  end
+
+  def travel_trade
   end
 
   def inquiry
     if params['newInquiry'].present?
-      customMade = Custominquiry.create(email: params['newInquiry']['email'], phone: params['newInquiry']['phone'])
+      customMade = Custominquiry.create(email: params['newInquiry']['email'], phone: params['newInquiry']['phone'], interval: params['newInquiry']['interval'], memberType: params['newInquiry']['memberType'])
 
       if customMade.present?
         flash[:success] = 'Inquiry Submitted'
-        redirect_to membership_path
+        # text me
+        oarlinMessage = "#{params['newInquiry']['email']} Joined The Waiting List!"
+        textSent = User.twilioText(params['newInquiry']['phone'], "#{oarlinMessage}")
+        redirect_to request.referrer
       else
         flash[:error] = 'Something Happened'
         redirect_to membership_path
@@ -624,73 +638,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def list
-    if current_user&.present?
-      customerToUpdate = Stripe::Customer.retrieve(current_user&.stripeCustomerID)
-      @tracking = (customerToUpdate['metadata']['tracking'].present? ? customerToUpdate['metadata']['tracking'].split('*').uniq : []).reject(&:blank?)
-      @profileMetadata = customerToUpdate['metadata']
-
-    end
-
-    if params[:remove] == 'true'
-      @newMeta = @profileMetadata['tracking'].split('*').reject { |i| i == "#{params[:id]}~#{params[:country]}~#{params[:images]}" }.join('*')
-      customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID, {
-                                                  metadata: {
-                                                    tracking: if @newMeta.nil?
-                                                                '*'
-                                                              else
-                                                                @newMeta.blank? ? '*' : @newMeta
-end
-                                                  }
-                                                })
-
-      flash[:success] = 'Removed From Your Public List'
-      redirect_to request.referrer
-    elsif params[:id].present?
-      customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID, {
-                                                  metadata: {
-                                                    tracking: customerToUpdate['metadata']['tracking'].split('*').reject(&:blank?).present? ? (customerToUpdate['metadata']['tracking'] + "*#{params[:id]}~#{params[:country]}~#{params[:images]}*") : "*#{params[:id]}~#{params[:country]}~#{params[:images]}*"
-                                                  }
-                                                })
-      flash[:success] = 'Added To Your Public List'
-      redirect_to request.referrer
-    end
-  end
-
-  def loved
-    if current_user&.present?
-      customerToUpdate = Stripe::Customer.retrieve(current_user&.stripeCustomerID)
-      @wishlist = (customerToUpdate['metadata']['wishlist'].present? ? customerToUpdate['metadata']['wishlist'].split('*').uniq : []).reject(&:blank?)
-      @profileMetadata = customerToUpdate['metadata']
-    end
-    if params[:remove] == 'true'
-
-      @newMeta = @profileMetadata['wishlist'].split('*').reject { |i| i == "#{params[:id]}~#{params[:country]}~#{params[:images]}" }.join('*')
-      customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID, {
-                                                  metadata: {
-                                                    wishlist: if @newMeta.nil?
-                                                                '*'
-                                                              else
-                                                                @newMeta.blank? ? '*' : @newMeta
-end
-                                                  }
-                                                })
-
-      flash[:success] = 'Removed From Your Love List'
-      redirect_to request.referrer
-    elsif params[:id].present?
-
-      customerUpdated = Stripe::Customer.update(current_user&.stripeCustomerID, {
-                                                  metadata: {
-                                                    wishlist: customerToUpdate['metadata']['wishlist'].split('*').reject(&:blank?).present? ? (customerToUpdate['metadata']['wishlist'] + "*#{params[:id]}~#{params[:country]}~#{params[:images]}*") : "*#{params[:id]}~#{params[:country]}~#{params[:images]}*"
-                                                  }
-                                                })
-      # analytics
-      flash[:success] = 'Added To Your Loved List'
-      redirect_to request.referrer
-    end
-  end
-
   def welcome
     @codes = Stripe::Coupon.list({ limit: 100 }).reject { |c| c['valid'] == false }
 
@@ -704,5 +651,4 @@ end
     end
   end
 
-  def loadMemberships; end
 end

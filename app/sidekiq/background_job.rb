@@ -6,6 +6,6 @@ class BackgroundJob
 
     ApplicationRecord.newEntry(tvData, apiKey, secretKey) if job == 'entry'
 
-    ApplicationRecord.killPending(tvData, apiKey, secretKey) if job == 'kill'
+    ApplicationRecord.killType(tvData, apiKey, secretKey) if job == 'kill'
   end
 end

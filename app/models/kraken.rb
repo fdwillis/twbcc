@@ -23,7 +23,7 @@ class Kraken < ApplicationRecord
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     response = http.request(req)
-    sleep 1
+    sleep 2
     Oj.load(response.body)
   end
 
@@ -101,9 +101,8 @@ class Kraken < ApplicationRecord
         # "price2" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
         'volume' => (tradeInfo['vol'].to_f * (0.01 * traderFound&.reduceBy)) > 0.0001 ? format('%.10f', (tradeInfo['vol'].to_f * (0.01 * traderFound&.reduceBy))) : '0.0001'
       }
-      sleep 1
       requestProfit = request(routeToKraken, orderParams, apiKey, secretKey)
-    elsif tvtraderFound&.reduceBy.present? && traderFound&.reduceBy == 100
+    elsif traderFound&.reduceBy.present? && traderFound&.reduceBy == 100
       routeToKraken1 = '/0/private/AddOrder'
 
       orderParams1 = {
@@ -114,14 +113,13 @@ class Kraken < ApplicationRecord
         # "price2" 		=> (tvData['type'] == 'sellStop' ? (tvData['currentPrice'].to_f + (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1) : (tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f * (0.01 * tvData['trail'].to_f))).round(1)).to_s,
         'volume' => tradeInfo['vol']
       }
-      sleep 1
       requestProfit = request(routeToKraken1, orderParams1, apiKey, secretKey)
 
     end
     puts "\n-- Trail Request #{requestProfit} --\n"
-
+    pullRequestK = Kraken.orderInfo(requestProfit['result']['txid'][0], traderFound.krakenLiveAPI, traderFound.krakenLiveSecret)
     if !requestProfit.empty? && requestProfit['result']['txid'].present?
-      tradeX.take_profits.create!(uuid: requestProfit['result']['txid'][0], status: 'open', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(krakenLiveAPI: apiKey).id, cost: requestProfit['result']['cost'].to_f)
+      tradeX.take_profits.create!(traderID: tvData['traderID'], uuid: requestProfit['result']['txid'][0], status: 'open', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(krakenLiveAPI: apiKey).id, cost: pullRequestK['result'][requestProfit['result']['txid'][0]]['cost'].to_f)
       requestProfit
     else
       []

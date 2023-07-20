@@ -16,11 +16,13 @@ Rails.application.routes.draw do
     get code, to: 'errors#show', code: code
   end
 
+  get '/invite', to: 'application#invite', as: 'invite' # sprint2
+  get '/external/:link', to: 'application#external', as: 'external' # sprint2
   get '/discounts', to: 'application#discounts', as: 'discounts' # sprint2
   get '/membership', to: 'application#membership', as: 'membership'
   get '/auto-trading', to: 'application#autotrading', as: 'autotrading'
   get '/traders', to: 'application#traders', as: 'traders'
-  get '/influencers', to: 'application#influencers', as: 'influencers'
+  get '/captains', to: 'application#captains', as: 'captains'
   get '/users', to: 'application#users', as: 'users'
   get '/view-on-amazon/:asin/:country', to: 'products#amazon', as: 'amazon'
   get '/list', to: 'application#list', as: 'list'
@@ -33,6 +35,7 @@ Rails.application.routes.draw do
   get '/checkout/:price/:account', to: 'application#checkout'
   get '/checkout/:price', to: 'application#checkout'
   get '/product/:asin', to: 'products#show'
+  get '/travel-and-trade', to: 'application#travel_trade', as: 'travel_trade'
   get '/split-session', to: 'application#split_session', as: 'split_session'
   get '/display-discount', to: 'application#display_discount', as: 'display_discount'
   get '/update-discount', to: 'application#update_discount', as: 'update_discount'

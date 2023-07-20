@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_07_08_152500) do
+ActiveRecord::Schema.define(version: 2023_07_20_020244) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -103,6 +103,8 @@ ActiveRecord::Schema.define(version: 2023_07_08_152500) do
     t.string "phone"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "memberType"
+    t.string "interval"
   end
 
   create_table "friendly_id_slugs", force: :cascade do |t|
@@ -114,6 +116,14 @@ ActiveRecord::Schema.define(version: 2023_07_08_152500) do
     t.index ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true
     t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
+  end
+
+  create_table "legs", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "people"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_legs_on_user_id"
   end
 
   create_table "products", force: :cascade do |t|
@@ -144,8 +154,10 @@ ActiveRecord::Schema.define(version: 2023_07_08_152500) do
     t.bigint "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.float "cost", default: 0.0
+    t.float "profitLoss", default: 0.0
     t.string "traderID"
+    t.string "stripePI"
+    t.string "ticker"
     t.index ["trade_id"], name: "index_take_profits_on_trade_id"
     t.index ["user_id"], name: "index_take_profits_on_user_id"
   end
@@ -164,6 +176,8 @@ ActiveRecord::Schema.define(version: 2023_07_08_152500) do
     t.boolean "profitCollected", default: false
     t.string "stripeInvoiceID"
     t.string "traderID"
+    t.string "stripePI"
+    t.string "ticker"
     t.index ["user_id"], name: "index_trades_on_user_id"
   end
 
@@ -200,6 +214,8 @@ ActiveRecord::Schema.define(version: 2023_07_08_152500) do
     t.float "maxRisk"
     t.string "allowMarketOrder"
     t.string "tradierToken"
+    t.boolean "autoProfitPay"
+    t.string "username"
     t.index ["alpacaKey"], name: "index_users_on_alpacaKey", unique: true
     t.index ["alpacaSecret"], name: "index_users_on_alpacaSecret", unique: true
     t.index ["alpacaTestKey"], name: "index_users_on_alpacaTestKey", unique: true
@@ -214,6 +230,7 @@ ActiveRecord::Schema.define(version: 2023_07_08_152500) do
   end
 
   add_foreign_key "blogs", "users"
+  add_foreign_key "legs", "users"
   add_foreign_key "take_profits", "trades"
   add_foreign_key "take_profits", "users"
   add_foreign_key "trades", "users"

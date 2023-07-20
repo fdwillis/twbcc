@@ -1,10 +1,189 @@
-users<br>
-users<br>
-users<br>
-users<br>
-users<br>
-users<br>
-users<br>
-users<br>
-users<br>
-users<br>
+<% autoTradingMonthlyMembership = Stripe::Price.retrieve(ENV['autoTradingMonthlyMembership']) %>
+<% autoTradingAnnualMembership = Stripe::Price.retrieve(ENV['autoTradingAnnualMembership']) %>
+<div class="header-clear-medium">   
+  <% if current_user %>
+    <div class="card card-style mt-2">
+      <div class="content text-center">
+          <h1 class="text-center">Your Membership Was Found</h1>
+          <p class="boxed-text-l mb-n1 font-14">Do You Want To Upgrade?</p>
+          <div class="font-11 pb-2 text-center"><%= mail_to "team@oarlin.com", "EMAIL US" %></div>
+      </div><!-- #sprint2 -->
+    </div>
+  <% end %>
+
+  <div class="card card-style bg-theme pb-0">
+    <div class="content text-center">
+        After 'Step 3' your Trading as a Service (TAAS) profile is complete. <br><%= mail_to "team@oarlin.com", "EMAIL US" %> to check if your broker has been integrated. 
+        <h1>
+          1. Sign Up
+        </h1>
+        Broker account required.
+        <h1>
+          2. Authorize Oarlin
+        </h1>
+        Paste your Broker API keys.
+        <h1>
+          3. List Your Assets
+        </h1>
+          What will you trade?<br>
+
+    </div>
+  </div>  
+    <div class="card card-style bg-highlight-dark">
+     <div class="content pb-0">
+        <p class="color-white font-30">Start Free -Trading as a Service (TAAS)</p>
+        <a href="/invite?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" class="btn btn-full btn-m rounded-s text-uppercase font-700 color-white border-white">Join Free</a> <!-- upgrade or downgrade #sprint2 -->
+     </div>
+  </div>
+	<div class="card card-style">
+	   <div class="content">
+	      <h4>Features &amp; Benefits For Users</h4>
+	      
+	   </div>
+	   <div class="accordion" id="accordion-1">
+	      <div class="mb-">
+	         <button class="btn accordion-btn no-effect" data-bs-toggle="collapse" data-bs-target="#collapse1">
+	         Experience Not Required
+	         <i class="fa fa-chevron-down font-10 accordion-icon"></i>
+	         </button>
+	         <div id="collapse1" class="collapse" data-bs-parent="#accordion-1">
+	            <div class="pt-1 pb-2 ps-3 pe-3">
+	               <p>This is the accordion content. You can add any content you want to it. Really, anything! Add images, text, lists, captions or any element you want.</p>
+	            </div>
+	         </div>
+	      </div>
+	      <div class="mb-0">
+	         <button class="btn accordion-btn no-effect" data-bs-toggle="collapse" data-bs-target="#collapse2">
+	         TradingView Not Required
+	         <i class="fa fa-chevron-down font-10 accordion-icon"></i>
+	         </button>
+	         <div id="collapse2" class="collapse" data-bs-parent="#accordion-1">
+	            <div class="pt-1 pb-2 ps-3 pe-3">
+	               <p>This is the accordion content. You can add any content you want to it. Really, anything! Add images, text, lists, captions or any element you want.</p>
+	            </div>
+	         </div>
+	      </div>
+	      <div class="mb-2">
+	         <button class="btn accordion-btn no-effect" data-bs-toggle="collapse" data-bs-target="#collapse3">
+	         Unlimited Assets &amp; Trades
+	         <i class="fa fa-chevron-down font-10 accordion-icon"></i>
+	         </button>
+	         <div id="collapse3" class="collapse" data-bs-parent="#accordion-1">
+	            <div class="pt-1 pb-2 ps-3 pe-3">
+	               <p>This is the accordion content. You can add any content you want to it. Really, anything! Add images, text, lists, captions or any element you want.</p>
+	            </div>
+	         </div>
+	      </div>
+	   </div>
+	</div>
+
+
+
+  <div class="card card-style bg-theme pb-0">
+      <div id="tab-group-1">
+          <h4 class="font-700 font-14 opacity-50 mb-4 text-center mt-4">Next Price Increase Jan <%=  Time.now.strftime("%Y").to_i + 1%></h4>
+          <h4 class="font-700 font-12 opacity-50 mb-4 text-center mt-4">Autotrading with <%= link_to "TradingView", "https://www.tradingview.com/gopro/?share_your_love=NetwerthTracker" %></h4>
+
+          <div data-bs-parent="#tab-group-1" class="pt-0" id="tab-2">
+            <div class="content text-center">
+              <!-- <h1 class="font-20 line-height-m pb-2">Explore Amazon Products</h1> -->
+              <div data-card-height="500" class="card mx-1 rounded-m shadow-l">
+                <div class="content">
+                  <div class="card-top text-center">
+                    <div class="mt-4">
+                        <h1 class="m-n2 p-2"><%= number_to_currency(autoTradingMonthlyMembership['unit_amount'] * 0.01, precision: 2) %></h1>
+                        <p class=" font-12 color-highlight m-n2">Per Month</p>
+                        <p class=" font-12 color-highlight m-n2">Unlimited Trading</p>
+                    </div>
+                    <div class="list-group list-custom-small">
+                      <% autoTradingMonthlyMembership['metadata'].each do |point| %>
+                          
+                          <span href="#" class="text-center font-15">
+                            <%= point[0] %> 
+
+                          </span>
+                          <div class="divider mb-2 mt-1"></div>
+                      <% end %>
+                        
+                    </div>
+                  </div>
+                  <div class="content card-bottom text-center">
+                    <a href="/invite?interval=month&memberType=user&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" class="btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark">Join Monthly Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
+                    <a href="/invite" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Skip Monthly Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
+                    
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+
+          <div data-bs-parent="#tab-group-1" id="tab-2">
+            <div class="content text-center">
+              <!-- <h1 class="font-20 line-height-m pb-2">Explore Amazon Products</h1> -->
+              <div data-card-height="500" class="card mx-1 rounded-m shadow-l">
+                <div class="content">
+                  <div class="card-top text-center">
+                    <div class="mt-4">
+                        <h1 class="m-n2 p-2"><%= number_to_currency(autoTradingAnnualMembership['unit_amount'] * 0.01, precision: 2) %></h1>
+                        <p class=" font-12 color-highlight m-n2">Per Year</p>
+                        <p class=" font-12 color-highlight m-n2">Unlimited Trading</p>
+                    </div>
+                    <div class="list-group list-custom-small">
+                      <% autoTradingAnnualMembership['metadata'].each do |point| %>
+                          
+                          <span href="#" class="text-center font-15">
+                            <%= point[0] %> 
+
+                          </span>
+                          <div class="divider mb-2 mt-1"></div>
+                      <% end %>
+                        
+                    </div>
+                  </div>
+                  <div class="content card-bottom text-center">
+                    <a href="/invite?interval=annual&memberType=user&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" class="btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark">Join Annual Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
+                    <a href="" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Skip Annual Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
+                    
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+
+          
+      </div>
+  </div>
+</div>
+
+
+<div id="menu-create-account" class="menu menu-box-top menu-box-detached rounded-m" style="display: block;">
+  <div class="content">
+    <div class="d-flex">
+      <div>
+        <h1 class="opacity-20">Complete &amp; Submit</h1>
+      </div>
+      <div class="ms-auto">
+        <h1>Custom Account Inqury</h1>
+      </div>
+    </div>
+    <p>
+      Oarlin will build your brand for automation &amp; scale from scratch. Migrate your existing brand to Oarlin and increase your conversions to maximize income with the power of customized automation. 
+    </p>
+    <%= form_for(:newInquiry, url: inquiry_path) do |f| %>
+      <div class="col-xl-12 p-3">
+        <div class="field">
+          <%= f.label "Email" %><br />
+          <%= f.email_field :email, class: "form-control form-control-lg form-control-alt py-3", placeholder: 'Email', required: true %>
+
+          <%= f.label "Phone" %><br />
+          <%= f.text_field :phone, class: "form-control form-control-lg form-control-alt py-3", placeholder: 'Phone Number', required: true, maxlength: 10 %>
+          
+        </div>
+        <br>
+        <%= f.submit "Contact Me", class: "form-control btn btn-full btn-m rounded-m bg-blue-dark font-700 text-uppercase mb-4 mt-4" %>
+      </div>
+    <% end %>
+  </div>
+</div>

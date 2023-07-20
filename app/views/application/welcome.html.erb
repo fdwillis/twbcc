@@ -1,5 +1,5 @@
-<div class="page-content pb-0">
-  <div class="card" data-card-height="cover" style="background-image: url(/assets/53d9a3fd304ab73d580828e5367313eb.jpeg); height: 668px;">
+<div class="page-content pb-4">
+  <div class="card" data-card-height="cover" style="background-image: url(/assets/stock-trading-ga01e5f952_1920.jpg); height: 668px;">
     <div class="card-bottom mb-5 mx-3">
       <div class="content mb-0">
         <h1 class="mt-5 mb-0 font-24 color-white text-center"><%= session['headlines'] %></h1>
@@ -7,66 +7,87 @@
         <p class="color-white font-13 pt-2 opacity-50 text-center">Trading as a Service (TAAS) with Oarlin</p>
         <p class="color-white text-center px-2 content">Lightning-fast order executions from the cloud<br>Never miss profitable opportunities again</p>
         <div class="col-12">
-          <a href="/checkout/<%= ENV['trialTradingDaily'] %>?&trial=true&referredBy=#{params[:splitSession]}" data-back-button="" class="btn btn-full btn-m mt-3 rounded-sm shadow-xl border-purple-dark bg-theme font-800 text-uppercase">Start Trial Trading</a>
-          <a href="/auto-trading?&referredBy=<%= params[:splitSession] %>" data-back-button="" class="btn btn-full btn-m mt-3 rounded-sm shadow-xl bg-highlight font-800 text-uppercase">Start Unlimited Trading</a>
+          <!-- <a href="/traders?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" data-back-button="" class="btn btn-full btn-m mt-3 rounded-sm shadow-xl border-purple-dark bg-theme font-800 text-uppercase">Start Trial Trading</a> -->
+          <!-- <a href="/auto-trading?&referredBy=<%= params[:splitSession] %>" data-back-button="" class="btn btn-full btn-m mt-3 rounded-sm shadow-xl bg-highlight font-800 text-uppercase">Start Unlimited Trading</a> -->
         </div>
       </div>
     </div>
     <div class="card-overlay bg-black opacity-80"></div>
   </div>
 </div>
+<div class="card card-style pt-4">
+  <div class="content">
+      <h6 class="color-highlight text-uppercase font-700 mb-1">JOIN TODAY</h6>
+     <h1 class="text-uppercase font-900 mt-n2">MEMBERSHIP</h1>
+      <p class='font-20'>Oarlin's Trading as a Service (TAAS) will execute trades in real time to all of your brokerage accounts. With Oarlin, you can trade crypto, stocks, options, and forex markets simultaneously without lifting a finger.</p>
+  </div>
+</div>
 <div class="content">
-  <h6 class="color-highlight text-uppercase font-700 mb-1">JOIN TODAY</h6>
-  <h1 class="text-uppercase font-900 mt-n2">MEMBERSHIP</h1>
-  <p class='font-14'>Oarlin's Trading as a Service (TAAS) allows you to copy trades in real time directly to all of your brokerage accounts. With Oarlin, you can trade crypto, stocks, options, and forex markets simultaneously without lifting a finger. To activate your Trading as a Service (TAAS) with Oarlin, provide the Oarlin platform with the assets and brokers you want to trade, set your risk tolerance, and watch as Oarlin's Trading as a Service (TAAS) executes your positions accordingly.  Let Oarlin's Trading as a Service (TAAS) bridge the trading gap for you.</p>
+  
+  
+  <div class="divider"></div>
+  <div class="row me-0 ms-0 mb-0">
+    <div class="col-4 ps-0 pe-0">
+      <div class="card card-style">
+         <img src="/assets/JasperArt_2023-07-15_12.51.48_upscaled.jpg" class="img-fluid">
+         <div class="content pb-0">
+            <p class="mb-0 font-30 mb-2"><strong>Traders</strong></p>
+            <p class="mb-0 font-22">Leverage More Capital Trading With Oarlin</p>
+            <a href="/traders?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" data-back-button="" class="btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dar">Learn More</a>
+         </div>
+      </div>
+   </div>
+   <div class="col-4 pe-0 ps-0">
+      <div class="card card-style">
+         <img src="/assets/JasperArt_2023-07-13_22.46.30_upscaled.jpg" class="img-fluid">
+         <div class="content pb-0">
+            <p class="mb-0 font-30 mb-2"><strong>Captains</strong></p>
+            <p class="mb-0 font-22">Share Oarlin For Unlimited Income Potential</p>
+            <a href="/captains?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" data-back-button="" class="btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dar">Learn More</a>
+         </div>
+      </div>
+   </div>
+   <div class="col-4 pe-0 ps-0">
+      <div class="card card-style">
+         <img src="/assets/JasperArt_2023-07-13_21.54.58_upscaled.jpg" class="img-fluid">
+         <div class="content pb-0">
+            <p class="mb-0 font-30 mb-2"><strong>Users</strong></p>
+            <p class="mb-0 font-22">Follow Experts That Make You Money</p>
+            <a href="/users?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" data-back-button="" class="btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dar">Learn More</a>
+         </div>
+      </div>
+   </div>
+  </div>
   <div class="divider"></div>
   <%= render 'search/dailydiscount', codes: @codes %>
-  <div class="divider"></div>
-  <div class="card card-style">
     
-    <div class=" row text-center m-4">
-      <div class="col-12">
-        <i class="fa fa-copy fa-4x color-theme mb-3"></i>
-        <h6 class="text-uppercase color-highlight font-700">Copy Trades</h6>
-        <p>Copy Trades In Real Time</p>
-      </div>
-      <div class="col-12">
-        <i class="fa fa-globe fa-4x color-theme mb-3"></i>
-        <h6 class="text-uppercase color-highlight font-700">all markets</h6>
-        <p>Stocks, Options, Forex, Crypto</p>
-      </div>
-
-      <div class="col-12">
-        <i class="fa fa-bolt fa-4x color-theme mb-3"></i>
-        <h6 class="text-uppercase color-highlight font-700">Instant executions</h6>
-        <p>Executions From The Cloud</p>
-      </div>
-      <div class="col-12">
-        <i class="fa fa-wifi fa-4x color-theme mb-3"></i>
-        <h6 class="text-uppercase color-highlight font-700">Trade 24/7</h6>
-        <p>Trade Any Time or Day</p>
-      </div>
-      <div class="col-12">
-        <i class="fa fa-gears fa-4x color-theme mb-3"></i>
-        <h6 class="text-uppercase color-highlight font-700">Customizable</h6>
-        <p>Risk &amp; Profit Set By You</p>
-      </div>
-      <div class="col-12">
-        <i class="fa fa-lock fa-4x color-theme mb-3"></i>
-        <h6 class="text-uppercase color-highlight font-700">Profit Protection</h6>
-        <p>Lock Profits Automatically</p>
-      </div>
-    </div>
+  <div class="row text-center mb-0">
+     <a href="#" class="col-6">
+        <div class="card card-style">
+           <i class="fa fa-copy color-highlight-dark fa-4x mt-5"></i>
+           <h1 class="pt-4">Copy Trades</h1>
+           <p class="font-20 opacity-50 pb-4">Trades are automatically executed directly in your brokerage account</p>
+        </div>
+     <a href="#" class="col-6">
+        <div class="card card-style">
+           <i class="fa fa-globe color-highlight-dark fa-4x mt-5"></i>
+           <h1 class="pt-4">All Markets</h1>
+           <p class="font-20 opacity-50 pb-4">Trade stocks, forex, options, &amp; cryto all at once without lifting a finger</p>
+        </div>
+     </a>
+     <a href="#" class="col-6">
+        <div class="card card-style">
+           <i class="fa fa-bolt color-highlight-dark fa-4x mt-5"></i>
+           <h1 class="pt-4">Instant Executions</h1>
+           <p class="font-20 opacity-50 pb-4">Never miss opportunities due to slow connections or wifi</p>
+        </div>
+     </a>
+     <a href="#" class="col-6">
+        <div class="card card-style">
+           <i class="fa fa-gears color-highlight-dark fa-4x mt-5"></i>
+           <h1 class="pt-4">Customizable</h1>
+           <p class="font-20 opacity-50 pb-4">Pick you position sizing, total risk, and other setting to fit your trading style</p>
+        </div>
+     </a>
   </div>
-  <div class="divider"></div>
-  <div class="col-12">
-    <%= image_tag "trialvs.png", style:"height: 100%;width: 100%;" %>
-  </div>
-  <div class="divider"></div>
-  <div class="col-12">
-    <a href="/checkout/<%= ENV['trialTradingDaily'] %>?&trial=true&referredBy=#{params[:splitSession]}" data-back-button="" class="btn btn-full btn-m mt-3 rounded-sm shadow-xl border-purple-dark bg-theme font-800 text-uppercase">Start Trial Trading</a>
-    <a href="/auto-trading?&referredBy=<%= params[:splitSession] %>" data-back-button="" class="btn btn-full btn-m mt-3 rounded-sm shadow-xl bg-highlight font-800 text-uppercase">Start Unlimited Trading</a>
-  </div>
-  <div class="divider"></div>
-  <%= render 'search/dailydiscount', codes: @codes %>
 </div>

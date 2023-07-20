@@ -112,53 +112,122 @@ namespace :generate do
   end
 
   task cleanTrades: :environment do
-    Trade.where(finalTakeProfit: nil).each do |trade|
-      puts trade.uuid
+    Trade.all.sort_by(&:created_at).each do |trade|
+      userForLoad = trade.user
       if trade&.broker == 'KRAKEN'
-
-        requestK = Kraken.orderInfo(trade.uuid, trade.user.krakenLiveAPI, trade.user.krakenLiveSecret)
-        p requestK
-        sleep 1
-        if requestK['result'].present? && requestK['result'][trade.uuid]['status'].present? && requestK['result'][trade.uuid]['cost'].present?
-          trade.update(status: requestK['result'][trade.uuid]['status'], cost: requestK['result'][trade.uuid]['cost'].to_f)
-        end
-
-        if trade.status == 'canceled'
           trade.destroy! 
+      elsif trade&.broker == 'OANDA'
+        trade&.user&.oandaList.split(',').each do |accountID|
+          @requestK = Oanda.oandaOrder(trade&.user&.oandaToken, accountID, trade.uuid)
+          @requestTTrade = Oanda.oandaTrade(userForLoad.oandaToken, accountID, @requestK['order']['tradeOpenedID'])
         end
-      # elsif trade&.broker == 'OANDA'
-      #   requestK = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
-
-      #   if requestK['order']['state'] == 'CANCELLED'
-      #     trade.destroy! if trade.status == 'canceled'
-      #   end
-
-      #   trade.update(status: 'closed') if requestK['order']['state'] == 'FILLED'
+        if @requestK['order']['state'] == 'CANCELLED'
+          trade.destroy! if trade.status == 'canceled'
+        end
+        
+        if @requestK['order']['type'] != 'LIMIT'
+          trade.update(cost: @requestTTrade['trade']['initialMarginRequired'].to_f)
+          trade.update(status: 'closed') if @requestK['order']['state'] == 'FILLED'
+        end
       end
     end
 
-    TakeProfit.where(status: 'open').each do |takeProfitX|
-      puts takeProfitX.uuid
+    TakeProfit.all.sort_by(&:created_at).each do |takeProfitX|
+      userForLoad = takeProfitX.user
+
       if takeProfitX&.broker == 'KRAKEN'
-        userForLoad = takeProfitX.user
-
-        requestK = Kraken.orderInfo(takeProfitX.uuid, userForLoad.krakenLiveAPI, userForLoad.krakenLiveSecret)
-        p requestK
-        if requestK['result'].present? && requestK['result'][takeProfitX.uuid]['status'].present? && requestK['result'][takeProfitX.uuid]['cost'].present?
-          takeProfitX.update(status: requestK['result'][takeProfitX.uuid]['status'], cost: requestK['result'][takeProfitX.uuid]['cost'].to_f)
-        end
-
-        if takeProfitX.status == 'canceled'
           takeProfitX.destroy! 
+      elsif takeProfitX&.broker == 'OANDA'
+
+        userForLoad.oandaList.split(",").each do |accountID|
+          @requestK = Oanda.oandaOrder(userForLoad.oandaToken, accountID, takeProfitX.uuid)
+
+          if @requestK['order']['tradeReducedID'].present?
+            @requestTTrade = Oanda.oandaTrade(userForLoad.oandaToken, accountID, @requestK['order']['tradeReducedID'])
+          elsif  @requestK['order']['tradeClosedIDs'].present?
+            @requestK['order']['tradeClosedIDs'].each do |tradeID|
+              @requestTTrade = Oanda.oandaTrade(userForLoad.oandaToken, accountID, tradeID)
+            end
+          end
+
+          if @requestK['order']['state'] == 'FILLED' && @requestTTrade['trade'].present?
+            takeProfitX.update(status: 'closed')
+            takeProfitX.update(profitLoss: @requestTTrade['trade']['realizedPL'].to_f)
+          elsif @requestK['order']['state'] == 'PENDING'
+            takeProfitX.update(status: 'open')
+          elsif @requestK['order']['state'] == 'CANCELLED'
+            takeProfitX.destroy!
+          end
         end
-      # elsif trade&.broker == 'OANDA'
-      #   requestK = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
+      end
+    end
+  end
 
-      #   if requestK['order']['state'] == 'CANCELLED'
-      #     trade.destroy! if trade.status == 'canceled'
-      #   end
+  task profitInvoice: :environment do 
+    # allSubscriptions.include?(planID)
+    # membershipPlan = Stripe::Subscription.list({ customer: stripeCustomerID, price: planID })['data'][0]
+    puts "cleaning database..."
+    Rake::Task['generate:cleanTrades'].invoke
 
-      #   trade.update(status: 'closed') if requestK['order']['state'] == 'FILLED'
+    User.all.each do |userX|
+      profitTallyForUserX = 0
+      permissionPass = false
+      
+
+      if userX.trader?
+        if userX&.take_profits.present? && userX&.take_profits.map(&:stripePI).include?(nil)
+          validTakeProfits = userX&.take_profits.where(stripePI: nil).where('created_at > ?', 30.days.ago).sort_by(&:created_at)
+          profitTallyForUserX += validTakeProfits.map(&:profitLoss).sum 
+
+          if Date.today.strftime("%d").to_i == 1
+            unless userX&.accessPin.include?('profit')
+                permissionPass = true
+            else
+              # only run if last charge was at least 28 days ago
+              userXIntents = Stripe::PaymentIntent.list(limit: 100, customer: userX.stripeCustomerID)
+              if userXIntents['has_more'] == true
+              else
+                cleanedIntents = userXIntents['data'].reject{|d|!d['metadata'][:profitPaid].present?}
+
+                cleanedIntents.each do |paymentIntent|
+                  unless paymentIntent['cancellation_reason'].present?
+                    if Time.at(cleanedIntents.last.created) < 28.days.ago
+                      permissionPass = true
+                    end
+                  end
+                end
+              end
+            end
+            
+            if permissionPass && profitTallyForUserX > 0
+              createPaymentIntent = Stripe::PaymentIntent.create(
+                amount: ((profitTallyForUserX * 100).to_i * (3 * 0.01)),
+                currency: userX.currencyBase,
+                customer: userX.stripeCustomerID,
+                metadata: {
+                  profitPaid: false
+                }
+
+              )
+
+              validTakeProfits.each do |takeProfitX|
+                takeProfitX.update(stripePI: createPaymentIntent)
+                takeProfitX.trade.update(stripePI: createPaymentIntent)
+              end
+
+              if userX&.autoProfitPay
+                Stripe::PaymentIntent.capture(createPaymentIntent['id'])
+                Stripe::PaymentIntent.update(createPaymentIntent['id'], {
+                  metadata: {
+                    profitPaid: true
+                  } 
+                })
+              end
+            end
+          else
+            puts "not the day"
+          end
+        end
       end
     end
   end
