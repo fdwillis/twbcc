@@ -32,7 +32,7 @@
 
   
 
-    <div class="card card-style">
+<!--     <div class="card card-style">
      <div class="content">
         <h1>Why You Love Oarlin<i class="fa fa-trophy float-end font-16 pt-1 color-yellow-dark"></i></h1>
         <p class="font-20">Trader Benefits</p>
@@ -70,14 +70,15 @@
      </div>
   </div>
   <%= render 'search/dailydiscount', codes: @codes %>
-  <div class="card card-style bg-highlight-dark">
+ -->  
+ <div class="card card-style bg-highlight-dark">
      <div class="content pb-0">
         <p class="mb-0 font-34 color-white text-center">Start Free</p>
         <p class="mb-0 font-22 color-white text-center">Trading as a Service (TAAS)</p>
         <a href="<%= new_user_registration_path %>?&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-m rounded-s bg-green-dark text-uppercase font-700 color-white border-green">Join Free</a> <!-- upgrade or downgrade #sprint2 -->
      </div>
   </div>
-    <div class="card card-style">
+<!--     <div class="card card-style">
        <div class="content">
           <h1>How To Sign Up - Traders<i class="fa fa-trophy float-end font-16 pt-1 color-yellow-dark"></i></h1>
           <p class="font-20">Completing Your SetupTakes 3 Minutes</p>
@@ -113,7 +114,7 @@
              </div>
           </div>
        </div>
-    </div>
+    </div> -->
   <div class="row text-center mb-0">
     <% if request.user_agent.include?('Mobile') %>
          <a href="index.html" class="col-12" style='pointer-events: none;'>
