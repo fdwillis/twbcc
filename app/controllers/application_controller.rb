@@ -640,6 +640,13 @@ class ApplicationController < ActionController::Base
 
   def welcome
     @codes = Stripe::Coupon.list({ limit: 100 }).reject { |c| c['valid'] == false }
+    @prob1 = [
+      {prob:'Hands Full At Work or Home?', solu: "Oarlin stays active 24/7 to reach your financial goals while you are busy"},
+      {prob:'Too Busy For Investing?', solu: 'Oarlin secures your investment goals so that you can secure your life goals'},
+      {prob:'Hesitating To Execute Trades?', solu: 'Oarlin will only trade when the time is right'},
+      {prob:"Don't Know Much About Investing?", solu: 'Oarlin will make you money while you learn to invest'},
+      {prob:"The Only Social Platform For Trading & Investing", solu: 'Oarlin is the home all traders have been waiting for'},
+    ] 
 
     if session['headlines'] && session['subline']
     else
