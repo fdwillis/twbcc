@@ -79,7 +79,7 @@ class TradingviewController < ApplicationController
       traderFound&.checkMembership
       
       if sequence['tradingDays'].present? && sequence['tradingDays'].map { |d| d.downcase }.include?(Date.today.strftime('%a').downcase)
-        if traderFound.trader?
+        if traderFound&.trader?
 
           if (ENV['adminUUID']).include?(traderFound.uuid)
             
@@ -136,7 +136,7 @@ class TradingviewController < ApplicationController
                 traderFoundForCopy = User.find_by(stripeCustomerID: planXinfo['customer'])
                 traderFoundForCopy&.checkMembership
 
-                if  traderFoundForCopy.trader?
+                if  traderFoundForCopy&.trader?
                   puts "\n-- Started For #{traderFoundForCopy.uuid} #{sequence.to_enum.to_h['type']} #{sequence.to_enum.to_h['direction']} --\n"
                   listToTrade = traderFoundForCopy&.authorizedList.present? ? traderFoundForCopy&.authorizedList&.delete(' ').split(",") : []
                   assetList = listToTrade.present? ? listToTrade : []
