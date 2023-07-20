@@ -1,10 +1,8 @@
 <div class="card card-style" style="background-image: url(&quot;images/photographer3.jpg&quot;); height: 350px;" data-card-height="350">
    <div class="card-bottom p-3">
       <h1 class="color-white font-24 opacity-50">Help Us Grow</h1>
-      <h1 class="color-white font-40">Skip Waitlist</h1>
-      <p class="color-white opacity-70 pt-3 mb-2">
-         Professional Photographer with over 35 years of experience in Video and Photo taking and editing
-      </p>
+      <h1 class="color-white font-40">Skip Waitlist - <%= params['memberType'] %></h1>
+      <p class="color-white opacity-70 pt-3 mb-2"><%= params['interval'].titleize %> Plan</p>
    </div>
    <div class="card-overlay bg-gradient"></div>
 </div>

@@ -649,17 +649,12 @@ class ApplicationController < ActionController::Base
       {prob:'Too Busy For Investing?', solu: 'Oarlin secures your investment goals so that you can secure your life goals'},
       {prob:'Hesitating To Execute Trades?', solu: 'Oarlin will only trade when the time is right'},
       {prob:"Don't Know Much About Investing?", solu: 'Oarlin will make you money while you learn to invest'},
-      {prob:"The Only Social Platform For Trading & Investing", solu: 'Oarlin is the home all traders have been waiting for'},
+      {prob:"The Only Social Platform For Trading", solu: 'Oarlin is the home all traders have been waiting for'},
     ] 
 
-    if session['headlines'] && session['subline']
-    else
-      @headlines = ['Real Time Trade Copying', 'Never Miss Trading Opportunities', 'Amplify Your Profits', 'Supercharge Your Day Trading']
-      @subline = ['Profit While You Sleep', 'Start Passive Trading', 'Travel More Trade Less', 'Worry Free Trading']
+    @subline = ['No Experience Required', 'Never Miss Trading Opportunities', 'Amplify Your Profits', 'Supercharge Your Day Trading']
+    @headlines = ['Profit While Sleeping', 'Profit While Living', 'Profit While Working', 'Profit While Exercising', 'Profit While Shopping', 'Travel More Trade Less', 'Less Worry More Money']
 
-      session['headlines'] = @headlines.sample
-      session['subline'] = @subline.sample
-    end
   end
 
 end
