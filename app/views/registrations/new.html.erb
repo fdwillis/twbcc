@@ -1,0 +1,47 @@
+<div class="header-clear-medium">
+
+  <div data-card-height="cover" class="card" style="height: 945px;">
+      <div class="card-center">
+          <div class="ps-5 pe-5">
+              <h1 class="text-center font-800 font-40 mb-1 text-uppercase">Sign Up</h1>
+              <p class="color-highlight text-center font-12 text-uppercase">Let's get you registered</p>
+
+              <%= form_for(:setSessionVar, url: new_user_registration_path) do |f| %>
+
+
+
+                <div class="actions">
+                  
+                </div>
+
+                <div class="input-style no-borders has-icon validate-field">
+                    <i class="fa fa-user"></i>
+                    <%= f.email_field :email, autofocus: true, autocomplete: "email", class: 'form-control validate-email', required: true, placeholder: 'Email' %>
+                    <em>(required)</em>
+                </div>
+
+                <div class="input-style no-borders has-icon validate-field mt-4">
+                    <i class="fa fa-lock"></i>
+                    <%= f.password_field :password, autocomplete: "current-password", class: 'form-control validate-password', required: true, placeholder: "Password" %>
+                    <label for="form3a" class="color-blue-dark font-10 mt-1">Password</label>
+                    <em>(required)</em>
+                </div>
+                <div class="input-style no-borders has-icon validate-field mt-4">
+                    <i class="fa fa-lock"></i>
+                    <%= f.password_field :password_confirmation, autocomplete: "current-password", class: 'form-control validate-password', required: true, placeholder: "Password" %>
+                    <label for="form3a" class="color-blue-dark font-10 mt-1">Password</label>
+                    <em>(required)</em>
+                </div>
+                <div class="mt-4 mb-4">
+                    <div class="w-50 font-11 pb-2">FORGOT? - <%= mail_to "team@oarlin.com", "EMAIL US" %></div>
+                </div>
+
+                <%= f.submit "Sign Up", class: 'back-button btn btn-full btn-m shadow-large rounded-sm text-uppercase font-700 bg-highlight form-control' %>
+              <% end %>
+              <div class="divider mt-4"></div>
+              <!-- <a href="#" class="btn btn-icon btn-m btn-full shadow-l rounded-sm bg-facebook text-uppercase font-700 text-start"><i class="fab fa-facebook-f text-center bg-transparent"></i>Sign in with Facebook</a>
+              <a href="#" class="btn btn-icon btn-m btn-full shadow-l rounded-sm bg-twitter text-uppercase font-700 text-start mt-2 "><i class="fab fa-twitter text-center bg-transparent"></i>Sign in with Twitter</a> -->
+          </div>
+      </div>
+  </div>
+</div>

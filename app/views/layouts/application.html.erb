@@ -5,8 +5,8 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag 'application', media: 'all' %>
-    <%= javascript_include_tag 'application' %>
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
     <link rel="stylesheet" type="text/css" href="/assets/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="/assets/glightbox.css">
     <link rel="stylesheet" type="text/css" href="/assets/style.css">
@@ -353,7 +353,7 @@
             </script>
           <% end %>
           <div class="page-content">
-            <% if User.find_by(uuid: params['referredBy']).present? %>
+            <% if User.find_by(uuid: params['referredBy']).present? && User.find_by(uuid: params['referredBy'])&.stripeCustomerID %>
               <h1 class="font-700 font-10 opacity-50 text-center mt-5 mb-n5">
                 "<%= Stripe::Customer.retrieve(User.find_by(uuid: params['referredBy'])&.stripeCustomerID)['name'].titleize %>" GOT YOU HERE</h1>
             <% end %>

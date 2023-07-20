@@ -1,4 +1,22 @@
 class RegistrationsController < ApplicationController
+
+  def new
+    if request.get?
+    else
+      createdUser = User.create(setSessionVarParams)
+      if createdUser.present?
+        flash[:success] = 'Sign Up Complete'
+        redirect_to request.referrer
+        return
+      else
+        debugger
+        flash[:error] = "Something Went Wrong"
+        redirect_to request.referrer
+        return
+      end
+    end
+  end
+
   def new_password
     if request.post?
       begin
@@ -158,9 +176,9 @@ class RegistrationsController < ApplicationController
                                                    10
                                                  else
                                                    User::AUTOMATIONmembership.include?(stripePlan) == true ? 20 : 0
- end
-                                              end
-end }
+             end
+            end
+          end }
 
           if cardNew.present? && cardHolderNew.present?
             customerUpdated = Stripe::Customer.update(
@@ -325,7 +343,7 @@ end }
       @stripeSession = Stripe::Checkout::Session.retrieve(
         params['session']
       )
-     end
+    end
   end
 
   def trial; end
@@ -333,7 +351,7 @@ end }
   private
 
   def setSessionVarParams
-    paramsClean = params.require(:setSessionVar).permit(:password_confirmation, :password, :stripeSession, :referredBy, :accessPin, :amazonUUID)
+    paramsClean = params.require(:setSessionVar).permit(:email, :password_confirmation, :password, :stripeSession, :referredBy, :accessPin, :amazonUUID)
     paramsClean.reject { |_, v| v.blank? }
   end
 

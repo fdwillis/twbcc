@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
-  devise_for :users, path: '/', path_names: { sign_in: 'auth/login', sign_out: 'auth/logout' }, controllers: { registrations: 'registrations', sessions: 'sessions' } do
+  devise_for :users, path: '/', path_names: { sign_in: 'auth/login', sign_up: 'auth/sign-up', sign_out: 'auth/logout' }, controllers: { registrations: 'registrations', sessions: 'sessions' } do
     get '/auth/logout' => 'sessions#destroy'
   end
 
@@ -43,6 +43,7 @@ Rails.application.routes.draw do
   get '/trading', to: 'registrations#trading', as: 'trading'
   get '/targets', to: 'tradingview#targets', as: 'targets'
 
+  post '/auth/sign-up' => 'registrations#new'
   post '/trading', to: 'registrations#trading'
   post '/signals', to: 'tradingview#signals', as: 'signals' # sprint2
   post '/manage-trading-keys', to: 'tradingview#manage_trading_keys', as: 'manage_trading_keys' # sprint2
