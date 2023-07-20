@@ -16,12 +16,13 @@ Rails.application.routes.draw do
     get code, to: 'errors#show', code: code
   end
 
+
   get '/skip-waitlist', to: 'application#skip', as: 'skip' # sprint2
   get '/invite', to: 'application#invite', as: 'invite' # sprint2
   get '/external/:link', to: 'application#external', as: 'external' # sprint2
   get '/discounts', to: 'application#discounts', as: 'discounts' # sprint2
   get '/membership', to: 'application#membership', as: 'membership'
-  get '/auto-trading', to: 'application#autotrading', as: 'autotrading'
+  get '/auto-trading', to: 'application#welcome'
   get '/traders', to: 'application#traders', as: 'traders'
   get '/captains', to: 'application#captains', as: 'captains'
   get '/users', to: 'application#users', as: 'users'

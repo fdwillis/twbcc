@@ -16,7 +16,61 @@ class ApplicationController < ActionController::Base
   end
 
   def skip
-    
+
+
+    if params['interval'] == 'month'
+      if params['memberType'] == 'user'
+        @stripePlan = Stripe::Price.retrieve(ENV['userMonth'])
+      end
+      if params['memberType'] == 'captain'
+        @stripePlan = Stripe::Price.retrieve(ENV['captainMonth'])
+      end
+      if params['memberType'] == 'trader'
+        @stripePlan = Stripe::Price.retrieve(ENV['traderMonth'])
+      end
+    end
+
+    if params['interval'] == 'annual'
+      if params['memberType'] == 'user'
+        @stripePlan = Stripe::Price.retrieve(ENV['userAnnual'])
+      end
+      if params['memberType'] == 'captain'
+        @stripePlan = Stripe::Price.retrieve(ENV['captainAnnual'])
+      end
+      if params['memberType'] == 'trader'
+        @stripePlan = Stripe::Price.retrieve(ENV['traderAnnual'])
+      end
+    end
+    successURL = "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}"
+    if session['coupon'].present?
+      @session = Stripe::Checkout::Session.create({
+                                                               success_url: successURL,
+                                                               phone_number_collection: {
+                                                                 enabled: true
+                                                               },
+                                                               discounts: [
+                                                                 coupon: session['coupon']
+                                                               ],
+                                                               line_items: [
+                                                                 { price: @stripePlan, quantity: 1 }
+                                                               ],
+                                                               mode: 'subscription'
+                                                             })
+    else
+      @session = Stripe::Checkout::Session.create({
+                                                               success_url: successURL,
+                                                               phone_number_collection: {
+                                                                 enabled: true
+                                                               },
+                                                               discounts: [
+                                                                 coupon: session['coupon']
+                                                               ],
+                                                               line_items: [
+                                                                 { price: @stripePlan, quantity: 1 }
+                                                               ],
+                                                               mode: 'subscription'
+                                                             })
+    end
   end
 
   def invite
@@ -654,7 +708,7 @@ class ApplicationController < ActionController::Base
       {prob:"The Only Social Platform For Trading", solu: 'Oarlin is the home all traders have been waiting for'},
     ] 
 
-    @subline = ['No Experience Required', 'Never Miss Trading Opportunities', 'Amplify Your Profits', 'Supercharge Your Day Trading']
+    @subline = ['No Experience Required', 'Never Miss Trading Opportunities', 'Amplify Your Profits', 'Supercharged Day Trading']
     @headlines = ['Profit While Sleeping', 'Profit While Living', 'Profit While Working', 'Profit While Exercising', 'Profit While Spending', 'Profit While Shopping', 'Travel More Trade Less', 'Less Worry More Money']
 
   end

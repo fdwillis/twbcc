@@ -5,11 +5,11 @@
               <h4 class="p-3 text-center">Your Account Has Been Created.<br>Please <%= link_to "Login", new_user_session_path %></h4>
             <% end %>
             <div class="d-flex">
-                <div class="align-self-center pe-3 d-none d-sm-table-cell">
-                    <i class="fa fa-check-circle  color-green-dark fa-5x"></i>
+                <div class="align-self-center m-2">
+                   <img src="/assets/Oarlin_free-file.jpg" data-src="/assets/Oarlin_free-file.png" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
                 </div>
-                <div class="align-self-center">
-                    <h4>Thanks For Becoming A Member</h4>
+                <div class="align-self-center m-2">
+                    <h4><i class="fa fa-check-circle  color-green-dark"></i> Thanks For Becoming A Member</h4>
                     <p class="line-height-s text-justify">Your membership will automatically renew on <strong><%= Time.at(Stripe::Invoice.retrieve(@stripeSession['invoice'])['lines']['data'][0]['period']['end']).to_date.strftime("%B #{Time.at(Stripe::Invoice.retrieve(@stripeSession['invoice'])['lines']['data'][0]['period']['end']).to_date.day.ordinalize}, %Y") %>.</strong> Create a password to complete your sign up.
                     </p>
                 </div>
@@ -35,33 +35,6 @@
             </div>
         </div>
     </div>
-    <% if foundUser = User.find_by(email: @stripeSession['customer_details']['email']) %>
-      <div class="card card-style">
-          <div class="content">
-              <h3 class="mb-0">Your Next Steps</h3>
-              <p>Follow these steps to set up auto trading with Oarlin via <%= link_to "TradingView", "https://www.tradingview.com/gopro/?share_your_love=NetwerthTracker" %></p>
-                <ul class="content">
-                  
-                  <div class="col-12">
-                      <li><h5 class="font-600 opacity-80">Create an account at <%= link_to "TradingView", "https://www.tradingview.com/gopro/?share_your_love=NetwerthTracker" %></h5></li>
-                  </div>
-                  <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
-                  <div class="col-12">
-                      <li><h5 class="font-600 opacity-80">Add the broker keys to your Oarlin <%= link_to "Profile", new_user_session_path %></h5></li>
-                  </div>
-                  <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
-                  <div class="col-12">
-                      <li><h5 class="font-600 opacity-80">Setup your alerts on <%= link_to "TradingView", "https://www.tradingview.com/gopro/?share_your_love=NetwerthTracker" %></h5></li>
-                  </div>
-                  <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
-                  <div class="col-12">
-                      <li><h5 class="font-600 opacity-80">Activate your alerts on <%= link_to "TradingView", "https://www.tradingview.com/gopro/?share_your_love=NetwerthTracker" %></h5></li>
-                  </div>
-                  <div class="divider w-100 mt-2 mb-2 divider-margins"></div>
-                </ul>
-          </div>
-      </div>
-    <% end %>
     <div class="card card-style">
         <div class="content">
             <h3 class="mb-0">Current Plan</h3>
