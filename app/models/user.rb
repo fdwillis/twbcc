@@ -106,7 +106,7 @@ class User < ApplicationRecord
 
   FREEmembership = [ENV['freeMembership']].freeze
   TRIALmembership = [ENV['trialTradingDaily']].freeze
-  TRADERmembership = [ENV['selfTradingMonthlyMembership'], ENV['selfTradingAnnualMembership'], ENV['autoTradingMonthlyMembership'], ENV['autoTradingAnnualMembership']].freeze
+  TRADERmembership = [ENV['userAnnual'], ENV['userMonth'], ENV['captainMonth'], ENV['captainAnnual'], ENV['traderMonth'], ENV['traderAnnual']].freeze
   AFFILIATEmembership = [ENV['affiliateMonthly'], ENV['affiliateAnnual']].freeze
   BUSINESSmembership = [ENV['businessMonthly'], ENV['businessAnnual']].freeze
   AUTOMATIONmembership = [ENV['automationMonthly'], ENV['automationAnnual']].freeze
@@ -358,7 +358,7 @@ class User < ApplicationRecord
 
   def checkMembership
     membershipValid = []
-    membershipPlans = [ENV['trialTradingDaily'], ENV['autoTradingMonthlyMembership'], ENV['autoTradingAnnualMembership'], ENV['selfTradingAnnualMembership'], ENV['selfTradingMonthlyMembership'], ENV['affiliateMonthly'], ENV['affiliateAnnual'], ENV['businessMonthly'], ENV['businessAnnual'], ENV['automationMonthly'], ENV['automationAnnual']]
+    membershipPlans = TRADERmembership
     allSubscriptions = Stripe::Subscription.list({ customer: stripeCustomerID })['data'].map(&:items).map(&:data).flatten.map(&:plan).map(&:id)
 
     #check for payment of membership
