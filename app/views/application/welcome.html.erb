@@ -102,36 +102,67 @@
   </div>
   <div class="divider"></div>
   <%= render 'search/dailydiscount', codes: @codes %>
-    
-  <div class="row text-center mb-0">
-     <a href="#" style='pointer-events: none;' class="col-6">
-        <div class="card card-style">
-           <i class="fa fa-copy color-highlight-dark fa-4x mt-5"></i>
-           <h1 class="pt-4">Copy Trades</h1>
-           <p class="font-20 opacity-50 pb-4">Trades are automatically executed directly in your brokerage account</p>
-        </div>
-     <a href="#" style='pointer-events: none;' class="col-6">
-        <div class="card card-style">
-           <i class="fa fa-globe color-highlight-dark fa-4x mt-5"></i>
-           <h1 class="pt-4">All Markets</h1>
-           <p class="font-20 opacity-50 pb-4">Trade stocks, forex, options, &amp; cryto all at once without lifting a finger</p>
-        </div>
-     </a>
-     <a href="#" style='pointer-events: none;' class="col-6">
-        <div class="card card-style">
-           <i class="fa fa-bolt color-highlight-dark fa-4x mt-5"></i>
-           <h1 class="pt-4">Instant Executions</h1>
-           <p class="font-20 opacity-50 pb-4">Never miss opportunities due to slow connections or wifi</p>
-        </div>
-     </a>
-     <a href="#" style='pointer-events: none;' class="col-6">
-        <div class="card card-style">
-           <i class="fa fa-gears color-highlight-dark fa-4x mt-5"></i>
-           <h1 class="pt-4">Customizable</h1>
-           <p class="font-20 opacity-50 pb-4">Pick you position sizing, total risk, and other setting to fit your trading style</p>
-        </div>
-     </a>
-  </div>
+   <% if request.user_agent.include?('Mobile') %> 
+     <div class="row text-center mb-0">
+        <a href="#" style='pointer-events: none;' class="col-12">
+           <div class="card card-style">
+              <i class="fa fa-copy color-highlight-dark fa-4x mt-5"></i>
+              <h1 class="pt-4">Copy Trades</h1>
+              <p class="font-20 opacity-50 pb-4">Trades are automatically executed directly in your brokerage account</p>
+           </div>
+        <a href="#" style='pointer-events: none;' class="col-12">
+           <div class="card card-style">
+              <i class="fa fa-globe color-highlight-dark fa-4x mt-5"></i>
+              <h1 class="pt-4">All Markets</h1>
+              <p class="font-20 opacity-50 pb-4">Trade stocks, forex, options, &amp; cryto all at once without lifting a finger</p>
+           </div>
+        </a>
+        <a href="#" style='pointer-events: none;' class="col-12">
+           <div class="card card-style">
+              <i class="fa fa-bolt color-highlight-dark fa-4x mt-5"></i>
+              <h1 class="pt-4">Instant Executions</h1>
+              <p class="font-20 opacity-50 pb-4">Never miss opportunities due to slow connections or wifi</p>
+           </div>
+        </a>
+        <a href="#" style='pointer-events: none;' class="col-12">
+           <div class="card card-style">
+              <i class="fa fa-gears color-highlight-dark fa-4x mt-5"></i>
+              <h1 class="pt-4">Customizable</h1>
+              <p class="font-20 opacity-50 pb-4">Pick you position sizing, total risk, and other setting to fit your trading style</p>
+           </div>
+        </a>
+     </div>
+   <% else %>  
+     <div class="row text-center mb-0">
+        <a href="#" style='pointer-events: none;' class="col-6">
+           <div class="card card-style">
+              <i class="fa fa-copy color-highlight-dark fa-4x mt-5"></i>
+              <h1 class="pt-4">Copy Trades</h1>
+              <p class="font-20 opacity-50 pb-4">Trades are automatically executed directly in your brokerage account</p>
+           </div>
+        <a href="#" style='pointer-events: none;' class="col-6">
+           <div class="card card-style">
+              <i class="fa fa-globe color-highlight-dark fa-4x mt-5"></i>
+              <h1 class="pt-4">All Markets</h1>
+              <p class="font-20 opacity-50 pb-4">Trade stocks, forex, options, &amp; cryto all at once without lifting a finger</p>
+           </div>
+        </a>
+        <a href="#" style='pointer-events: none;' class="col-6">
+           <div class="card card-style">
+              <i class="fa fa-bolt color-highlight-dark fa-4x mt-5"></i>
+              <h1 class="pt-4">Instant Executions</h1>
+              <p class="font-20 opacity-50 pb-4">Never miss opportunities due to slow connections or wifi</p>
+           </div>
+        </a>
+        <a href="#" style='pointer-events: none;' class="col-6">
+           <div class="card card-style">
+              <i class="fa fa-gears color-highlight-dark fa-4x mt-5"></i>
+              <h1 class="pt-4">Customizable</h1>
+              <p class="font-20 opacity-50 pb-4">Pick you position sizing, total risk, and other setting to fit your trading style</p>
+           </div>
+        </a>
+     </div>
+   <% end %>
    <div class="card card-style">
       <div class="content mb-0">
          <h4>Frequently Asked Questions</h4>
