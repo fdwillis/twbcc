@@ -115,43 +115,83 @@
        </div>
     </div>
   <div class="row text-center mb-0">
-     <a href="index.html" class="col-6" style='pointer-events: none;'>
-        <div class="card card-style me-2 mb-2">
-           <div class="ps-2 align-self-center">
-              <img src="/assets/Oarlin_free-file.jpg" data-src="/assets/Oarlin_free-file.png" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
-           </div>
-           <h1 class="pt-4">Monthly</h1>
-           <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and recieve continued education related to trading financial markets successfully</p>
-           <div class="list-group list-custom-small">
-              <% autoTradingMonthlyMembership['metadata'].each do |point| %>
-               <p><i class="fa fa-check color-green-dark"></i> <%= point[0] %> </p>
-                  <div class="divider mb-2 mt-1"></div>
-              <% end %>
-                
+    <% if request.user_agent.include?('Mobile') %>
+         <a href="index.html" class="col-12" style='pointer-events: none;'>
+            <div class="card card-style me-2 mb-2">
+               <div class="ps-2 align-self-center">
+                  <img src="/assets/Oarlin_free-file.jpg" data-src="/assets/Oarlin_free-file.png" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
+               </div>
+               <h1 class="pt-4">Monthly</h1>
+               <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and recieve continued education related to trading financial markets successfully</p>
+               <div class="list-group list-custom-small">
+                  <% autoTradingMonthlyMembership['metadata'].each do |point| %>
+                   <p><i class="fa fa-check color-green-dark"></i> <%= point[0] %> </p>
+                      <div class="divider mb-2 mt-1"></div>
+                  <% end %>
+                    
+                </div>
             </div>
-        </div>
-     </a>
-     <a href="index-components.html" class="col-6 ps-0" style='pointer-events: none;'>
-        <div class="card card-style ms-2 mb-3">
-            <div class="ps-2 align-self-center">
-              <img src="/assets/Oarlin_free-file.jpg" data-src="/assets/Oarlin_free-file.png" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
-           </div>
-           <h1 class="pt-4">Annual</h1>
-           <p class="font-11 opacity-50 mt-n1">Built to Feel like Apps</p>
-           <p class="mb-0 pb-0 font-10 opacity-40">Click To Start</p>
-           <div class="list-group list-custom-small">
-            <div class="list-group list-custom-small">
-              <% autoTradingMonthlyMembership['metadata'].each do |point| %>
+         </a>
+         <a href="index-components.html" class="col-12" style='pointer-events: none;'>
+            <div class="card card-style ms-2 mb-3">
+                <div class="ps-2 align-self-center">
+                  <img src="/assets/Oarlin_free-file.jpg" data-src="/assets/Oarlin_free-file.png" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
+               </div>
+               <h1 class="pt-4">Annual</h1>
+               <p class="font-11 opacity-50 mt-n1">Built to Feel like Apps</p>
+               <p class="mb-0 pb-0 font-10 opacity-40">Click To Start</p>
+               <div class="list-group list-custom-small">
+                <div class="list-group list-custom-small">
+                  <% autoTradingMonthlyMembership['metadata'].each do |point| %>
+                      
+                      <p><i class="fa fa-check color-green-dark"></i> <%= point[0] %> </p>
+                      <div class="divider mb-2 mt-1"></div>
+                  <% end %>
+                    
+                </div>
                   
-                  <p><i class="fa fa-check color-green-dark"></i> <%= point[0] %> </p>
-                  <div class="divider mb-2 mt-1"></div>
-              <% end %>
+              </div>
+            </div>
+         </a>
+    <% else %>
+       <a href="index.html" class="col-6" style='pointer-events: none;'>
+          <div class="card card-style me-2 mb-2">
+             <div class="ps-2 align-self-center">
+                <img src="/assets/Oarlin_free-file.jpg" data-src="/assets/Oarlin_free-file.png" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
+             </div>
+             <h1 class="pt-4">Monthly</h1>
+             <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and recieve continued education related to trading financial markets successfully</p>
+             <div class="list-group list-custom-small">
+                <% autoTradingMonthlyMembership['metadata'].each do |point| %>
+                 <p><i class="fa fa-check color-green-dark"></i> <%= point[0] %> </p>
+                    <div class="divider mb-2 mt-1"></div>
+                <% end %>
+                  
+              </div>
+          </div>
+       </a>
+       <a href="index-components.html" class="col-6" style='pointer-events: none;'>
+          <div class="card card-style ms-2 mb-3">
+              <div class="ps-2 align-self-center">
+                <img src="/assets/Oarlin_free-file.jpg" data-src="/assets/Oarlin_free-file.png" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
+             </div>
+             <h1 class="pt-4">Annual</h1>
+             <p class="font-11 opacity-50 mt-n1">Built to Feel like Apps</p>
+             <p class="mb-0 pb-0 font-10 opacity-40">Click To Start</p>
+             <div class="list-group list-custom-small">
+              <div class="list-group list-custom-small">
+                <% autoTradingMonthlyMembership['metadata'].each do |point| %>
+                    
+                    <p><i class="fa fa-check color-green-dark"></i> <%= point[0] %> </p>
+                    <div class="divider mb-2 mt-1"></div>
+                <% end %>
+                  
+              </div>
                 
             </div>
-              
           </div>
-        </div>
-     </a>
+       </a>
+    <% end %>
      <% if request.user_agent.include?('Mobile') %>
         <div class="text-center col-12">
           <a href="/invite?interval=month&memberType=captain&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark">Join Monthly Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
