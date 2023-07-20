@@ -1,6 +1,6 @@
 <% catcher =  @prob1.sample %>
 <div class="page-content pb-4">
-  <div class="card" data-card-height="cover" style="background-image: url(/assets/stock-trading-ga01e5f952_1920.jpg); height: 668px;">
+  <div class="card" data-card-height="cover" style="background-image: url(/assets/gbpusdsell.png); height: 668px;">
     <div class="card-top mx-3 mt-6">
       <div class="content mb-0 text-center">
       </div>
@@ -68,6 +68,17 @@
                <p class="mb-0 font-30 mb-2"><strong>Users</strong></p>
                <p class="mb-0 font-22">Follow Experts That Make You Money</p>
                <a href="/users?&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>}" data-back-button="" class="btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dar">Learn More</a>
+            </div>
+         </div>
+      </div>
+       <div class="col-12 pe-0 ps-0">
+         <div class="card card-style text-center">
+            <img src="/assets/gbpusdsell.png" class="img-fluid">
+            <img src="/assets/eurusdsell.png" class="img-fluid">
+            <div class="content pb-0">
+               <p class="mb-0 font-30 mb-2"><strong>Previous Trades</strong></p>
+               <p class="mb-0 font-22">Join Today</p>
+               <!-- <a href="/users?&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>}" data-back-button="" class="btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dar">Learn More</a> -->
             </div>
          </div>
       </div>
