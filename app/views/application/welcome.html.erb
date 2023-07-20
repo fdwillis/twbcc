@@ -1,10 +1,17 @@
-<%= catcher =  @prob1.sample %>
+<% catcher =  @prob1.sample %>
 <div class="page-content pb-4">
   <div class="card" data-card-height="cover" style="background-image: url(/assets/stock-trading-ga01e5f952_1920.jpg); height: 668px;">
+    <div class="card-top mx-3 mt-6">
+      <div class="content mb-0 text-center">
+      </div>
+    </div>
     <div class="card-bottom mb-5 mx-3">
-      <div class="content mb-0">
+      <div class="content mb-0 text-center">
         <p class="color-white text-center content font-40"><%= catcher[:prob] %></p>
         <p class="color-white font-20 pt-2 opacity-50 text-center"><%= catcher[:solu] %></p>
+         <div class="align-self-center">
+            <img src="/assets/Oarlin_free-file.jpg" data-src="/assets/Oarlin_free-file.png" width="120" height="120" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
+         </div>
         <h1 class="mt-5 mb-0 font-24 color-white text-center"><%= session['headlines'] %></h1>
         <h1 class="mb-0 font-34 color-white text-center"><%= session['subline'] %></h1>
         <p class="color-white font-13 pt-2 opacity-50 text-center">Trading as a Service (TAAS) with Oarlin</p>
@@ -64,27 +71,27 @@
   <%= render 'search/dailydiscount', codes: @codes %>
     
   <div class="row text-center mb-0">
-     <a href="#" class="col-6">
+     <a href="#" style='pointer-events: none;' class="col-6">
         <div class="card card-style">
            <i class="fa fa-copy color-highlight-dark fa-4x mt-5"></i>
            <h1 class="pt-4">Copy Trades</h1>
            <p class="font-20 opacity-50 pb-4">Trades are automatically executed directly in your brokerage account</p>
         </div>
-     <a href="#" class="col-6">
+     <a href="#" style='pointer-events: none;' class="col-6">
         <div class="card card-style">
            <i class="fa fa-globe color-highlight-dark fa-4x mt-5"></i>
            <h1 class="pt-4">All Markets</h1>
            <p class="font-20 opacity-50 pb-4">Trade stocks, forex, options, &amp; cryto all at once without lifting a finger</p>
         </div>
      </a>
-     <a href="#" class="col-6">
+     <a href="#" style='pointer-events: none;' class="col-6">
         <div class="card card-style">
            <i class="fa fa-bolt color-highlight-dark fa-4x mt-5"></i>
            <h1 class="pt-4">Instant Executions</h1>
            <p class="font-20 opacity-50 pb-4">Never miss opportunities due to slow connections or wifi</p>
         </div>
      </a>
-     <a href="#" class="col-6">
+     <a href="#" style='pointer-events: none;' class="col-6">
         <div class="card card-style">
            <i class="fa fa-gears color-highlight-dark fa-4x mt-5"></i>
            <h1 class="pt-4">Customizable</h1>

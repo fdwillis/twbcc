@@ -15,6 +15,10 @@ class ApplicationController < ActionController::Base
     
   end
 
+  def skip
+    
+  end
+
   def invite
     
   end

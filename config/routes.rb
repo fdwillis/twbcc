@@ -16,6 +16,7 @@ Rails.application.routes.draw do
     get code, to: 'errors#show', code: code
   end
 
+  get '/skip-waitlist', to: 'application#skip', as: 'skip' # sprint2
   get '/invite', to: 'application#invite', as: 'invite' # sprint2
   get '/external/:link', to: 'application#external', as: 'external' # sprint2
   get '/discounts', to: 'application#discounts', as: 'discounts' # sprint2
