@@ -116,7 +116,7 @@
     </div>
   <div class="row text-center mb-0">
     <% if request.user_agent.include?('Mobile') %>
-       <a href="index.html" class="col-12" style='pointer-events: none;'>
+       <a href="index.html" class="col-12 mt-2" style='pointer-events: none;'>
           <div class="card card-style me-2 mb-2">
              <div class="ps-2 align-self-center">
                 <img src="/assets/Oarlin_free-file.jpg" data-src="/assets/Oarlin_free-file.png" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
@@ -132,7 +132,12 @@
               </div>
           </div>
        </a>
-       <a href="index-components.html" class="col-12" style='pointer-events: none;'>
+       <div class="text-center col-12 mt-2">
+          <a href="/invite?interval=month&memberType=user&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark">Join Monthly Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
+          <a href="/skip-waitlist?&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Skip Monthly Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
+          
+        </div>
+       <a href="index-components.html" class="col-12 mt-2" style='pointer-events: none;'>
           <div class="card card-style ms-2 mb-3">
               <div class="ps-2 align-self-center">
                 <img src="/assets/Oarlin_free-file.jpg" data-src="/assets/Oarlin_free-file.png" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
@@ -153,6 +158,11 @@
             </div>
           </div>
        </a>
+        <div class="text-center col-12 mt-2">
+            <a href="/invite?interval=annual&memberType=user&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark">Join Annual Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
+            <a href="/skip-waitlist?&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Skip Annual Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
+            
+        </div>
     <% else %>
        <a href="index.html" class="col-6" style='pointer-events: none;'>
           <div class="card card-style me-2 mb-2">
@@ -193,16 +203,7 @@
        </a>
     <% end %>
      <% if request.user_agent.include?('Mobile') %>
-       <div class="text-center col-12">
-          <a href="/invite?interval=month&memberType=user&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark">Join Monthly Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
-          <a href="/skip-waitlist?&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Skip Monthly Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
-          
-        </div>
-        <div class="text-center col-12">
-            <a href="/invite?interval=annual&memberType=user&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark">Join Annual Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
-            <a href="/skip-waitlist?&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">Skip Annual Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
-            
-        </div>
+       
      <% else %>
         <div class="text-center col-6">
           <a href="/invite?interval=month&memberType=user&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark">Join Monthly Waitlist</a> <!-- upgrade or downgrade #sprint2 -->
