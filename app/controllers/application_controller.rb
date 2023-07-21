@@ -733,7 +733,7 @@ class ApplicationController < ActionController::Base
     ] 
 
     @subline = ['No Experience Required', 'Never Miss Trading Opportunities', 'Amplify Your Profits', 'Supercharged Day Trading']
-    @headlines = ['Profit While Sleeping', 'Profit While Living', 'Profit While Working', 'Profit While Exercising', 'Profit While Spending', 'Profit While Shopping', 'Travel More Trade Less']
+    @headlines = ['Trade While Sleeping', 'Trade While Living', 'Trade While Working', 'Trade While Exercising', 'Trade While Spending', 'Trade While Shopping', 'Travel More Trade Less']
 
   end
 
