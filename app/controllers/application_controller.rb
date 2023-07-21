@@ -24,7 +24,7 @@ class ApplicationController < ActionController::Base
       },{
         name: 'Bella',
         image: 'bella.jpg',
-        quote: "I rarely have time for my coffee, but now Oarlin pays for it!",
+        quote: "I rarely have time for my coffee, but now Oarlin pays it!",
       },{
         name: 'Cindy',
         image: 'cindy.jpg',
