@@ -77,7 +77,7 @@ class TradingviewController < ApplicationController
       traderID = sequence['traderID']
       traderFound = User.find_by(uuid: traderID)
       traderFound&.checkMembership
-      validPlansToParse = nil
+      validPlansToParse = []
       
       if sequence['tradingDays'].present? && sequence['tradingDays'].map { |d| d.downcase }.include?(Date.today.strftime('%a').downcase)
         if traderFound&.trader?
@@ -134,8 +134,8 @@ class TradingviewController < ApplicationController
                 validPlansToParse << planX
               end
 
-              validPlansToParse.each do |planXinfo|
-                traderFoundForCopy = User.find_by(stripeCustomerID: planXinfo['customer'])
+              validPlansToParse.reject(&:blank?).each do |planXinfo|
+                traderFoundForCopy = User.find_by(stripeCustomerID: planXinfo[0]['customer'])
                 traderFoundForCopy&.checkMembership
 
                 if  traderFoundForCopy&.trader? && !(ENV['adminUUID']).include?(traderFoundForCopy.uuid)
