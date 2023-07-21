@@ -97,7 +97,7 @@
                       <span>
                         Profile
                       </span>
-                      <i class="fa fa-angle-right"></i>
+                      <i class="fa fa-angle-right color-highlight-dark"></i>
                     </a>
                   </div>
                   <% if current_user.connectAccount? %>
@@ -107,21 +107,21 @@
                         <span>
                          Commissions
                         </span>
-                        <i class="fa fa-angle-right"></i>
+                        <i class="fa fa-angle-right color-highlight-dark"></i>
                       </a>
                     </div>
                     <!-- <div class="list-group list-custom-small list-icon-0">
                       <a href="/loved">
                         <i class="fa font-12 fa-heart bg-highlight rounded-sm color-white"></i>
                         <span>Loved <%= current_user&.present? && Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['wishlist'].present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['wishlist'].split(',').reject(&:blank?).uniq.size})" : nil %></span>
-                        <i class="fa fa-angle-right"></i>
+                        <i class="fa fa-angle-right color-highlight-dark"></i>
                       </a>
                     </div> -->
                     <div class="list-group list-custom-small list-icon-0">
                       <a href="/list?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
                         <i class="fa font-12 fa-list bg-orange-dark rounded-sm color-white"></i>
                         <span>List <%= current_user&.present? && Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].split('*').reject(&:blank?).uniq.size})" : nil %></span>
-                        <i class="fa fa-angle-right"></i>
+                        <i class="fa fa-angle-right color-highlight-dark"></i>
                       </a>
                     </div>
                   <% end %>
@@ -130,21 +130,21 @@
                     <a href="/blog/new">
                       <i class="fa font-12 fa-plus bg-sunny-dark rounded-sm color-white"></i>
                       <span>New Post</span>
-                      <i class="fa fa-angle-right"></i>
+                      <i class="fa fa-angle-right color-highlight-dark"></i>
                     </a>
                   </div>
                   <div class="list-group list-custom-small list-icon-0">
                     <a href="/product/new">
                       <i class="fa font-12 fa-plus bg-magenta-dark rounded-sm color-white"></i>
                       <span>New Product</span>
-                      <i class="fa fa-angle-right"></i>
+                      <i class="fa fa-angle-right color-highlight-dark"></i>
                     </a>
                   </div>
                   <div class="list-group list-custom-small list-icon-0">
                     <a href="/analytics?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
                       <i class="fa font-12 fa-signal bg-green-dark rounded-sm color-white"></i>
                       <span>Analytics</span>
-                      <i class="fa fa-angle-right"></i>
+                      <i class="fa fa-angle-right color-highlight-dark"></i>
                     </a>
                   </div>
                 <% end %>
@@ -154,69 +154,92 @@
           
           <div class="card card-style">
             <div class="content my-0">
+              <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Follow Us</h5>
+                <div class="list-group list-custom-small list-icon-0">
+
+
+                  <a href="https://www.instagram.com/mr.oarlin/">
+                    <i class="fa font-12 fa-instagram bg-highlight-dark rounded-sm color-white"></i>
+                    <span>Instagram</span>
+                    <i class="fa fa-angle-right color-highlight-dark"></i>
+                  </a>
+                  <a href="https://www.youtube.com/@mr.oarlin">
+                    <i class="fa font-12 fa-youtube bg-highlight-dark rounded-sm color-white"></i>
+                    <span>YouTube</span>
+                    <i class="fa fa-angle-right color-highlight-dark"></i>
+                  </a>
+                  <a href="https://www.facebook.com/profile.php?id=100092428797855">
+                    <i class="fa font-12 fa-facebook bg-highlight-dark rounded-sm color-white"></i>
+                    <span>Facebook</span>
+                    <i class="fa fa-angle-right color-highlight-dark"></i>
+                  </a>
+                </div>
+            </div>
+          </div>
+
+          <div class="card card-style">
+            <div class="content my-0">
               <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Memberships (Waitlist)</h5>
-              <% if Stripe::Coupon.list({limit: 100})['data'].size > 0 %>
                 <div class="list-group list-custom-small list-icon-0">
                   <a href="/skip-waitlist?&interval=month&memberType=user&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
                     <i class="fa font-12 fa-bullhorn bg-highlight-dark rounded-sm color-white"></i>
                     <span>Skip Waitlist</span>
-                    <i class="fa fa-angle-right"></i>
+                    <i class="fa fa-angle-right color-highlight-dark"></i>
                   </a>
                   <a href="/traders?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
                     <i class="fa font-12 fa-star bg-highlight-dark rounded-sm color-white"></i>
                     <span>Trader</span>
-                    <i class="fa fa-angle-right"></i>
+                    <i class="fa fa-angle-right color-highlight-dark"></i>
                   </a>
                   <a href="/captains?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
                     <i class="fa font-12 fa-users bg-highlight-dark rounded-sm color-white"></i>
                     <span>Captain</span>
-                    <i class="fa fa-angle-right"></i>
+                    <i class="fa fa-angle-right color-highlight-dark"></i>
                   </a>
                    <a href="/users?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
                     <i class="fa font-12 fa-user bg-highlight-dark rounded-sm color-white"></i>
                     <span>User</span>
-                    <i class="fa fa-angle-right"></i>
+                    <i class="fa fa-angle-right color-highlight-dark"></i>
                   </a>
                 </div>
-              <% end %>
             </div>
           </div>
           <div class="card card-style">
             <div class="content my-0">
               <% if !current_user %>
-                <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Oarlin</h5>
+                <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Add-ons</h5>
                 <div class="list-group list-custom-small list-icon-0">
                   <!--                   <a href="/auto-trading?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
                                       <i class="fa font-12 fa-signal bg-blue-dark rounded-sm color-white"></i>
                                       <span>Membership</span>
-                                      <i class="fa fa-angle-right"></i>
+                                      <i class="fa fa-angle-right color-highlight-dark"></i>
                                     </a> -->
 
                   <a href="/travel-and-trade?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
                     <i class="fa font-12 fa-plane bg-highlight-dark rounded-sm color-white"></i>
                     <span>Travel &amp; Trade</span>
-                    <i class="fa fa-angle-right"></i>
+                    <i class="fa fa-angle-right color-highlight-dark"></i>
                   </a>
                   <% if Stripe::Coupon.list({limit: 100})['data'].size > 0 %>
                     <div class="list-group list-custom-small list-icon-0">
                       <a href="/discounts?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
                         <i class="fa font-12 fa-percent bg-highlight-dark rounded-sm color-white"></i>
                         <span>Discounts</span>
-                        <i class="fa fa-angle-right"></i>
+                        <i class="fa fa-angle-right color-highlight-dark"></i>
                       </a>
                     </div>
                   <% end %>
                   <a href="/questions?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
                     <i class="fa font-12 fa-question bg-highlight-dark rounded-sm color-white"></i>
                     <span>FAQ</span>
-                    <i class="fa fa-angle-right"></i>
+                    <i class="fa fa-angle-right color-highlight-dark"></i>
                   </a>
                 </div>
                 <!-- <div class="list-group list-custom-small list-icon-0">
                   <a href="/membership?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
                     <i class="fa font-12 fa-users bg-yellow-dark rounded-sm color-white"></i>
                     <span>Affiliates</span>
-                    <i class="fa fa-angle-right"></i>
+                    <i class="fa fa-angle-right color-highlight-dark"></i>
                   </a>
                 </div -->
               <% end %>
@@ -225,7 +248,7 @@
                 <a href="/how-it-works?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
                   <i class="fa font-12 fa-question bg-yellow-dark rounded-sm color-white"></i>
                   <span>How It Works</span>
-                  <i class="fa fa-angle-right"></i>
+                  <i class="fa fa-angle-right color-highlight-dark"></i>
                 </a>
               </div> -->
               
@@ -238,7 +261,7 @@
                 <a href="https://oarlin.com/learn-trading" target="_blank">
                   <i class="fa font-12 fa-heart bg-highlight-dark rounded-sm color-white"></i>
                   <span>Learn Trading</span>
-                  <i class="fa fa-angle-right"></i>
+                  <i class="fa fa-angle-right color-highlight-dark"></i>
                 </a>
               </div>
             </div>
@@ -253,28 +276,28 @@
                     <a href="/categories">
                       <i class="fa font-12 fa-users bg-highlight rounded-sm color-white"></i>
                       <span>Categories</span>
-                      <i class="fa fa-angle-right"></i>
+                      <i class="fa fa-angle-right color-highlight-dark"></i>
                     </a>
                   </div>
                   <div class="list-group list-custom-small list-icon-0">
                     <a href="/categories/new">
                       <i class="fa font-12 fa-question bg-yellow-dark rounded-sm color-white"></i>
                       <span>New Category</span>
-                      <i class="fa fa-angle-right"></i>
+                      <i class="fa fa-angle-right color-highlight-dark"></i>
                     </a>
                   </div>
                   <div class="list-group list-custom-small list-icon-0">
                     <a href="/brands">
                       <i class="fa font-12 fa-question bg-yellow-dark rounded-sm color-white"></i>
                       <span>Brands</span>
-                      <i class="fa fa-angle-right"></i>
+                      <i class="fa fa-angle-right color-highlight-dark"></i>
                     </a>
                   </div>
                   <div class="list-group list-custom-small list-icon-0">
                     <a href="//brands/new">
                       <i class="fa font-12 fa-question bg-yellow-dark rounded-sm color-white"></i>
                       <span>New Brand</span>
-                      <i class="fa fa-angle-right"></i>
+                      <i class="fa fa-angle-right color-highlight-dark"></i>
                     </a>
                   </div>
                 
@@ -299,7 +322,7 @@
                       <a href="<%= new_user_session_path %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" data-toggle-theme="" data-trigger-switch="switch-dark2-mode" class="border-0">
                         <i class="fa font-12 fa-sign-in bg-green-dark color-white rounded-sm"></i>
                         <span>Login</span>
-                        <i class="fa fa-angle-right"></i>
+                        <i class="fa fa-angle-right color-highlight-dark"></i>
                       </a>
                     </div>
                 </div>
@@ -381,14 +404,14 @@
         </div>
         <div class="footer card card-style">
             <a href="#" class="footer-title"><span class="color-highlight">Oarlin</span></a>
-            <p class="footer-copyright font-22">Beta<i class="fa fa-flask"></i></p>
-            <p class="footer-copyright mb-2">Having Trouble? <%= mail_to "team@oarlin.com", "EMAIL US" %></p>
+            <p class="footer-copyright font-22">Beta<i class="fa fa-flask color-pink-light"></i></p>
+            <p class="footer-copyright mb-2 color-pink-light">Having Trouble? <%= mail_to "team@oarlin.com", "EMAIL US" %></p>
             <p class="footer-links">
               
               <a target='_blank' href="https://www.themarathonclothing.com/" class="back-to-top color-highlight">REST IN PEACE NIPSEY</a> | <a target='_blank' href="https://shop.mambaandmambacita.org/" class="back-to-top color-highlight">REST IN PEACE KOBE</a>
             </p>
             <div class="text-center mb-3">
-              <a target='_blank' href="https://www.youtube.com/@oarlin" class="back-to-top color-highlight">YOUTUBE</a> | <a target='_blank' href="https://www.instagram.com/mr.oarlin/" class="back-to-top color-highlight">INSTAGRAM</a> | <a target='_blank' href="https://www.facebook.com/profile.php?id=100092428797855" class="back-to-top color-highlight">FACEBOOK</a>
+              <a target='_blank' href="https://www.youtube.com/@oarlin" class="back-to-top color-pink-light"><i class="fa fa-youtube fa-3x"></i></a>  <a target='_blank' href="https://www.instagram.com/mr.oarlin/" class="back-to-top color-pink-light"><i class="fa fa-instagram fa-3x"></i></a>  <a target='_blank' href="https://www.facebook.com/profile.php?id=100092428797855" class="back-to-top color-pink-light"><i class="fa fa-facebook fa-3x"></i></a>
             </div>
             <p class="footer-copyright">Copyright © Enabled <span id="copyright-year">2023</span>. All Rights Reserved.</p>
             <!-- <p class="footer-links"><a href="" class="color-highlight">Privacy Policy</a> | <a href="#" class="color-highlight">Terms and Conditions</a> | <a href="#" class="back-to-top color-highlight"> Back to Top</a></p> -->
@@ -410,7 +433,7 @@
                             <input data-toggle-theme="" type="checkbox" class="ios-input" id="switch-dark-mode">
                             <label class="custom-control-label" for="switch-dark-mode"></label>
                         </div>
-                        <i class="fa fa-angle-right"></i>
+                        <i class="fa fa-angle-right color-highlight-dark"></i>
                     </a>
                 </div>
                 <div class="list-group list-custom-large">
@@ -419,14 +442,14 @@
                         <span>Page Highlight</span>
                         <strong>16 Colors Highlights Included</strong>
                         <span class="badge bg-highlight color-white">HOT</span>
-                        <i class="fa fa-angle-right"></i>
+                        <i class="fa fa-angle-right color-highlight-dark"></i>
                     </a>
                     <a href="#" class="border-0">
                         <i class="fa font-14 fa-cog bg-blue-dark rounded-s"></i>
                         <span>Background Color</span>
                         <strong>10 Page Gradients Included</strong>
                         <span class="badge bg-highlight color-white">NEW</span>
-                        <i class="fa fa-angle-right"></i>
+                        <i class="fa fa-angle-right color-highlight-dark"></i>
                     </a>
                 </div>
             </div>
@@ -440,7 +463,7 @@
                     <a href="#" data-change-highlight="blue"><i class="fa fa-circle color-blue-dark"></i><span class="color-blue-light">Default</span></a>
                     <a href="#" data-change-highlight="red"><i class="fa fa-circle color-red-dark"></i><span class="color-red-light">Red</span></a>
                     <a href="#" data-change-highlight="orange"><i class="fa fa-circle color-orange-dark"></i><span class="color-orange-light">Orange</span></a>
-                    <a href="#" data-change-highlight="pink2"><i class="fa fa-circle color-pink2-dark"></i><span class="color-pink-dark">Pink</span></a>
+                    <a href="#" data-change-highlight="pink2"><i class="fa fa-circle color-pink2-dark"></i><span class="color-highlight-dark">Pink</span></a>
                     <a href="#" data-change-highlight="magenta"><i class="fa fa-circle color-magenta-dark"></i><span class="color-magenta-light">Purple</span></a>
                     <a href="#" data-change-highlight="aqua"><i class="fa fa-circle color-aqua-dark"></i><span class="color-aqua-light">Aqua</span></a>
                     <a href="#" data-change-highlight="teal"><i class="fa fa-circle color-teal-dark"></i><span class="color-teal-light">Teal</span></a>
@@ -487,27 +510,27 @@
                     <a href="https://www.facebook.com/sharer/sharer.php?u=file:///Users/fdwillis/Downloads/themeforest-qkNNuq1C-sticky-mobile-mobile-template/code/page-fitness-home-2.html" class="shareToFacebook external-link" target="_blank">
                         <i class="font-18 fab fa-facebook-square color-facebook"></i>
                         <span class="font-13">Facebook</span>
-                        <i class="fa fa-angle-right"></i>
+                        <i class="fa fa-angle-right color-highlight-dark"></i>
                     </a>
                     <a href="http://twitter.com/share?text=StickyMobile BootStrap%20file:///Users/fdwillis/Downloads/themeforest-qkNNuq1C-sticky-mobile-mobile-template/code/page-fitness-home-2.html" class="shareToTwitter external-link" target="_blank">
                         <i class="font-18 fab fa-twitter-square color-twitter"></i>
                         <span class="font-13">Twitter</span>
-                        <i class="fa fa-angle-right"></i>
+                        <i class="fa fa-angle-right color-highlight-dark"></i>
                     </a>
                     <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=file:///Users/fdwillis/Downloads/themeforest-qkNNuq1C-sticky-mobile-mobile-template/code/page-fitness-home-2.html&amp;title=StickyMobile BootStrap&amp;summary=&amp;source=" class="shareToLinkedIn external-link" target="_blank">
                         <i class="font-18 fab fa-linkedin color-linkedin"></i>
                         <span class="font-13">LinkedIn</span>
-                        <i class="fa fa-angle-right"></i>
+                        <i class="fa fa-angle-right color-highlight-dark"></i>
                     </a>
                     <a href="whatsapp://send?text=file:///Users/fdwillis/Downloads/themeforest-qkNNuq1C-sticky-mobile-mobile-template/code/page-fitness-home-2.html" class="shareToWhatsApp external-link" target="_blank">
                         <i class="font-18 fab fa-whatsapp-square color-whatsapp"></i>
                         <span class="font-13">WhatsApp</span>
-                        <i class="fa fa-angle-right"></i>
+                        <i class="fa fa-angle-right color-highlight-dark"></i>
                     </a>
                     <a href="mailto:?body=file:///Users/fdwillis/Downloads/themeforest-qkNNuq1C-sticky-mobile-mobile-template/code/page-fitness-home-2.html" class="shareToMail external-link border-0" target="_blank">
                         <i class="font-18 fa fa-envelope-square color-mail"></i>
                         <span class="font-13">Email</span>
-                        <i class="fa fa-angle-right"></i>
+                        <i class="fa fa-angle-right color-highlight-dark"></i>
                     </a>
                 </div>
             </div>

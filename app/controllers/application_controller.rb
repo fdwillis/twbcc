@@ -699,17 +699,17 @@ class ApplicationController < ActionController::Base
   def welcome
     @codes = Stripe::Coupon.list({ limit: 100 }).reject { |c| c['valid'] == false }
     @prob1 = [
-      {prob:'Too Busy Working?', solu: "Oarlin stays active 24/7 to reach your financial goals while you are busy"},
-      {prob:'Too Busy With Home?', solu: "Oarlin stays active 24/7 to reach your financial goals while you are busy"},
+      {prob:'Too Busy Working?', solu: "Oarlin hunts for financial opportunities while you are busy"},
+      {prob:'Too Busy With Home?', solu: "Trust Oarlin to protect your financial goals while you are busy"},
       {prob:'Too Busy For Investing?', solu: 'Oarlin secures your investment goals so that you can secure your life goals'},
-      {prob:'Volatility Making You Hesitate?', solu: 'Oarlin will only trade when the time is right'},
-      {prob:'Invest Today Like You Know You Should', solu: '3 minutes is all it takes to start trading automatically with Oarlin'},
-      {prob:"Still Learning About Investing?", solu: 'Oarlin will make you money while you learn to invest'},
+      {prob:'Volatility Making You Hesitate?', solu: 'Oarlin will trade when the time is right'},
+      {prob:'Invest Today Like You Know You Should', solu: 'Stop putting off your investment goals'},
+      {prob:"Still Learning About Investing?", solu: 'Oarlin makes you money while you keep learning'},
       {prob:"The Only Social Platform For Trading", solu: 'Oarlin is the home all traders have been waiting for'},
     ] 
 
     @subline = ['No Experience Required', 'Never Miss Trading Opportunities', 'Amplify Your Profits', 'Supercharged Day Trading']
-    @headlines = ['Profit While Sleeping', 'Profit While Living', 'Profit While Working', 'Profit While Exercising', 'Profit While Spending', 'Profit While Shopping', 'Travel More Trade Less', 'Less Worry More Money']
+    @headlines = ['Profit While Sleeping', 'Profit While Living', 'Profit While Working', 'Profit While Exercising', 'Profit While Spending', 'Profit While Shopping', 'Travel More Trade Less']
 
   end
 

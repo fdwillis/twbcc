@@ -204,6 +204,7 @@ namespace :generate do
                 amount: ((profitTallyForUserX * 100).to_i * (3 * 0.01)),
                 currency: userX.currencyBase,
                 customer: userX.stripeCustomerID,
+                description: '3% Profit Fee',
                 metadata: {
                   profitPaid: false
                 }
