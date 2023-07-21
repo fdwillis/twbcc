@@ -6,48 +6,74 @@
    </div>
    <div class="card-overlay bg-gradient"></div>
 </div>
-<div class="card card-style">
-   <div class="content">
-      <h1>Quality Over Quantity<i class="fa fa-info-circle float-end font-16 pt-1 color-blue-dark"></i></h1>
-      <p>                                     </p>
-   </div>
-</div>
 
 <div class="card card-style">
    <div class="content">
-      <h1>Ideal For<i class="fa fa-trophy float-end font-16 pt-1 color-yellow-dark"></i></h1>
-      <p>   </p>
-      <div class="row text-center mb-0">
-         <div class="col-6">
-            <i class="fa fa-trophy color-yellow-dark fa-4x mb-3"></i>
-            <h6 class="text-uppercase font-700">Best <br> Photographer</h6>
-            <p>
-               Best Photographer on Envato Awards
-            </p>
+      <% if params['memberType'] == 'captain' %>
+         <div class="row text-center mb-0">
+            <div class="col-6">
+               <h6 class="text-uppercase font-700">Salespeople</h6>
+               <p>Bring your sales knowledge and team!</p>
+            </div>
+            <div class="col-6">
+               <h6 class="text-uppercase font-700">Affiliates</h6>
+               <p>Easily share your link to get credit</p>
+            </div>
+            <div class="col-12 pb-5"></div>
+            <div class="col-6">
+               <h6 class="text-uppercase font-700">Influencers</h6>
+               <p>Make content with Oarlin to drive traffic and sales</p>
+            </div>
+            <div class="col-6">
+               <h6 class="text-uppercase font-700">Hustlers</h6>
+               <p>You keep what you kill</p>
+            </div>
          </div>
-         <div class="col-6">
-            <i class="fa fa-certificate fa-4x color-blue-dark mb-3"></i>
-            <h6 class="text-uppercase font-700">Best<br>Gallery</h6>
-            <p>
-               Best Photo Gallery on Envato Awards
-            </p>
+      <% elsif params['memberType'] == 'user' %>
+         <div class="row text-center mb-0">
+            <div class="col-6">
+               <h6 class="text-uppercase font-700">Busy Parents</h6>
+               <p>You already juggle alot, let us handle the investments </p>
+            </div>
+            <div class="col-6">
+               <h6 class="text-uppercase font-700">New Traders</h6>
+               <p>Keep learn the basics of investing and trade along side the service</p>
+            </div>
+            <div class="col-12 pb-5"></div>
+            <div class="col-6">
+               <h6 class="text-uppercase font-700">Passive Income</h6>
+               <p>We never take unnecessary risk so you enjoy steady returns</p>
+            </div>
+            <div class="col-6">
+               <h6 class="text-uppercase font-700">Working Professionals</h6>
+               <p>On your way to the office or home, Oarlin is trading for you</p>
+            </div>
          </div>
-         <div class="col-12 pb-5"></div>
-         <div class="col-6">
-            <i class="fa fa-award color-red-dark fa-4x mb-3"></i>
-            <h6 class="text-uppercase font-700">Best<br>Support</h6>
-            <p>
-               Best Customer Support on Envato Awards
-            </p>
+      <% else %>
+         <div class="row text-center mb-0">
+            <div class="col-6">
+               <h6 class="text-uppercase font-700">Manage From <%= link_to "TradingView", "https://www.tradingview.com/gopro/?share_your_love=oarlin" %></h6>
+               <p>Oarlin triggers directly from TradingView.</p>
+            </div>
+            <div class="col-6">
+               <h6 class="text-uppercase font-700">Traders With Social Proof</h6>
+               <p>Bring your followers &amp; watch your income multiply...again!</p>
+            </div>
+            <div class="col-12 pb-5"></div>
+            <div class="col-6">
+               <h6 class="text-uppercase font-700">Leveraging More Capital</h6>
+               <p>Users will trust you to trade directly in their account. </p>
+            </div>
+            <div class="col-6">
+               <h6 class="text-uppercase font-700">Fund Managers</h6>
+               <p>Manage clients funds more effeciently &amp; automatically.</p>
+            </div>
          </div>
-         <div class="col-6">
-            <i class="fa fa-medal fa-4x color-brown-dark mb-3"></i>
-            <h6 class="text-uppercase font-700">Best<br>Updates</h6>
-            <p>
-               Best Product Updates on Envato Awards
-            </p>
-         </div>
-      </div>
+      <% end %>
+
+
+
+
    </div>
 </div>
 
@@ -66,15 +92,16 @@
                <p><i class="fa fa-check color-green-dark"></i> Expand Your "Downline"</p>
                <p><i class="fa fa-check color-green-dark"></i> 3% Profit Fee</p>
             <% elsif params['memberType'] == 'user' %>
-               <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and not harrass anyone. You agree that investing comes with the risk of loosing all your money.</p>
+               <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and not harass anyone. You agree that investing comes with the risk of loosing all your money.</p>
                <p><i class="fa fa-check color-green-dark"></i> Manage Your Assets</p>
                <p><i class="fa fa-check color-green-dark"></i> Adjust Risk &amp; Reward Anytime</p>
                <p><i class="fa fa-check color-green-dark"></i> Pause Your Plan Anytime</p>
                <p><i class="fa fa-check color-green-dark"></i> 3% Profit Fee</p>
             <% else %>
                <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and be transparent about trades taken. You agree that investing comes with the risk of loosing all your money.</p>
-               <p><i class="fa fa-check color-green-dark"></i> Manage Your Assets</p>
+               <p><i class="fa fa-check color-green-dark"></i> Manage Automated Strategies</p>
                <p><i class="fa fa-check color-green-dark"></i> Adjust Risk &amp; Reward Anytime</p>
+               <p><i class="fa fa-check color-green-dark"></i> Remain Profitable</p>
                <p><i class="fa fa-check color-green-dark"></i> Pause Your Plan Anytime</p>
                <p><i class="fa fa-check color-green-dark"></i> 3% Profit Fee</p>
             <% end %>
@@ -88,8 +115,39 @@
             <h1 class="pt-4">Join Oarlin</h1>
             <p class="mb-0 pb-0 font-10 opacity-40">Click To Start</p>
             <div class="list-group list-custom-small">
-             
-               
+                <div class="splide single-slider slider-no-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="single-slider-1" style="visibility: visible;">
+                 <div class="splide__arrows">
+                   <button class="splide__arrow splide__arrow--prev" type="button" aria-controls="single-slider-1-track" aria-label="Go to last slide">
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
+                       <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path>
+                     </svg>
+                   </button>
+                   <button class="splide__arrow splide__arrow--next" type="button" aria-controls="single-slider-1-track" aria-label="Next slide">
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
+                       <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path>
+                     </svg>
+                   </button>
+                 </div>
+                 <div class="splide__track" id="single-slider-1-track">
+                   <div class="splide__list" id="single-slider-1-list" style="transform: translateX(-1920px);">
+                   <% @peopleProfiles.each do |profile| %>
+                     <div class="splide__slide splide__slide--clone" style="width: 100%;">
+                       <div class="card card-style">
+                         <div class="content">
+                           <%= image_tag profile[:image], class: 'mx-auto mb-5', style:"width:100%!important" %>
+                           <div class="text-center">
+                             <div class="flex-grow-1">
+                               <h1 class="font-30">Like <%= profile[:name] %></h1>
+                               <p class="mt-n1 font-12 color-highlight mb-4"><%= profile[:quote] %></p>
+                             </div>
+                           </div>
+                         </div>
+                       </div>
+                     </div>
+                  <% end %>
+                   </div>
+                 </div>
+               </div>
            </div>
          </div>
       </a>
@@ -106,7 +164,7 @@
                <p><i class="fa fa-check color-green-dark"></i> Expand Your "Downline"</p>
                <p><i class="fa fa-check color-green-dark"></i> 3% Profit Fee</p>
             <% elsif params['memberType'] == 'user' %>
-               <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and not harrass anyone. You agree that investing comes with the risk of loosing all your money.</p>
+               <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and not harass anyone. You agree that investing comes with the risk of loosing all your money.</p>
                <p><i class="fa fa-check color-green-dark"></i> Manage Your Assets</p>
                <p><i class="fa fa-check color-green-dark"></i> Adjust Risk &amp; Reward Anytime</p>
                <p><i class="fa fa-check color-green-dark"></i> Pause Your Plan Anytime</p>
@@ -128,10 +186,42 @@
             <h1 class="pt-4">Join Oarlin</h1>
             <p class="mb-0 pb-0 font-20 text-uppercase opacity-40">Click To Start</p>
             <div class="list-group list-custom-small">
-             
-               
+                <div class="splide single-slider slider-no-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="single-slider-1" style="visibility: visible;">
+                 <div class="splide__arrows">
+                   <button class="splide__arrow splide__arrow--prev" type="button" aria-controls="single-slider-1-track" aria-label="Go to last slide">
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
+                       <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path>
+                     </svg>
+                   </button>
+                   <button class="splide__arrow splide__arrow--next" type="button" aria-controls="single-slider-1-track" aria-label="Next slide">
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
+                       <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path>
+                     </svg>
+                   </button>
+                 </div>
+                 <div class="splide__track" id="single-slider-1-track">
+                   <div class="splide__list" id="single-slider-1-list" style="transform: translateX(-1920px);">
+                   <% @peopleProfiles.each do |profile| %>
+                     <div class="splide__slide splide__slide--clone" style="width: 100%;">
+                       <div class="card card-style">
+                         <div class="content">
+                           <%= image_tag profile[:image], class: 'mx-auto mb-5', style:"width:100%!important" %>
+                           <div class="text-center">
+                             <div class="flex-grow-1">
+                               <h1 class="font-30">Like <%= profile[:name] %></h1>
+                               <p class="mt-n1 font-12 color-highlight mb-4"><%= profile[:quote] %></p>
+                             </div>
+                           </div>
+                         </div>
+                       </div>
+                     </div>
+                  <% end %>
+                   </div>
+                 </div>
+               </div>
            </div>
          </div>
       </a>
    <% end %>
 </div>
+

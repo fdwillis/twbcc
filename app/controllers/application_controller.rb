@@ -16,6 +16,30 @@ class ApplicationController < ActionController::Base
   end
 
   def skip
+    @peopleProfiles = [
+      {
+        name: 'Kevin',
+        image: 'kevin.jpg',
+        quote: "I did not think trading existed this way",
+      },{
+        name: 'Bella',
+        image: 'bella.jpg',
+        quote: "I rarely have time for my coffee, but now Oarlin pays for it!",
+      },{
+        name: 'Cindy',
+        image: 'cindy.jpg',
+        quote: "Becoming an Oarlin Captain changed my life",
+      },{
+        name: 'Nick',
+        image: 'nick.jpg',
+        quote: "Oarlin just makes sense to me...it's the future",
+      },{
+        name: 'Payton',
+        image: 'payton.jpg',
+        quote: "This has to be magic!",
+      },
+    ]
+
 
 
     if params['interval'] == 'month'
