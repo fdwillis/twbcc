@@ -305,7 +305,7 @@ class TradingviewController < ApplicationController
   end
 
   def authorizedListParams
-    params.require(:authorizedList).permit(:authorizedList)
+    params.require(:authorizedList).permit(:authorizedList, :username)
   end
 
   def tradingviewKeysparams
