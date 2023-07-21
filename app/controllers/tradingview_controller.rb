@@ -140,7 +140,7 @@ class TradingviewController < ApplicationController
 
                 if  traderFoundForCopy&.trader? && !(ENV['adminUUID']).include?(traderFoundForCopy.uuid)
                   puts "\n-- Started For #{traderFoundForCopy.uuid} #{sequence.to_enum.to_h['type']} #{sequence.to_enum.to_h['direction']} --\n"
-                  listToTrade = traderFoundForCopy&.authorizedList.present? ? traderFoundForCopy&.authorizedList&.delete(' ').split(",") : []
+                  listToTrade = traderFoundForCopy&.authorizedList.present? ? traderFoundForCopy&.authorizedList&.delete(' ').shuffle.split(",") : []
                   assetList = listToTrade.present? ? listToTrade : []
                   if assetList.size > 0
                     assetList.each do |assetX|
