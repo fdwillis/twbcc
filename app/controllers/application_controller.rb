@@ -198,17 +198,13 @@ class ApplicationController < ActionController::Base
   def cancel
     allSubscriptions = Stripe::Subscription.list({ customer: current_user&.stripeCustomerID })['data'].map(&:id)
     allSubscriptions.each do |id|
-      Stripe::Subscription.cancel(id)
+      upda = Stripe::Subscription.update(id, {pause_collection: {
+        behavior: 'keep_as_draft' }})
+    debugger
     end
 
-    Stripe::Subscription.create({
-                                  customer: current_user&.stripeCustomerID,
-                                  items: [
-                                    { price: ENV['freeMembership'] }
-                                  ]
-                                })
 
-    flash[:success] = 'Membership Canceled'
+    flash[:success] = 'Membership Paused'
     redirect_to request.referrer
   end
 

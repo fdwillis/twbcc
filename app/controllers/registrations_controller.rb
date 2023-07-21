@@ -9,7 +9,6 @@ class RegistrationsController < ApplicationController
         redirect_to request.referrer
         return
       else
-        debugger
         flash[:error] = "Something Went Wrong"
         redirect_to request.referrer
         return

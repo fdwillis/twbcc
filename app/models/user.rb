@@ -401,9 +401,10 @@ class User < ApplicationRecord
         if membershipPlan['status'] == 'active' && membershipPlan['pause_collection'].nil?
           membershipValid << { membershipDetails: membershipPlan, membershipType: membershipType }
         end
+      else
+        # membershipValid << { membershipDetails: membershipPlan, membershipType: membershipType }
       end
     end
-
     membershipValid.present? ? membershipValid : [{ membershipType: 'free', membershipDetails: { 0 => { 'status' => 'active', 'interval' => 'N/A' } } }]
 
     #logic checking for profits us profitPaid or profitPending
@@ -441,7 +442,12 @@ class User < ApplicationRecord
   end
 
   def trader?
-    accessPin.split(',').include?('trader')
+    trueorF = accessPin.split(',').include?('trader') && !profitPending?
+
+    unless trueorF == true
+      self.update(accessPin: self.accessPin.delete('trader'))
+    end
+    trueorF
   end
 
   def trial?
