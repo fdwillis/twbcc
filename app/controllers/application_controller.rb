@@ -200,7 +200,6 @@ class ApplicationController < ActionController::Base
     allSubscriptions.each do |id|
       upda = Stripe::Subscription.update(id, {pause_collection: {
         behavior: 'keep_as_draft' }})
-    debugger
     end
 
 
