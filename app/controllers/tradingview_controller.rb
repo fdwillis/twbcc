@@ -77,6 +77,7 @@ class TradingviewController < ApplicationController
       traderID = sequence['traderID']
       traderFound = User.find_by(uuid: traderID)
       traderFound&.checkMembership
+      validPlansToParse = nil
       
       if sequence['tradingDays'].present? && sequence['tradingDays'].map { |d| d.downcase }.include?(Date.today.strftime('%a').downcase)
         if traderFound&.trader?
@@ -127,16 +128,17 @@ class TradingviewController < ApplicationController
             if sequence['adminOnly'] == 'false'
               puts "\n-- Starting To Copy Trades --\n"
               # pull those with done for you plan
-              monthlyAuto = Stripe::Subscription.list({ limit: 100, price: ENV['autoTradingMonthlyMembership'] })['data'].reject { |d| d['status'] != 'active' }
-              annualAuto = Stripe::Subscription.list({ limit: 100, price: ENV['autoTradingAnnualMembership'] })['data'].reject { |d| d['status'] != 'active' }
-              trial = Stripe::Subscription.list({ limit: 100, price: ENV['trialTradingDaily'] })['data'].reject { |d| d['status'] != 'active' }
-              validPlansToParse = monthlyAuto + annualAuto + trial
+
+              User::TRADERmembership.each do |memberType|
+                planX = Stripe::Subscription.list({ limit: 100, price: memberType })['data'].reject { |d| d['status'] != 'active' }
+                validPlansToParse << planX
+              end
 
               validPlansToParse.each do |planXinfo|
                 traderFoundForCopy = User.find_by(stripeCustomerID: planXinfo['customer'])
                 traderFoundForCopy&.checkMembership
 
-                if  traderFoundForCopy&.trader?
+                if  traderFoundForCopy&.trader? && !(ENV['adminUUID']).include?(traderFoundForCopy.uuid)
                   puts "\n-- Started For #{traderFoundForCopy.uuid} #{sequence.to_enum.to_h['type']} #{sequence.to_enum.to_h['direction']} --\n"
                   listToTrade = traderFoundForCopy&.authorizedList.present? ? traderFoundForCopy&.authorizedList&.delete(' ').split(",") : []
                   assetList = listToTrade.present? ? listToTrade : []
