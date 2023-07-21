@@ -6,13 +6,13 @@
    </div>
    <div class="card-overlay bg-gradient"></div>
 </div>
-<!-- <div class="card card-style">
+<div class="card card-style">
    <div class="content">
       <h1>Quality Over Quantity<i class="fa fa-info-circle float-end font-16 pt-1 color-blue-dark"></i></h1>
       <p>                                     </p>
    </div>
-</div> -->
-<!-- 
+</div>
+
 <div class="card card-style">
    <div class="content">
       <h1>Ideal For<i class="fa fa-trophy float-end font-16 pt-1 color-yellow-dark"></i></h1>
@@ -49,19 +49,35 @@
          </div>
       </div>
    </div>
-</div> -->
+</div>
 
 <div class="row text-center mb-0">
    <% if request.user_agent.include?('Mobile') %>
-      <a href="index.html" class="col-12" style='pointer-events: none;'>
+      <a href="" class="col-12" style='pointer-events: none;'>
          <div class="card card-style me-2 mb-2">
+            
             <i class="fa fa-users color-highlight-dark fa-3x mt-5"></i>
-            <h1 class="pt-4">Captain Expectations</h1>
-            <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and recieve continued education related to trading financial markets successfully</p>
-            <p><i class="fa fa-check color-green-dark"></i> Learn How Oarlin Works</p>
-            <p><i class="fa fa-check color-green-dark"></i> Explain The "Oarlin Plan"</p>
-            <p><i class="fa fa-check color-green-dark"></i> Share The "Oarlin Plan" Ethically</p>
-            <p><i class="fa fa-check color-green-dark"></i> Expand Your "Downline"</p>
+            <h1 class="pt-4"><%= params['memberType'] == 'user' ? 'User' : params['memberType'] == 'captain' ? 'Captain' : 'Trader' %> Expectations</h1>
+            <% if params['memberType'] == 'captain' %>
+               <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and recieve continued education related to trading financial markets successfully</p>
+               <p><i class="fa fa-check color-green-dark"></i> Learn How Oarlin Works</p>
+               <p><i class="fa fa-check color-green-dark"></i> Explain The "Oarlin Plan"</p>
+               <p><i class="fa fa-check color-green-dark"></i> Share The "Oarlin Plan" Ethically</p>
+               <p><i class="fa fa-check color-green-dark"></i> Expand Your "Downline"</p>
+               <p><i class="fa fa-check color-green-dark"></i> 3% Profit Fee</p>
+            <% elsif params['memberType'] == 'user' %>
+               <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and not harrass anyone. You agree that investing comes with the risk of loosing all your money.</p>
+               <p><i class="fa fa-check color-green-dark"></i> Manage Your Assets</p>
+               <p><i class="fa fa-check color-green-dark"></i> Adjust Risk &amp; Reward Anytime</p>
+               <p><i class="fa fa-check color-green-dark"></i> Pause Your Plan Anytime</p>
+               <p><i class="fa fa-check color-green-dark"></i> 3% Profit Fee</p>
+            <% else %>
+               <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and be transparent about trades taken. You agree that investing comes with the risk of loosing all your money.</p>
+               <p><i class="fa fa-check color-green-dark"></i> Manage Your Assets</p>
+               <p><i class="fa fa-check color-green-dark"></i> Adjust Risk &amp; Reward Anytime</p>
+               <p><i class="fa fa-check color-green-dark"></i> Pause Your Plan Anytime</p>
+               <p><i class="fa fa-check color-green-dark"></i> 3% Profit Fee</p>
+            <% end %>
          </div>
       </a>
       <a href="index-components.html" class="col-12">
@@ -70,7 +86,6 @@
                <img src="/assets/Oarlin_free-file.jpg" data-src="/assets/Oarlin_free-file.png" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
             </div>
             <h1 class="pt-4">Join Oarlin</h1>
-            <p class="font-11 opacity-50 mt-n1">Built to Feel like Apps</p>
             <p class="mb-0 pb-0 font-10 opacity-40">Click To Start</p>
             <div class="list-group list-custom-small">
              
@@ -82,12 +97,27 @@
       <a href="" class="col-6" style='pointer-events: none;'>
          <div class="card card-style me-2 mb-2">
             <i class="fa fa-users color-highlight-dark fa-3x mt-5"></i>
-            <h1 class="pt-4">Captain Expectations</h1>
-            <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and recieve continued education related to trading financial markets successfully</p>
-            <p><i class="fa fa-check color-green-dark"></i> Learn How Oarlin Works</p>
-            <p><i class="fa fa-check color-green-dark"></i> Explain The "Oarlin Plan"</p>
-            <p><i class="fa fa-check color-green-dark"></i> Share The "Oarlin Plan" Ethically</p>
-            <p><i class="fa fa-check color-green-dark"></i> Expand Your "Downline"</p>
+            <h1 class="pt-4"><%= params['memberType'] == 'user' ? 'User' : params['memberType'] == 'captain' ? 'Captain' : 'Trader' %> Expectations</h1>
+            <% if params['memberType'] == 'captain' %>
+               <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and recieve continued education related to trading financial markets successfully. You agree that investing comes with the risk of loosing all your money.</p>
+               <p><i class="fa fa-check color-green-dark"></i> Learn How Oarlin Works</p>
+               <p><i class="fa fa-check color-green-dark"></i> Explain The "Oarlin Plan"</p>
+               <p><i class="fa fa-check color-green-dark"></i> Share The "Oarlin Plan" Ethically</p>
+               <p><i class="fa fa-check color-green-dark"></i> Expand Your "Downline"</p>
+               <p><i class="fa fa-check color-green-dark"></i> 3% Profit Fee</p>
+            <% elsif params['memberType'] == 'user' %>
+               <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and not harrass anyone. You agree that investing comes with the risk of loosing all your money.</p>
+               <p><i class="fa fa-check color-green-dark"></i> Manage Your Assets</p>
+               <p><i class="fa fa-check color-green-dark"></i> Adjust Risk &amp; Reward Anytime</p>
+               <p><i class="fa fa-check color-green-dark"></i> Pause Your Plan Anytime</p>
+               <p><i class="fa fa-check color-green-dark"></i> 3% Profit Fee</p>
+            <% else %>
+               <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and be transparent about trades taken. You agree that investing comes with the risk of loosing all your money.</p>
+               <p><i class="fa fa-check color-green-dark"></i> Manage Your Assets</p>
+               <p><i class="fa fa-check color-green-dark"></i> Adjust Risk &amp; Reward Anytime</p>
+               <p><i class="fa fa-check color-green-dark"></i> Pause Your Plan Anytime</p>
+               <p><i class="fa fa-check color-green-dark"></i> 3% Profit Fee</p>
+            <% end %>
          </div>
       </a>
       <a href="<%= @session['url'] %>" class="col-6">
