@@ -32,12 +32,12 @@
       <% elsif params['memberType'] == 'user' %>
          <div class="row text-center mb-0">
             <div class="col-6">
-               <h6 class="text-uppercase font-700">Busy Parents</h6>
+               <h6 class="text-uppercase font-700">Parents</h6>
                <p>You already juggle alot, let us handle the investments </p>
             </div>
             <div class="col-6">
-               <h6 class="text-uppercase font-700">New Traders</h6>
-               <p>Keep learn the basics of investing and trade along side the service</p>
+               <h6 class="text-uppercase font-700">Traders</h6>
+               <p>Learn the basics of investing or bring your strategy to automate</p>
             </div>
             <div class="col-12 pb-5"></div>
             <div class="col-6">
@@ -56,12 +56,12 @@
                <p>Oarlin triggers directly from TradingView.</p>
             </div>
             <div class="col-6">
-               <h6 class="text-uppercase font-700">Traders With Social Proof</h6>
+               <h6 class="text-uppercase font-700">Traders</h6>
                <p>Bring your followers &amp; watch your income multiply...again!</p>
             </div>
             <div class="col-12 pb-5"></div>
             <div class="col-6">
-               <h6 class="text-uppercase font-700">Leveraging More Capital</h6>
+               <h6 class="text-uppercase font-700">Leverage More</h6>
                <p>Users will trust you to trade directly in their account. </p>
             </div>
             <div class="col-6">
@@ -90,20 +90,21 @@
                <p><i class="fa fa-check color-green-dark"></i> Explain The "Oarlin Plan"</p>
                <p><i class="fa fa-check color-green-dark"></i> Share The "Oarlin Plan" Ethically</p>
                <p><i class="fa fa-check color-green-dark"></i> Expand Your "Downline"</p>
-               <p><i class="fa fa-check color-green-dark"></i> 3% Profit Fee</p>
+               <p><i class="fa fa-check color-green-dark mb-4"></i> 3% Profit Fee</p>
             <% elsif params['memberType'] == 'user' %>
                <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and not harass anyone. You agree that investing comes with the risk of loosing all your money.</p>
                <p><i class="fa fa-check color-green-dark"></i> Manage Your Assets</p>
                <p><i class="fa fa-check color-green-dark"></i> Adjust Risk &amp; Reward Anytime</p>
                <p><i class="fa fa-check color-green-dark"></i> Pause Your Plan Anytime</p>
-               <p><i class="fa fa-check color-green-dark"></i> 3% Profit Fee</p>
+               <p><i class="fa fa-check color-green-dark mb-4"></i> 3% Profit Fee</p>
             <% else %>
                <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and be transparent about trades taken. You agree that investing comes with the risk of loosing all your money.</p>
                <p><i class="fa fa-check color-green-dark"></i> Manage Automated Strategies</p>
                <p><i class="fa fa-check color-green-dark"></i> Adjust Risk &amp; Reward Anytime</p>
+               <p><i class="fa fa-check color-green-dark"></i> Communicate Performaance with Followers</p>
                <p><i class="fa fa-check color-green-dark"></i> Remain Profitable</p>
                <p><i class="fa fa-check color-green-dark"></i> Pause Your Plan Anytime</p>
-               <p><i class="fa fa-check color-green-dark"></i> 3% Profit Fee</p>
+               <p><i class="fa fa-check color-green-dark mb-4"></i> 3% Profit Fee</p>
             <% end %>
          </div>
       </a>
@@ -152,7 +153,7 @@
          </div>
       </a>
    <% else %>
-      <a href="" class="col-6" style='pointer-events: none;'>
+      <a href="" class="col-12" style='pointer-events: none;'>
          <div class="card card-style me-2 mb-2">
             <i class="fa fa-users color-highlight-dark fa-3x mt-5"></i>
             <h1 class="pt-4"><%= params['memberType'] == 'user' ? 'User' : params['memberType'] == 'captain' ? 'Captain' : 'Trader' %> Expectations</h1>
@@ -162,23 +163,25 @@
                <p><i class="fa fa-check color-green-dark"></i> Explain The "Oarlin Plan"</p>
                <p><i class="fa fa-check color-green-dark"></i> Share The "Oarlin Plan" Ethically</p>
                <p><i class="fa fa-check color-green-dark"></i> Expand Your "Downline"</p>
-               <p><i class="fa fa-check color-green-dark"></i> 3% Profit Fee</p>
+               <p><i class="fa fa-check color-green-dark mb-4"></i> 3% Profit Fee</p>
             <% elsif params['memberType'] == 'user' %>
                <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and not harass anyone. You agree that investing comes with the risk of loosing all your money.</p>
                <p><i class="fa fa-check color-green-dark"></i> Manage Your Assets</p>
                <p><i class="fa fa-check color-green-dark"></i> Adjust Risk &amp; Reward Anytime</p>
                <p><i class="fa fa-check color-green-dark"></i> Pause Your Plan Anytime</p>
-               <p><i class="fa fa-check color-green-dark"></i> 3% Profit Fee</p>
+               <p><i class="fa fa-check color-green-dark mb-4"></i> 3% Profit Fee</p>
             <% else %>
                <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and be transparent about trades taken. You agree that investing comes with the risk of loosing all your money.</p>
-               <p><i class="fa fa-check color-green-dark"></i> Manage Your Assets</p>
+               <p><i class="fa fa-check color-green-dark"></i> Manage Automated Strategies</p>
                <p><i class="fa fa-check color-green-dark"></i> Adjust Risk &amp; Reward Anytime</p>
+               <p><i class="fa fa-check color-green-dark"></i> Communicate Performaance with Followers</p>
+               <p><i class="fa fa-check color-green-dark"></i> Remain Profitable</p>
                <p><i class="fa fa-check color-green-dark"></i> Pause Your Plan Anytime</p>
-               <p><i class="fa fa-check color-green-dark"></i> 3% Profit Fee</p>
+               <p><i class="fa fa-check color-green-dark mb-4"></i> 3% Profit Fee</p>
             <% end %>
          </div>
       </a>
-      <a href="<%= @session['url'] %>" class="col-6">
+      <a href="<%= @session['url'] %>" class="col-12">
          <div class="card card-style ms-2 mb-3">
              <div class="ps-2 align-self-center">
                <img src="/assets/Oarlin_free-file.jpg" data-src="/assets/Oarlin_free-file.png" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
@@ -205,7 +208,7 @@
                      <div class="splide__slide splide__slide--clone" style="width: 100%;">
                        <div class="card card-style">
                          <div class="content">
-                           <%= image_tag profile[:image], class: 'mx-auto mb-5', style:"width:100%!important" %>
+                           <%= image_tag profile[:image], class: 'mx-auto mb-5', style:"width:300px!important;height: 300px;" %>
                            <div class="text-center">
                              <div class="flex-grow-1">
                                <h1 class="font-30">Like <%= profile[:name] %></h1>

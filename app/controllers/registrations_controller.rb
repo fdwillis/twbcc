@@ -311,6 +311,7 @@ class RegistrationsController < ApplicationController
           loadedCustomer = User.create(
             referredBy: newTraderParams['referredBy'].present? ? newTraderParams['referredBy'] : ',',
             email: stripeCustomer['email'],
+            username: newTraderParams['username'],
             password: newTraderParams['password'],
             accessPin: newTraderParams['accessPin'],
             stripeCustomerID: stripeSessionInfo['customer'],
@@ -355,7 +356,7 @@ class RegistrationsController < ApplicationController
   end
 
   def newTraderParams
-    paramsClean = params.require(:newTrader).permit(:password_confirmation, :password, :stripeSession, :referredBy, :accessPin, :country)
+    paramsClean = params.require(:newTrader).permit(:username, :password_confirmation, :password, :stripeSession, :referredBy, :accessPin, :country)
     paramsClean.reject { |_, v| v.blank? }
   end
 end
