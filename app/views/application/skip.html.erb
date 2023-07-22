@@ -155,7 +155,7 @@
    <% else %>
       <a href="" class="col-12" style='pointer-events: none;'>
          <div class="card card-style me-2 mb-2">
-            <i class="fa fa-users color-highlight-dark fa-3x mt-5"></i>
+            <i class="fa fa-<%= params['memberType'] == 'user' ? 'user' : params['memberType'] == 'captain' ? 'users' : 'star' %> color-highlight-dark fa-3x mt-5"></i>
             <h1 class="pt-4"><%= params['memberType'] == 'user' ? 'User' : params['memberType'] == 'captain' ? 'Captain' : 'Trader' %> Expectations</h1>
             <% if params['memberType'] == 'captain' %>
                <p class="font-11 opacity-50 mt-n1">To skip the waitlist you agree to uphold all Oarlin standards and recieve continued education related to trading financial markets successfully. You agree that investing comes with the risk of loosing all your money.</p>

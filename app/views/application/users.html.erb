@@ -74,7 +74,7 @@
      <div class="content pb-0">
         <p class="mb-2 font-34 color-white text-center">Join Free</p>
         <p class="mb-2 font-22 color-white text-center">Trading as a Service (TAAS)</p>
-        <a href="<%= new_user_registration_path %>?&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-m rounded-s bg-pink-dark text-uppercase font-700 color-white border-green">Join Free</a> <!-- upgrade or downgrade #sprint2 -->
+        <a href="<%= new_user_registration_path %>?&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>" class="btn btn-full btn-m rounded-s bg-pink-dark text-uppercase font-700 color-white border-pink">Join Free</a> <!-- upgrade or downgrade #sprint2 -->
      </div>
   </div>
 <!--     <div class="card card-style">
@@ -105,7 +105,7 @@
                 </p>
              </div>
              <div class="col-6">
-                <i class="fa fa-medal fa-4x color-brown-dark mb-3"></i>
+                <i class="fa fa-medal fa-4x color-brown-dark mb-3"></i> 
                 <h6 class="text-uppercase font-700">Best<br>Updates</h6>
                 <p>
                    Best Product Updates on Envato Awards
@@ -114,6 +114,13 @@
           </div>
        </div>
     </div> -->
+   <div class="card card-style pt-4">
+     <div class="content">
+         <h6 class="color-highlight text-uppercase font-700 mb-1">Users</h6>
+        <h1 class="text-uppercase font-900 mt-n2">MEMBERSHIP</h1>
+         <p class='font-20'>Oarlin's Trading as a Service (TAAS) was specifically designed for the everyday worker. Instead of being left out due to a busy scheudle or a lack of understranding you can </p>
+     </div>
+   </div>
   <div class="row text-center mb-0">
     <% if request.user_agent.include?('Mobile') %>
        <a href="index.html" class="col-12 mt-2" style='pointer-events: none;'>
