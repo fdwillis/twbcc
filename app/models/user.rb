@@ -104,9 +104,9 @@ class User < ApplicationRecord
     }
   }.freeze
 
-  FREEmembership = [ENV['freeMembership']].freeze
-  TRIALmembership = [ENV['trialTradingDaily']].freeze
-  TRADERmembership = [ENV['userAnnual'], ENV['userMonth'], ENV['captainMonth'], ENV['captainAnnual'], ENV['traderMonth'], ENV['traderAnnual']].freeze
+  USERmembership = [ENV['userAnnual'], ENV['userMonth']].freeze
+  CAPTAINmembership = [ENV['captainMonth'], ENV['captainAnnual']].freeze
+  TRADERmembership = [ENV['traderMonth'], ENV['traderAnnual']].freeze
   AFFILIATEmembership = [ENV['affiliateMonthly'], ENV['affiliateAnnual']].freeze
   BUSINESSmembership = [ENV['businessMonthly'], ENV['businessAnnual']].freeze
   AUTOMATIONmembership = [ENV['automationMonthly'], ENV['automationAnnual']].freeze
@@ -367,35 +367,14 @@ class User < ApplicationRecord
       case true
       when allSubscriptions.include?(planID)
         membershipPlan = Stripe::Subscription.list({ customer: stripeCustomerID, price: planID })['data'][0]
-        membershipType = if TRIALmembership.include?(planID)
-                           'trial,trader'
-                         elsif TRADERmembership.include?(planID)
-                           'trader'
-                         elsif AFFILIATEmembership.include?(planID)
-                           'affiliate'
-                         elsif BUSINESSmembership.include?(planID)
-                           'business'
-                         elsif AUTOMATIONmembership.include?(planID)
-                           'automation'
+        membershipType = if TRADERmembership.include?(planID)
+                           'trader,trader'
+                         elsif USERmembership.include?(planID)
+                           'user,trader'
+                         elsif CAPTAINmembership.include?(planID)
+                           'captain,trader'
                          else
-                          
-                           if TRADERmembership.include?(planID)
-                             'trader'
-                           else
-                             if AFFILIATEmembership.include?(planID)
-                               'affiliate'
-                             else
-                               if BUSINESSmembership.include?(planID)
-                                 'business'
-                               else
-                                 if AUTOMATIONmembership.include?(planID)
-                                   'automation'
-                                 else
-                                   FREEmembership.include?(planID) ? 'free' : 'free'
-                                 end
-                               end
-                             end
-                           end
+                           FREEmembership.include?(planID) ? 'free' : 'free'
                          end
                          
         if membershipPlan['status'] == 'active' && membershipPlan['pause_collection'].nil?
