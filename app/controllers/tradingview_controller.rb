@@ -129,7 +129,9 @@ class TradingviewController < ApplicationController
               puts "\n-- Starting To Copy Trades --\n"
               # pull those with done for you plan
 
-              User::TRADERmembership.each do |memberType|
+              memberTypes = User::USERmembership + User::CAPTAINmembership + User::TRADERmembership
+
+              memberTypes.each do |memberType|
                 planX = Stripe::Subscription.list({ limit: 100, price: memberType })['data'].reject { |d| d['status'] != 'active' }
                 validPlansToParse << planX
               end

@@ -358,7 +358,7 @@ class User < ApplicationRecord
 
   def checkMembership
     membershipValid = []
-    membershipPlans = TRADERmembership
+    membershipPlans = User::USERmembership + User::CAPTAINmembership + User::TRADERmembership
     allSubscriptions = Stripe::Subscription.list({ customer: stripeCustomerID })['data'].map(&:items).map(&:data).flatten.map(&:plan).map(&:id)
 
     #check for payment of membership

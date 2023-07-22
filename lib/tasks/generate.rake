@@ -176,7 +176,7 @@ namespace :generate do
 
       if userX.trader?
         if userX&.take_profits.present? && userX&.take_profits.map(&:stripePI).include?(nil)
-          validTakeProfits = userX&.take_profits.where(stripePI: nil).where('created_at > ?', 30.days.ago).sort_by(&:created_at)
+          validTakeProfits = userX&.take_profits.where(stripePI: nil).sort_by(&:created_at)
           profitTallyForUserX += validTakeProfits.map(&:profitLoss).sum 
 
           if Date.today.strftime("%d").to_i == 1
