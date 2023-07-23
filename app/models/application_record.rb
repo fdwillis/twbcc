@@ -58,10 +58,8 @@ class ApplicationRecord < ActiveRecord::Base
           (@openTrades+@closedTrades).each do |tradeX|
             begin
               @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, tradeX.uuid.to_i - 1)
-              if @requestOriginalE['trade']['unrealizedPL'].to_f > 0.05  && @requestOriginalE['trade']['initialUnits'].to_i.negative? #and proper units
-                takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'kill')
-                puts takeProfitX
-              end
+              takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'kill')
+              puts takeProfitX
             rescue Exception => e
               
               if tradeX&.status == 'open'
@@ -102,10 +100,8 @@ class ApplicationRecord < ActiveRecord::Base
           (@openTrades+@closedTrades).each do |tradeX|
             begin
               @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, tradeX.uuid.to_i - 1)
-              if @requestOriginalE['trade']['unrealizedPL'].to_f > 0.05 && @requestOriginalE['trade']['initialUnits'].to_i.positive?#and proper units
-                takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'kill')
-                puts takeProfitX
-              end
+              takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'kill')
+              puts takeProfitX
             rescue Exception => e
             
               if tradeX&.status == 'open'
