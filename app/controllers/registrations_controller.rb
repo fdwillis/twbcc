@@ -302,7 +302,7 @@ class RegistrationsController < ApplicationController
             stripeSessionInfo['customer'], {
               metadata: {
                 referredBy: newTraderParams['referredBy'].present? ? newTraderParams['referredBy'] : ',',
-                commissionRate: 0,
+                commissionRate: 10,
                 connectAccount: newStripeAccount['id']
               }
             }
