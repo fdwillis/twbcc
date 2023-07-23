@@ -145,7 +145,7 @@ class TradingviewController < ApplicationController
                   listToTrade = traderFoundForCopy&.authorizedList.present? ? traderFoundForCopy&.authorizedList&.delete(' ').split(",") : []
                   assetList = listToTrade.present? ? listToTrade : []
                   if assetList.size > 0
-                    assetList.shuffle.each do |assetX|
+                    assetList.each do |assetX|
                       
                       if assetX.upcase == sequence['ticker']
                         # execute trade
