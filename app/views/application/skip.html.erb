@@ -79,8 +79,10 @@
 
 <div class="row text-center mb-0">
    <% if request.user_agent.include?('Mobile') %>
-      <a href="" class="col-12" style='pointer-events: none;'>
+      <a href="<%= @session['url'] %>" class="col-12">
          <div class="card card-style me-2 mb-2">
+            <h1 class="pt-4">Join Oarlin</h1>
+            <p class="mb-0 pb-0 font-20 text-uppercase opacity-40">Click To Start</p>
             
             <i class="fa fa-users color-highlight-dark fa-3x mt-5"></i>
             <h1 class="pt-4"><%= params['memberType'] == 'user' ? 'User' : params['memberType'] == 'captain' ? 'Captain' : 'Trader' %> Expectations</h1>
@@ -110,11 +112,6 @@
       </a>
       <a href="<%= @session['url'] %>" class="col-12">
          <div class="card card-style">
-             <div class="align-self-center">
-               <img src="/assets/Oarlin_free-file.jpg" data-src="/assets/Oarlin_free-file.png" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
-            </div>
-            <h1 class="pt-4">Join Oarlin</h1>
-            <p class="mb-0 pb-0 font-10 opacity-40">Click To Start</p>
             <div class="list-group list-custom-small">
                 <div class="splide single-slider slider-no-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="single-slider-1" style="visibility: visible;">
                  <div class="splide__arrows">
@@ -129,32 +126,15 @@
                      </svg>
                    </button>
                  </div>
-                 <div class="splide__track" id="single-slider-1-track">
-                   <div class="splide__list" id="single-slider-1-list" style="transform: translateX(-1920px);">
-                   <% @peopleProfiles.each do |profile| %>
-                     <div class="splide__slide splide__slide--clone" style="width: 100%;">
-                       <div class="card card-style">
-                         <div class="content">
-                           <%= image_tag profile[:image], class: 'mx-auto mb-5', style:"width:100%!important" %>
-                           <div class="text-center">
-                             <div class="flex-grow-1">
-                               <h1 class="font-30">Like <%= profile[:name] %></h1>
-                               <p class="mt-n1 font-12 color-highlight mb-4"><%= profile[:quote] %></p>
-                             </div>
-                           </div>
-                         </div>
-                       </div>
-                     </div>
-                  <% end %>
-                   </div>
-                 </div>
                </div>
            </div>
          </div>
       </a>
    <% else %>
-      <a href="" class="col-12" style='pointer-events: none;'>
+      <a href="<%= @session['url'] %>" class="col-12">
          <div class="card card-style me-2 mb-2">
+            <h1 class="pt-4">Join Oarlin</h1>
+            <p class="mb-0 pb-0 font-20 text-uppercase opacity-40">Click To Start</p>
             <i class="fa fa-<%= params['memberType'] == 'user' ? 'user' : params['memberType'] == 'captain' ? 'users' : 'star' %> color-highlight-dark fa-3x mt-5"></i>
             <h1 class="pt-4"><%= params['memberType'] == 'user' ? 'User' : params['memberType'] == 'captain' ? 'Captain' : 'Trader' %> Expectations</h1>
             <% if params['memberType'] == 'captain' %>
@@ -183,11 +163,6 @@
       </a>
       <a href="<%= @session['url'] %>" class="col-12">
          <div class="card card-style ms-2 mb-3">
-             <div class="ps-2 align-self-center">
-               <img src="/assets/Oarlin_free-file.jpg" data-src="/assets/Oarlin_free-file.png" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
-            </div>
-            <h1 class="pt-4">Join Oarlin</h1>
-            <p class="mb-0 pb-0 font-20 text-uppercase opacity-40">Click To Start</p>
             <div class="list-group list-custom-small">
                 <div class="splide single-slider slider-no-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="single-slider-1" style="visibility: visible;">
                  <div class="splide__arrows">
@@ -201,25 +176,6 @@
                        <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path>
                      </svg>
                    </button>
-                 </div>
-                 <div class="splide__track" id="single-slider-1-track">
-                   <div class="splide__list" id="single-slider-1-list" style="transform: translateX(-1920px);">
-                   <% @peopleProfiles.each do |profile| %>
-                     <div class="splide__slide splide__slide--clone" style="width: 100%;">
-                       <div class="card card-style">
-                         <div class="content">
-                           <%= image_tag profile[:image], class: 'mx-auto mb-5', style:"width:300px!important;height: 300px;" %>
-                           <div class="text-center">
-                             <div class="flex-grow-1">
-                               <h1 class="font-30">Like <%= profile[:name] %></h1>
-                               <p class="mt-n1 font-12 color-highlight mb-4"><%= profile[:quote] %></p>
-                             </div>
-                           </div>
-                         </div>
-                       </div>
-                     </div>
-                  <% end %>
-                   </div>
                  </div>
                </div>
            </div>
