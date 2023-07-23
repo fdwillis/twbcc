@@ -6,7 +6,7 @@
    </div>
    <div class="card-overlay bg-gradient"></div>
 </div>
-
+ <%= render 'search/dailydiscount', codes: @codes %>
 
 <div class="row text-center mb-0">
    <% if request.user_agent.include?('Mobile') %>
