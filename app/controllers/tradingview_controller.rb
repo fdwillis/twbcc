@@ -81,9 +81,8 @@ class TradingviewController < ApplicationController
       
       if traderFound&.trader?
 
-        if (ENV['adminUUID']).include?(traderFound.uuid)
           
-          if sequence['tradeForAdmin'] == 'true'
+          if sequence['forTrader'] == 'true'
     
             case true
             when sequence['type'].include?('Stop')
@@ -124,8 +123,8 @@ class TradingviewController < ApplicationController
             puts "\n-- Finished Admin Trades --\n"
           end
 
-          if sequence['adminOnly'] == 'false'
-            puts "\n-- Starting To Copy Trades --\n"
+          if sequence['traderOnly'] == 'false'
+            puts "\n-- Starting To Copy Trades For Followers--\n"
             # pull those with done for you plan
 
             memberTypes = User::USERmembership + User::CAPTAINmembership + User::TRADERmembership
@@ -245,48 +244,6 @@ class TradingviewController < ApplicationController
             end
 
           end
-
-        else
-          case true
-          when sequence['type'].include?('Stop')
-            puts "\n-- Starting Stop --\n"
-            case true
-            when sequence['broker'] == 'KRAKEN'
-              BackgroundJob.perform_async('stop', sequence.to_enum.to_h, traderFound&.krakenLiveAPI, traderFound&.krakenLiveSecret)
-            when sequence['broker'] == 'OANDA'
-              traderFound&.oandaList.split(',')&.reject(&:blank?).each do |accountID|
-                BackgroundJob.perform_async('stop', sequence.to_enum.to_h, traderFound&.oandaToken, accountID)
-              end
-            when sequence['broker'] == 'TRADIER'
-              BackgroundJob.perform_async('stop', sequence.to_enum.to_h, traderFound&.tradierToken, accountID)
-            end
-          when sequence['type'] == 'entry'
-            puts "\n-- Starting Entry #{sequence.to_enum.to_h['type']} #{sequence.to_enum.to_h['direction']} --\n"
-            case true
-            when sequence['broker'] == 'KRAKEN'
-              BackgroundJob.perform_async('entry', sequence.to_enum.to_h, traderFound&.krakenLiveAPI, traderFound&.krakenLiveSecret)
-            when sequence['broker'] == 'OANDA'
-              traderFound&.oandaList.split(',')&.reject(&:blank?).each do |accountID|
-                BackgroundJob.perform_async('entry', sequence.to_enum.to_h, traderFound&.oandaToken, accountID)
-              end
-            when sequence['broker'] == 'TRADIER'
-              BackgroundJob.perform_async('entry', sequence.to_enum.to_h, traderFound&.tradierToken, accountID)
-            end
-          when sequence['type'].include?('profit')
-          when sequence['type'] == 'kill'
-            puts "\n-- Starting Kill --\n"
-            case true
-            when sequence['broker'] == 'KRAKEN'
-              BackgroundJob.perform_async('kill', sequence.to_enum.to_h, traderFound&.krakenLiveAPI, traderFound&.krakenLiveSecret)
-            when sequence['broker'] == 'OANDA'
-              traderFound&.oandaList.split(',')&.reject(&:blank?).each do |accountID|
-                BackgroundJob.perform_async('kill', sequence.to_enum.to_h, traderFound&.oandaToken, accountID)
-              end
-            when sequence['broker'] == 'TRADIER'
-              BackgroundJob.perform_async('kill', sequence.to_enum.to_h, traderFound&.tradierToken, accountID)
-            end
-          end
-        end
       else
         puts "\n-- No Trader Found --\n"
       end

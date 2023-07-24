@@ -33,7 +33,6 @@ class ApplicationRecord < ActiveRecord::Base
         if tvData['killType'] == 'pending'
           @openTrades.each do |tradeX|
             cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX['id'])
-            @userX.trades.find_or_create_by(uuid: tradeX['id']).destroy!
             puts "\n-- KILLED #{tradeX['id']} --\n"
           end
         elsif (tvData['killType'] == 'profit')
@@ -55,7 +54,6 @@ class ApplicationRecord < ActiveRecord::Base
         elsif tvData['killType'] == 'all'
           @openTrades.each do |tradeX|
             cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX['id'])
-            @userX.trades.find_or_create_by(uuid: tradeX['id']).destroy!
             puts "\n-- KILLED #{tradeX['id']} --\n"
           end
               
@@ -77,7 +75,6 @@ class ApplicationRecord < ActiveRecord::Base
         if tvData['killType'] == 'pending'
           @openTrades.each do |tradeX|
             cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX['id'])
-            @userX.trades.find_or_create_by(uuid: tradeX['id']).destroy!
             puts "\n-- KILLED #{tradeX['id']} --\n"
           end
         elsif (tvData['killType'] == 'profit')
@@ -99,7 +96,6 @@ class ApplicationRecord < ActiveRecord::Base
         elsif tvData['killType'] == 'all'
           @openTrades.each do |tradeX|
             cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX['id'])
-            @userX.trades.find_or_create_by(uuid: tradeX['id']).destroy!
             puts "\n-- KILLED #{tradeX['id']} --\n"
           end
 
