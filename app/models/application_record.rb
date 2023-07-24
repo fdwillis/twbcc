@@ -2,13 +2,12 @@ class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
 
   def self.killType(tvData, apiKey = nil, secretKey = nil)
-
     if tvData['broker'] == 'OANDA'
 
       @userX = User.find_by(oandaToken: apiKey)
-      @openTrades = @userX.trades.where(ticker:tvData['ticker'], broker: tvData['broker'], finalTakeProfit:nil, status: 'open', direction: tvData['direction'])
-      @closedTrades = @userX.trades.where(ticker:tvData['ticker'], broker: tvData['broker'], finalTakeProfit:nil, status: 'closed', direction: tvData['direction'])
-      @traderFound = @userX
+      @openTrades = @userX.trades.where(ticker:tvData['ticker'], broker: tvData['broker'], stripePI:nil, status: 'open', direction: tvData['direction'])
+      @closedTrades = @userX.trades.where(ticker:tvData['ticker'], broker: tvData['broker'], stripePI:nil, status: 'closed', direction: tvData['direction'])
+
       (@closedTrades + @openTrades).each do |tradeX|
         begin
 
@@ -28,6 +27,7 @@ class ApplicationRecord < ActiveRecord::Base
         end
       end
 
+              
       if tvData['direction'] == 'sell'
         if tvData['killType'] == 'pending'
           @openTrades.each do |tradeX|
@@ -55,6 +55,7 @@ class ApplicationRecord < ActiveRecord::Base
             end
           end
         elsif tvData['killType'] == 'all'
+              
           (@openTrades+@closedTrades).each do |tradeX|
             begin
               @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, tradeX.uuid.to_i - 1)
@@ -81,10 +82,10 @@ class ApplicationRecord < ActiveRecord::Base
         elsif (tvData['killType'] == 'profit')
               
            @closedTrades.each do |tradeX|
-            
             begin 
               @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, tradeX.uuid.to_i)
               if @requestOriginalE['trade']['unrealizedPL'].to_f > 0.05 && @requestOriginalE['trade']['initialUnits'].to_i.positive?#and proper units
+                
                 takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'reduce')
                 puts takeProfitX
               end              

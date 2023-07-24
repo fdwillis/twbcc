@@ -1,6 +1,6 @@
 class Oanda < ApplicationRecord
   def self.oandaRequest(token, accountID)
-    @oanda = OandaApiV20.new(access_token: token)
+    @oanda = OandaApiV20.new(access_token: token,practice:true)
   end
 
   def self.oandaAccount(token, accountID)
@@ -44,6 +44,7 @@ class Oanda < ApplicationRecord
   end
 
   def self.closePosition(token, accountID, tvData, tradeX, tradeInfo, reduceOrKill)
+    traderFound = User.find_by(oandaToken: token)
     oandaTicker = "#{tvData['ticker'][0..2]}_#{tvData['ticker'][3..5]}"
     if tvData['direction'] == 'sell'
       if reduceOrKill == 'reduce'
@@ -62,8 +63,8 @@ class Oanda < ApplicationRecord
         options = {'longUnits' => 'ALL'}
       end
     end
+    debugger
     requestProfit = oandaRequest(token, accountID).account(accountID).position(oandaTicker, options).close
-
     if requestProfit.present? && requestProfit['orderCreateTransaction'].present?
       tradeX.take_profits.create!(ticker: tvData['ticker'], profitLoss: tvData['direction'] == 'sell' ?  requestProfit['shortOrderFillTransaction']['pl'] : requestProfit['longOrderFillTransaction']['pl'], traderID: tvData['traderID'], uuid: tvData['direction'] == 'sell' ?  requestProfit['shortOrderFillTransaction']['id'] : requestProfit['longOrderFillTransaction']['id'], status: 'closed', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(oandaToken: token).id)
      end

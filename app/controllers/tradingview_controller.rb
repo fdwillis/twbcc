@@ -139,13 +139,13 @@ class TradingviewController < ApplicationController
               traderFoundForCopy = User.find_by(stripeCustomerID: planXinfo[0]['customer'])
               traderFoundForCopy&.checkMembership
 
-              if  traderFoundForCopy&.trader? && !(ENV['adminUUID']).include?(traderFoundForCopy.uuid)
+              if  traderFoundForCopy&.trader?
+                    
                 puts "\n-- Started For #{traderFoundForCopy.uuid} #{sequence.to_enum.to_h['type']} #{sequence.to_enum.to_h['direction']} --\n"
                 listToTrade = traderFoundForCopy&.authorizedList.present? ? traderFoundForCopy&.authorizedList&.delete(' ').split(",") : []
                 assetList = listToTrade.present? ? listToTrade : []
                 if assetList.size > 0
                   assetList.each do |assetX|
-                    
                     if assetX.upcase == sequence['ticker']
                       # execute trade
                       case true
@@ -309,7 +309,7 @@ class TradingviewController < ApplicationController
   end
 
   def tradingviewKeysparams
-    params.permit(:sequence.to_enum.to_h, :killType, :traderID, :adminOnly, :tradeForAdmin, :ticker, :type, :direction, :timeframe, :currentPrice, :highPrice, :tradingview, :traderID, :lowPrice, :broker, :trail, entries: [], tradingDays: [])
+    params.permit(:sequence.to_enum.to_h, :killType, :traderID, :adminOnly, :tradeForAdmin, :ticker, :type, :direction, :timeframe, :currentPrice, :highPrice, :tradingview, :traderID, :lowPrice, :broker, :trail, entries: [])
   end
 
   def profitTriggersparams
