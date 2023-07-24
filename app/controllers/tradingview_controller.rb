@@ -74,7 +74,7 @@ class TradingviewController < ApplicationController
 
   def signals
     params['sequence'].to_enum.to_a.each do |sequence|
-      traderID = sequence['traderID']
+      traderID = params['traderID']
       traderFound = User.find_by(uuid: traderID)
       traderFound&.checkMembership
       validPlansToParse = []
