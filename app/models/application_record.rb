@@ -39,6 +39,7 @@ class ApplicationRecord < ActiveRecord::Base
         elsif (tvData['killType'] == 'profit')
               
           @closedTrades.each do |tradeX|
+            Trade.find_or_create_by(uuid: tradeX['id'])
             begin
               if @requestOriginalE['trade']['unrealizedPL'].to_f > 0.05  && @requestOriginalE['trade']['initialUnits'].to_i.negative? #and proper units
                 takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'reduce')
@@ -59,6 +60,7 @@ class ApplicationRecord < ActiveRecord::Base
           end
               
           (@closedTrades).each do |tradeX|
+            Trade.find_or_create_by(uuid: tradeX['id'])
             begin
               takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'kill')
               puts takeProfitX
@@ -81,6 +83,7 @@ class ApplicationRecord < ActiveRecord::Base
         elsif (tvData['killType'] == 'profit')
               
            @closedTrades.each do |tradeX|
+            Trade.find_or_create_by(uuid: tradeX['id'])
             begin 
               if @requestOriginalE['trade']['unrealizedPL'].to_f > 0.05 && @requestOriginalE['trade']['initialUnits'].to_i.positive?#and proper units
                 
@@ -101,6 +104,7 @@ class ApplicationRecord < ActiveRecord::Base
           end
 
           (@closedTrades).each do |tradeX|
+            Trade.find_or_create_by(uuid: tradeX['id'])
             begin
               takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'kill')
               puts takeProfitX
