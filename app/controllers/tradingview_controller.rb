@@ -134,7 +134,7 @@ class TradingviewController < ApplicationController
               validPlansToParse << planX
             end
 
-            validPlansToParse.reject(&:blank?).each do |planXinfo|
+            validPlansToParse.reject(&:blank?).flatten.each do |planXinfo|
               traderFoundForCopy = User.find_by(stripeCustomerID: planXinfo[0]['customer'])
               traderFoundForCopy&.checkMembership
 
