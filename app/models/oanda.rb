@@ -57,13 +57,13 @@ class Oanda < ApplicationRecord
 
     if tvData['direction'] == 'buy'
       if reduceOrKill == 'reduce'
-        unitsForOrder = (tvData['direction'] == 'sell' ?  (tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round.abs : "-#{(tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round}")
+        unitsForOrder = "#{(tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round.abs }"
         options = {'longUnits' => unitsForOrder}
       elsif reduceOrKill == 'kill'      
         options = {'longUnits' => 'ALL'}
       end
     end
-    debugger
+    
     requestProfit = oandaRequest(token, accountID).account(accountID).position(oandaTicker, options).close
     if requestProfit.present? && requestProfit['orderCreateTransaction'].present?
       tradeX.take_profits.create!(ticker: tvData['ticker'], profitLoss: tvData['direction'] == 'sell' ?  requestProfit['shortOrderFillTransaction']['pl'] : requestProfit['longOrderFillTransaction']['pl'], traderID: tvData['traderID'], uuid: tvData['direction'] == 'sell' ?  requestProfit['shortOrderFillTransaction']['id'] : requestProfit['longOrderFillTransaction']['id'], status: 'closed', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(oandaToken: token).id)
