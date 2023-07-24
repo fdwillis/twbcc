@@ -5,13 +5,14 @@ class ApplicationRecord < ActiveRecord::Base
     if tvData['broker'] == 'OANDA'
 
       @userX = User.find_by(oandaToken: apiKey)
-      @openTrades = @userX.trades.where(ticker:tvData['ticker'], broker: tvData['broker'], stripePI:nil, status: 'open', direction: tvData['direction'])
-      @closedTrades = @userX.trades.where(ticker:tvData['ticker'], broker: tvData['broker'], stripePI:nil, status: 'closed', direction: tvData['direction'])
+      @openTrades = Oanda.oandaPendingOrders(apiKey, secretKey)['orders']
+      @closedTrades = Oanda.oandaRequest(apiKey, secretKey).account(secretKey).open_trades.show['trades']
 
       (@closedTrades + @openTrades).each do |tradeX|
+        Trade.find_or_create_by(uuid: tradeX.id, ticker:tvData['ticker'], traderID: tvData['traderID'], broker: tvData['broker'], cost: tradeX['initialMarginRequired'].to_f)
         begin
 
-          requestK = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
+          requestK = Oanda.oandaOrder(apiKey, secretKey, tradeX.id)
             
           if requestK['order']['state'] == 'CANCELLED'
             tradeX.update(status: 'canceled')
@@ -31,14 +32,13 @@ class ApplicationRecord < ActiveRecord::Base
       if tvData['direction'] == 'sell'
         if tvData['killType'] == 'pending'
           @openTrades.each do |tradeX|
-            tradeID = tradeX.uuid
-            cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX.uuid)
-            puts "\n-- KILLED #{tradeX.uuid} --\n"
+            cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX.id)
+            Trade.find_by(uuid: tradeX.id).destroy!
+            puts "\n-- KILLED #{tradeX.id} --\n"
           end
         elsif (tvData['killType'] == 'profit')
               
           @closedTrades.each do |tradeX|
-            
             begin
               @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, tradeX.uuid.to_i)
               if @requestOriginalE['trade']['unrealizedPL'].to_f > 0.05  && @requestOriginalE['trade']['initialUnits'].to_i.negative? #and proper units
@@ -47,25 +47,27 @@ class ApplicationRecord < ActiveRecord::Base
               end   
             rescue Exception => e
               
-              if tradeX&.status == 'open'
-                tradeX.destroy!
-              end
+              break
 
               
             end
           end
         elsif tvData['killType'] == 'all'
+
+          @openTrades.each do |tradeX|
+            cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX.id)
+            Trade.find_by(uuid: tradeX.id).destroy!
+            puts "\n-- KILLED #{tradeX.id} --\n"
+          end
               
-          (@openTrades+@closedTrades).each do |tradeX|
+          (@closedTrades).each do |tradeX|
             begin
               @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, tradeX.uuid.to_i - 1)
               takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'kill')
               puts takeProfitX
             rescue Exception => e
               
-              if tradeX&.status == 'open'
-                tradeX.destroy!
-              end
+              break
               
             end
           end
@@ -75,9 +77,9 @@ class ApplicationRecord < ActiveRecord::Base
       if tvData['direction'] == 'buy'
         if tvData['killType'] == 'pending'
           @openTrades.each do |tradeX|
-            tradeID = tradeX.uuid
-            cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX.uuid)
-            puts "\n-- KILLED #{tradeX.uuid} --\n"
+            cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX.id)
+            Trade.find_by(uuid: tradeX.id).destroy!
+            puts "\n-- KILLED #{tradeX.id} --\n"
           end
         elsif (tvData['killType'] == 'profit')
               
@@ -91,23 +93,25 @@ class ApplicationRecord < ActiveRecord::Base
               end              
             rescue Exception => e
               
-              if tradeX&.status == 'open'
-                tradeX.destroy!
-              end
+              break
               
             end
           end
         elsif tvData['killType'] == 'all'
-          (@openTrades+@closedTrades).each do |tradeX|
+          @openTrades.each do |tradeX|
+            cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX.id)
+            Trade.find_by(uuid: tradeX.id).destroy!
+            puts "\n-- KILLED #{tradeX.id} --\n"
+          end
+
+          (@closedTrades).each do |tradeX|
             begin
               @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, tradeX.uuid.to_i - 1)
               takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'kill')
               puts takeProfitX
             rescue Exception => e
             
-              if tradeX&.status == 'open'
-                tradeX.destroy!
-              end
+              break
               
             end
           end
@@ -466,7 +470,7 @@ class ApplicationRecord < ActiveRecord::Base
         if tvData['broker'] == 'OANDA'
 
           if @requestK.present? && !@requestK['orderCancelTransaction'].present? && @requestK['orderFillTransaction']['tradeOpened'].present?
-            User.find_by(oandaToken: apiKey).trades.create(ticker:tvData['ticker'], traderID: tvData['traderID'], uuid: @requestK['orderFillTransaction']['id'], broker: tvData['broker'], direction: tvData['direction'], status: 'closed', cost: @requestK['orderFillTransaction']['tradeOpened']['initialMarginRequired'].to_f)
+            # User.find_by(oandaToken: apiKey).trades.create(ticker:tvData['ticker'], traderID: tvData['traderID'], uuid: @requestK['orderFillTransaction']['id'], broker: tvData['broker'], direction: tvData['direction'], status: 'closed', cost: @requestK['orderFillTransaction']['tradeOpened']['initialMarginRequired'].to_f)
             @costForLimit = @requestK['orderFillTransaction']['tradeOpened']['initialMarginRequired'].to_f
             puts "\n-- #{tvData['broker']} Entry Submitted --\n"
             puts "\n-- Current Risk #{@currentRisk.abs.round(2)} --\n"
@@ -522,7 +526,7 @@ class ApplicationRecord < ActiveRecord::Base
 
             if  requestK.present? && @costForLimit
               
-              User.find_by(oandaToken: apiKey).trades.create(ticker:tvData['ticker'], traderID: tvData['traderID'], uuid: requestK['orderCreateTransaction']['id'], broker: tvData['broker'], direction: tvData['direction'], status: 'open', cost: @costForLimit)
+              # User.find_by(oandaToken: apiKey).trades.create(ticker:tvData['ticker'], traderID: tvData['traderID'], uuid: requestK['orderCreateTransaction']['id'], broker: tvData['broker'], direction: tvData['direction'], status: 'open', cost: @costForLimit)
               puts "\n-- #{tvData['broker']} Entry Submitted --\n"
               puts "\n-- Current Risk #{@currentRisk.abs.round(2)} --\n"
             else

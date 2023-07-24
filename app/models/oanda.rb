@@ -1,6 +1,6 @@
 class Oanda < ApplicationRecord
   def self.oandaRequest(token, accountID)
-    @oanda = OandaApiV20.new(access_token: token)
+    @oanda = OandaApiV20.new(access_token: token, practice: true)
   end
 
   def self.oandaAccount(token, accountID)
@@ -48,7 +48,7 @@ class Oanda < ApplicationRecord
     oandaTicker = "#{tvData['ticker'][0..2]}_#{tvData['ticker'][3..5]}"
     if tvData['direction'] == 'sell'
       if reduceOrKill == 'reduce'
-        unitsForOrder = (tvData['direction'] == 'sell' ?  (tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round.abs : "-#{(tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round}")
+        unitsForOrder = "#{(tradeInfo['trade']['initialUnits'].to_f * (0.01 * traderFound&.reduceBy)).round.abs}"
         options = {'shortUnits' => unitsForOrder}
       elsif reduceOrKill == 'kill'      
         options = {'shortUnits' => 'ALL'}
