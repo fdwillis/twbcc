@@ -39,7 +39,7 @@ class ApplicationRecord < ActiveRecord::Base
         elsif (tvData['killType'] == 'profit')
               
           @closedTrades.each do |tradeX|
-            ourTradeX = @userX.trades.find_or_create_by(uuid: tradeX['id'])
+            ourTradeX = @userX.trades.find_by(uuid: tradeX['id'])
             begin
               if tradeX['unrealizedPL'].to_f > 0.05  && tradeX['initialUnits'].to_i.negative? #and proper units
                 takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, ourTradeX, tradeX, 'reduce')
@@ -60,7 +60,7 @@ class ApplicationRecord < ActiveRecord::Base
           end
               
           (@closedTrades).each do |tradeX|
-            ourTradeX = @userX.trades.find_or_create_by(uuid: tradeX['id'])
+            ourTradeX = @userX.trades.find_by(uuid: tradeX['id'])
             begin
               takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, ourTradeX, tradeX, 'kill')
               puts takeProfitX
@@ -83,7 +83,7 @@ class ApplicationRecord < ActiveRecord::Base
         elsif (tvData['killType'] == 'profit')
               
            @closedTrades.each do |tradeX|
-            ourTradeX = @userX.trades.find_or_create_by(uuid: tradeX['id'])
+            ourTradeX = @userX.trades.find_by(uuid: tradeX['id'])
             begin 
               if tradeX['unrealizedPL'].to_f > 0.05 && tradeX['initialUnits'].to_i.positive?#and proper units
                 
@@ -104,7 +104,7 @@ class ApplicationRecord < ActiveRecord::Base
           end
 
           (@closedTrades).each do |tradeX|
-            ourTradeX = @userX.trades.find_or_create_by(uuid: tradeX['id'])
+            ourTradeX = @userX.trades.find_by(uuid: tradeX['id'])
             begin
               takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, ourTradeX, tradeX, 'kill')
               puts takeProfitX
