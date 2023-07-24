@@ -124,7 +124,7 @@ class TradingviewController < ApplicationController
           end
 
           if sequence['traderOnly'] == 'false'
-            puts "\n-- Starting To Copy Trades For Followers--\n"
+            puts "\n-- Starting To Copy Trades For Followers --\n"
             # pull those with done for you plan
 
             memberTypes = User::USERmembership + User::CAPTAINmembership + User::TRADERmembership
@@ -135,10 +135,10 @@ class TradingviewController < ApplicationController
             end
 
             validPlansToParse.reject(&:blank?).flatten.each do |planXinfo|
-              traderFoundForCopy = User.find_by(stripeCustomerID: planXinfo[0]['customer'])
+              traderFoundForCopy = User.find_by(stripeCustomerID: planXinfo['customer'])
               traderFoundForCopy&.checkMembership
 
-              if  traderFoundForCopy&.trader?
+              if  traderFoundForCopy&.trader? && !ENV["adminUUID"].include?(traderFoundForCopy&.uuid)
                     
                 puts "\n-- Started For #{traderFoundForCopy.uuid} #{sequence.to_enum.to_h['type']} #{sequence.to_enum.to_h['direction']} --\n"
                 listToTrade = traderFoundForCopy&.authorizedList.present? ? traderFoundForCopy&.authorizedList&.delete(' ').split(",") : []
