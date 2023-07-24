@@ -1,6 +1,6 @@
 class Oanda < ApplicationRecord
   def self.oandaRequest(token, accountID)
-    @oanda = OandaApiV20.new(access_token: token)
+    @oanda = OandaApiV20.new(access_token: token, practice: true)
   end
 
   def self.oandaAccount(token, accountID)
@@ -13,7 +13,7 @@ class Oanda < ApplicationRecord
     accountBalance = accountToFind['account']['balance'].to_f
   end
 
-  def self.oandaPendingOrders(token, accountID)
+  def self.oandaPendingOrders(token, accountID) 
     oandaRequest(token, accountID).account(accountID).pending_orders.show
   end
 
