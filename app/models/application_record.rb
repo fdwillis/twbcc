@@ -8,7 +8,7 @@ class ApplicationRecord < ActiveRecord::Base
       @openTrades = Oanda.oandaPendingOrders(apiKey, secretKey)['orders']
       @closedTrades = Oanda.oandaRequest(apiKey, secretKey).account(secretKey).open_trades.show['trades']
 
-      (@closedTrades + @openTrades).each do |tradeX|
+      (@openTrades).each do |tradeX|
         Trade.find_or_create_by(uuid: tradeX['id'], ticker:tvData['ticker'], traderID: tvData['traderID'], broker: tvData['broker'], cost: tradeX['initialMarginRequired'].to_f)
         begin
 
