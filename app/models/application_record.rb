@@ -51,9 +51,12 @@ class ApplicationRecord < ActiveRecord::Base
             end
           end
         elsif tvData['killType'] == 'all'
+          # kill buy sell/put
           @openTrades.each do |tradeX|
-            cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX['id'])
-            puts "\n-- KILLED #{tradeX['id']} --\n"
+            if tradeX['units'].to_f.negative?
+              cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX['id'])
+              puts "\n-- KILLED #{tradeX['id']} --\n"
+            end
           end
               
           (@closedTrades).each do |tradeX|
@@ -91,9 +94,12 @@ class ApplicationRecord < ActiveRecord::Base
             end
           end
         elsif tvData['killType'] == 'all'
+          # kill buy sell/put
           @openTrades.each do |tradeX|
-            cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX['id'])
-            puts "\n-- KILLED #{tradeX['id']} --\n"
+            if tradeX['units'].to_f.positive?
+              cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX['id'])
+              puts "\n-- KILLED #{tradeX['id']} --\n"
+            end
           end
 
           (@closedTrades).each do |tradeX|
