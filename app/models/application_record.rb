@@ -5,8 +5,8 @@ class ApplicationRecord < ActiveRecord::Base
     if tvData['broker'] == 'OANDA'
 
       @userX = User.find_by(oandaToken: apiKey)
-      @openTrades = Oanda.oandaPendingOrders(apiKey, secretKey)['orders']
-      @closedTrades = Oanda.oandaRequest(apiKey, secretKey).account(secretKey).open_trades.show['trades']
+      @openTrades = Oanda.oandaPendingOrders(apiKey, secretKey)['orders'].reject{|d|d['instrument'].delete('_') != tvData['ticker']}
+      @closedTrades = Oanda.oandaRequest(apiKey, secretKey).account(secretKey).open_trades.show['trades'].reject{|d|d['instrument'].delete('_') != tvData['ticker']}
 
       (@closedTrades).each do |tradeX|
         @userX.trades.find_or_create_by(uuid: tradeX['id'], ticker:tvData['ticker'], traderID: tvData['traderID'], broker: tvData['broker'], cost: tradeX['initialMarginRequired'].to_f)
@@ -38,9 +38,9 @@ class ApplicationRecord < ActiveRecord::Base
         elsif (tvData['killType'] == 'profit')
               
           @closedTrades.each do |tradeX|
-            ourTradeX = @userX.trades.find_by(uuid: tradeX['id'])
             begin
               if tradeX['unrealizedPL'].to_f > 0.05  && tradeX['initialUnits'].to_i.negative? #and proper units
+                ourTradeX = @userX.trades.find_by(uuid: tradeX['id'])
                 takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, ourTradeX, tradeX, 'reduce')
               end   
             rescue Exception => e
@@ -60,8 +60,8 @@ class ApplicationRecord < ActiveRecord::Base
           end
               
           (@closedTrades).each do |tradeX|
-            ourTradeX = @userX.trades.find_by(uuid: tradeX['id'])
             begin
+              ourTradeX = @userX.trades.find_by(uuid: tradeX['id'])
               takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, ourTradeX, tradeX, 'kill')
             rescue Exception => e
               
@@ -81,10 +81,9 @@ class ApplicationRecord < ActiveRecord::Base
         elsif (tvData['killType'] == 'profit')
               
            @closedTrades.each do |tradeX|
-            ourTradeX = @userX.trades.find_by(uuid: tradeX['id'])
             begin 
               if tradeX['unrealizedPL'].to_f > 0.05 && tradeX['initialUnits'].to_i.positive?#and proper units
-                
+                ourTradeX = @userX.trades.find_by(uuid: tradeX['id'])
                 takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, ourTradeX, tradeX, 'reduce')
               end              
             rescue Exception => e
@@ -103,8 +102,8 @@ class ApplicationRecord < ActiveRecord::Base
           end
 
           (@closedTrades).each do |tradeX|
-            ourTradeX = @userX.trades.find_by(uuid: tradeX['id'])
             begin
+              ourTradeX = @userX.trades.find_by(uuid: tradeX['id'])
               takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, ourTradeX, tradeX, 'kill')
             rescue Exception => e
             
@@ -378,8 +377,7 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def self.newEntry(tvData, apiKey = nil, secretKey = nil)
-    # if allowMarketOrder -> market order
-    # if entries.count > 0 -> limit order
+    # if there is a current open/pending trade -> do not make new one (let it fill or cancel when it flips)
     currentFilledListToSum =  @traderFound&.trades
 
     if tvData['broker'] == 'OANDA'
