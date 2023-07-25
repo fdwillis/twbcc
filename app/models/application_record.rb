@@ -42,7 +42,6 @@ class ApplicationRecord < ActiveRecord::Base
             begin
               if tradeX['unrealizedPL'].to_f > 0.05  && tradeX['initialUnits'].to_i.negative? #and proper units
                 takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, ourTradeX, tradeX, 'reduce')
-                puts takeProfitX
               end   
             rescue Exception => e
               
@@ -61,7 +60,6 @@ class ApplicationRecord < ActiveRecord::Base
             ourTradeX = @userX.trades.find_by(uuid: tradeX['id'])
             begin
               takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, ourTradeX, tradeX, 'kill')
-              puts takeProfitX
             rescue Exception => e
               
               break
@@ -85,7 +83,6 @@ class ApplicationRecord < ActiveRecord::Base
               if tradeX['unrealizedPL'].to_f > 0.05 && tradeX['initialUnits'].to_i.positive?#and proper units
                 
                 takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, ourTradeX, tradeX, 'reduce')
-                puts takeProfitX
               end              
             rescue Exception => e
               
@@ -103,7 +100,6 @@ class ApplicationRecord < ActiveRecord::Base
             ourTradeX = @userX.trades.find_by(uuid: tradeX['id'])
             begin
               takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, ourTradeX, tradeX, 'kill')
-              puts takeProfitX
             rescue Exception => e
             
               break
