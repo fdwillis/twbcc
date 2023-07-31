@@ -5,7 +5,7 @@ class ApplicationRecord < ActiveRecord::Base
     if tvData['broker'] == 'OANDA'
 
       @userX = User.find_by(oandaToken: apiKey)
-      @openTrades = Oanda.oandaPendingOrders(apiKey, secretKey)['orders'].reject{|d|d['type'] == 'TAKE_PROFIT'}.reject{|d|d['instrument'].delete('_') != tvData['ticker']}
+      @openTrades = Oanda.oandaPendingOrders(apiKey, secretKey)['orders']&.reject{|d|d['type'] == 'TAKE_PROFIT'}&.reject{|d|d['type'] == 'STOP_LOSS'}&.reject{|d|d['instrument'].delete('_') != tvData['ticker']}
       @closedTrades = Oanda.oandaRequest(apiKey, secretKey).account(secretKey).open_trades.show['trades'].reject{|d|d['instrument'].delete('_') != tvData['ticker']}
 
       (@closedTrades).each do |tradeX|
