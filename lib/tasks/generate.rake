@@ -117,17 +117,24 @@ namespace :generate do
       if trade&.broker == 'KRAKEN'
           trade.destroy! 
       elsif trade&.broker == 'OANDA'
-        trade&.user&.oandaList.split(',').each do |accountID|
-          @requestK = Oanda.oandaOrder(trade&.user&.oandaToken, accountID, trade.uuid)
-          @requestTTrade = Oanda.oandaTrade(userForLoad.oandaToken, accountID, @requestK['order']['tradeOpenedID'])
-        end
-        if @requestK['order']['state'] == 'CANCELLED'
-          trade.destroy! if trade.status == 'canceled'
-        end
-        
-        if @requestK['order']['type'] != 'LIMIT'
-          trade.update(cost: @requestTTrade['trade']['initialMarginRequired'].to_f)
-          trade.update(status: 'closed') if @requestK['order']['state'] == 'FILLED'
+        begin
+          trade&.user&.oandaList.split(',').each do |accountID|
+            @requestK = Oanda.oandaOrder(trade&.user&.oandaToken, accountID, trade.uuid)
+            @requestTTrade = Oanda.oandaTrade(userForLoad.oandaToken, accountID, @requestK['order']['tradeOpenedID'])
+          end
+
+          if @requestK['order']['state'] == 'CANCELLED'
+            trade.destroy! if trade.status == 'canceled'
+          end
+          
+          if @requestK['order']['type'] != 'LIMIT'
+            trade.update(cost: @requestTTrade['trade']['initialMarginRequired'].to_f)
+            trade.update(status: 'closed') if @requestK['order']['state'] == 'FILLED'
+          end
+        rescue Exception => e
+
+            break
+          
         end
       end
     end
