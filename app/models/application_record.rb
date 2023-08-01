@@ -161,10 +161,10 @@ class ApplicationRecord < ActiveRecord::Base
       afterUpdates.each do |tradeX|
         puts "\n-- Starting For #{tradeX.uuid} --\n"
         if tradeX&.broker == 'OANDA'
-          @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, tradeX.uuid)
+          @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, tradeX.uuid)['trade']
           
-          originalPrice = @requestOriginalE['trade']['price'].present? ? @requestOriginalE['trade']['price'].to_f : 0
-          originalVolume = @requestOriginalE['trade']['initialUnits'].to_f
+          originalPrice = @requestOriginalE['price'].present? ? @requestOriginalE['price'].to_f : 0
+          originalVolume = @requestOriginalE['initialUnits'].to_f
         elsif tradeX&.broker == 'TRADIER'
         end
 
@@ -179,8 +179,8 @@ class ApplicationRecord < ActiveRecord::Base
 
         trailPrice =  (tvData['type'] == 'sellStop' ? (((0.01 * tvData['trail'].to_f) *  tvData['currentPrice'].to_f) + tvData['currentPrice'].to_f) : (( tvData['currentPrice'].to_f - ((0.01 * tvData['trail'].to_f) *  tvData['currentPrice'].to_f)))).round(5).to_s
         
-        if  @requestOriginalE['trade']['unrealizedPL'].to_f >= 0.05
-          if @requestOriginalE['trade']['currentUnits'].to_f.positive?
+        if  @requestOriginalE['unrealizedPL'].to_f >= 0.05
+          if @requestOriginalE['currentUnits'].to_f.positive?
             if tvData['direction'] == 'buy'
               if tradeX.take_profits.size == 0
                 if  tvData['broker'] == 'OANDA'
@@ -216,7 +216,7 @@ class ApplicationRecord < ActiveRecord::Base
                     openProfitCount += 1
                     
                     if  tvData['broker'] == 'OANDA'
-                      if @requestOriginalE['trade']['currentUnits'].to_f > 0 && @requestOriginalE['trade']['unrealizedPL'].to_f >= 0.05 && (tvData['currentPrice'].to_f > trailPrice)
+                      if @requestOriginalE['currentUnits'].to_f > 0 && @requestOriginalE['unrealizedPL'].to_f >= 0.05 && (tvData['currentPrice'].to_f > trailPrice)
                         cancel = Oanda.oandaCancel(apiKey, secretKey, profitTrade.uuid)
                         puts "\n-- Old Take Profit Canceled --\n"
                         @protectTrade = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'reduce')
@@ -266,7 +266,7 @@ class ApplicationRecord < ActiveRecord::Base
                 end
               end
             end
-          elsif @requestOriginalE['trade']['currentUnits'].to_f.negative?
+          elsif @requestOriginalE['currentUnits'].to_f.negative?
             if tvData['direction'] == 'sell'
 
               if tradeX.take_profits.size == 0
@@ -303,7 +303,7 @@ class ApplicationRecord < ActiveRecord::Base
                     openProfitCount += 1
 
                     if tvData['broker'] == 'OANDA'
-                      if @requestOriginalE['trade']['currentUnits'].to_f < 0 && @requestOriginalE['trade']['unrealizedPL'].to_f >= 0.05 && (tvData['currentPrice'].to_f < trailPrice)
+                      if @requestOriginalE['currentUnits'].to_f < 0 && @requestOriginalE['unrealizedPL'].to_f >= 0.05 && (tvData['currentPrice'].to_f < trailPrice)
                         cancel = Oanda.oandaCancel(apiKey, secretKey, profitTrade.uuid)
                         puts "\n-- Old Take Profit Canceled --\n"
                         @protectTrade = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'reduce')
@@ -326,7 +326,7 @@ class ApplicationRecord < ActiveRecord::Base
                   if openProfitCount == 0
                     if tvData['broker'] == 'OANDA'
                       @protectTrade = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'reduce')
-                      if @requestOriginalE['trade']['currentUnits'].to_f < 0 && @requestOriginalE['trade']['unrealizedPL'].to_f >= 0.05
+                      if @requestOriginalE['currentUnits'].to_f < 0 && @requestOriginalE['unrealizedPL'].to_f >= 0.05
 
                         if @protectTrade.present? && !@protectTrade.empty?&& !@protectTrade.nil?# && @protectTrade['orderCreateTransaction']['id'].present?
                           puts  "\n-- Additional Take Profit #{@protectTrade['orderCreateTransaction']['id']} --\n"
@@ -354,7 +354,7 @@ class ApplicationRecord < ActiveRecord::Base
             end
           end
         else
-          if @requestOriginalE['trade']['currentUnits'].to_f.abs == 0
+          if @requestOriginalE['currentUnits'].to_f.abs == 0
             tradeX.update(finalTakeProfit: tradeX.take_profits.present? ? tradeX.take_profits.last.uuid : 'closed')
           else
             puts "\n-- Waiting For Profit --\n"
