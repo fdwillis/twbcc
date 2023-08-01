@@ -125,7 +125,7 @@ class ApplicationRecord < ActiveRecord::Base
   def self.trailStop(tvData, apiKey = nil, secretKey = nil)
     if tvData['broker'] == 'OANDA'
       @userX = User.find_by(oandaToken: apiKey)
-      @openTrades = @userX.trades.where(broker: 'OANDA')
+      @openTrades = @userX.trades.where(broker: 'OANDA', ticker: tvData['ticker'])
       @traderFound = @userX
     elsif tvData['broker'] == 'TRADIER'
     end
@@ -139,9 +139,9 @@ class ApplicationRecord < ActiveRecord::Base
           
           if requestK['trade']['state'] == 'CANCELLED'
             trade.update(status: 'canceled', direction: requestK['trade']['units'].to_f.negative? ? 'sell' : 'buy')
-          elsif requestK['trade']['state'] == 'PENDING'
+          elsif requestK['trade']['state'] == 'OPEN'
             trade.update(status: 'open', direction: requestK['trade']['units'].to_f.negative? ? 'sell' : 'buy')
-          elsif requestK['trade']['state'] == 'FILLED'
+          elsif requestK['trade']['state'] == 'CLOSED'
             trade.update(status: 'closed', direction: requestK['trade']['units'].to_f.negative? ? 'sell' : 'buy')
           end
         elsif trade&.broker == 'TRADIER'
@@ -150,7 +150,7 @@ class ApplicationRecord < ActiveRecord::Base
     end
     # pull closed/filled bot trades
     if tvData['broker'] == 'OANDA'
-      afterUpdates =  @userX.trades.where(status: 'closed', broker: 'OANDA', direction: tvData['direction'] == 'sell' ? 'buy' : 'sell')
+      afterUpdates =  @userX.trades.where(status: 'open', broker: 'OANDA', direction: tvData['direction'] == 'sell' ? 'buy' : 'sell')
     elsif tvData['broker'] == 'TRADIER'
     end
 
@@ -194,13 +194,13 @@ class ApplicationRecord < ActiveRecord::Base
                 end
               else
 
-                tradeX.take_profits.each do |profitTrade|
+                tradeX.take_profits.each  do |profitTrade|
                   if  tvData['broker'] == 'OANDA'
                     requestProfitTradex = Oanda.oandaTrade(apiKey, secretKey, profitTrade.uuid)
 
-                    if requestProfitTradex['trade']['state'] == 'FILLED'
+                    if requestProfitTradex['trade']['state'] == 'CLOSED'
                       profitTrade.update(status: 'closed')
-                    elsif requestProfitTradex['trade']['state'] == 'PENDING'
+                    elsif requestProfitTradex['trade']['state'] == 'OPEN'
                       profitTrade.update(status: 'open')
                     elsif requestProfitTradex['trade']['state'] == 'CANCELLED'
                       profitTrade.update(status: 'canceled')
@@ -256,7 +256,7 @@ class ApplicationRecord < ActiveRecord::Base
                   
                     if checkFill['trade']['state'] == 'PENDING'
                       tradeX.update(finalTakeProfit: nil)
-                    elsif checkFill['trade']['state'] == 'FILLED'
+                    elsif checkFill['trade']['state'] == 'CLOSED'
                       tradeX.update(finalTakeProfit:  tradeX.take_profits.last.uuid)
                       tradeX.take_profits.last.update(status: 'closed')
                     end
@@ -285,9 +285,9 @@ class ApplicationRecord < ActiveRecord::Base
                   if tvData['broker'] == 'OANDA'
                     requestProfitTradex = Oanda.oandaTrade(apiKey, secretKey, profitTrade.uuid)
 
-                    if requestProfitTradex['trade']['state'] == 'FILLED'
+                    if requestProfitTradex['trade']['state'] == 'CLOSED'
                       profitTrade.update(status: 'closed')
-                    elsif requestProfitTradex['trade']['state'] == 'PENDING'
+                    elsif requestProfitTradex['trade']['state'] == 'OPEN'
                       profitTrade.update(status: 'open')
                     elsif requestProfitTradex['trade']['state'] == 'CANCELLED'
                       profitTrade.update(status: 'canceled')
@@ -341,7 +341,7 @@ class ApplicationRecord < ActiveRecord::Base
                     checkFill = Oanda.oandaTrade(apiKey, secretKey, trade.uuid)
                     if checkFill['trade']['state'] == 'PENDING'
                       tradeX.update(finalTakeProfit: nil)
-                    elsif checkFill['trade']['state'] == 'FILLED'
+                    elsif checkFill['trade']['state'] == 'CLOSED'
                       tradeX.update(finalTakeProfit:  tradeX.take_profits.last.uuid)
                       tradeX.take_profits.last.update(status: 'closed')
                     end
