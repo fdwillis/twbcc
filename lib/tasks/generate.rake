@@ -122,13 +122,13 @@ namespace :generate do
             @requestTTrade = Oanda.oandaTrade(userForLoad.oandaToken, accountID, trade.uuid)
           end
 
-          if @requestK['order']['state'] == 'CANCELLED'
+          if @requestK['trade']['state'] == 'CANCELLED'
             trade.destroy! if trade.status == 'canceled'
           end
           
-          if @requestK['order']['type'] != 'LIMIT'
+          if @requestK['trade']['type'] != 'LIMIT'
             trade.update(cost: @requestTTrade['trade']['initialMarginRequired'].to_f)
-            trade.update(status: 'closed') if @requestK['order']['state'] == 'FILLED'
+            trade.update(status: 'closed') if @requestK['trade']['state'] == 'FILLED'
           end
           puts @requestTTrade
         rescue Exception => e
