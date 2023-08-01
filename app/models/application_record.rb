@@ -188,7 +188,7 @@ class ApplicationRecord < ActiveRecord::Base
                   @protectTrade = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'reduce')
                   
                   if @protectTrade.present? && !@protectTrade.empty?&& !@protectTrade.nil?# && @protectTrade['orderCreateTransaction']['id'].present?
-                    puts 	"\n-- Taking Profit #{@protectTrade['orderCreateTransaction']['id']} --\n"
+                    puts 	"\n-- Taking Profit #{tradeX.uuid} --\n"
                   end
 
                 elsif tvData['broker'] == 'TRADIER'
@@ -222,7 +222,7 @@ class ApplicationRecord < ActiveRecord::Base
                         @protectTrade = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'reduce')
                         
                         if @protectTrade.present? && !@protectTrade.empty?&& !@protectTrade.nil?# && @protectTrade['orderCreateTransaction']['id'].present?
-                          puts  "\n-- Repainting Take Profit #{@protectTrade['orderCreateTransaction']['id']} --\n"
+                          puts  "\n-- Repainting Take Profit #{tradeX.uuid} --\n"
                         end
                         break
                       end
@@ -243,7 +243,7 @@ class ApplicationRecord < ActiveRecord::Base
                       @protectTrade = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'reduce')
                       
                       if @protectTrade.present? && !@protectTrade.empty?&& !@protectTrade.nil?# && @protectTrade['orderCreateTransaction']['id'].present?
-                        puts  "\n-- Additional Take Profit #{@protectTrade['orderCreateTransaction']['id']} --\n"
+                        puts  "\n-- Additional Take Profit #{tradeX.uuid} --\n"
                       end
 
                     elsif tvData['broker'] == 'TRADIER'
@@ -275,7 +275,7 @@ class ApplicationRecord < ActiveRecord::Base
                   @protectTrade = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'reduce')
                   
                   if @protectTrade.present? && !@protectTrade.empty?&& !@protectTrade.nil?# && @protectTrade['orderCreateTransaction']['id'].present?
-                    puts  "\n-- Taking Profit #{@protectTrade['orderCreateTransaction']['id']} --\n"
+                    puts  "\n-- Taking Profit #{tradeX.uuid} --\n"
                   end
 
                 elsif tvData['broker'] == 'TRADIER'
@@ -309,7 +309,7 @@ class ApplicationRecord < ActiveRecord::Base
                         @protectTrade = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'reduce')
                         
                         if @protectTrade.present? && !@protectTrade.empty?&& !@protectTrade.nil?# && @protectTrade['orderCreateTransaction']['id'].present?
-                          puts  "\n-- Repainting Take Profit #{@protectTrade['orderCreateTransaction']['id']} --\n"
+                          puts  "\n-- Repainting Take Profit #{tradeX.uuid} --\n"
                         end
                       end
                     elsif tvData['broker'] == 'TRADIER'
@@ -329,7 +329,7 @@ class ApplicationRecord < ActiveRecord::Base
                       if @requestOriginalE['currentUnits'].to_f < 0 && @requestOriginalE['unrealizedPL'].to_f >= 0.05
 
                         if @protectTrade.present? && !@protectTrade.empty?&& !@protectTrade.nil?# && @protectTrade['orderCreateTransaction']['id'].present?
-                          puts  "\n-- Additional Take Profit #{@protectTrade['orderCreateTransaction']['id']} --\n"
+                          puts  "\n-- Additional Take Profit #{tradeX.uuid} --\n"
                         end
                       end
                     elsif tvData['broker'] == 'TRADIER'
