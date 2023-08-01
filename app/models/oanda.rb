@@ -65,9 +65,9 @@ class Oanda < ApplicationRecord
     end
     
     requestProfit = oandaRequest(token, accountID).account(accountID).position(oandaTicker, options).close
-    puts requestProfit
+
     if requestProfit.present? && !requestProfit.empty?&& !requestProfit.nil?
-      tradeX.take_profits.create!(ticker: tvData['ticker'], profitLoss: tvData['direction'] == 'buy' ?  requestProfit['shortOrderFillTransaction']['pl'] : requestProfit['longOrderFillTransaction']['pl'], traderID: tvData['traderID'], uuid: tvData['direction'] == 'buy' ?  requestProfit['shortOrderFillTransaction']['id'] : requestProfit['longOrderFillTransaction']['id'], status: 'closed', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(oandaToken: token).id)
+      tradeX.take_profits.create!(ticker: tvData['ticker'], profitLoss: tvData['direction'] == 'buy' ?  requestProfit['longOrderFillTransaction']['pl'] : requestProfit['shortOrderFillTransaction']['pl'], traderID: tvData['traderID'], uuid: tvData['direction'] == 'buy' ?  requestProfit['longOrderFillTransaction']['id'] : requestProfit['shortOrderFillTransaction']['id'], status: 'closed', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(oandaToken: token).id)
      end
      
     requestProfit
