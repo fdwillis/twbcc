@@ -133,6 +133,7 @@ namespace :generate do
           puts @requestTTrade
         rescue Exception => e
             puts e
+            trade.destroy!
             next
           
         end
