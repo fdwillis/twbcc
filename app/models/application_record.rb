@@ -138,11 +138,11 @@ class ApplicationRecord < ActiveRecord::Base
           requestK = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
           
           if requestK['order']['state'] == 'CANCELLED'
-            trade.update(status: 'canceled')
+            trade.update(status: 'canceled', direction: requestK['order']['units'].to_f.negative? ? 'sell' : 'buy')
           elsif requestK['order']['state'] == 'PENDING'
-            trade.update(status: 'open')
+            trade.update(status: 'open', direction: requestK['order']['units'].to_f.negative? ? 'sell' : 'buy')
           elsif requestK['order']['state'] == 'FILLED'
-            trade.update(status: 'closed')
+            trade.update(status: 'closed', direction: requestK['order']['units'].to_f.negative? ? 'sell' : 'buy')
           end
         elsif trade&.broker == 'TRADIER'
         end
