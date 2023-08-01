@@ -135,7 +135,6 @@ namespace :generate do
             puts e
             trade.destroy!
             next
-          
         end
       end
     end

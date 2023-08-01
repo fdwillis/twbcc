@@ -135,14 +135,14 @@ class ApplicationRecord < ActiveRecord::Base
     if @openTrades.present? && @openTrades.size > 0
       @openTrades.each do |trade|
         if trade&.broker == 'OANDA'
-          requestK = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
+          requestK = Oanda.oandaTrade(apiKey, secretKey, trade.uuid)
           
-          if requestK['order']['state'] == 'CANCELLED'
-            trade.update(status: 'canceled', direction: requestK['order']['units'].to_f.negative? ? 'sell' : 'buy')
-          elsif requestK['order']['state'] == 'PENDING'
-            trade.update(status: 'open', direction: requestK['order']['units'].to_f.negative? ? 'sell' : 'buy')
-          elsif requestK['order']['state'] == 'FILLED'
-            trade.update(status: 'closed', direction: requestK['order']['units'].to_f.negative? ? 'sell' : 'buy')
+          if requestK['trade']['state'] == 'CANCELLED'
+            trade.update(status: 'canceled', direction: requestK['trade']['units'].to_f.negative? ? 'sell' : 'buy')
+          elsif requestK['trade']['state'] == 'PENDING'
+            trade.update(status: 'open', direction: requestK['trade']['units'].to_f.negative? ? 'sell' : 'buy')
+          elsif requestK['trade']['state'] == 'FILLED'
+            trade.update(status: 'closed', direction: requestK['trade']['units'].to_f.negative? ? 'sell' : 'buy')
           end
         elsif trade&.broker == 'TRADIER'
         end
@@ -160,8 +160,7 @@ class ApplicationRecord < ActiveRecord::Base
       afterUpdates.each do |tradeX|
         puts "\n-- Starting For #{tradeX.uuid} --\n"
         if tradeX&.broker == 'OANDA'
-          requestExecution = Oanda.oandaOrder(apiKey, secretKey, tradeX.uuid)
-          @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, requestExecution['order']['fillingTransactionID'])
+          @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, tradeX.uuid)
           
           originalPrice = @requestOriginalE['trade']['price'].present? ? @requestOriginalE['trade']['price'].to_f : 0
           originalVolume = @requestOriginalE['trade']['initialUnits'].to_f
@@ -197,17 +196,17 @@ class ApplicationRecord < ActiveRecord::Base
 
                 tradeX.take_profits.each do |profitTrade|
                   if  tvData['broker'] == 'OANDA'
-                    requestProfitTradex = Oanda.oandaOrder(apiKey, secretKey, profitTrade.uuid)
+                    requestProfitTradex = Oanda.oandaTrade(apiKey, secretKey, profitTrade.uuid)
 
-                    if requestProfitTradex['order']['state'] == 'FILLED'
+                    if requestProfitTradex['trade']['state'] == 'FILLED'
                       profitTrade.update(status: 'closed')
-                    elsif requestProfitTradex['order']['state'] == 'PENDING'
+                    elsif requestProfitTradex['trade']['state'] == 'PENDING'
                       profitTrade.update(status: 'open')
-                    elsif requestProfitTradex['order']['state'] == 'CANCELLED'
+                    elsif requestProfitTradex['trade']['state'] == 'CANCELLED'
                       profitTrade.update(status: 'canceled')
                     end
-                    volumeForProfit = requestProfitTradex['order']['units'].to_f
-                    priceToBeat = requestProfitTradex['order']['price'].to_f
+                    volumeForProfit = requestProfitTradex['trade']['units'].to_f
+                    priceToBeat = requestProfitTradex['trade']['price'].to_f
                   elsif tvData['broker'] == 'TRADIER'
                   end
                   
@@ -253,11 +252,11 @@ class ApplicationRecord < ActiveRecord::Base
                   end
                 else
                   if tvData['broker'] == 'OANDA'
-                    checkFill = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
+                    checkFill = Oanda.oandaTrade(apiKey, secretKey, trade.uuid)
                   
-                    if checkFill['order']['state'] == 'PENDING'
+                    if checkFill['trade']['state'] == 'PENDING'
                       tradeX.update(finalTakeProfit: nil)
-                    elsif checkFill['order']['state'] == 'FILLED'
+                    elsif checkFill['trade']['state'] == 'FILLED'
                       tradeX.update(finalTakeProfit:  tradeX.take_profits.last.uuid)
                       tradeX.take_profits.last.update(status: 'closed')
                     end
@@ -284,17 +283,17 @@ class ApplicationRecord < ActiveRecord::Base
 
                 tradeX.take_profits.each do |profitTrade|
                   if tvData['broker'] == 'OANDA'
-                    requestProfitTradex = Oanda.oandaOrder(apiKey, secretKey, profitTrade.uuid)
+                    requestProfitTradex = Oanda.oandaTrade(apiKey, secretKey, profitTrade.uuid)
 
-                    if requestProfitTradex['order']['state'] == 'FILLED'
+                    if requestProfitTradex['trade']['state'] == 'FILLED'
                       profitTrade.update(status: 'closed')
-                    elsif requestProfitTradex['order']['state'] == 'PENDING'
+                    elsif requestProfitTradex['trade']['state'] == 'PENDING'
                       profitTrade.update(status: 'open')
-                    elsif requestProfitTradex['order']['state'] == 'CANCELLED'
+                    elsif requestProfitTradex['trade']['state'] == 'CANCELLED'
                       profitTrade.update(status: 'canceled')
                     end
-                    volumeForProfit = requestProfitTradex['order']['units'].to_f
-                    priceToBeat = requestProfitTradex['order']['price'].to_f
+                    volumeForProfit = requestProfitTradex['trade']['units'].to_f
+                    priceToBeat = requestProfitTradex['trade']['price'].to_f
                   elsif tvData['broker'] == 'TRADIER'
                   end
 
@@ -339,10 +338,10 @@ class ApplicationRecord < ActiveRecord::Base
                   end
                 else
                   if tvData['broker'] == 'OANDA'
-                    checkFill = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
-                    if checkFill['order']['state'] == 'PENDING'
+                    checkFill = Oanda.oandaTrade(apiKey, secretKey, trade.uuid)
+                    if checkFill['trade']['state'] == 'PENDING'
                       tradeX.update(finalTakeProfit: nil)
-                    elsif checkFill['order']['state'] == 'FILLED'
+                    elsif checkFill['trade']['state'] == 'FILLED'
                       tradeX.update(finalTakeProfit:  tradeX.take_profits.last.uuid)
                       tradeX.take_profits.last.update(status: 'closed')
                     end
