@@ -130,8 +130,9 @@ namespace :generate do
             trade.update(cost: @requestTTrade['trade']['initialMarginRequired'].to_f)
             trade.update(status: 'closed') if @requestK['order']['state'] == 'FILLED'
           end
+          puts @requestTTrade
         rescue Exception => e
-
+            puts e
             break
           
         end
