@@ -181,7 +181,7 @@ class ApplicationRecord < ActiveRecord::Base
         
         if  @requestOriginalE['trade']['unrealizedPL'].to_f >= 0.05
           if @requestOriginalE['trade']['currentUnits'].to_f.positive?
-            if tvData['direction'] == 'sell'
+            if tvData['direction'] == 'buy'
               if tradeX.take_profits.size == 0
                 if  tvData['broker'] == 'OANDA'
                 
@@ -267,7 +267,7 @@ class ApplicationRecord < ActiveRecord::Base
               end
             end
           elsif @requestOriginalE['trade']['currentUnits'].to_f.negative?
-            if tvData['direction'] == 'buy'
+            if tvData['direction'] == 'sell'
 
               if tradeX.take_profits.size == 0
                   
