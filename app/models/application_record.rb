@@ -125,7 +125,7 @@ class ApplicationRecord < ActiveRecord::Base
   def self.trailStop(tvData, apiKey = nil, secretKey = nil)
     if tvData['broker'] == 'OANDA'
       @userX = User.find_by(oandaToken: apiKey)
-      @openTrades = @userX.trades.where(broker: 'OANDA', finalTakeProfit:nil, direction: tvData['direction'] == 'sell' ? 'buy' : 'sell')
+      @openTrades = @userX.trades.where(broker: 'OANDA')
       @traderFound = @userX
     elsif tvData['broker'] == 'TRADIER'
     end
@@ -150,7 +150,7 @@ class ApplicationRecord < ActiveRecord::Base
     end
     # pull closed/filled bot trades
     if tvData['broker'] == 'OANDA'
-      afterUpdates =  @userX.trades.where(status: 'closed', broker: 'OANDA', finalTakeProfit: nil, direction: tvData['direction'] == 'sell' ? 'buy' : 'sell')
+      afterUpdates =  @userX.trades.where(status: 'closed', broker: 'OANDA', direction: tvData['direction'] == 'sell' ? 'buy' : 'sell')
     elsif tvData['broker'] == 'TRADIER'
     end
 
@@ -175,14 +175,6 @@ class ApplicationRecord < ActiveRecord::Base
         if tradeX&.broker == 'OANDA'
           profitTriggerPassed = (originalPrice + profitTrigger).round(5).to_f
         elsif tradeX&.broker == 'TRADIER'
-        end
-
-        if tradeX&.broker == 'OANDA'
-          oandaOrderParams = {
-            'stopLoss' => {
-              'distance' => (tvData['type'] == 'sellStop' ? (((0.01 * tvData['trail'].to_f) *  tvData['currentPrice'].to_f) + tvData['currentPrice'].to_f - (tvData['currentPrice'].to_f)) : (tvData['currentPrice'].to_f) - ( tvData['currentPrice'].to_f - ((0.01 * tvData['trail'].to_f) *  tvData['currentPrice'].to_f))).round(3),
-            }
-          }
         end
 
         trailPrice =  (tvData['type'] == 'sellStop' ? (((0.01 * tvData['trail'].to_f) *  tvData['currentPrice'].to_f) + tvData['currentPrice'].to_f) : (( tvData['currentPrice'].to_f - ((0.01 * tvData['trail'].to_f) *  tvData['currentPrice'].to_f)))).round(5).to_s
