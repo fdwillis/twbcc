@@ -1,3 +1,4 @@
+# tvData = {"currentPrice"=>1.33, "direction"=>"buy", "ticker"=>"USDCAD", "traderID"=>"d57307d7", "broker"=>"OANDA", 'trail' => 0.30, 'type' => 'buyStop'}
 class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
 
@@ -150,7 +151,7 @@ class ApplicationRecord < ActiveRecord::Base
     end
     # pull closed/filled bot trades
     if tvData['broker'] == 'OANDA'
-      afterUpdates =  @userX.trades.where(status: 'open', broker: 'OANDA', direction: tvData['direction'] == 'sell' ? 'buy' : 'sell')
+      afterUpdates =  @userX.trades.where(status: 'open', broker: 'OANDA', direction: tvData['direction'] == 'sell' ? 'sell' : 'buy')
     elsif tvData['broker'] == 'TRADIER'
     end
 
