@@ -1,4 +1,4 @@
-# tvData = {"currentPrice"=>1.33, "direction"=>"buy", "ticker"=>"USDCAD", "traderID"=>"d57307d7", "broker"=>"OANDA", 'trail' => 0.30, 'type' => 'buyStop'}
+# tvData = {"direction"=>"buy", "ticker"=>"EURJPY", "traderID"=>"d57307d7", "broker"=>"OANDA", 'type' => 'kill', 'killType' => 'all'}
 class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
 
@@ -80,7 +80,7 @@ class ApplicationRecord < ActiveRecord::Base
           end
         elsif (tvData['killType'] == 'profit')
               
-           @closedTrades.each do |tradeX|
+          @closedTrades.each do |tradeX|
             begin 
               if tradeX['unrealizedPL'].to_f * (0.01 * traderFound&.reduceBy) >= 0.05 && tradeX['initialUnits'].to_i.positive?#and proper units
                 takeProfitX = Oanda.closePosition(apiKey, secretKey, tvData, ourTradeX, tradeX, 'reduce')
@@ -182,7 +182,7 @@ class ApplicationRecord < ActiveRecord::Base
 
         trailPrice =  (tvData['type'] == 'sellStop' ? (((0.01 * tvData['trail'].to_f) *  tvData['currentPrice'].to_f) + tvData['currentPrice'].to_f) : (( tvData['currentPrice'].to_f - ((0.01 * tvData['trail'].to_f) *  tvData['currentPrice'].to_f)))).round(5).to_s
         # make trail proce profir trigger 
-        if  @requestOriginalE['unrealizedPL'].to_f * (0.01 * traderFound&.reduceBy) >= 0.05
+        if  @requestOriginalE['unrealizedPL'].to_f * (0.01 * @traderFound&.reduceBy) >= 0.05
           if @requestOriginalE['currentUnits'].to_f.positive?
             if tvData['direction'] == 'buy'
               if tradeX.take_profits.size == 0

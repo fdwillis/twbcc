@@ -1,3 +1,5 @@
+# tvData = {"currentPrice"=>1.33, "direction"=>"buy", "ticker"=>"USDCAD", "traderID"=>"d57307d7", "broker"=>"OANDA", 'trail' => 0.30, 'type' => 'buyStop'}
+
 class Oanda < ApplicationRecord
   def self.oandaRequest(token, accountID)
     @oanda = OandaApiV20.new(access_token: token)
@@ -37,7 +39,7 @@ class Oanda < ApplicationRecord
     oandaRequest(token, accountID).account(accountID).trade(tradeID).show
   end
 
-   def self.oandaUpdateTrade(tvData, token, accountID, tradeID, orderParams, tradeX)
+  def self.oandaUpdateTrade(tvData, token, accountID, tradeID, orderParams, tradeX)
     trailSet = oandaRequest(token, accountID).account(accountID).trade(tradeID, orderParams).update
     madeRecord = tradeX.take_profits.create!(ticker: tvData['ticker'], traderID: tvData['traderID'], uuid: trailSet['stopLossOrderTransaction']['id'], status: 'open', direction: tvData['direction'], broker: tvData['broker'], user_id: User.find_by(oandaToken: token).id)
     trailSet
