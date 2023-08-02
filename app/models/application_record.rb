@@ -136,6 +136,7 @@ class ApplicationRecord < ActiveRecord::Base
     if @openTrades.present? && @openTrades.size > 0
       @openTrades.each do |trade|
         if trade&.broker == 'OANDA'
+          puts @userX
           requestK = Oanda.oandaTrade(apiKey, secretKey, trade.uuid.to_i - 1)
           
           if requestK['trade']['state'] == 'CANCELLED'
