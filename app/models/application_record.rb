@@ -137,7 +137,7 @@ class ApplicationRecord < ActiveRecord::Base
       @openTrades.each do |trade|
         @userX.trades.find_or_create_by(uuid: trade['id'], ticker:tvData['ticker'], traderID: tvData['traderID'], broker: tvData['broker'], cost: trade['initialMarginRequired'].to_f, direction: trade['currentUnits'].to_f.negative? ? 'sell' : 'buy')
 
-        if trade&.broker == 'OANDA'
+        if tvData['ticker'] == 'OANDA'
           requestK = Oanda.oandaOrder(apiKey, secretKey, trade['id'])
             
           if requestK['order']['state'] == 'CANCELLED'
@@ -148,7 +148,7 @@ class ApplicationRecord < ActiveRecord::Base
             @userX.trades.find_by(uuid: trade['id']).update(status: 'closed')
           end
 
-        elsif trade&.broker == 'TRADIER'
+        elsif tvData['ticker'] == 'TRADIER'
         end
       end
     end
