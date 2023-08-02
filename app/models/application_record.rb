@@ -201,7 +201,7 @@ class ApplicationRecord < ActiveRecord::Base
 
                     if requestProfitTradex['order']['state'] == 'FILLED'
                       profitTrade.update(status: 'closed')
-                    elsif requestProfitTradex['order']['state'] == 'OPEN'
+                    elsif requestProfitTradex['order']['state'] == 'PENDING'
                       profitTrade.update(status: 'open')
                     elsif requestProfitTradex['order']['state'] == 'CANCELLED'
                       profitTrade.update(status: 'canceled')
