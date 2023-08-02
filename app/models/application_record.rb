@@ -199,15 +199,15 @@ class ApplicationRecord < ActiveRecord::Base
                   if  tvData['broker'] == 'OANDA'
                     requestProfitTradex = Oanda.oandaTrade(apiKey, secretKey, profitTrade.uuid)
 
-                    if requestProfitTradex['trade']['state'] == 'CLOSED'
+                    if requestProfitTradex['order']['state'] == 'FILLED'
                       profitTrade.update(status: 'closed')
-                    elsif requestProfitTradex['trade']['state'] == 'OPEN'
+                    elsif requestProfitTradex['order']['state'] == 'OPEN'
                       profitTrade.update(status: 'open')
-                    elsif requestProfitTradex['trade']['state'] == 'CANCELLED'
+                    elsif requestProfitTradex['order']['state'] == 'CANCELLED'
                       profitTrade.update(status: 'canceled')
                     end
-                    volumeForProfit = requestProfitTradex['trade']['units'].to_f
-                    priceToBeat = requestProfitTradex['trade']['price'].to_f
+                    volumeForProfit = requestProfitTradex['order']['units'].to_f
+                    priceToBeat = requestProfitTradex['order']['price'].to_f
                   elsif tvData['broker'] == 'TRADIER'
                   end
                   
