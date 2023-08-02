@@ -164,7 +164,7 @@ class ApplicationRecord < ActiveRecord::Base
       afterUpdates.each do |tradeX|
         puts "\n-- Starting For #{tradeX.uuid} --\n"
         if tradeX&.broker == 'OANDA'
-          @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, tradeX.uuid.to_i - 1)['trade']
+          @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, tradeX.uuid)['trade']
           
           originalPrice = @requestOriginalE['price'].present? ? @requestOriginalE['price'].to_f : 0
           originalVolume = @requestOriginalE['initialUnits'].to_f
@@ -256,7 +256,7 @@ class ApplicationRecord < ActiveRecord::Base
                   end
                 else
                   if tvData['broker'] == 'OANDA'
-                    checkFill = Oanda.oandaTrade(apiKey, secretKey, trade.uuid.to_i - 1)
+                    checkFill = Oanda.oandaTrade(apiKey, secretKey, tradeX.uuid)
                   
                     if checkFill['trade']['state'] == 'PENDING'
                       tradeX.update(finalTakeProfit: nil)
@@ -342,7 +342,7 @@ class ApplicationRecord < ActiveRecord::Base
                   end
                 else
                   if tvData['broker'] == 'OANDA'
-                    checkFill = Oanda.oandaTrade(apiKey, secretKey, trade.uuid.to_i - 1)
+                    checkFill = Oanda.oandaTrade(apiKey, secretKey, tradeX.uuid)
                     if checkFill['trade']['state'] == 'PENDING'
                       tradeX.update(finalTakeProfit: nil)
                     elsif checkFill['trade']['state'] == 'CLOSED'
