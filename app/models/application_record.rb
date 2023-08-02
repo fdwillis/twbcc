@@ -179,7 +179,7 @@ class ApplicationRecord < ActiveRecord::Base
 
         trailPrice =  (tvData['type'] == 'sellStop' ? (((0.01 * tvData['trail'].to_f) *  tvData['currentPrice'].to_f) + tvData['currentPrice'].to_f) : (( tvData['currentPrice'].to_f - ((0.01 * tvData['trail'].to_f) *  tvData['currentPrice'].to_f)))).round(5).to_s
         # make trail proce profir trigger 
-        if  @requestOriginalE['unrealizedPL'].to_f * (0.01 * traderFound&.reduceBy) >= 0.05  
+        if  @requestOriginalE['unrealizedPL'].to_f >= 0.05
           if @requestOriginalE['currentUnits'].to_f.positive?
             if tvData['direction'] == 'buy'
               if tradeX.take_profits.size == 0
