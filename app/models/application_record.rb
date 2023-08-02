@@ -141,11 +141,11 @@ class ApplicationRecord < ActiveRecord::Base
           requestK = Oanda.oandaOrder(apiKey, secretKey, trade['id'])
             
           if requestK['order']['state'] == 'CANCELLED'
-            trade.update(status: 'canceled')
+            @userX.trades.find_by(uuid: trade['id']).update(status: 'canceled')
           elsif requestK['order']['state'] == 'PENDING'
-            trade.update(status: 'open')
+            @userX.trades.find_by(uuid: trade['id']).update(status: 'open')
           elsif requestK['order']['state'] == 'FILLED'
-            trade.update(status: 'closed')
+            @userX.trades.find_by(uuid: trade['id']).update(status: 'closed')
           end
 
         elsif trade&.broker == 'TRADIER'
