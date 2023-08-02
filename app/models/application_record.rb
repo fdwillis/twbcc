@@ -126,7 +126,7 @@ class ApplicationRecord < ActiveRecord::Base
   def self.trailStop(tvData, apiKey = nil, secretKey = nil)
     if tvData['broker'] == 'OANDA'
       @userX = User.find_by(oandaToken: apiKey)
-      @openTrades = @userX.trades.where(broker: 'OANDA', ticker: tvData['ticker'])
+      @openTrades = Oanda.oandaRequest(apiKey, secretKey).account(secretKey).open_trades.show['trades'].reject{|d|d['instrument'].delete('_') != tvData['ticker']}
       @traderFound = @userX
     elsif tvData['broker'] == 'TRADIER'
     end
@@ -135,24 +135,26 @@ class ApplicationRecord < ActiveRecord::Base
     # update trade status
     if @openTrades.present? && @openTrades.size > 0
       @openTrades.each do |trade|
+        @userX.trades.find_or_create_by(uuid: trade['id'], ticker:tvData['ticker'], traderID: tvData['traderID'], broker: tvData['broker'], cost: trade['initialMarginRequired'].to_f, direction: trade['currentUnits'].to_f.negative? ? 'sell' : 'buy')
+
         if trade&.broker == 'OANDA'
-          puts trade.uuid
-          requestK = Oanda.oandaTrade(apiKey, secretKey, trade.uuid.to_i - 1)
-          
-          if requestK['trade']['state'] == 'CANCELLED'
-            trade.update(status: 'canceled', direction: requestK['trade']['units'].to_f.negative? ? 'sell' : 'buy')
-          elsif requestK['trade']['state'] == 'OPEN'
-            trade.update(status: 'open', direction: requestK['trade']['units'].to_f.negative? ? 'sell' : 'buy')
-          elsif requestK['trade']['state'] == 'CLOSED'
-            trade.update(status: 'closed', direction: requestK['trade']['units'].to_f.negative? ? 'sell' : 'buy')
+          requestK = Oanda.oandaOrder(apiKey, secretKey, trade['id'])
+            
+          if requestK['order']['state'] == 'CANCELLED'
+            trade.update(status: 'canceled')
+          elsif requestK['order']['state'] == 'PENDING'
+            trade.update(status: 'open')
+          elsif requestK['order']['state'] == 'FILLED'
+            trade.update(status: 'closed')
           end
+
         elsif trade&.broker == 'TRADIER'
         end
       end
     end
     # pull closed/filled bot trades
     if tvData['broker'] == 'OANDA'
-      afterUpdates =  @userX.trades.where(status: 'open', broker: 'OANDA', direction: tvData['direction'] == 'sell' ? 'sell' : 'buy')
+      afterUpdates =  @userX.trades.where(broker: 'OANDA', direction: tvData['direction'], ticker: tvData['ticker'])
     elsif tvData['broker'] == 'TRADIER'
     end
 
