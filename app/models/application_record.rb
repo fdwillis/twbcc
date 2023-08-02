@@ -136,7 +136,7 @@ class ApplicationRecord < ActiveRecord::Base
     if @openTrades.present? && @openTrades.size > 0
       @openTrades.each do |trade|
         if trade&.broker == 'OANDA'
-          requestK = Oanda.oandaTrade(apiKey, secretKey, trade.uuid)
+          requestK = Oanda.oandaTrade(apiKey, secretKey, trade.uuid.to_i - 1)
           
           if requestK['trade']['state'] == 'CANCELLED'
             trade.update(status: 'canceled', direction: requestK['trade']['units'].to_f.negative? ? 'sell' : 'buy')
@@ -161,7 +161,7 @@ class ApplicationRecord < ActiveRecord::Base
       afterUpdates.each do |tradeX|
         puts "\n-- Starting For #{tradeX.uuid} --\n"
         if tradeX&.broker == 'OANDA'
-          @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, tradeX.uuid)['trade']
+          @requestOriginalE = Oanda.oandaTrade(apiKey, secretKey, tradeX.uuid.to_i - 1)['trade']
           
           originalPrice = @requestOriginalE['price'].present? ? @requestOriginalE['price'].to_f : 0
           originalVolume = @requestOriginalE['initialUnits'].to_f
@@ -253,7 +253,7 @@ class ApplicationRecord < ActiveRecord::Base
                   end
                 else
                   if tvData['broker'] == 'OANDA'
-                    checkFill = Oanda.oandaTrade(apiKey, secretKey, trade.uuid)
+                    checkFill = Oanda.oandaTrade(apiKey, secretKey, trade.uuid.to_i - 1)
                   
                     if checkFill['trade']['state'] == 'PENDING'
                       tradeX.update(finalTakeProfit: nil)
@@ -339,7 +339,7 @@ class ApplicationRecord < ActiveRecord::Base
                   end
                 else
                   if tvData['broker'] == 'OANDA'
-                    checkFill = Oanda.oandaTrade(apiKey, secretKey, trade.uuid)
+                    checkFill = Oanda.oandaTrade(apiKey, secretKey, trade.uuid.to_i - 1)
                     if checkFill['trade']['state'] == 'PENDING'
                       tradeX.update(finalTakeProfit: nil)
                     elsif checkFill['trade']['state'] == 'CLOSED'
