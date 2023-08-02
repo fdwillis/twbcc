@@ -137,14 +137,14 @@ class ApplicationRecord < ActiveRecord::Base
       @openTrades.each do |trade|
         if trade&.broker == 'OANDA'
           puts @userX
-          requestK = Oanda.oandaTrade(apiKey, secretKey, trade.uuid.to_i - 1)
+          requestK = Oanda.oandaOrder(apiKey, secretKey, trade.uuid)
           
-          if requestK['trade']['state'] == 'CANCELLED'
-            trade.update(status: 'canceled', direction: requestK['trade']['units'].to_f.negative? ? 'sell' : 'buy')
-          elsif requestK['trade']['state'] == 'OPEN'
-            trade.update(status: 'open', direction: requestK['trade']['units'].to_f.negative? ? 'sell' : 'buy')
-          elsif requestK['trade']['state'] == 'CLOSED'
-            trade.update(status: 'closed', direction: requestK['trade']['units'].to_f.negative? ? 'sell' : 'buy')
+          if requestK['order']['state'] == 'CANCELLED'
+            trade.update(status: 'canceled', direction: requestK['order']['units'].to_f.negative? ? 'sell' : 'buy')
+          elsif requestK['order']['state'] == 'OPEN'
+            trade.update(status: 'open', direction: requestK['order']['units'].to_f.negative? ? 'sell' : 'buy')
+          elsif requestK['order']['state'] == 'CLOSED'
+            trade.update(status: 'closed', direction: requestK['order']['units'].to_f.negative? ? 'sell' : 'buy')
           end
         elsif trade&.broker == 'TRADIER'
         end
