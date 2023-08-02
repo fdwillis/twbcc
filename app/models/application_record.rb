@@ -135,7 +135,7 @@ class ApplicationRecord < ActiveRecord::Base
     # update trade status
     if @openTrades.present? && @openTrades.size > 0
       @openTrades.each do |trade|
-        @userX.trades.find_or_create_by(uuid: trade['id'], ticker:tvData['ticker'], traderID: tvData['traderID'], broker: tvData['broker'], cost: trade['initialMarginRequired'].to_f, direction: trade['currentUnits'].to_f.negative? ? 'sell' : 'buy')
+        @userX.trades.find_or_create_by(uuid: trade['id'], ticker:tvData['ticker'], traderID: tvData['traderID'], broker: tvData['broker'], cost: trade['initialMarginRequired'].to_f, direction: trade['initialUnits'].to_f.negative? ? 'sell' : 'buy')
 
         if tvData['ticker'] == 'OANDA'
           requestK = Oanda.oandaOrder(apiKey, secretKey, trade['id'])
@@ -182,7 +182,7 @@ class ApplicationRecord < ActiveRecord::Base
 
         trailPrice =  (tvData['type'] == 'sellStop' ? (((0.01 * tvData['trail'].to_f) *  tvData['currentPrice'].to_f) + tvData['currentPrice'].to_f) : (( tvData['currentPrice'].to_f - ((0.01 * tvData['trail'].to_f) *  tvData['currentPrice'].to_f)))).round(5).to_s
         # make trail proce profir trigger 
-        if  @requestOriginalE['unrealizedPL'].to_f >= 0.05
+        if  @requestOriginalE['unrealizedPL'].to_f * (0.01 * traderFound&.reduceBy)) >= 0.05
           if @requestOriginalE['currentUnits'].to_f.positive?
             if tvData['direction'] == 'buy'
               if tradeX.take_profits.size == 0
