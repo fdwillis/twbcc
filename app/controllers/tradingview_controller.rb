@@ -74,6 +74,11 @@ class TradingviewController < ApplicationController
   end
 
   def signals
+    if params['updateSignal']
+      LastSignal&.find_by(ticker: params['ticker']).destroy
+      LastSignal.create(ticker: params['ticker'], direction: params['direction'], high: params['high'].to_f, low: params['low'].to_f, close: params['close'].to_f, open: params['open'].to_f )
+    end
+
     params['sequence'].to_enum.to_a.each do |sequence|
       traderID = params['traderID']
       traderFound = User.find_by(uuid: traderID)
@@ -273,7 +278,7 @@ class TradingviewController < ApplicationController
   end
 
   def tradingviewKeysparams
-    params.permit(:sequence.to_enum.to_h, :killType, :traderID, :adminOnly, :tradeForAdmin, :ticker, :type, :direction, :timeframe, :currentPrice, :highPrice, :tradingview, :traderID, :lowPrice, :broker, :trail, entries: [])
+    params.permit(:sequence.to_enum.to_h, :killType, :traderID, :adminOnly, :tradeForAdmin, :ticker, :type, :direction, :timeframe, :currentPrice, :high, :tradingview, :traderID, :low, :open, :close, :broker, :trail, entries: [])
   end
 
   def profitTriggersparams

@@ -1,0 +1,2 @@
+class LastSignal < ApplicationRecord
+end
