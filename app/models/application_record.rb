@@ -30,7 +30,7 @@ class ApplicationRecord < ActiveRecord::Base
       end
 
               
-      if tvData['direction'] == 'sell'
+      if tvData['direction'] == 'sell' && LastSignal&.find_by(ticker: tvData['ticker'])&.direction == 'buy'
         if tvData['killType'] == 'pending'
           @openTrades.each do |tradeX|
             cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX['id'])
@@ -72,7 +72,7 @@ class ApplicationRecord < ActiveRecord::Base
         end
       end
 
-      if tvData['direction'] == 'buy'
+      if tvData['direction'] == 'buy' && LastSignal&.find_by(ticker: tvData['ticker'])&.direction == 'sell'
         if tvData['killType'] == 'pending'
           @openTrades.each do |tradeX|
             cancel = Oanda.oandaCancel(apiKey, secretKey, tradeX['id'])
