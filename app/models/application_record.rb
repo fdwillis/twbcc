@@ -219,7 +219,7 @@ class ApplicationRecord < ActiveRecord::Base
                     openProfitCount += 1
                     
                     if  tvData['broker'] == 'OANDA'
-                      if @requestOriginalE['currentUnits'].to_f > 0 && @requestOriginalE['unrealizedPL'].to_f >= 0.05 && (tvData['currentPrice'].to_f > trailPrice)
+                      if @requestOriginalE['unrealizedPL'].to_f >= 0.05 && (tvData['currentPrice'].to_f > trailPrice)
                         cancel = Oanda.oandaCancel(apiKey, secretKey, profitTrade.uuid)
                         puts "\n-- Old Take Profit Canceled --\n"
                         @protectTrade = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'reduce')
@@ -436,7 +436,7 @@ class ApplicationRecord < ActiveRecord::Base
         end
 
         # call order
-        if tvData['direction'] == 'buy'
+        if tvData['direction'] == 'buy' && LastSignal&.find_by(ticker: tvData['ticker'])&.direction == tvData['direction']
 
           if tvData['broker'] == 'OANDA'
             @requestK = Oanda.oandaEntry(apiKey, secretKey, oandaOrderParams)
@@ -445,7 +445,7 @@ class ApplicationRecord < ActiveRecord::Base
         end
 
         # put order
-        if tvData['direction'] == 'sell'
+        if tvData['direction'] == 'sell' && LastSignal&.find_by(ticker: tvData['ticker'])&.direction == tvData['direction']
 
           if  tvData['broker'] == 'OANDA'
             @requestK = Oanda.oandaEntry(apiKey, secretKey, oandaOrderParams)
@@ -468,17 +468,13 @@ class ApplicationRecord < ActiveRecord::Base
       # limit order
       
       if tvData['entries'].reject(&:blank?).size > 0
-        tvData['entries'].reject(&:blank?).each do |entryPercentage|
-          if tvData['broker'] == 'OANDA'
-            priceToSet = (tvData['direction'] == 'sell' ? tvData['highPrice'].to_f + (tvData['highPrice'].to_f * (0.01 * entryPercentage.to_f)) : tvData['lowPrice'].to_f - (tvData['lowPrice'].to_f * (0.01 * entryPercentage.to_f))).round(5)
-          elsif tvData['broker'] == 'TRADIER'
-          end
+        tvData['entries'].reject(&:blank?).each do |entryPrice|
           # set order params
 
           if tvData['broker'] == 'OANDA'
             oandaOrderParams = {
               'order' => {
-                'price' => tvData['ticker'].include?('JPY') ?  priceToSet.round(3).to_s :  priceToSet.to_s,
+                'price' => entryPrice,
                 'units' => tvData['direction'] == 'buy' ? (@amountToRisk == oandaAccount['account']['marginRate'].to_f ? 1 : @amountToRisk.round).to_s : (@amountToRisk == oandaAccount['account']['marginRate'].to_f ? -1 : -@amountToRisk.round).to_s,
                 'instrument' => "#{tvData['ticker'][0..2]}_#{tvData['ticker'][3..5]}",
                 'timeInForce' => 'GTC',
@@ -490,7 +486,7 @@ class ApplicationRecord < ActiveRecord::Base
 
           end
           # call order
-          if tvData['direction'] == 'buy'
+          if tvData['direction'] == 'buy' && LastSignal&.find_by(ticker: tvData['ticker'])&.direction == tvData['direction']
 
             if tvData['broker'] == 'OANDA'
               requestK = Oanda.oandaEntry(apiKey, secretKey, oandaOrderParams)
@@ -498,7 +494,7 @@ class ApplicationRecord < ActiveRecord::Base
             end
           end
           # put order
-          if tvData['direction'] == 'sell'
+          if tvData['direction'] == 'sell' && LastSignal&.find_by(ticker: tvData['ticker'])&.direction == tvData['direction']
 
             if tvData['broker'] == 'OANDA'
               requestK = Oanda.oandaEntry(apiKey, secretKey, oandaOrderParams)
