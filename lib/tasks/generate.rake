@@ -139,35 +139,33 @@ namespace :generate do
       end
     end
 
-    # TakeProfit.all.sort_by(&:created_at).each do |takeProfitX|
-    #   userForLoad = takeProfitX.user
+    TakeProfit.all.sort_by(&:created_at).each do |takeProfitX|
+      userForLoad = takeProfitX.user
 
-    #   if takeProfitX&.broker == 'KRAKEN'
-    #       takeProfitX.destroy! 
-    #   elsif takeProfitX&.broker == 'OANDA'
+      if takeProfitX&.broker == 'OANDA'
 
-    #     userForLoad.oandaList.split(",").each do |accountID|
-    #       @requestK = Oanda.oandaOrder(userForLoad.oandaToken, accountID, takeProfitX.uuid)
+        userForLoad.oandaList.split(",").each do |accountID|
+          @requestK = Oanda.oandaOrder(userForLoad.oandaToken, accountID, takeProfitX.uuid)
 
-    #       if @requestK['order']['tradeReducedID'].present?
-    #         @requestTTrade = Oanda.oandaTrade(userForLoad.oandaToken, accountID, @requestK['order']['tradeReducedID'])
-    #       elsif  @requestK['order']['tradeClosedIDs'].present?
-    #         @requestK['order']['tradeClosedIDs'].each do |tradeID|
-    #           @requestTTrade = Oanda.oandaTrade(userForLoad.oandaToken, accountID, tradeID)
-    #         end
-    #       end
+          if @requestK['order']['tradeReducedID'].present?
+            @requestTTrade = Oanda.oandaTrade(userForLoad.oandaToken, accountID, @requestK['order']['tradeReducedID'])
+          elsif  @requestK['order']['tradeClosedIDs'].present?
+            @requestK['order']['tradeClosedIDs'].each do |tradeID|
+              @requestTTrade = Oanda.oandaTrade(userForLoad.oandaToken, accountID, tradeID)
+            end
+          end
 
-    #       if @requestK['order']['state'] == 'FILLED' && @requestTTrade['trade'].present?
-    #         takeProfitX.update(status: 'closed')
-    #         takeProfitX.update(profitLoss: @requestTTrade['trade']['realizedPL'].to_f)
-    #       elsif @requestK['order']['state'] == 'PENDING'
-    #         takeProfitX.update(status: 'open')
-    #       elsif @requestK['order']['state'] == 'CANCELLED'
-    #         takeProfitX.destroy!
-    #       end
-    #     end
-    #   end
-    # end
+          if @requestK['order']['state'] == 'FILLED' && @requestTTrade['trade'].present?
+            takeProfitX.update(status: 'closed')
+            takeProfitX.update(profitLoss: @requestTTrade['trade']['realizedPL'].to_f)
+          elsif @requestK['order']['state'] == 'PENDING'
+            takeProfitX.update(status: 'open')
+          elsif @requestK['order']['state'] == 'CANCELLED'
+            takeProfitX.destroy!
+          end
+        end
+      end
+    end
   end
 
   task profitInvoice: :environment do 

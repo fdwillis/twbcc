@@ -180,9 +180,8 @@ class ApplicationRecord < ActiveRecord::Base
         elsif tradeX&.broker == 'TRADIER'
         end
 
-        trailPrice =  (tvData['type'] == 'sellStop' ? (((0.01 * tvData['trail'].to_f) *  tvData['currentPrice'].to_f) + tvData['currentPrice'].to_f) : (( tvData['currentPrice'].to_f - ((0.01 * tvData['trail'].to_f) *  tvData['currentPrice'].to_f)))).round(5).to_s
         # make trail proce profir trigger 
-        if  @requestOriginalE['unrealizedPL'].to_f * (0.01 * @traderFound&.reduceBy) >= 0.05
+        if  @requestOriginalE['unrealizedPL'].to_f >= 0.03
           if @requestOriginalE['currentUnits'].to_f.positive?
             if tvData['direction'] == 'buy'
               if tradeX.take_profits.size == 0
@@ -219,7 +218,7 @@ class ApplicationRecord < ActiveRecord::Base
                     openProfitCount += 1
                     
                     if  tvData['broker'] == 'OANDA'
-                      if @requestOriginalE['unrealizedPL'].to_f >= 0.05 && (tvData['currentPrice'].to_f > trailPrice)
+                      if @requestOriginalE['unrealizedPL'].to_f >= 0.03
                         cancel = Oanda.oandaCancel(apiKey, secretKey, profitTrade.uuid)
                         puts "\n-- Old Take Profit Canceled --\n"
                         @protectTrade = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'reduce')
@@ -306,7 +305,7 @@ class ApplicationRecord < ActiveRecord::Base
                     openProfitCount += 1
 
                     if tvData['broker'] == 'OANDA'
-                      if @requestOriginalE['currentUnits'].to_f < 0 && @requestOriginalE['unrealizedPL'].to_f >= 0.05 && (tvData['currentPrice'].to_f < trailPrice)
+                      if @requestOriginalE['unrealizedPL'].to_f >= 0.03
                         cancel = Oanda.oandaCancel(apiKey, secretKey, profitTrade.uuid)
                         puts "\n-- Old Take Profit Canceled --\n"
                         @protectTrade = Oanda.closePosition(apiKey, secretKey, tvData, tradeX, @requestOriginalE, 'reduce')
