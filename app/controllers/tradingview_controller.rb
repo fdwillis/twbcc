@@ -84,7 +84,7 @@ class TradingviewController < ApplicationController
       traderFound = User.find_by(uuid: traderID)
       validPlansToParse = []
 
-      if sequence['traderOnly'] == 'false'
+      if sequence['traderOnly'] == 'false' && traderFound&.admin?
         puts "\n-- Starting To Copy Trades For Followers --\n"
         # pull those with done for you plan
 
