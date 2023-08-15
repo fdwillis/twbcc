@@ -409,18 +409,22 @@ class User < ApplicationRecord
   end
 
   def profitPaid?
+    checkMembership
     accessPin.split(',').include?('profitPaid')
   end
 
   def profitPending?
+    checkMembership
     accessPin.split(',').include?('profitPending')
   end
 
   def customer?
+    checkMembership
     accessPin.split(',').include?('customer')
   end
 
   def trader?
+    checkMembership
     trueorF = accessPin.split(',').include?('trader') && !profitPending?
 
     unless trueorF == true
@@ -430,6 +434,7 @@ class User < ApplicationRecord
   end
 
   def trial?
+    checkMembership
     accessPin.split(',').include?('trial')
   end
 
