@@ -82,7 +82,6 @@ class TradingviewController < ApplicationController
     params['sequence'].to_enum.to_a.each do |sequence|
       traderID = params['traderID']
       traderFound = User.find_by(uuid: traderID)
-      traderFound&.checkMembership
       validPlansToParse = []
 
       if sequence['traderOnly'] == 'false'
@@ -98,7 +97,6 @@ class TradingviewController < ApplicationController
 
         validPlansToParse.reject(&:blank?).flatten.each do |planXinfo|
           traderFoundForCopy = User.find_by(stripeCustomerID: planXinfo['customer'])
-          traderFoundForCopy&.checkMembership
 
           if  traderFoundForCopy&.trader? && !ENV["adminUUID"].include?(traderFoundForCopy&.uuid)
                 
