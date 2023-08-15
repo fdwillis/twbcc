@@ -212,7 +212,7 @@ class TradingviewController < ApplicationController
       if sequence['forTrader'] == 'true'
         listToTrade = traderFound&.authorizedList.present? ? traderFound&.authorizedList&.delete(' ').split(",") : []
         assetList = listToTrade.present? ? listToTrade : []
-        if assetList.size > 0
+        if assetList.size > 0 && traderFound&.trader?
           assetList.each do |assetX|
             if assetX.upcase == sequence['ticker']
 
