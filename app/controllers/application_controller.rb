@@ -152,6 +152,7 @@ class ApplicationController < ActionController::Base
       @discountList = Stripe::Coupon.list({ limit: 100 })['data'].reject { |c| c['valid'] == false }.reject { |c| c['duration'] == 'forever' }.reject { |c| c['max_redemptions'] == 0 }
 
       if @discountsFor.nil? || !@discountsFor.map { |s| s[:membershipType] }.include?('free')
+        
         @newList = @discountList.reject { |c| c['percent_off'] > 10 }.reject { |c| c['percent_off'] > 90 }.size > 0 ? @discountList.reject { |c| c['percent_off'] > 10 }.reject { |c| c['percent_off'] > 90 }.sample['id'] : 0
       elsif @discountsFor.map { |s| s[:membershipType] }.include?('affiliate')
         @newList = @discountList.reject { |c| c['percent_off'] > 20 || c['percent_off'] < 10 }.reject { |c| c['percent_off'] > 90 }.size > 0 ? @discountList.reject { |c| c['percent_off'] > 20 || c['percent_off'] < 10 }.reject { |c| c['percent_off'] > 90 }.sample['id'] : 0
@@ -716,7 +717,7 @@ class ApplicationController < ActionController::Base
   end
 
   def welcome
-    @codes = Stripe::Coupon.list({ limit: 100 }).reject { |c| c['valid'] == false }
+    @codes = Stripe::Coupon.list({ limit: 100 }).reject { |c| c['valid'] == false }.reject { |c| c['duration'] == 'forever' }
     @prob1 = [
       {prob:'Too Busy Working?', solu: "Oarlin hunts for financial opportunities while you are busy"},
       {prob:'Too Busy With Home?', solu: "Trust Oarlin to protect your financial goals while you are busy"},
