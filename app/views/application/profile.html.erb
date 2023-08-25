@@ -186,7 +186,7 @@
                      <%= form.label "Authorized Trading List (Separate By Comma)" %><br />
                      <% if current_user.trial? %>
                               <%= form.text_field :authorizedList, value: current_user&.authorizedList == 'crypto' ? "BTC#{ISO3166::Country[current_user.amazonCountry.downcase].currency_code}" : current_user&.authorizedList == 'forex' ? "EUR#{ISO3166::Country[current_user.amazonCountry.downcase].currency_code}" : nil , class: 'form-control form-control-lg form-control-alt py-3', readonly: true, disabled: true %><br />
-                              Want to change your asset? <%= mail_to "team@oarlin.com", "EMAIL US" %>
+                              Want to change your asset? <%= mail_to "kyneticfitnesshtx@gmail.com", "EMAIL US" %>
                      <% else %>
                               <%= form.text_field :authorizedList, value: current_user&.authorizedList, class: 'form-control form-control-lg form-control-alt py-3' %><br />
                      <% end %>

@@ -1,20 +1,22 @@
 <% catcher =  @prob1.sample %>
 <div class="page-content pb-4">
-  <div class="card" data-card-height="cover" style="background-image: url(/assets/gbpusdsell.png); height: 668px;">
+  <div class="card" style="background-image: url(/assets/gbpusdsell.png); height: 668px;">
     <div class="card-top mx-3 mt-6">
       <div class="content mb-0 text-center">
       </div>
     </div>
     <div class="card-bottom mb-5 mx-3">
       <div class="content mb-0 text-center">
-        <h1 class="mb-0 font-34 color-white text-center"><%= catcher[:prob] %></h1>
-        <p class="color-white font-20 pt-2 opacity-50 text-center"><%= catcher[:solu] %></p>
          <div class="align-self-center">
-            <img src="/assets/Oarlin_free-file.jpg" data-src="/assets/Oarlin_free-file.png" width="120" height="120" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
+            <img src="/assets/kyneticlogo.png" data-src="/assets/kyneticlogo.png" width="120" height="120" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
          </div>
-        <h1 class="mb-0 font-28 color-white text-center mt-2"><%= @headlines.sample %></h1>
-        <h1 class="mt-2 mb-0 font-20 color-white text-center"><%= @subline.sample %></h1>
-        <p class="color-white font-13 pt-2 opacity-50 text-center">Trading as a Service (TAAS) with Oarlin</p>
+        <% if request.user_agent.include?('Mobile') %>
+           <h1 class="mb-0 font-22 color-white text-center mt-2"><%= @headlines.sample %></h1>
+           <h1 class="mt-2 mb-0 font-16 color-white text-center"><%= @subline.sample %></h1>
+        <% else %>
+           <h1 class="mb-0 font-30 color-white text-center mt-2"><%= @headlines.sample %></h1>
+           <h1 class="mt-2 mb-0 font-20 color-white text-center"><%= @subline.sample %></h1>
+        <% end %> 
         <div class="col-12">
           <!-- <a href="/traders?&referredBy=<%=current_user&.present? ? current_user&.uuid : params['referredBy']%>}" data-back-button="" class="btn btn-full btn-m mt-3 rounded-sm shadow-xl border-purple-dark bg-theme font-800 text-uppercase">Start Trial Trading</a> -->
           <!-- <a href="/auto-trading?&referredBy=<%= params[:splitSession] %>" data-back-button="" class="btn btn-full btn-m mt-3 rounded-sm shadow-xl bg-highlight font-800 text-uppercase">Start Unlimited Trading</a> -->
@@ -26,188 +28,35 @@
 </div>
 <div class="card card-style pt-4">
   <div class="content">
-      <h6 class="color-highlight text-uppercase font-700 mb-1">JOIN TODAY</h6>
-     <h1 class="text-uppercase font-900 ">Trading as a Service</h1>
-      <p class='font-20'>Oarlin is designed to automate the trading process for you. Instead of looking at charts and having to make a decision, the computers analyzing the charts make the decisions for you and simultaneously executes the trade. Not many people have the time or knowledge to make investing a profitable career. Oarlin is the only platform designed to allow profitable trading strategies to be copied directly into your account(s) instantaneously across the globe! Trade one thing or multiple at the same time! Memberships start at $130 USD per month (Available Globally).</p>
+     <h1 class="text-uppercase font-900 font-20 ">Start Training Today</h1>
+      <p class='font-20'>Get in shape with Kynetic Fitness! Led by Kyndal McKnight, a former LSU Track & Field athlete, our personalized training programs will deliver results fast. From tailored workout plans to in-person and virtual sessions, we have you covered. Plus, our nutritional coaching will optimize your fitness journey. Don't wait, start with a free consultation now!</p>
   </div>
 </div>
 <div class="content">
   
   <div class="divider"></div>
-  <%= render 'search/dailydiscount', codes: @codes %>
-   <% if request.user_agent.include?('Mobile') %> 
-     <div class="row text-center mb-0">
-        <a href="#" style='pointer-events: none;' class="col-12">
-           <div class="card card-style">
-              <i class="fa fa-copy color-highlight-dark fa-4x mt-5"></i>
-              <h1 class="pt-4">Copy Trades</h1>
-              <p class="font-20 opacity-50 pb-4">Trades are automatically executed directly in your brokerage account</p>
-           </div>
-        <a href="#" style='pointer-events: none;' class="col-12">
-           <div class="card card-style">
-              <i class="fa fa-globe color-highlight-dark fa-4x mt-5"></i>
-              <h1 class="pt-4">All Markets</h1>
-              <p class="font-20 opacity-50 pb-4">Trade stocks, forex, options, &amp; cryto all at once without lifting a finger</p>
-           </div>
-        </a>
-        <a href="#" style='pointer-events: none;' class="col-12">
-           <div class="card card-style">
-              <i class="fa fa-bolt color-highlight-dark fa-4x mt-5"></i>
-              <h1 class="pt-4">Instant Executions</h1>
-              <p class="font-20 opacity-50 pb-4">Never miss opportunities due to slow connections or wifi</p>
-           </div>
-        </a>
-        <a href="#" style='pointer-events: none;' class="col-12">
-           <div class="card card-style">
-              <i class="fa fa-gears color-highlight-dark fa-4x mt-5"></i>
-              <h1 class="pt-4">Customizable</h1>
-              <p class="font-20 opacity-50 pb-4">Pick you position sizing, total risk, and other setting to fit your trading style</p>
-           </div>
-        </a>
-     </div>
-   <% else %>  
-     <div class="row text-center mb-0">
-        <a href="#" style='pointer-events: none;' class="col-6">
-           <div class="card card-style">
-              <i class="fa fa-copy color-highlight-dark fa-4x mt-5"></i>
-              <h1 class="pt-4">Copy Trades</h1>
-              <p class="font-20 opacity-50 pb-4">Trades are automatically executed directly in your brokerage account</p>
-           </div>
-        <a href="#" style='pointer-events: none;' class="col-6">
-           <div class="card card-style">
-              <i class="fa fa-globe color-highlight-dark fa-4x mt-5"></i>
-              <h1 class="pt-4">All Markets</h1>
-              <p class="font-20 opacity-50 pb-4">Trade stocks, forex, options, &amp; cryto all at once without lifting a finger</p>
-           </div>
-        </a>
-        <a href="#" style='pointer-events: none;' class="col-6">
-           <div class="card card-style">
-              <i class="fa fa-bolt color-highlight-dark fa-4x mt-5"></i>
-              <h1 class="pt-4">Instant Executions</h1>
-              <p class="font-20 opacity-50 pb-4">Never miss opportunities due to slow connections or wifi</p>
-           </div>
-        </a>
-        <a href="#" style='pointer-events: none;' class="col-6">
-           <div class="card card-style">
-              <i class="fa fa-gears color-highlight-dark fa-4x mt-5"></i>
-              <h1 class="pt-4">Customizable</h1>
-              <p class="font-20 opacity-50 pb-4">Pick you position sizing, total risk, and other setting to fit your trading style</p>
-           </div>
-        </a>
-     </div>
-   <% end %>
-   <div class="card card-style">
-      <div class="content mb-0">
-         <h4>Frequently Asked Questions</h4>
-         <p>Here are some of the most common questions before joining Oarlin</p>
-      </div>
-      <div class="accordion mt-4" id="accordion-6">
-            
-         <div class="card card-style shadow-0 bg-highlight mb-1">
-            <button class="btn accordion-btn color-white no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#collapse11" aria-expanded="false">
-               <i class="fa fa-question me-2"></i>
-               How does Trading as a Service with Oarlin work?
-               <i class="fa fa-chevron-down font-10 accordion-icon"></i>
-            </button>
-            <div id="collapse11" class="bg-theme collapse" data-bs-parent="#accordion-6" style="">
-               <div class="pt-3 pb-3 color-theme">
-                  <ol>
-                     <li>Choose a broker you trust for trading</li>
-                     <li>Pick the assets your account will trade</li>
-                     <li>Enter your account credentials</li>
-                  </ol>
-                  Our system will do the rest and execute trades directly in your account!
-               </div>
-            </div>
-         </div>
-         <div class="card card-style bg-highlight mb-1">
-            <button class="btn accordion-btn color-white no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#collapse12" aria-expanded="false">
-               <i class="fa fa-question me-2"></i>
-               What is trade copying?
-               <i class="fa fa-chevron-down font-10 accordion-icon"></i>
-            </button>
-            <div id="collapse12" class="collapse bg-theme" data-bs-parent="#accordion-6">
-               <div class="pt-3 pb-3 color-theme">
-                  Trade copying is a feature within Oarlin's Trading as a Service (TAAS) that allows you to replicate every trade made by Oarlin directly into your broker account. This means that whenever we execute a trade, your account will execute as well.
-               </div>
-            </div>
-         </div>
-         <div class="card card-style bg-highlight mb-1">
-            <button class="btn accordion-btn color-white no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#collapse13" aria-expanded="false">
-               <i class="fa fa-question me-2"></i>
-               What is the difference between Trial Trading and Unlimited Trading ?
-               <i class="fa fa-chevron-down font-10 accordion-icon"></i>
-            </button>
-            <div id="collapse13" class="collapse bg-theme" data-bs-parent="#accordion-6">
-               <div class="pt-3 pb-3 color-theme">
-                  Trial trading will allow your account to automatically trade one asset in any given market of your choice. Unlimited trading allows you to trade any number of assets in any number of markets. 
-               </div>
-            </div>
-         </div>
+   <h1 class="color-highlight text-uppercase font-700 mb-1">Workout Plans</h1>
+  <!-- <%= render 'search/dailydiscount', codes: @codes %> -->
+  <% if request.user_agent.include?('Mobile') %> 
+          <a href="#" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">1X Week</a>
+          <a href="#" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">2X Week</a>
+          <a href="#" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">3X Week</a>
+          <a href="#" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">4X Week</a>
+  <% else %>  
 
-         <div class="card card-style bg-highlight mb-1">
-            <button class="btn accordion-btn color-white no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#collapse14" aria-expanded="false">
-               <i class="fa fa-question me-2"></i>
-               Can I get account notifications?
-               <i class="fa fa-chevron-down font-10 accordion-icon"></i>
-            </button>
-            <div id="collapse14" class="collapse bg-theme" data-bs-parent="#accordion-6">
-               <div class="pt-3 pb-3 color-theme">
-                  Absolutely! Enhance your trading experience with our exclusive notifications add-on. Stay in the loop about your trades, exits, entries, and so much more.
-               </div>
-            </div>
-         </div>
-
-         <div class="card card-style bg-highlight mb-1">
-            <button class="btn accordion-btn color-white no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#collapse16" aria-expanded="false">
-               <i class="fa fa-question me-2"></i>
-               Can someone help me setup?
-               <i class="fa fa-chevron-down font-10 accordion-icon"></i>
-            </button>
-            <div id="collapse16" class="collapse bg-theme" data-bs-parent="#accordion-6">
-               <div class="pt-3 pb-3 color-theme">
-                  Of course! We're here to make sure trading is available to all.  We are glad to help you get set up properly. Integrating a funded brokerage account into Oarlin typically takes 3 minutes. 
-               </div>
-            </div>
-         </div>
-         <div class="card card-style bg-highlight mb-1">
-            <button class="btn accordion-btn color-white no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#collapse17" aria-expanded="false">
-               <i class="fa fa-question me-2"></i>
-               Will this work with my broker?
-               <i class="fa fa-chevron-down font-10 accordion-icon"></i>
-            </button>
-            <div id="collapse17" class="collapse bg-theme" data-bs-parent="#accordion-6">
-               <div class="pt-3 pb-3 color-theme">
-                  We have the capability to seamlessly integrate with any broker or exchange that offers an API.  Please <%= mail_to "team@oarlin.com", "EMAIL US" %> with the broker name and link to the API if we have not created an integration. <br>
-                  <ul>
-                     <li>Currently Available For: Kraken & Oanda</li>
-                     <li>Coming Soon: Tradier, Alpaca, ByBit, Bitget, KuCoin, Metatrader, Binance</li>
-                  </ul>
-               </div>
-            </div>
-         </div>
-         <div class="card card-style bg-highlight mb-1">
-            <button class="btn accordion-btn color-white no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#collapse18" aria-expanded="false">
-               <i class="fa fa-question me-2"></i>
-               When can I withdraw money?
-               <i class="fa fa-chevron-down font-10 accordion-icon"></i>
-            </button>
-            <div id="collapse18" class="collapse bg-theme" data-bs-parent="#accordion-6">
-               <div class="pt-3 pb-3 color-theme">
-                  You can withdraw funds anytime. Because Oarlin executes trades directly into your brokerage account, you have 100% control over your money.
-               </div>
-            </div>
-         </div>
-         <div class="card card-style bg-highlight mb-1">
-            <button class="btn accordion-btn color-white no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#collapse19" aria-expanded="false">
-               <i class="fa fa-question me-2"></i>
-               Can i cancel my membership anytime?
-               <i class="fa fa-chevron-down font-10 accordion-icon"></i>
-            </button>
-            <div id="collapse19" class="collapse bg-theme" data-bs-parent="#accordion-6">
-               <div class="pt-3 pb-3 color-theme">Yes!</div>
-            </div>
-         </div>
-      </div>
-   </div>
+    <div class="row">
+       <div class="col-3">
+          <a href="#" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">1X Week</a>
+       </div>
+       <div class="col-3">
+          <a href="#" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">2X Week</a>
+       </div>
+       <div class="col-3">
+          <a href="#" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">3X Week</a>
+       </div>
+       <div class="col-3">
+          <a href="#" class="btn btn-full btn-sm rounded-sm font-10 text-uppercase font-700 mt-3 bg-highlight">4X Week</a>
+       </div>
+    </div>
+  <% end %>
 </div>

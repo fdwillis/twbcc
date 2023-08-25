@@ -728,8 +728,8 @@ class ApplicationController < ActionController::Base
       {prob:"The Only Social Platform For Trading", solu: 'Oarlin is the home all traders have been waiting for'},
     ] 
 
-    @subline = ['No Experience Required', 'Never Miss Trading Opportunities', 'Amplify Your Profits', 'Supercharged Day Trading']
-    @headlines = ['Oarlin Trades While You Sleep', 'Oarlin Trades While You Explore', 'Oarlin Trades While You Work', 'Oarlin Trades While You Exercise', 'Oarlin Trades While You Shop', 'Oarlin Trades While You Spend', 'Oarlin Trades While You Travel']
+    @subline = ['In Person & Virtual Sessions']
+    @headlines = ['Achieve Your Fitness Goals']
 
   end
 

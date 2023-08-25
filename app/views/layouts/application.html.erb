@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Oarlin</title>
+    <title>Kynetic Fitness</title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -25,7 +25,7 @@
     <div id="page">
 
       <div class="header header-fixed header-logo-center ">
-          <a href="/?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="header-title font-30 color-highlight">Oarlin</a>
+          <a href="/?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="header-title font-20 color-highlight">Kynetic Fitness</a>
           <!-- <a href='javascript:history.go(-1);' data-back-button="" class="header-icon header-icon-1"><i class="fa fa-arrow-left"></i></a> -->
           <a href="#" data-menu="menu-sidebar-right-1" class="active-nav"><i class="header-icon header-icon-4 fa fa-bars font-25"></i><span></span></a>
       </div>
@@ -67,7 +67,7 @@
             <div class="d-flex px-2 pb-2 pt-2">
               <div class="ps-2 align-self-center">
                <a href="/">
-                <img src="/assets/Oarlin_free-file.jpg" data-src="/assets/Oarlin_free-file.png" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
+                <img src="/assets/kyneticlogo.png" data-src="/assets/kyneticlogo.png" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
                   
                </a> 
              </div>
@@ -154,16 +154,45 @@
           
           <div class="card card-style">
             <div class="content my-0">
+              <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Workout Plans</h5>
+                <div class="list-group list-custom-small list-icon-0">
+
+
+                  <a href="#">
+                    <i class="fa font-12 fa-check bg-highlight-dark rounded-sm color-white"></i>
+                    <span>1X Week</span>
+                    <i class="fa fa-angle-right color-highlight-dark"></i>
+                  </a>
+                  <a href="#">
+                    <i class="fa font-12 fa-check bg-highlight-dark rounded-sm color-white"></i>
+                    <span>2X Week</span>
+                    <i class="fa fa-angle-right color-highlight-dark"></i>
+                  </a>
+                  <a href="#">
+                    <i class="fa font-12 fa-check bg-highlight-dark rounded-sm color-white"></i>
+                    <span>3X Week</span>
+                    <i class="fa fa-angle-right color-highlight-dark"></i>
+                  </a>
+                  <a href="#">
+                    <i class="fa font-12 fa-check bg-highlight-dark rounded-sm color-white"></i>
+                    <span>4X Week</span>
+                    <i class="fa fa-angle-right color-highlight-dark"></i>
+                  </a>
+                </div>
+            </div>
+          </div>
+          <div class="card card-style">
+            <div class="content my-0">
               <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Follow Us</h5>
                 <div class="list-group list-custom-small list-icon-0">
 
 
-                  <a href="https://www.instagram.com/mr.oarlin/">
+                  <a href="https://www.instagram.com/kyneticfitness_/">
                     <i class="fa font-12 fa-instagram bg-highlight-dark rounded-sm color-white"></i>
                     <span>Instagram</span>
                     <i class="fa fa-angle-right color-highlight-dark"></i>
                   </a>
-                  <a href="https://www.youtube.com/@mr.oarlin">
+<!--                   <a href="https://www.youtube.com/@mr.oarlin">
                     <i class="fa font-12 fa-youtube bg-highlight-dark rounded-sm color-white"></i>
                     <span>YouTube</span>
                     <i class="fa fa-angle-right color-highlight-dark"></i>
@@ -172,140 +201,12 @@
                     <i class="fa font-12 fa-facebook bg-highlight-dark rounded-sm color-white"></i>
                     <span>Facebook</span>
                     <i class="fa fa-angle-right color-highlight-dark"></i>
-                  </a>
-                </div>
-            </div>
-          </div>
-
-          <div class="card card-style">
-            <div class="content my-0">
-              <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Memberships (Waitlist)</h5>
-                <div class="list-group list-custom-small list-icon-0">
-                  <a href="/skip-waitlist?&interval=month&memberType=user&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                    <i class="fa font-12 fa-bullhorn bg-highlight-dark rounded-sm color-white"></i>
-                    <span>Skip Waitlist</span>
-                    <i class="fa fa-angle-right color-highlight-dark"></i>
-                  </a>
-                  <a href="/traders?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                    <i class="fa font-12 fa-star bg-highlight-dark rounded-sm color-white"></i>
-                    <span>Trader</span>
-                    <i class="fa fa-angle-right color-highlight-dark"></i>
-                  </a>
-                  <!-- <a href="/captains?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                    <i class="fa font-12 fa-users bg-highlight-dark rounded-sm color-white"></i>
-                    <span>Captain</span>
-                    <i class="fa fa-angle-right color-highlight-dark"></i>
                   </a> -->
-                   <a href="/users?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                    <i class="fa font-12 fa-user bg-highlight-dark rounded-sm color-white"></i>
-                    <span>User</span>
-                    <i class="fa fa-angle-right color-highlight-dark"></i>
-                  </a>
                 </div>
             </div>
           </div>
-          <div class="card card-style">
-            <div class="content my-0">
-              <% if !current_user %>
-                <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Add-ons</h5>
-                <div class="list-group list-custom-small list-icon-0">
-                  <!--                   <a href="/auto-trading?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                                      <i class="fa font-12 fa-signal bg-blue-dark rounded-sm color-white"></i>
-                                      <span>Membership</span>
-                                      <i class="fa fa-angle-right color-highlight-dark"></i>
-                                    </a> -->
 
-                  <a href="/travel-and-trade?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                    <i class="fa font-12 fa-plane bg-highlight-dark rounded-sm color-white"></i>
-                    <span>Travel &amp; Trade</span>
-                    <i class="fa fa-angle-right color-highlight-dark"></i>
-                  </a>
-                  <% if Stripe::Coupon.list({limit: 100})['data'].size > 0 %>
-                    <div class="list-group list-custom-small list-icon-0">
-                      <a href="/discounts?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                        <i class="fa font-12 fa-percent bg-highlight-dark rounded-sm color-white"></i>
-                        <span>Discounts</span>
-                        <i class="fa fa-angle-right color-highlight-dark"></i>
-                      </a>
-                    </div>
-                  <% end %>
-                  <a href="/questions?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                    <i class="fa font-12 fa-question bg-highlight-dark rounded-sm color-white"></i>
-                    <span>FAQ</span>
-                    <i class="fa fa-angle-right color-highlight-dark"></i>
-                  </a>
-                </div>
-                <!-- <div class="list-group list-custom-small list-icon-0">
-                  <a href="/membership?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                    <i class="fa font-12 fa-users bg-yellow-dark rounded-sm color-white"></i>
-                    <span>Affiliates</span>
-                    <i class="fa fa-angle-right color-highlight-dark"></i>
-                  </a>
-                </div -->
-              <% end %>
-              <!-- change to offerings -->
-              <!-- <div class="list-group list-custom-small list-icon-0">
-                <a href="/how-it-works?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                  <i class="fa font-12 fa-question bg-yellow-dark rounded-sm color-white"></i>
-                  <span>How It Works</span>
-                  <i class="fa fa-angle-right color-highlight-dark"></i>
-                </a>
-              </div> -->
-              
-            </div>
-          </div>
-          <div class="card card-style">
-            <div class="content my-0">
-              <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Freebies</h5>
-              <div class="list-group list-custom-small list-icon-0">
-                <a href="https://oarlin.com/learn-trading" target="_blank">
-                  <i class="fa font-12 fa-heart bg-highlight-dark rounded-sm color-white"></i>
-                  <span>Learn Trading</span>
-                  <i class="fa fa-angle-right color-highlight-dark"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-          
-
-          <% if current_user&.admin? %>
-            <div class="card card-style">
-              <div class="content my-0">
-                <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Admin</h5>
-                  <div class="list-group list-custom-small list-icon-0">
-                    <a href="/categories">
-                      <i class="fa font-12 fa-users bg-highlight rounded-sm color-white"></i>
-                      <span>Categories</span>
-                      <i class="fa fa-angle-right color-highlight-dark"></i>
-                    </a>
-                  </div>
-                  <div class="list-group list-custom-small list-icon-0">
-                    <a href="/categories/new">
-                      <i class="fa font-12 fa-question bg-yellow-dark rounded-sm color-white"></i>
-                      <span>New Category</span>
-                      <i class="fa fa-angle-right color-highlight-dark"></i>
-                    </a>
-                  </div>
-                  <div class="list-group list-custom-small list-icon-0">
-                    <a href="/brands">
-                      <i class="fa font-12 fa-question bg-yellow-dark rounded-sm color-white"></i>
-                      <span>Brands</span>
-                      <i class="fa fa-angle-right color-highlight-dark"></i>
-                    </a>
-                  </div>
-                  <div class="list-group list-custom-small list-icon-0">
-                    <a href="//brands/new">
-                      <i class="fa font-12 fa-question bg-yellow-dark rounded-sm color-white"></i>
-                      <span>New Brand</span>
-                      <i class="fa fa-angle-right color-highlight-dark"></i>
-                    </a>
-                  </div>
-                
-              </div>
-            </div>
-          <% end %>
-
-          <div class="card card-style">
+          <!-- <div class="card card-style">
             <% if current_user %>
               <div class=" position-sticky bottom-0 end-0">
                     <div class="content list-group list-custom-small list-icon-0">
@@ -328,7 +229,7 @@
                 </div>
               </div>
             <% end %>
-          </div>
+          </div> -->
         </div>
       </div>
 
@@ -403,139 +304,17 @@
           </div>
         </div>
         <div class="footer card card-style">
-            <a href="#" class="mb-2 footer-title"><span class="color-highlight">Oarlin</span></a>
-            <p class="text-center font-22">Beta<i class="fa fa-flask color-pink-light"></i></p>
-            <p class="footer-copyright mb-2 color-pink-light">Having Trouble? <%= mail_to "team@oarlin.com", "EMAIL US" %></p>
+            <a href="#" class="mb-2 footer-title"><span class="color-highlight font-20">Kynetic Fitness</span></a>
+            <p class="footer-copyright mb-2 color-pink-light">Having Trouble? <%= mail_to "kyneticfitnesshtx@gmail.com", "EMAIL US" %></p>
             <p class="footer-links">
-              
-              <a target='_blank' href="https://www.themarathonclothing.com/" class="back-to-top color-highlight">REST IN PEACE NIPSEY</a> | <a target='_blank' href="https://shop.mambaandmambacita.org/" class="back-to-top color-highlight">REST IN PEACE KOBE</a>
             </p>
             <div class="text-center mb-3">
-              <a target='_blank' href="https://www.youtube.com/@oarlin" class="back-to-top color-pink-light"><i class="fa fa-youtube fa-3x"></i></a>  <a target='_blank' href="https://www.instagram.com/mr.oarlin/" class="back-to-top color-pink-light"><i class="fa fa-instagram fa-3x"></i></a>  <a target='_blank' href="https://www.facebook.com/profile.php?id=100092428797855" class="back-to-top color-pink-light"><i class="fa fa-facebook fa-3x"></i></a>
             </div>
-            <p class="footer-copyright">Copyright © Enabled <span id="copyright-year">2023</span>. All Rights Reserved.</p>
+            <p class="footer-copyright">Copyright © <span id="copyright-year">2023</span>. All Rights Reserved.</p>
             <!-- <p class="footer-links"><a href="" class="color-highlight">Privacy Policy</a> | <a href="#" class="color-highlight">Terms and Conditions</a> | <a href="#" class="back-to-top color-highlight"> Back to Top</a></p> -->
         </div>
         <br>
         <br>
-        <!-- End of Page Content-->
-
-        <!-- All Menus, Action Sheets, Modals, Notifications, Toasts, Snackbars get Placed outside the <div class="page-content"> -->
-        <div id="menu-settings" class="menu menu-box-bottom menu-box-detached" style="display: block;">
-            <div class="menu-title mt-0 pt-0"><h1>Settings</h1><p class="color-highlight">Flexible and Easy to Use</p><a href="#" class="close-menu"><i class="fa fa-times"></i></a></div>
-            <div class="divider divider-margins mb-n2"></div>
-            <div class="content">
-                <div class="list-group list-custom-small">
-                    <a href="#" data-toggle-theme="" data-trigger-switch="switch-dark-mode" class="pb-2 ms-n1">
-                        <i class="fa font-12 fa-moon rounded-s bg-highlight color-white me-3"></i>
-                        <span>Dark Mode</span>
-                        <div class="custom-control scale-switch ios-switch">
-                            <input data-toggle-theme="" type="checkbox" class="ios-input" id="switch-dark-mode">
-                            <label class="custom-control-label" for="switch-dark-mode"></label>
-                        </div>
-                        <i class="fa fa-angle-right color-highlight-dark"></i>
-                    </a>
-                </div>
-                <div class="list-group list-custom-large">
-                    <a data-menu="menu-highlights" href="#">
-                        <i class="fa font-14 fa-tint bg-green-dark rounded-s"></i>
-                        <span>Page Highlight</span>
-                        <strong>16 Colors Highlights Included</strong>
-                        <span class="badge bg-highlight color-white">HOT</span>
-                        <i class="fa fa-angle-right color-highlight-dark"></i>
-                    </a>
-                    <a href="#" class="border-0">
-                        <i class="fa font-14 fa-cog bg-blue-dark rounded-s"></i>
-                        <span>Background Color</span>
-                        <strong>10 Page Gradients Included</strong>
-                        <span class="badge bg-highlight color-white">NEW</span>
-                        <i class="fa fa-angle-right color-highlight-dark"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <!-- Menu Settings Highlights-->
-        <div id="menu-highlights" class="menu menu-box-bottom menu-box-detached" style="display: block;">
-            <div class="menu-title"><h1>Highlights</h1><p class="color-highlight">Any Element can have a Highlight Color</p><a href="#" class="close-menu"><i class="fa fa-times"></i></a></div>
-            <div class="divider divider-margins mb-n2"></div>
-            <div class="content">
-                <div class="highlight-changer">
-                    <a href="#" data-change-highlight="blue"><i class="fa fa-circle color-blue-dark"></i><span class="color-blue-light">Default</span></a>
-                    <a href="#" data-change-highlight="red"><i class="fa fa-circle color-red-dark"></i><span class="color-red-light">Red</span></a>
-                    <a href="#" data-change-highlight="orange"><i class="fa fa-circle color-orange-dark"></i><span class="color-orange-light">Orange</span></a>
-                    <a href="#" data-change-highlight="pink2"><i class="fa fa-circle color-pink2-dark"></i><span class="color-highlight-dark">Pink</span></a>
-                    <a href="#" data-change-highlight="magenta"><i class="fa fa-circle color-magenta-dark"></i><span class="color-magenta-light">Purple</span></a>
-                    <a href="#" data-change-highlight="aqua"><i class="fa fa-circle color-aqua-dark"></i><span class="color-aqua-light">Aqua</span></a>
-                    <a href="#" data-change-highlight="teal"><i class="fa fa-circle color-teal-dark"></i><span class="color-teal-light">Teal</span></a>
-                    <a href="#" data-change-highlight="mint"><i class="fa fa-circle color-mint-dark"></i><span class="color-mint-light">Mint</span></a>
-                    <a href="#" data-change-highlight="green"><i class="fa fa-circle color-green-light"></i><span class="color-green-light">Green</span></a>
-                    <a href="#" data-change-highlight="grass"><i class="fa fa-circle color-green-dark"></i><span class="color-green-dark">Grass</span></a>
-                    <a href="#" data-change-highlight="sunny"><i class="fa fa-circle color-yellow-light"></i><span class="color-yellow-light">Sunny</span></a>
-                    <a href="#" data-change-highlight="yellow"><i class="fa fa-circle color-yellow-dark"></i><span class="color-yellow-light">Goldish</span></a>
-                    <a href="#" data-change-highlight="brown"><i class="fa fa-circle color-brown-dark"></i><span class="color-brown-light">Wood</span></a>
-                    <a href="#" data-change-highlight="night"><i class="fa fa-circle color-dark-dark"></i><span class="color-dark-light">Night</span></a>
-                    <a href="#" data-change-highlight="dark"><i class="fa fa-circle color-dark-light"></i><span class="color-dark-light">Dark</span></a>
-                    <div class="clearfix"></div>
-                </div>
-                <a href="#" data-menu="menu-settings" class="mb-3 btn btn-full btn-m rounded-sm bg-highlight shadow-xl text-uppercase font-900 mt-4">Back to Settings</a>
-            </div>
-        </div>
-        <!-- Menu Settings Backgrounds-->
-        <div id="menu-backgrounds" class="menu menu-box-bottom menu-box-detached" style="display: block;">
-            <div class="menu-title"><h1>Backgrounds</h1><p class="color-highlight">Change Page Color Behind Content Boxes</p><a href="#" class="close-menu"><i class="fa fa-times"></i></a></div>
-            <div class="divider divider-margins mb-n2"></div>
-            <div class="content">
-                <div class="background-changer">
-                    <a href="#" data-change-background="default"><i class="bg-theme"></i><span class="color-dark-dark">Default</span></a>
-                    <a href="#" data-change-background="plum"><i class="body-plum"></i><span class="color-plum-dark">Plum</span></a>
-                    <a href="#" data-change-background="magenta"><i class="body-magenta"></i><span class="color-dark-dark">Magenta</span></a>
-                    <a href="#" data-change-background="dark"><i class="body-dark"></i><span class="color-dark-dark">Dark</span></a>
-                    <a href="#" data-change-background="violet"><i class="body-violet"></i><span class="color-violet-dark">Violet</span></a>
-                    <a href="#" data-change-background="red"><i class="body-red"></i><span class="color-red-dark">Red</span></a>
-                    <a href="#" data-change-background="green"><i class="body-green"></i><span class="color-green-dark">Green</span></a>
-                    <a href="#" data-change-background="sky"><i class="body-sky"></i><span class="color-sky-dark">Sky</span></a>
-                    <a href="#" data-change-background="orange"><i class="body-orange"></i><span class="color-orange-dark">Orange</span></a>
-                    <a href="#" data-change-background="yellow"><i class="body-yellow"></i><span class="color-yellow-dark">Yellow</span></a>
-                    <div class="clearfix"></div>
-                </div>
-                <a href="#" data-menu="menu-settings" class="mb-3 btn btn-full btn-m rounded-sm bg-highlight shadow-xl text-uppercase font-900 mt-4">Back to Settings</a>
-            </div>
-        </div>
-        <!-- Menu Share -->
-        <div id="menu-share" class="menu menu-box-bottom menu-box-detached" style="display: block;">
-            <div class="menu-title mt-n1"><h1>Share the Love</h1><p class="color-highlight">Just Tap the Social Icon. We'll add the Link</p><a href="#" class="close-menu"><i class="fa fa-times"></i></a></div>
-            <div class="content mb-0">
-                <div class="divider mb-0"></div>
-                <div class="list-group list-custom-small list-icon-0">
-                    <a href="https://www.facebook.com/sharer/sharer.php?u=file:///Users/fdwillis/Downloads/themeforest-qkNNuq1C-sticky-mobile-mobile-template/code/page-fitness-home-2.html" class="shareToFacebook external-link" target="_blank">
-                        <i class="font-18 fab fa-facebook-square color-facebook"></i>
-                        <span class="font-13">Facebook</span>
-                        <i class="fa fa-angle-right color-highlight-dark"></i>
-                    </a>
-                    <a href="http://twitter.com/share?text=StickyMobile BootStrap%20file:///Users/fdwillis/Downloads/themeforest-qkNNuq1C-sticky-mobile-mobile-template/code/page-fitness-home-2.html" class="shareToTwitter external-link" target="_blank">
-                        <i class="font-18 fab fa-twitter-square color-twitter"></i>
-                        <span class="font-13">Twitter</span>
-                        <i class="fa fa-angle-right color-highlight-dark"></i>
-                    </a>
-                    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=file:///Users/fdwillis/Downloads/themeforest-qkNNuq1C-sticky-mobile-mobile-template/code/page-fitness-home-2.html&amp;title=StickyMobile BootStrap&amp;summary=&amp;source=" class="shareToLinkedIn external-link" target="_blank">
-                        <i class="font-18 fab fa-linkedin color-linkedin"></i>
-                        <span class="font-13">LinkedIn</span>
-                        <i class="fa fa-angle-right color-highlight-dark"></i>
-                    </a>
-                    <a href="whatsapp://send?text=file:///Users/fdwillis/Downloads/themeforest-qkNNuq1C-sticky-mobile-mobile-template/code/page-fitness-home-2.html" class="shareToWhatsApp external-link" target="_blank">
-                        <i class="font-18 fab fa-whatsapp-square color-whatsapp"></i>
-                        <span class="font-13">WhatsApp</span>
-                        <i class="fa fa-angle-right color-highlight-dark"></i>
-                    </a>
-                    <a href="mailto:?body=file:///Users/fdwillis/Downloads/themeforest-qkNNuq1C-sticky-mobile-mobile-template/code/page-fitness-home-2.html" class="shareToMail external-link border-0" target="_blank">
-                        <i class="font-18 fa fa-envelope-square color-mail"></i>
-                        <span class="font-13">Email</span>
-                        <i class="fa fa-angle-right color-highlight-dark"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-
     <script type="text/javascript" src="/assets/jquery.js"></script>
     <script type="text/javascript" src="/assets/bootstrap.min.js"></script>
     <script type="text/javascript" src="/assets/gallery-views.js"></script>
