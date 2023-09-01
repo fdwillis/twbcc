@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Kynetic Fitness</title>
+    <title>TWBCC Card</title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -25,7 +25,7 @@
     <div id="page">
 
       <div class="header header-fixed header-logo-center ">
-          <a href="/?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="header-title font-20 color-highlight">Kynetic Fitness</a>
+          <a href="/?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>" class="header-title font-20 color-highlight">TWBCC Card</a>
           <!-- <a href='javascript:history.go(-1);' data-back-button="" class="header-icon header-icon-1"><i class="fa fa-arrow-left"></i></a> -->
           <a href="#" data-menu="menu-sidebar-right-1" class="active-nav"><i class="header-icon header-icon-4 fa fa-bars font-25"></i><span></span></a>
       </div>
@@ -67,7 +67,7 @@
             <div class="d-flex px-2 pb-2 pt-2">
               <div class="ps-2 align-self-center">
                <a href="/">
-                <img src="/assets/kyneticlogo.png" data-src="/assets/kyneticlogo.png" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
+                <img src="/assets/chamber-white.jpeg" data-src="/assets/chamber-white.jpeg" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
                   
                </a> 
              </div>
@@ -154,28 +154,13 @@
           
           <div class="card card-style">
             <div class="content my-0">
-              <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Workout Plans</h5>
+              <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Membership Card</h5>
                 <div class="list-group list-custom-small list-icon-0">
 
 
-                  <a href="#">
+                  <a href="membership-card">
                     <i class="fa font-12 fa-check bg-highlight-dark rounded-sm color-white"></i>
-                    <span>1X Week</span>
-                    <i class="fa fa-angle-right color-highlight-dark"></i>
-                  </a>
-                  <a href="#">
-                    <i class="fa font-12 fa-check bg-highlight-dark rounded-sm color-white"></i>
-                    <span>2X Week</span>
-                    <i class="fa fa-angle-right color-highlight-dark"></i>
-                  </a>
-                  <a href="#">
-                    <i class="fa font-12 fa-check bg-highlight-dark rounded-sm color-white"></i>
-                    <span>3X Week</span>
-                    <i class="fa fa-angle-right color-highlight-dark"></i>
-                  </a>
-                  <a href="#">
-                    <i class="fa font-12 fa-check bg-highlight-dark rounded-sm color-white"></i>
-                    <span>4X Week</span>
+                    <span>Order Now</span>
                     <i class="fa fa-angle-right color-highlight-dark"></i>
                   </a>
                 </div>
@@ -304,8 +289,8 @@
           </div>
         </div>
         <div class="footer card card-style">
-            <a href="#" class="mb-2 footer-title"><span class="color-highlight font-20">Kynetic Fitness</span></a>
-            <p class="footer-copyright mb-2 color-pink-light">Having Trouble? <%= mail_to "kyneticfitnesshtx@gmail.com", "EMAIL US" %></p>
+            <a href="#" class="mb-2 footer-title"><span class="color-highlight font-20">TWBCC Card</span></a>
+            <p class="footer-copyright mb-2 color-green-light">Having Trouble? <%= mail_to "kyneticfitnesshtx@gmail.com", "EMAIL US" %></p>
             <p class="footer-links">
             </p>
             <div class="text-center mb-3">

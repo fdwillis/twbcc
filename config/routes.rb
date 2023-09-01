@@ -16,7 +16,7 @@ Rails.application.routes.draw do
     get code, to: 'errors#show', code: code
   end
 
-
+  get '/membership-card',     to: 'application#membership_card',    as: 'membership-card'
   get '/discounts', to: 'application#discounts', as: 'discounts' # sprint2
   get '/membership', to: 'application#membership', as: 'membership'
   get '/users', to: 'application#users', as: 'users'

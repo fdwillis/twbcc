@@ -1,6 +1,35 @@
 class ApplicationController < ActionController::Base
   before_action :authenticate_user!, only: %i[loved list]
 
+  def membership_card
+    successURL = "https://card.twbcc.com/set-password?session={CHECKOUT_SESSION_ID}"
+    customFields = [{
+      key: 'type',
+      label: { custom: 'Card Type', type: 'custom' },
+      type: 'dropdown',
+      dropdown: { options: [
+        { label: 'Individual', value: 'individual' },
+        { label: 'Company', value: 'company' }
+      ] }
+    }]
+    @session = Stripe::Checkout::Session.create({
+      success_url: successURL,
+      phone_number_collection: {
+       enabled: true
+      },
+      custom_fields: customFields,
+      shipping_address_collection: {
+        allowed_countries: ['US']
+      },
+      line_items: [
+       { price: ENV['memberCardPrice'], quantity: 1 }
+      ],
+      mode: 'payment'
+    })
+
+    redirect_to @session['url']
+  end
+
   def external
     @link = 'https://oarlin.com/learn-trading' 
   end
