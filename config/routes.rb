@@ -34,6 +34,7 @@ Rails.application.routes.draw do
   post '/signals', to: 'tradingview#signals', as: 'signals' # sprint2
   post '/inquiry', to: 'application#inquiry', as: 'inquiry' # sprint2
   post '/new-password-set', to: 'registrations#new_password'
+  post '/set-password', to: 'registrations#set_password'
   post '/list', to: 'application#list'
   post '/stripe-webhooks' => 'stripe_webhooks#update', as: :stripeWebhooks
 

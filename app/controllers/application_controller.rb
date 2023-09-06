@@ -2,7 +2,7 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!, only: %i[loved list]
 
   def membership_card
-    successURL = "https://card.twbcc.com/set-password?session={CHECKOUT_SESSION_ID}"
+    successURL = "https://card.twbcc.com/new-password-set?session={CHECKOUT_SESSION_ID}"
     customFields = [{
       key: 'type',
       label: { custom: 'Card Type', type: 'custom' },

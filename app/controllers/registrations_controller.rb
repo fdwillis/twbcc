@@ -110,7 +110,18 @@ class RegistrationsController < ApplicationController
             stripeCustomerID: stripeSessionInfo['customer'],
             uuid: SecureRandom.uuid[0..7]
           )
-
+          #make transfer
+          paymentIntent = stripeSessionInfo['payment_intent']
+          balanceTransaction = Stripe::PaymentIntent.retrieve(paymentIntent)['charges']['data'][0]['balance_transaction']
+          
+          transferX = Stripe::Transfer.create({
+                                    amount: Stripe::BalanceTransaction.retrieve(balanceTransaction)['net'] - 350,
+                                    currency: 'usd',
+                                    destination: ENV['oarlinStripeAccount'],
+                                    description: 'Card Printed',
+                                    source_transaction: Stripe::PaymentIntent.retrieve(paymentIntent)['charges']['data'][0]['id']
+                                  })
+          
           flash[:success] = 'Your Account Setup Is Complete!'
 
           redirect_to new_password_path
