@@ -29,35 +29,25 @@
           <!-- <a href='javascript:history.go(-1);' data-back-button="" class="header-icon header-icon-1"><i class="fa fa-arrow-left"></i></a> -->
           <a href="#" data-menu="menu-sidebar-right-1" class="active-nav"><i class="header-icon header-icon-4 fa fa-bars font-25"></i><span></span></a>
       </div>
-      <% if current_user&.connectAccount? %>
-        <div id="footer-bar" class="footer-bar-1" data-no-turbolink>
-          <% if current_user&.present? %>
-            <% if request.fullpath.include?('/commissions') %>
-              <a href="/commissions/<%= current_user&.uuid %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" class="active-nav" data-no-turbolink><i class="font-25 fa fa-money"></i><span>Commissions</span></a>
-            <% else %>
-              <a href="/commissions/<%= current_user&.uuid %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" data-no-turbolink><i class="opacity-40 font-25 fa fa-money"></i><span class="opacity-40">Commissions</span></a>
-            <% end %>
+      <div id="footer-bar" class="footer-bar-1" data-no-turbolink>
+        <% if current_user&.present? %>
+          <% if request.fullpath.include?('/commissions') %>
+            <a href="/commissions/<%= current_user&.uuid %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" class="active-nav" data-no-turbolink><i class="font-25 fa fa-money"></i><span>Deposits</span></a>
           <% else %>
-            <% if request.fullpath.include?('/how-it-works') %>
-              <a href="/how-it-works?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" class="active-nav" data-no-turbolink><i class="font-25 fa fa-question"></i><span>How It Works</span></a>
-            <% else %>
-              <a href="/how-it-works?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" data-no-turbolink><i class="opacity-40 font-25 fa fa-question"></i><span class="opacity-40">How It Works</span></a>
-            <% end %>
+            <a href="/commissions/<%= current_user&.uuid %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" data-no-turbolink><i class="opacity-40 font-25 fa fa-money"></i><span class="opacity-40">Deposits</span></a>
           <% end %>
-
-          <% if request.fullpath.include?('/search') || request.fullpath.include?('/brand') || request.fullpath.include?('/categories') || request.fullpath.include?('/product') %>
-            <a href="/search?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" class="active-nav" data-no-turbolink><i class="font-25 fa fa-search"></i><span>Search</span></a>
+          <% if request.fullpath.include?('/commissions') %>
+            <a href="/commissions/<%= current_user&.uuid %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" class="active-nav" data-no-turbolink><i class="font-25 fa fa-list"></i><span>Transactions</span></a>
           <% else %>
-            <a href="/search?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" data-no-turbolink><i class="opacity-40 font-25 fa fa-search"></i><span class="opacity-40">Search</span></a>
+            <a href="/commissions/<%= current_user&.uuid %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" data-no-turbolink><i class="opacity-40 font-25 fa fa-list"></i><span class="opacity-40">Transactions</span></a>
           <% end %>
-
-          <% if request.fullpath.include?('/blog') %>
-            <a href="/blog?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" class="active-nav" data-no-turbolink><i class="font-25 fa fa-comments"></i><span>The Hive</span></a>
+          <% if request.fullpath.include?('/commissions') %>
+            <a href="/commissions/<%= current_user&.uuid %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" class="active-nav" data-no-turbolink><i class="font-25 fa fa-cog"></i><span>Settings</span></a>
           <% else %>
-            <a href="/blog?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" data-no-turbolink><i class="opacity-40 font-25 fa fa-comments"></i><span class="opacity-40">The Hive</span></a>
+            <a href="/commissions/<%= current_user&.uuid %>?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy']  %>" data-no-turbolink><i class="opacity-40 font-25 fa fa-cog"></i><span class="opacity-40">Settings</span></a>
           <% end %>
-        </div>
-      <% end %>
+        <% end %>
+      </div>
 
 
       <div id="menu-sidebar-right-1" class="menu menu-box-right menu-box-detached menu-sidebar" data-menu-width="310" style="display: block; width: 310px;">

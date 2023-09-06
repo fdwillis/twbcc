@@ -304,7 +304,7 @@ class RegistrationsController < ApplicationController
   private
 
   def setSessionVarParams
-    paramsClean = params.require(:setSessionVar).permit(:email, :password_confirmation, :password, :stripeSession, :referredBy, :accessPin, :amazonUUID)
+    paramsClean = params.require(:setSessionVar).permit(:first_name, :last_name, :dob, :email, :password_confirmation, :password, :stripeSession, :referredBy, :accessPin, :amazonUUID)
     paramsClean.reject { |_, v| v.blank? }
   end
 
