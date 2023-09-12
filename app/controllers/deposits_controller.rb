@@ -11,6 +11,11 @@ class DepositsController < ApplicationController
 	end
 	
 	def create
+		stripeCustomerX = Stripe::Customer.retrieve(current_user&.stripeCustomerID)
+    cardHolderID = stripeCustomerX['metadata']['cardHolder'].strip
+    cardholder = Stripe::Issuing::Cardholder.retrieve(cardHolderID)
+    loadSpendingMeta = cardholder['spending_controls']['spending_limits']
+		
 		chargeX = Stripe::Charge.create({
 			amount: User.stripeAmount((newDepositRequest[:depositAmount].to_f + newDepositRequest[:depositAmount].to_f * 0.05).to_s),
 			currency: 'usd',
@@ -19,14 +24,48 @@ class DepositsController < ApplicationController
 			customer: current_user&.stripeCustomerID,
 			metadata: {reqeustAmount: User.stripeAmount(newDepositRequest[:depositAmount])}
 		})
-		
+
+		amountForFee = Stripe::BalanceTransaction.retrieve(chargeX['balance_transaction'])['net'] - chargeX['metadata']['reqeustAmount'].to_i
+
 		transferX = Stripe::Transfer.create({
-      amount: Stripe::BalanceTransaction.retrieve(chargeX['balance_transaction'])['net'] - chargeX['metadata']['reqeustAmount'].to_i,
+      amount: amountForFee,
       currency: 'usd',
       destination: ENV['oarlinStripeAccount'],
       description: 'Deposit Fee',
       source_transaction: chargeX['id']
     })
+
+		amountForIssue = Stripe::BalanceTransaction.retrieve(chargeX['balance_transaction'])['net'] - amountForFee.to_i
+
+    topUp = Stripe::Topup.create({
+      amount: amountForIssue,
+      currency: 'usd',
+      description: "#{stripeCustomerX.id} deposit: $#{(amountForIssue).to_f * 0.01}",
+      statement_descriptor: 'Top-up',
+      destination_balance: 'issuing',
+      metadata: {cardHolder: stripeCustomerX['metadata']['cardHolder'], deposit: true}
+    })
+
+    Stripe::Charge.update(chargeX.id, metadata: {topUp: topUp['id']})
+      
+		someCalAmount = loadSpendingMeta.empty? ? amountForIssue : loadSpendingMeta&.first['amount'].to_i + amountForIssue
+    
+    case loadSpendingMeta&.empty?
+    when true
+      Stripe::Issuing::Cardholder.update(cardHolderID,{spending_controls: {spending_limits: [amount: amountForIssue, interval: 'per_authorization']}})
+    when false 
+      Stripe::Issuing::Cardholder.update(cardHolderID,{spending_controls: {spending_limits: [amount: someCalAmount, interval: 'per_authorization']}})
+    end
+    
+    Stripe::Issuing::Card.update(stripeCustomerX['metadata']['issuedCard'].strip, status: 'active')
+
+
+
+
+
+
+
+
 		flash[:success] = "Deposit Submitted"
 		redirect_to new_deposit_path
 	end
