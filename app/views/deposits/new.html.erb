@@ -1,9 +1,8 @@
 <div class="header-clear-medium">
-	<%= form_for(:setSessionVar, url: set_password_path) do |f| %>
+	<%= form_for(:newDepositRequest, url: deposits_path) do |f| %>
 	  <h4 class="opacity-50">Deposit Amount</h4>
 	  <div class="input-style has-borders no-icon validate-field mb-4">
-	    <input type="text" class="form-control validate-text" id="form2" placeholder="Deposit Amount">
-	    <label for="form2" class="color-highlight">Card</label>
+	  	<%= f.number_field :depositAmount, class: 'form-check-input form-control validate-field', placeholder: "Deposit Amount"   %>
 	    <i class="fa fa-times disabled invalid color-red-dark"></i>
 	    <i class="fa fa-check disabled valid color-green-dark"></i>
 	    <em>(required)</em>
@@ -15,7 +14,7 @@
 				<div class="col-3">
 					<label class="card card-style me-0 mb-3 text-center pt-2 form-check-label" for="<%= sourceX.id %>">
 					  <div class="form-check icon-check">
-					  	<%= f.radio_button :depositSource, sourceX.id, checked: false, id: sourceX.id, name: 'inlineRadioOptions', class: 'form-check-input'   %>
+					  	<%= f.radio_button :depositSource, sourceX.id, checked: false, id: sourceX.id, class: 'form-check-input'   %>
 				      <!-- <input class="form-check-input" type="radio" name="inlineRadioOptions" value="" id="<%= sourceX.id %>"> -->
 				      <!-- <label class="form-check-label" for="<%= sourceX.id %>">Select</label> -->
 				      <i class="icon-check-1 fa fa-circle color-gray-dark font-16"></i>

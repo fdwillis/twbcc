@@ -455,4 +455,28 @@ class User < ApplicationRecord
   def admin?
     accessPin.split(',').include?('admin')
   end
+
+  def self.stripeAmount(string)
+    converted = (string.gsub(/[^0-9]/i, '').to_i)
+
+    if string.include?(".")
+      dollars = string.split(".")[0]
+      cents = string.split(".")[1]
+
+      if cents.length == 2
+        stripe_amount = "#{dollars}#{cents}"
+      else
+        if cents === "0"
+          stripe_amount = ("#{dollars}00")
+        else
+          stripe_amount = ("#{dollars}#{cents.to_i * 10}")
+        end
+      end
+
+      return stripe_amount
+    else
+      stripe_amount = converted * 100
+      return stripe_amount
+    end
+  end
 end
