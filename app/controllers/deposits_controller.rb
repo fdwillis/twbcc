@@ -20,20 +20,22 @@ class DepositsController < ApplicationController
 			amount: User.stripeAmount((newDepositRequest[:depositAmount].to_f + newDepositRequest[:depositAmount].to_f * 0.05).to_s),
 			currency: 'usd',
 			source: newDepositRequest[:depositSource],
-			description: 'TWBCC ',
+			description: "Deposit $#{(User.stripeAmount(newDepositRequest[:depositAmount]) * 0.01).to_i}",
 			customer: current_user&.stripeCustomerID,
-			metadata: {reqeustAmount: User.stripeAmount(newDepositRequest[:depositAmount])}
+			metadata: {requestAmount: User.stripeAmount(newDepositRequest[:depositAmount])}
 		})
 
-		amountForFee = Stripe::BalanceTransaction.retrieve(chargeX['balance_transaction'])['net'] - chargeX['metadata']['reqeustAmount'].to_i
+		amountForFee = Stripe::BalanceTransaction.retrieve(chargeX['balance_transaction'])['net'] - chargeX['metadata']['requestAmount'].to_i
 
-		transferX = Stripe::Transfer.create({
-      amount: amountForFee,
-      currency: 'usd',
-      destination: ENV['oarlinStripeAccount'],
-      description: 'Deposit Fee',
-      source_transaction: chargeX['id']
-    })
+		if amountForFee >= 1
+			transferX = Stripe::Transfer.create({
+		      amount: amountForFee,
+		      currency: 'usd',
+		      destination: ENV['oarlinStripeAccount'],
+		      description: 'Deposit Fee',
+		      source_transaction: chargeX['id']
+		    })
+		end
 
 		amountForIssue = Stripe::BalanceTransaction.retrieve(chargeX['balance_transaction'])['net'] - amountForFee.to_i
 

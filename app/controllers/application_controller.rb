@@ -721,10 +721,19 @@ class ApplicationController < ActionController::Base
   end
 
   def profile
+    builtPayload = []
+
     @userFound = params['id'].present? ? User.find_by(uuid: params['id']) : current_user
     @profile = @userFound.present? ? Stripe::Customer.retrieve(@userFound&.stripeCustomerID) : nil
-    @issuingTransactions = Stripe::Issuing::Transaction.list({card: @profile['metadata']['issuedCard']})['data']
-    @balance = false ? 1 : 0
+    @issuingTransactions = Stripe::Issuing::Authorization.list({card: @profile['metadata']['issuedCard']})['data'].reject{|d| d['approved'] != true}
+    @deposits = Stripe::Charge.list({limit: 100, customer: current_user&.stripeCustomerID}).reject{|d| !d['metadata']['topUp'].present?}
+
+    builtPayload << @issuingTransactions.map{|d| {created: DateTime.strptime(d['created'].to_s,'%s'), item: d['merchant_data']['name'], status: d['approved'] == true ? 'Approved' : 'Declined', amount: d['amount'].to_i}}.flatten
+    builtPayload << @deposits.map{|d| {created: DateTime.strptime(d['created'].to_s,'%s'), item: d['description'], status: 'Approved', amount: d['metadata']['requestAmount'].to_i}}.reject{|d| d[:amount] == 0}.flatten
+    transactions = @issuingTransactions.map(&:amount).sum * 0.01
+    @balance = @deposits.map{|d| d['metadata']['requestAmount'].to_i}.sum * 0.01 - transactions
+    @builtPayload = builtPayload.flatten
+    
   end
 
   def welcome

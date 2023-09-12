@@ -37,15 +37,17 @@
       <div class="content mb-0">
           <!-- <h4 class="font-700 text-uppercase font-12 opacity-30 mb-3 mt-n2">Account History</h4> -->
           <div class="row mb-3">
-              <div class="col-4"><p class="font-14 mb-0 font-800 color-theme text-start">Date</p></div>
-              <div class="col-4"><p class="font-14 mb-0 font-800 color-theme text-center">Item</p></div>
-              <div class="col-4"><p class="font-14 mb-0 font-800 color-theme text-end">Amount</p></div>
+              <div class="col-3"><p class="font-14 mb-0 font-800 color-theme text-start">Date</p></div>
+              <div class="col-3"><p class="font-14 mb-0 font-800 color-theme text-center">Item</p></div>
+              <div class="col-3"><p class="font-14 mb-0 font-800 color-theme text-center">Status</p></div>
+              <div class="col-3"><p class="font-14 mb-0 font-800 color-theme text-end">Amount</p></div>
               <div class="divider w-100 mb-2 mt-2"></div>
-              <% if @issuingTransactions.present? %>
-                <% @issuingTransactions.each do |transa| %> 
-                  <div class="col-4"><p class="font-13 mb-0 font-500 color-theme text-start"><%= time_ago_in_words(transa['created']) %> ago</p></div>
-                  <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-center"><%= transa['merchant_data']['name'] %></p></div>
-                  <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-end"><%= number_to_currency(transa['amount'] * 0.01, precision: 2) %></p></div>
+              <% if @builtPayload.present? %>
+                <% @builtPayload.flatten.sort_by{|e| e[:created]}.reverse.each do |transa| %> 
+                  <div class="col-3"><p class="font-13 mb-0 font-500 color-theme text-start"><%= time_ago_in_words(transa[:created].to_i) %> ago</p></div>
+                  <div class="col-3"><p class="font-13 mb-0 font-800 color-theme text-center"><%= transa[:item] %></p></div>
+                  <div class="col-3"><p class="font-13 mb-0 font-800 color-theme text-center"><%= transa[:status] %></p></div>
+                  <div class="col-3"><p class="font-13 mb-0 font-800 color-theme text-end"><%= number_to_currency(transa[:amount] * 0.01, precision: 2) %></p></div>
                 <% end %>
               <% else %>
                 <p class="bottom-0 opacity-50 under-heading font-20 text-center font-700">NO TRANSACTIONS</p>
