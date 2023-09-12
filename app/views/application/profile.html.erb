@@ -1,119 +1,4 @@
-<% if current_user %>
-<% if current_user.admin? %>
-  <div id="page" data-swup="0">
-    <div class="page-content header-clear-medium">
-      <div class="card card-style">
-        <div class="d-flex content mb-1">
-          <i class="fa fa-star color-highlight-dark float-end font-13 mt-2 me-3"></i>
-          <div class="flex-grow-1">
-            <h1 class="font-700"><%= @userFound.username %></h1>
-            <p class="mb-2 font-16">I'm in love software &amp; finance... I founded Oarlin.</p>
-            <p class="font-10">
-              <strong class="color-theme pe-1 font-14">1k</strong>Followers
-              <strong class="color-theme ps-3 pe-1 font-14">342</strong>Traders
-            </p>
-          </div>
-          <img src="/assets/Oarlin_free-file.jpg" data-src="/assets/Oarlin_free-file.png" width="90" height="90" class="rounded-circle mt-3 shadow-xl preload-img entered loaded" data-ll-status="loaded">
-        </div>
-        <div class="content mb-4">
-          <div class="row mb-0">
-            <div class="col-6">
-              <a href="#" class="btn btn-full btn-m rounded-s text-uppercase font-700 bg-highlight-dark">
-                TRADES
-                <p class="text-center color-white font-8">FOLLOW</p>
-              </a>
-            </div>
-            <div class="col-6">
-              <a href="#" class="btn btn-full btn-m rounded-s text-uppercase font-700 color-highlight-dark border-highlight-dark">
-                LIFESTYLE
-                <p class="text-center color-highlight font-8">FOLLOWING</p>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <a href="/invite" data-menu="ad-timed-2" data-timed-ad="5" data-auto-show-ad="10" class="btn btn-l btn-full rounded-s shadow-xl text-uppercase font-900 bg-highlight me-3 ms-3 mb-4">GET INVITED</a>
-      <div class="divider mt-4 mb-0"></div>
-      <div class="content mb-0 mt-n1">
-        <div class="gallery-views gallery-view-3">
-          <div class="card card-style">
-            <div class="content">
-              <p><i class="fa fa-star color-highlight-dark font-13"></i> <%= @userFound.username %> <span class="color-highlight float-end"><%= rand(0..4) %> Days Ago</span></p>
-            </div>
-            <a data-gallery="gallery-1" title="Vynil and Typerwritter">
-              <img src="/assets/Oarlin_free-file.png" data-src="/assets/Oarlin_free-file.png" class="rounded-m preload-img shadow-xl img-fluid entered loaded" alt="img" data-ll-status="loaded">
-              <div class="caption content">
-                <h4 class="bottom-0 color-theme">Messy Desk?<span class="float-end"><i class="fa fa-bullhorn color-highlight"></i></span></h4>
-                <p>Some may consider this to be a very messy desk.</p>
-              </div>
-            </a>
-          </div>
-          <div class="card card-style">
-            <div class="content">
-              <p><i class="fa fa-star color-highlight-dark font-13"></i> <%= @userFound.username %> <span class="color-highlight float-end"><%= rand(0..4) %> Days Ago</span></p>
-            </div>
-            <a data-gallery="gallery-1" title="Fruit Cookie Pie">
-              <img src="/assets/Oarlin_free-file.png" data-src="/assets/Oarlin_free-file.png" class="rounded-m preload-img shadow-xl img-fluid entered loaded" alt="img" data-ll-status="loaded">
-              <div class="caption content">
-                <h4 class="bottom-0 color-theme">Designers Desk<span class="float-end"><i class="fa fa-bullhorn color-highlight"></i></span></h4>
-                <p>With all the gadgets you'd ever wish for.</p>
-              </div>
-            </a>
-          </div>
-          <div class="card card-style">
-            <div class="content">
-              <p><i class="fa fa-star color-highlight-dark font-13"></i> <%= @userFound.username %> <span class="color-highlight float-end"><%= rand(0..4) %> Days Ago</span></p>
-            </div>
-            <a data-gallery="gallery-1" title="Plain Cookies and Flour">
-              <img src="/assets/Oarlin_free-file.png" data-src="/assets/Oarlin_free-file.png" class="rounded-m preload-img shadow-xl img-fluid entered loaded" alt="img" data-ll-status="loaded">
-              <div class="caption content">
-                <h4 class="bottom-0 color-theme">Apple Watch<span class="float-end"><i class="fa fa-bullhorn color-highlight"></i></span></h4>
-                <p>The perfect and small notification device.</p>
-              </div>
-            </a>
-          </div>
-          <div class="card card-style">
-            <div class="content">
-              <p><i class="fa fa-star color-highlight-dark font-13"></i> <%= @userFound.username %> <span class="color-highlight float-end"><%= rand(0..4) %> Days Ago</span></p>
-            </div>
-            <a data-gallery="gallery-1" title="Pots and Stuff">
-              <img src="/assets/Oarlin_free-file.png" data-src="/assets/Oarlin_free-file.png" class="rounded-m preload-img shadow-xl img-fluid entered loaded" alt="img" data-ll-status="loaded">
-              <div class="caption content">
-                <h4 class="bottom-0 color-theme">City Landscape<span class="float-end"><i class="fa fa-bullhorn color-highlight"></i></span></h4>
-                <p>It's absolutely gorgeous, we'd love to see it live.</p>
-              </div>
-            </a>
-          </div>
-          <div class="card card-style">
-            <div class="content">
-              <p></p>
-              <p><i class="fa fa-star color-highlight-dark font-13"></i> <%= @userFound.username %> <span class="color-highlight float-end"><%= rand(0..4) %> Days Ago</span></p>
-            </div>
-            <a data-gallery="gallery-1" title="Delicious Strawberries">
-              <img src="/assets/Oarlin_free-file.png" data-src="/assets/Oarlin_free-file.png" class="rounded-m preload-img shadow-xl img-fluid entered loaded" alt="img" data-ll-status="loaded">
-              <div class="caption content">
-                <h4 class="bottom-0 color-theme">Typography and iP5</h4>
-                <p>A beautifully captured snap with great contrast.</p>
-              </div>
-            </a>
-          </div>
-          <div class="card card-style">
-            <div class="content">
-              <p><i class="fa fa-star color-highlight-dark font-13"></i> <%= @userFound.username %> <span class="color-highlight float-end"><%= rand(0..4) %> Days Ago</span></p>
-            </div>
-            <a data-gallery="gallery-1" title="A Beautiful Camera">
-              <img src="/assets/Oarlin_free-file.png" data-src="/assets/Oarlin_free-file.png" class="rounded-m preload-img shadow-xl img-fluid entered loaded" alt="img" data-ll-status="loaded">
-              <div class="caption content">
-                <h4 class="bottom-0 color-theme">Feather and P</h4>
-                <p>Going back to days when things were simplere.</p>
-              </div>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-<% else %>
+
 <div class="header-clear-medium">
   <div data-card-height="240" class="card card-style rounded-m shadow-xl preload-img entered loaded" data-src="images/pictures/18w.jpg" data-ll-status="loaded" style="height: 240px; background-image: url(&quot;images/pictures/18w.jpg&quot;);">
       <div class="card-top mt-4 ms-3">
@@ -127,10 +12,10 @@
           <p class="bottom-0 color-white opacity-50 under-heading font-11 font-700">**** **** **** <%= Stripe::Issuing::Card.retrieve(@profile['metadata']['issuedCard'] )['last4'] %></p>
       </div>
       <div class="card-top mt-4 me-3">
-          <a href="#" data-menu="menu-add-funds" class="mt-1 float-end text-uppercase font-900 font-11 btn btn-s rounded-s shadow-l bg-highlight">Add Funds</a>
+          <a href="<%= new_deposit_path %>" data-menu="menu-add-funds" class="mt-1 float-end text-uppercase font-900 font-11 btn btn-s rounded-s shadow-l bg-highlight">New Deposit</a>
       </div>
       <div class="card-center text-center">
-          <h1 class="color-white fa-4x">$8.178</h1>
+          <h1 class="color-white fa-4x"><%= number_to_currency(@balance, precision: 2) %></h1>
           <p class="color-white opacity-70 font-11 mb-n5">Balance</p>
       </div>
       <div class="card-bottom">
@@ -143,30 +28,28 @@
   </div>
   <div class="d-flex content mb-1">
     <div class="flex-grow-1">
-      <h1 class="font-700"><%=@profile['name'].titleize%>#<%= current_user&.uuid %></h1>
+      <h1 class="font-700">Transaction History</h1>
       <!--  <%= Stripe::Issuing::Card.retrieve(@profile['metadata']['issuedCard'] )['exp_month'] %> -->
       
     </div>
   </div>
   <div class="card card-style">
       <div class="content mb-0">
-          <h4 class="font-700 text-uppercase font-12 opacity-30 mb-3 mt-n2">Account History</h4>
+          <!-- <h4 class="font-700 text-uppercase font-12 opacity-30 mb-3 mt-n2">Account History</h4> -->
           <div class="row mb-3">
               <div class="col-4"><p class="font-14 mb-0 font-800 color-theme text-start">Date</p></div>
               <div class="col-4"><p class="font-14 mb-0 font-800 color-theme text-center">Item</p></div>
               <div class="col-4"><p class="font-14 mb-0 font-800 color-theme text-end">Amount</p></div>
               <div class="divider w-100 mb-2 mt-2"></div>
-              <div class="col-4"><p class="font-13 mb-0 font-500 color-theme text-start"><%= rand(1..10) %> days ago</p></div>
-              <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-center"><i class="fa fa-arrow-up color-green-dark pe-1"></i> 24.10</p></div>
-              <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-end"><i class="fa fa-arrow-down color-red-dark pe-1"></i> 14.10</p></div>
-              <div class="divider w-100 mb-2 mt-2"></div>
-              <div class="col-4"><p class="font-13 mb-0 font-500 color-theme text-start"><%= rand(1..10) %> days ago</p></div>
-              <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-center"><i class="fa fa-arrow-down color-red-dark pe-1"></i> 14.10</p></div>
-              <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-end"><i class="fa fa-arrow-up color-green-dark pe-1"></i> 18.10</p></div>
-              <div class="divider w-100 mb-2 mt-2"></div>
-              <div class="col-4"><p class="font-13 mb-0 font-500 color-theme text-start"><%= rand(1..10) %> days ago</p></div>
-              <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-center"><i class="fa fa-minus color-yellow-dark pe-1"></i> 18.10</p></div>
-              <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-end"><i class="fa fa-minus color-yellow-dark pe-1"></i> 14.10</p></div>
+              <% if @issuingTransactions.present? %>
+                <% @issuingTransactions.each do |transa| %> 
+                  <div class="col-4"><p class="font-13 mb-0 font-500 color-theme text-start"><%= time_ago_in_words(transa['created']) %> ago</p></div>
+                  <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-center"><%= transa['merchant_data']['name'] %></p></div>
+                  <div class="col-4"><p class="font-13 mb-0 font-800 color-theme text-end"><%= number_to_currency(transa['amount'] * 0.01, precision: 2) %></p></div>
+                <% end %>
+              <% else %>
+                <p class="bottom-0 opacity-50 under-heading font-20 text-center font-700">NO TRANSACTIONS</p>
+              <% end %>
           </div>
       </div>    
   </div>
@@ -215,9 +98,7 @@
     <small class="pb-4">This Page Contains Amazon Affiliate Links That Will Earn That Affiliate Commission If Purchased. We Automate This Process For All Amazon Associates &amp; Pay Commission On Oarlin Memberships As Well (Available In USA)</small>
   </div>
 </div>
-<% end %>
-<% else %>
-<% end %>
+
 <!-- ad spaces -->
 <div id="ad-timed-3" class="menu menu-box-modal menu-box-modal-full" style="display: block;">
   <div class="card bg-17" style="height:100vh; width:100vw;">

@@ -1,0 +1,26 @@
+<div class="header-clear-medium">
+	<%= form_for(:newSource, url: sources_path) do |f| %>
+	  <div class="input-style has-borders no-icon validate-field mb-4">
+	    <label for="number" class="color-highlight">Card Number</label>
+			<%= f.text_field :number, class: 'form-control validate-text', id: 'number', placeholder: 'Card Number' %>
+	    <em>(required)</em>
+	  </div>
+	  <div class="input-style has-borders no-icon validate-field mb-4">
+			<%= f.text_field :cvc, class: 'form-control validate-text', id: 'cvc', placeholder: 'CVC Number' %>
+	    <label for="cvc" class="color-highlight">CVC</label>
+	    <em>(required)</em>
+	  </div>
+	  <div class="input-style has-borders no-icon validate-field mb-4">
+			<%= f.text_field :exp_month, class: 'form-control validate-text', id: 'exp_month', placeholder: 'Expiration Month' %>
+	    <label for="exp_month" class="color-highlight">Exp Month</label>
+	    <em>(required)</em>
+	  </div>
+	  <div class="input-style has-borders no-icon validate-field mb-4">
+			<%= f.text_field :exp_year, class: 'form-control validate-text', id: 'exp_year', placeholder: 'Expiration Year' %>
+	    <label for="exp_year" class="color-highlight">Exp Year</label>
+	    <em>(required)</em>
+	  </div>
+	  
+    <%= f.submit "Add Source", class: "btn btn-full rounded-sm text-uppercase font-700 mt-3 bg-green-dark col-md-12" %>
+	<% end %>
+</div>

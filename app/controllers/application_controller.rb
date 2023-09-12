@@ -723,26 +723,8 @@ class ApplicationController < ActionController::Base
   def profile
     @userFound = params['id'].present? ? User.find_by(uuid: params['id']) : current_user
     @profile = @userFound.present? ? Stripe::Customer.retrieve(@userFound&.stripeCustomerID) : nil
-    @membershipDetails = @userFound.present? ? @userFound&.checkMembership : nil
-    @profileMetadata = @profile.present? ? @profile['metadata'] : nil
-    @accountItemsDue = @userFound.present? && Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'].present? ? Stripe::Account.retrieve(Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due'] : nil
-
-    if @userFound.present? && Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'].present?
-      @stripeAccountUpdate = Stripe::AccountLink.create(
-        {
-          account: Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount'],
-          refresh_url: "https://app.oarlin.com/?&referredBy=#{@userFound&.uuid}",
-          return_url: "https://app.oarlin.com/?&referredBy=#{@userFound&.uuid}",
-          type: 'account_onboarding'
-        }
-      )
-
-      if @accountItemsDue.count == 0
-        @loginLink = Stripe::Account.create_login_link(
-          Stripe::Customer.retrieve(@userFound&.stripeCustomerID)['metadata']['connectAccount']
-        )
-      end
-    end
+    @issuingTransactions = Stripe::Issuing::Transaction.list({card: @profile['metadata']['issuedCard']})['data']
+    @balance = false ? 1 : 0
   end
 
   def welcome
