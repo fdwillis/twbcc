@@ -3,12 +3,6 @@ class StripeWebhooksController < ApplicationController
 
   def update
     event = params['stripe_webhook']['type']
-    stripeObject = params['data']['object']
-    customerIDToGrab = stripeObject['card']['cardholder']['metadata']['stripeCustomerID'].strip
-    customerToGrab = Stripe::Customer.retrieve(customerIDToGrab)
-    cardHolderID = customerToGrab['metadata']['cardHolder'].strip
-    cardholder = Stripe::Issuing::Cardholder.retrieve(cardHolderID)
-    loadSpendingMeta = cardholder['spending_controls']['spending_limits']
 
     if event == 'checkout.session.completed'
       # send sessionLinkEmail: after payment
@@ -16,6 +10,12 @@ class StripeWebhooksController < ApplicationController
     end
 
     if event == 'issuing_authorization.request'
+      stripeObject = params['data']['object']
+      customerIDToGrab = stripeObject['card']['cardholder']['metadata']['stripeCustomerID']
+      customerToGrab = Stripe::Customer.retrieve(customerIDToGrab)
+      cardHolderID = customerToGrab['metadata']['cardHolder'].strip
+      cardholder = Stripe::Issuing::Cardholder.retrieve(cardHolderID)
+      loadSpendingMeta = cardholder['spending_controls']['spending_limits']
 
       amountToCharge = stripeObject['pending_request']['amount']
       maxSpend = loadSpendingMeta&.first['amount']
