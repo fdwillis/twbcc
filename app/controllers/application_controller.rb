@@ -5,11 +5,11 @@ class ApplicationController < ActionController::Base
     successURL = "https://card.twbcc.com/new-password-set?session={CHECKOUT_SESSION_ID}"
     customFields = [{
       key: 'type',
-      label: { custom: 'Card Type', type: 'custom' },
+      label: { custom: 'Include Membership Card ($5)', type: 'custom' },
       type: 'dropdown',
       dropdown: { options: [
-        { label: 'Individual', value: 'individual' },
-        { label: 'Company', value: 'company' }
+        { label: 'Yes', value: 'yes' },
+        { label: 'No', value: 'no' }
       ] }
     }]
     @session = Stripe::Checkout::Session.create({
@@ -18,11 +18,8 @@ class ApplicationController < ActionController::Base
        enabled: true
       },
       custom_fields: customFields,
-      shipping_address_collection: {
-        allowed_countries: ['US']
-      },
       line_items: [
-       { price: ENV['memberCardPrice'], quantity: 1 }
+       { price: params['price'], quantity: 1 }
       ],
       mode: 'payment'
     })
