@@ -7,6 +7,60 @@ class User < ApplicationRecord
 
   include MediaEmbed::Handler
 
+  def checkMembership
+    membershipValid = []
+    membershipPlans = User::USERmembership + User::CAPTAINmembership + User::TRADERmembership
+    allSubscriptions = Stripe::Subscription.list({ customer: stripeCustomerID })['data'].map(&:items).map(&:data).flatten.map(&:plan).map(&:id)
+
+    #check for payment of membership
+    # when checking for addOns us addOnPaid or addOnPending
+    membershipPlans.each do |planID|
+      case true
+      when allSubscriptions.include?(planID)
+        membershipPlan = Stripe::Subscription.list({ customer: stripeCustomerID, price: planID })['data'][0]
+        membershipType = if TRADERmembership.include?(planID)
+                           'trader,trader'
+                         elsif USERmembership.include?(planID)
+                           'user,trader'
+                         elsif CAPTAINmembership.include?(planID)
+                           'captain,trader'
+                         else
+                           FREEmembership.include?(planID) ? 'free' : 'free'
+                         end
+
+
+                         
+        if membershipPlan['status'] == 'active' && membershipPlan['pause_collection'].nil?
+          membershipValid << { membershipDetails: membershipPlan, membershipType: self.uuid == 'd57307d7' ? membershipType + ',admin' : membershipType }
+        end
+      else
+        # membershipValid << { membershipDetails: membershipPlan, membershipType: membershipType }
+      end
+    end
+    membershipValid.present? ? membershipValid : [{ membershipType: 'free', membershipDetails: { 0 => { 'status' => 'active', 'interval' => 'N/A' } } }]
+
+    #logic checking for profits us profitPaid or profitPending
+
+    paymentIntents = Stripe::PaymentIntent.list({limit: 100, customer: stripeCustomerID})
+
+    if paymentIntents['has_more'] == true
+    else
+      paymentIntents['data'].each do |stripePI|
+        if stripePI['metadata'].present?
+          if stripePI['metadata']['profitPaid'] == 'false'
+            membershipValid << { membershipDetails: stripePI['id'], membershipType: 'profitPending' }
+          elsif stripePI['metadata']['profitPaid'] == 'true'
+            membershipValid << { membershipDetails: stripePI['id'], membershipType: 'profitPaid' }
+          end
+        end
+      end
+    end
+
+    self.update(accessPin: membershipValid.map { |d| d[:membershipType] }.uniq.join(','))
+
+    membershipValid
+  end
+
 
   def self.twilioText(number, message)
     if ENV['stripeLivePublish'].include?("pk_live_") && Rails.env.production? && number

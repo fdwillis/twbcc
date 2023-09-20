@@ -17,6 +17,9 @@ class ApplicationController < ActionController::Base
       phone_number_collection: {
        enabled: true
       },
+      shipping_address_collection: {
+        allowed_countries: ['US']
+      },
       custom_fields: customFields,
       line_items: [
        { price: params['price'], quantity: 1 }

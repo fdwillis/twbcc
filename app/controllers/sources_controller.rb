@@ -8,7 +8,6 @@ class SourcesController < ApplicationController
 	end
 	
 	def create
-		debugger
 		tokenX = Stripe::Token.create({
 		  card: {
 		    number: setCardVarParams[:number],
@@ -23,7 +22,7 @@ class SourcesController < ApplicationController
 		  {source: tokenX},
 		)
 		flash[:notice] = "Source Added"
-		redirect_to new_source_path
+		redirect_to new_deposit_path
 	end
 
 	private

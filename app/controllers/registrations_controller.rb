@@ -11,11 +11,11 @@ class RegistrationsController < ApplicationController
           # transfer for payment and card creation
           
           # make cardholder -> usa
-          if stripeSessionInfo['custom_fields'][0]['dropdown']['value'] == 'yes'
+          if setSessionVarParams['cardType'] == 'company'
             # company
             cardHolderNew = Stripe::Issuing::Cardholder.create({
-                                                                 type: stripeSessionInfo['custom_fields'][0]['dropdown']['value'],
-                                                                 name: stripeSessionInfo['customer_details']['name'],
+                                                                 type: setSessionVarParams['cardType'],
+                                                                 name: setSessionVarParams['name'],
                                                                  email: stripeSessionInfo['customer_details']['email'],
                                                                  phone_number: stripeSessionInfo['customer_details']['phone'],
                                                                  billing: {
@@ -34,7 +34,7 @@ class RegistrationsController < ApplicationController
           else
             # individual
             cardHolderNew = Stripe::Issuing::Cardholder.create({
-                 type: stripeSessionInfo['custom_fields'][0]['dropdown']['value'],
+                 type: setSessionVarParams['cardType'],
                  email: stripeSessionInfo['customer_details']['email'],
                  name: "#{setSessionVarParams['first_name']} #{setSessionVarParams['last_name']}",
                  individual: { 
@@ -77,7 +77,7 @@ class RegistrationsController < ApplicationController
            spending_controls: { spending_limits: {} },
            status: 'active',
            shipping: {
-             name: stripeSessionInfo['customer_details']['name'],
+             name: setSessionVarParams['cardType'] == 'company' ? setSessionVarParams['name'] : "#{setSessionVarParams['first_name']} #{setSessionVarParams['last_name']}",
              address: {
                line1: stripeSessionInfo['customer_details']['address']['line1'],
                city: stripeSessionInfo['customer_details']['address']['city'],
@@ -120,7 +120,8 @@ class RegistrationsController < ApplicationController
                                     description: 'Card Printed',
                                     source_transaction: Stripe::PaymentIntent.retrieve(paymentIntent)['charges']['data'][0]['id']
                                   })
-          
+
+
           flash[:success] = 'Your Account Setup Is Complete!'
 
           redirect_to new_password_path
@@ -238,7 +239,7 @@ class RegistrationsController < ApplicationController
   private
 
   def setSessionVarParams
-    paramsClean = params.require(:setSessionVar).permit(:first_name, :last_name, :dob, :email, :password_confirmation, :password, :stripeSession, :referredBy, :accessPin, :amazonUUID)
+    paramsClean = params.require(:setSessionVar).permit(:cardType, :name, :first_name, :last_name, :dob, :email, :password_confirmation, :password, :stripeSession, :referredBy, :accessPin, :amazonUUID)
     paramsClean.reject { |_, v| v.blank? }
   end
 

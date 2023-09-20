@@ -90,31 +90,6 @@
                       <i class="fa fa-angle-right color-highlight-dark"></i>
                     </a>
                   </div>
-                  <% if current_user.connectAccount? %>
-                    <div class="list-group list-custom-small list-icon-0">
-                      <a href=<%= current_user&.present? ? "/commissions/#{User&.all.shuffle.take(1)[0].uuid}?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" : "/commissions/#{User&.all.shuffle.take(1)[0].uuid}?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" %>>
-                        <i class="fa font-12 fa-money bg-mint-dark rounded-sm color-white"></i>
-                        <span>
-                         Commissions
-                        </span>
-                        <i class="fa fa-angle-right color-highlight-dark"></i>
-                      </a>
-                    </div>
-                    <!-- <div class="list-group list-custom-small list-icon-0">
-                      <a href="/loved">
-                        <i class="fa font-12 fa-heart bg-highlight rounded-sm color-white"></i>
-                        <span>Loved <%= current_user&.present? && Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['wishlist'].present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['wishlist'].split(',').reject(&:blank?).uniq.size})" : nil %></span>
-                        <i class="fa fa-angle-right color-highlight-dark"></i>
-                      </a>
-                    </div> -->
-                    <div class="list-group list-custom-small list-icon-0">
-                      <a href="/list?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                        <i class="fa font-12 fa-list bg-orange-dark rounded-sm color-white"></i>
-                        <span>List <%= current_user&.present? && Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].present? ? "(#{Stripe::Customer.retrieve(current_user.stripeCustomerID)['metadata']['tracking'].split('*').reject(&:blank?).uniq.size})" : nil %></span>
-                        <i class="fa fa-angle-right color-highlight-dark"></i>
-                      </a>
-                    </div>
-                  <% end %>
                 <% if current_user&.admin? %>
                   <div class="list-group list-custom-small list-icon-0">
                     <a href="/blog/new">
@@ -148,22 +123,13 @@
                   <div class="list-group list-custom-small list-icon-0">
 
 
-<<<<<<< Updated upstream
-                    <a href="membership-card">
-                      <i class="fa font-12 fa-check bg-highlight-dark rounded-sm color-white"></i>
-                      <span>Order Now</span>
-                      <i class="fa fa-angle-right color-highlight-dark"></i>
-                    </a>
-                  </div>
               </div>
-=======
                   <a href="membership-card?price=price_1NiJRWHvKdEDURjLEOuvHIKM">
                     <i class="fa font-12 fa-check bg-highlight-dark rounded-sm color-white"></i>
                     <span>Order Now</span>
                     <i class="fa fa-angle-right color-highlight-dark"></i>
                   </a>
                 </div>
->>>>>>> Stashed changes
             </div>
           <% end %>
           <div class="card card-style">
