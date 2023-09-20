@@ -33,6 +33,7 @@ Rails.application.routes.draw do
 
   post '/new-membership-card',     to: 'registrations#new_membership_card'
   post '/inquiry', to: 'application#inquiry', as: 'inquiry' # sprint2
+  post '/pause_membership', to: 'application#pause_membership', as: 'pause_membership'
   post '/new-password-set', to: 'registrations#new_password'
   post '/set-password', to: 'registrations#set_password'
   post '/stripe-webhooks' => 'stripe_webhooks#update', as: :stripeWebhooks

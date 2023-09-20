@@ -1,6 +1,18 @@
 class ApplicationController < ActionController::Base
   before_action :authenticate_user!, only: %i[loved list]
 
+  def pause_membership
+    allSubscriptions = Stripe::Subscription.list({ customer: current_user&.stripeCustomerID })['data'].map(&:id)
+    allSubscriptions.each do |id|
+      upda = Stripe::Subscription.update(id, {pause_collection: {
+        behavior: 'keep_as_draft' }})
+    end
+
+
+    flash[:success] = 'Membership Paused'
+    redirect_to request.referrer
+  end
+
   def memberships
     successURL = "https://card.twbcc.com/new-password-set?session={CHECKOUT_SESSION_ID}"
     customFields = [{
