@@ -1,0 +1,107 @@
+<div class="header-clear-medium">
+	<% unless Stripe::Customer.retrieve(@session['customer'])['metadata']['cardHolder'].present? %>
+		<div class="header-clear-medium">    
+		    <div class="card card-style">
+		        <div class="content">
+		            <div class="d-flex">
+		                <div class="align-self-center pe-3 d-none d-sm-table-cell">
+		                    <i class="fa fa-check-circle  color-green-dark fa-5x"></i>
+		                </div>
+		                <div class="align-self-center">
+		                    <h4>Thanks For Becoming A Member</h4>
+		                    <% if User.find_by(email: @session['customer_details']['email']) %>
+		                      <p class="line-height-s text-justify">Finish Your Membership Card Setup</p>
+		                    <% else %>
+		                      <p class="line-height-s text-justify">Create a password to complete your sign up.
+		                      </p>
+		                    <% end %>
+		                </div>
+		            </div>
+		            <div class="row g-0 justify-content-center">
+	                <%= form_for(:setSessionVar, url: new_membership_card_path) do |f| %>
+		                <%= f.hidden_field :stripeSession, value:  @session['id'] %>
+	                  <div class="col-xl-12 p-3">
+                      <label class="form-check-label" for="company">Company Card</label>
+                      <%= f.radio_button :cardType, 'company', checked: false, id: 'company', class: 'form-check-input', required: true,onclick: "show1();"   %>
+                      <br />
+                      <label class="form-check-label" for="individual">Individual Card</label>
+                      <%= f.radio_button :cardType, 'individual', checked: false, id: 'individual', class: 'form-check-input', required: true, onclick: "show2();"   %>
+	                    <br>
+	                    <div id="div1" class="hide col-xl-12 p-3">
+	                      <hr><p>Individual Card Information</p>
+	                        <div class="field">
+	                          <%= f.label :first_name %><br />
+	                          <%= f.text_field :first_name, class: "form-control form-control-lg form-control-alt py-3" %><br />
+
+	                        </div>
+	                        <div class="field">
+	                          <%= f.label :last_name %><br />
+	                          <%= f.text_field :last_name, class: "form-control form-control-lg form-control-alt py-3" %><br />
+
+	                        </div>
+	                        <div class="field">
+	                          <%= f.label :dob %><br />
+	                          <%= f.date_field :dob, class: "form-control form-control-lg form-control-alt py-3" %><br />
+
+	                        </div>
+	                    </div>
+	                    <div id="div2" class="hide col-xl-12 p-3">
+	                      <hr><p>Company Card Information</p>
+	                        <div class="field">
+	                          <%= f.label :name %><br />
+	                          <%= f.text_field :name, value: @session['customer_details']['name'], class: "form-control form-control-lg form-control-alt py-3" %><br />
+	                        </div>
+	                    </div>
+	                    <%= f.submit "Finish Account Setup", class: "btn btn-full rounded-sm text-uppercase font-700 mt-3 bg-green-dark col-md-12" %>
+	                  </div>
+	                <% end %>
+		            </div>
+		          
+		        </div>
+		    </div>
+		</div>
+
+
+		<style type="text/css">
+		  body {
+		  font-family: arial;
+		}
+		.hide {
+		  display: none;
+		}
+		p {
+		  font-weight: bold;
+		}
+		</style>
+
+		<script type="text/javascript">
+		  function show1(){
+		  document.getElementById('div1').style.display ='none';
+		  document.getElementById('div2').style.display = 'block';
+		}
+		function show2(){
+		  document.getElementById('div1').style.display = 'block';
+		  document.getElementById('div2').style.display ='none';
+		}
+		</script>
+	<% else %>
+		<div class="header-clear-medium">    
+	    <div class="card card-style">
+        <div class="content">
+          <div class="d-flex">
+            <div class="align-self-center pe-3 d-none d-sm-table-cell">
+                <i class="fa fa-check-circle  color-green-dark fa-5x"></i>
+            </div>
+            <div class="align-self-center">
+                <h4>Thanks For Becoming A Member</h4>
+                <p class="line-height-s text-justify">Please <%= link_to "Login", new_user_session_path %>
+                  </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+	<% end %>
+</div>
+

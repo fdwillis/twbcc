@@ -1,6 +1,46 @@
 class ApplicationController < ActionController::Base
   before_action :authenticate_user!, only: %i[loved list]
 
+  def memberships
+    successURL = "https://card.twbcc.com/new-password-set?session={CHECKOUT_SESSION_ID}"
+    customFields = [{
+      key: 'type',
+      label: { custom: 'Include Membership Card ($5)', type: 'custom' },
+      type: 'dropdown',
+      dropdown: { options: [
+        { label: 'Yes', value: 'yes' },
+        { label: 'No', value: 'no' }
+      ] }
+    }]
+
+    @basicSession = Stripe::Checkout::Session.create({
+      success_url: successURL,
+      phone_number_collection: {
+       enabled: true
+      },
+      custom_fields: customFields,
+      line_items: [
+       { price: 'price_1NsSFUHvKdEDURjLRQbPkF9U', quantity: 1 }
+      ],
+      mode: 'subscription'
+    })
+
+
+
+    @bizSession = Stripe::Checkout::Session.create({
+      success_url: successURL,
+      phone_number_collection: {
+       enabled: true
+      },
+      custom_fields: customFields,
+      line_items: [
+       { price: 'price_1NsSFDHvKdEDURjLcjpj0Fg6', quantity: 1 }
+      ],
+      mode: 'subscription'
+    })
+    
+  end
+
   def membership_card
     successURL = "https://card.twbcc.com/new-password-set?session={CHECKOUT_SESSION_ID}"
     customFields = [{
@@ -12,6 +52,7 @@ class ApplicationController < ActionController::Base
         { label: 'No', value: 'no' }
       ] }
     }]
+
     @session = Stripe::Checkout::Session.create({
       success_url: successURL,
       phone_number_collection: {
@@ -22,7 +63,7 @@ class ApplicationController < ActionController::Base
       },
       custom_fields: customFields,
       line_items: [
-       { price: params['price'], quantity: 1 }
+       { price: 'price_1NiJRWHvKdEDURjLEOuvHIKM', quantity: 1 }
       ],
       mode: 'payment'
     })

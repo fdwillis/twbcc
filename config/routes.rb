@@ -17,6 +17,8 @@ Rails.application.routes.draw do
   end
 
   get '/membership-card',     to: 'application#membership_card',    as: 'membership-card'
+  get '/new-membership-card',     to: 'registrations#new_membership_card',    as: 'new-membership-card'
+  get '/memberships',     to: 'application#memberships',    as: 'memberships'
   get '/discounts', to: 'application#discounts', as: 'discounts' # sprint2
   get '/users', to: 'application#users', as: 'users'
   get '/view-on-amazon/:asin/:country', to: 'products#amazon', as: 'amazon'
@@ -29,6 +31,7 @@ Rails.application.routes.draw do
   get '/display-discount', to: 'application#display_discount', as: 'display_discount'
   get '/update-discount', to: 'application#update_discount', as: 'update_discount'
 
+  post '/new-membership-card',     to: 'registrations#new_membership_card'
   post '/inquiry', to: 'application#inquiry', as: 'inquiry' # sprint2
   post '/new-password-set', to: 'registrations#new_password'
   post '/set-password', to: 'registrations#set_password'
