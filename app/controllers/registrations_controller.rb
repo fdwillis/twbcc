@@ -101,16 +101,7 @@ class RegistrationsController < ApplicationController
 
         end
         
-        paymentIntent = stripeSessionInfo['payment_intent']
-        balanceTransaction = Stripe::PaymentIntent.retrieve(paymentIntent)['charges']['data'][0]['balance_transaction']
-
-        transferX = Stripe::Transfer.create({
-                                  amount: Stripe::BalanceTransaction.retrieve(balanceTransaction)['net'] - 350,
-                                  currency: 'usd',
-                                  destination: ENV['oarlinStripeAccount'],
-                                  description: 'Card Printed',
-                                  source_transaction: Stripe::PaymentIntent.retrieve(paymentIntent)['charges']['data'][0]['id']
-                                })
+        
 
       end
       flash[:success] = 'Your Card Is On The Way'
@@ -219,6 +210,21 @@ class RegistrationsController < ApplicationController
     @stripeSession = Stripe::Checkout::Session.retrieve(
       params['session']
     )
+
+    paymentIntent = @stripeSession['payment_intent']
+    
+    if Stripe::PaymentIntent.retrieve(paymentIntent)['metadata']['transfered'] != true
+      balanceTransaction = Stripe::PaymentIntent.retrieve(paymentIntent)['charges']['data'][0]['balance_transaction']
+
+      transferX = Stripe::Transfer.create({
+                                amount: Stripe::BalanceTransaction.retrieve(balanceTransaction)['net'] - 350,
+                                currency: 'usd',
+                                destination: ENV['oarlinStripeAccount'],
+                                description: 'Card Printed',
+                                source_transaction: Stripe::PaymentIntent.retrieve(paymentIntent)['charges']['data'][0]['id']
+                              })
+      updateIntent = Stripe::PaymentIntent.update(paymentIntent,{metadata: {transfered: true}})
+    end
   end
 
   def trading

@@ -1,4 +1,1 @@
-<div class="header-clear-medium">
-	<h1><a href="<%= @bizSession['url'] %>">Business</a></h1>
-	<h1><a href="<%= @basicSession['url'] %>">Basic</a></h1>
-</div>
+<%= render 'pricing_tables', subscriptions: Stripe::Subscription.list({ limit: 100, customer: current_user&.stripeCustomerID})['data'].reject{|d| d['pause_collection']!=nil}.map{|d| d['items']['data']}.flatten.map{|d|d['plan']}.map(&:id) %>

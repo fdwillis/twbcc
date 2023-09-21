@@ -81,38 +81,24 @@
             <div class="card card-style">
               <div class="content my-0">
                 <h5 class="font-700 text-uppercase opacity-40 font-12 pt-2 mb-0">Account</h5>
-                  <div class="list-group list-custom-small list-icon-0">
-                    <a href=<%= current_user&.present? ? "/profile/#{current_user&.uuid}?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" : "/profile/#{User&.all.shuffle.take(1)[0].uuid}/?&referredBy=#{current_user&.present? ? current_user&.uuid : params['referredBy']}" %>>
+                <div class="list-group list-custom-small list-icon-0">
+                  <% if Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['cardHolder'].present? %>
+                    <a href=<%= "/transactions" %>>
                       <i class="fa font-12 fa-user bg-blue-dark rounded-sm color-white"></i>
                       <span>
-                        Profile
+                        Transactions
                       </span>
                       <i class="fa fa-angle-right color-highlight-dark"></i>
                     </a>
-                  </div>
-                <% if current_user&.admin? %>
-                  <div class="list-group list-custom-small list-icon-0">
-                    <a href="/blog/new">
-                      <i class="fa font-12 fa-plus bg-sunny-dark rounded-sm color-white"></i>
-                      <span>New Post</span>
-                      <i class="fa fa-angle-right color-highlight-dark"></i>
-                    </a>
-                  </div>
-                  <div class="list-group list-custom-small list-icon-0">
-                    <a href="/product/new">
-                      <i class="fa font-12 fa-plus bg-magenta-dark rounded-sm color-white"></i>
-                      <span>New Product</span>
-                      <i class="fa fa-angle-right color-highlight-dark"></i>
-                    </a>
-                  </div>
-                  <div class="list-group list-custom-small list-icon-0">
-                    <a href="/analytics?&referredBy=<%= current_user&.present? ? current_user&.uuid : params['referredBy'] %>">
-                      <i class="fa font-12 fa-signal bg-green-dark rounded-sm color-white"></i>
-                      <span>Analytics</span>
-                      <i class="fa fa-angle-right color-highlight-dark"></i>
-                    </a>
-                  </div>
-                <% end %>
+                  <% end %>
+                  <a href=<%= "/your-membership" %>>
+                    <i class="fa font-12 fa-user bg-blue-dark rounded-sm color-white"></i>
+                    <span>
+                      Your Membership
+                    </span>
+                    <i class="fa fa-angle-right color-highlight-dark"></i>
+                  </a>
+                </div>
               </div>
             </div>
           <% end %>

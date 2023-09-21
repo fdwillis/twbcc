@@ -1,15 +1,79 @@
 class ApplicationController < ActionController::Base
-  before_action :authenticate_user!, only: %i[loved list]
+  before_action :authenticate_user!, only: %i[your_membership transactions pause_membership]
+
+  def transactions
+    builtPayload = []
+
+    @userFound = params['id'].present? ? User.find_by(uuid: params['id']) : current_user
+    @profile = @userFound.present? ? Stripe::Customer.retrieve(@userFound&.stripeCustomerID) : nil
+    @issuingTransactions = Stripe::Issuing::Authorization.list({card: @profile['metadata']['issuedCard']})['data'].reject{|d| d['approved'] != true}
+    @deposits = Stripe::Charge.list({limit: 100, customer: current_user&.stripeCustomerID}).reject{|d| !d['metadata']['topUp'].present?}
+
+    builtPayload << @issuingTransactions.map{|d| {created: DateTime.strptime(d['created'].to_s,'%s'), item: d['merchant_data']['name'], status: d['approved'] == true ? 'Approved' : 'Declined', amount: d['amount'].to_i}}.flatten
+    builtPayload << @deposits.map{|d| {created: DateTime.strptime(d['created'].to_s,'%s'), item: 'Deposit', status: 'Approved', amount: d['metadata']['requestAmount'].to_i}}.reject{|d| d[:amount] == 0}.flatten
+    transactions = @issuingTransactions.map(&:amount).sum * 0.01
+    @balance = @deposits.map{|d| d['metadata']['requestAmount'].to_i}.sum * 0.01 - transactions
+    @builtPayload = builtPayload.flatten
+  end
+
+  def your_membership
+    memberships
+    @stripeCustomer = Stripe::Customer.retrieve(current_user&.stripeCustomerID)
+    @stripeCustomerSubsctiptions = Stripe::Subscription.list({ limit: 100, customer: current_user&.stripeCustomerID })['data'].reject{|d| d['pause_collection']!=nil}
+    @subscriptionList = Stripe::Subscription.list({ limit: 100, customer: current_user&.stripeCustomerID})['data'].reject{|d| d['pause_collection']!=nil}.map{|d| d['items']['data']}.flatten.map{|d|d['plan']}.map(&:id) 
+    successURL = "https://card.twbcc.com/new-password-set?session={CHECKOUT_SESSION_ID}"
+    customFields = [{
+      key: 'type',
+      label: { custom: 'Include Membership Card ($5)', type: 'custom' },
+      type: 'dropdown',
+      dropdown: { options: [
+        { label: 'Yes', value: 'yes' },
+        { label: 'No', value: 'no' }
+      ] }
+    }]
+    @authBasicSession = Stripe::Checkout::Session.create({
+      success_url: successURL,
+      phone_number_collection: {
+       enabled: true
+      },
+      custom_fields: customFields,
+      customer: current_user&.stripeCustomerID,
+      line_items: [
+       { price: ENV['basicMembership'], quantity: 1 }
+      ],
+      mode: 'subscription'
+    })
+    @authBizSession = Stripe::Checkout::Session.create({
+      success_url: successURL,
+      phone_number_collection: {
+       enabled: true
+      },
+      custom_fields: customFields,
+      customer: current_user&.stripeCustomerID,
+      line_items: [
+       { price: ENV['executiveMembership'], quantity: 1 }
+      ],
+      mode: 'subscription'
+    })
+    @authEquitySession = Stripe::Checkout::Session.create({
+      success_url: successURL,
+      phone_number_collection: {
+       enabled: true
+      },
+      custom_fields: customFields,
+      customer: current_user&.stripeCustomerID,
+      line_items: [
+       { price: ENV['equityMembership'], quantity: 1 }
+      ],
+      mode: 'subscription'
+    })
+  end
 
   def pause_membership
-    allSubscriptions = Stripe::Subscription.list({ customer: current_user&.stripeCustomerID })['data'].map(&:id)
-    allSubscriptions.each do |id|
-      upda = Stripe::Subscription.update(id, {pause_collection: {
-        behavior: 'keep_as_draft' }})
-    end
+    # only pause of ID passed
+    Stripe::Subscription.update(params['id'], {pause_collection: {behavior: 'keep_as_draft' }})
 
-
-    flash[:success] = 'Membership Paused'
+    flash[:success] = 'Subscription Paused'
     redirect_to request.referrer
   end
 
@@ -32,10 +96,13 @@ class ApplicationController < ActionController::Base
       },
       custom_fields: customFields,
       line_items: [
-       { price: 'price_1NsSFUHvKdEDURjLRQbPkF9U', quantity: 1 }
+       { price: ENV['basicMembership'], quantity: 1 }
       ],
       mode: 'subscription'
     })
+
+    @basicPrice = Stripe::Price.retrieve(ENV['basicMembership'])
+    @basicProduct = Stripe::Product.retrieve(@basicPrice['product'])
 
 
 
@@ -46,10 +113,28 @@ class ApplicationController < ActionController::Base
       },
       custom_fields: customFields,
       line_items: [
-       { price: 'price_1NsSFDHvKdEDURjLcjpj0Fg6', quantity: 1 }
+       { price: ENV['executiveMembership'], quantity: 1 }
       ],
       mode: 'subscription'
     })
+
+    @bizPrice = Stripe::Price.retrieve(ENV['executiveMembership'])
+    @bizProduct = Stripe::Product.retrieve(@basicPrice['product'])
+
+    @equitySession = Stripe::Checkout::Session.create({
+      success_url: successURL,
+      phone_number_collection: {
+       enabled: true
+      },
+      custom_fields: customFields,
+      line_items: [
+       { price: ENV['equityMembership'], quantity: 1 }
+      ],
+      mode: 'subscription'
+    })
+
+    @equityPrice = Stripe::Price.retrieve(ENV['equityMembership'])
+    @equityProduct = Stripe::Product.retrieve(@basicPrice['product'])
     
   end
 
