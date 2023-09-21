@@ -21,7 +21,7 @@
 	          <% end %>
 				  </ul>
 				  <% if @subscriptionList.include?(dataX['plan']['id']) %>
-					  <a href="/pause-membership/<%= dataX['id'] %>" class="btn btn-s bg-green-dark btn-center-l text-uppercase rounded-s font-900">Pause</a>
+					  <a href="/pause-membership/<%= dataX['id'] %>" class="btn btn-s bg-yellow-dark btn-center-l text-uppercase rounded-s font-900">Pause</a>
 					<% else %>
 					  <a href="#" class="btn btn-s bg-green-dark btn-center-l text-uppercase rounded-s font-900">Join</a>
 					<% end %>

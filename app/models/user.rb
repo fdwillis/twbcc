@@ -7,9 +7,13 @@ class User < ApplicationRecord
 
   include MediaEmbed::Handler
 
+  BASICmembership = [ENV['basicMembership']].freeze
+  BIZmembership = [ENV['executiveMembership']].freeze
+  EQUITYmembership = [ENV['equityMembership']].freeze
+
   def checkMembership
     membershipValid = []
-    membershipPlans = User::USERmembership + User::CAPTAINmembership + User::TRADERmembership
+    membershipPlans = User::BASICmembership + User::BIZmembership + User::EQUITYmembership
     allSubscriptions = Stripe::Subscription.list({ customer: stripeCustomerID })['data'].map(&:items).map(&:data).flatten.map(&:plan).map(&:id)
 
     #check for payment of membership
@@ -18,12 +22,12 @@ class User < ApplicationRecord
       case true
       when allSubscriptions.include?(planID)
         membershipPlan = Stripe::Subscription.list({ customer: stripeCustomerID, price: planID })['data'][0]
-        membershipType = if TRADERmembership.include?(planID)
-                           'trader,trader'
-                         elsif USERmembership.include?(planID)
-                           'user,trader'
-                         elsif CAPTAINmembership.include?(planID)
-                           'captain,trader'
+        membershipType = if EQUITYmembership.include?(planID)
+                           'member,equity'
+                         elsif BIZmembership.include?(planID)
+                           'member,biz'
+                         elsif BASICmembership.include?(planID)
+                           'member,member'
                          else
                            FREEmembership.include?(planID) ? 'free' : 'free'
                          end
@@ -89,8 +93,8 @@ class User < ApplicationRecord
     ISO3166::Country[amazonCountry.downcase].currency_code
   end
 
-  def business?
-    accessPin.split(',').include?('business')
+  def biz?
+    accessPin.split(',').include?('biz')
   end
 
   def member?

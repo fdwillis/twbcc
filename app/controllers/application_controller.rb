@@ -517,6 +517,7 @@ class ApplicationController < ActionController::Base
   end
 
   def profile
+    current_user&.checkMembership
     builtPayload = []
 
     @userFound = params['id'].present? ? User.find_by(uuid: params['id']) : current_user
