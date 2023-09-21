@@ -4,14 +4,13 @@ class ApplicationMailer < ActionMailer::Base
 
   def sessionLink(sessionID)
     stripeSessionData = Stripe::Checkout::Session.retrieve(sessionID)
-    paidStripeCustomer = Stripe::Customer.retrieve(stripeSessionData['customer'])
-    loadedAffililate = paidStripeCustomer['metadata']['referredBy'].present? ? paidStripeCustomer['metadata']['referredBy'].split(',').reject(&:blank?) : nil
-    link = loadedAffililate.present? ? "https://app.oarlin.com/trading?session=#{sessionID}&referredBy=#{loadedAffililate}" : "https://app.oarlin.com/trading?session=#{sessionID}"
+    stripeCustomerX = Stripe::Customer.retrieve(stripeSessionData['customer'])
+    link = "https://card.twbcc.com/new-password-set?session=#{sessionID}"
 
     mail(
-      to: paidStripeCustomer['email'],
-      subject: 'Welcome To Oarlin',
-      body: "Thank you for joining Oarlin. Here is your link to complete your account setup: #{link}"
+      to: stripeCustomerX['email'],
+      subject: 'Welcome To The Wisconsin Black Chamber of Commerce',
+      body: "Thank you for joining, here is your link to complete your setup: #{link}"
     )
   end
 end

@@ -121,7 +121,6 @@ class RegistrationsController < ApplicationController
             setSessionVarParams['stripeSession']
           )
           stripeCustomer = Stripe::Customer.retrieve(stripeSessionInfo['customer'])
-          # transfer for payment and card creation
           
           # make cardholder -> usa
           
@@ -134,18 +133,6 @@ class RegistrationsController < ApplicationController
             stripeCustomerID: stripeSessionInfo['customer'],
             uuid: SecureRandom.uuid[0..7]
           )
-          #make transfer for subscription at 2%
-          
-          transferX = Stripe::Transfer.create({
-                                      amount: (stripeSessionInfo['amount_total'] * 0.02).to_i,
-                                      currency: 'usd',
-                                      destination: ENV['oarlinStripeAccount'],
-                                      description: 'Membership',
-                                      source_transaction: Stripe::Invoice.retrieve(stripeSessionInfo['invoice'])['charge']
-                                    })
-          
-          
-
 
           flash[:success] = 'Your Account Setup Is Complete!'
 
@@ -210,92 +197,7 @@ class RegistrationsController < ApplicationController
     @stripeSession = Stripe::Checkout::Session.retrieve(
       params['session']
     )
-
-    paymentIntent = @stripeSession['payment_intent']
-    
-    if Stripe::PaymentIntent.retrieve(paymentIntent)['metadata']['transfered'] != true
-      balanceTransaction = Stripe::PaymentIntent.retrieve(paymentIntent)['charges']['data'][0]['balance_transaction']
-
-      transferX = Stripe::Transfer.create({
-                                amount: Stripe::BalanceTransaction.retrieve(balanceTransaction)['net'] - 350,
-                                currency: 'usd',
-                                destination: ENV['oarlinStripeAccount'],
-                                description: 'Card Printed',
-                                source_transaction: Stripe::PaymentIntent.retrieve(paymentIntent)['charges']['data'][0]['id']
-                              })
-      updateIntent = Stripe::PaymentIntent.update(paymentIntent,{metadata: {transfered: true}})
-    end
   end
-
-  def trading
-    # route here after successful checkout of price
-    # email them their sessionLink via webhook sessionLinkEmail
-
-    if request.post?
-      begin
-        if newTraderParams[:password_confirmation] == newTraderParams[:password]
-          stripeSessionInfo = Stripe::Checkout::Session.retrieve(
-            newTraderParams['stripeSession']
-          )
-          stripeCustomer = Stripe::Customer.retrieve(stripeSessionInfo['customer'])
-
-          stripePlan = Stripe::Subscription.list({ customer: stripeSessionInfo['customer'] })['data'][0]['items']['data'][0]['plan']['id']
-
-          newStripeAccount = Stripe::Account.create({
-                                                      type: 'standard',
-                                                      country: stripeSessionInfo['customer_details']['address']['country'],
-                                                      email: stripeCustomer['email']
-                                                    })
-
-          customerUpdated = Stripe::Customer.update(
-            stripeSessionInfo['customer'], {
-              metadata: {
-                referredBy: newTraderParams['referredBy'].present? ? newTraderParams['referredBy'] : ',',
-                commissionRate: 10,
-                connectAccount: newStripeAccount['id']
-              }
-            }
-          )
-          # make user with password passed
-          loadedCustomer = User.create(
-            referredBy: newTraderParams['referredBy'].present? ? newTraderParams['referredBy'] : ',',
-            email: stripeCustomer['email'],
-            username: newTraderParams['username'],
-            password: newTraderParams['password'],
-            accessPin: newTraderParams['accessPin'],
-            stripeCustomerID: stripeSessionInfo['customer'],
-            uuid: SecureRandom.uuid[0..7],
-            amazonCountry: stripeSessionInfo['customer_details']['address']['country']
-          )
-
-          loadedCustomer.checkMembership
-          if loadedCustomer.trial?
-            loadedCustomer.update(authorizedList: stripeSessionInfo['custom_fields'][0]['dropdown']['value'])
-          end
-
-          flash[:success] = 'Your Account Is Setup!'
-          redirect_to request.referrer
-          nil
-        else
-          flash[:alert] = 'Password Must Match'
-          redirect_to request.referrer
-          nil
-        end
-      rescue Stripe::StripeError => e
-        flash[:error] = e.error.message.to_s
-        redirect_to request.referrer
-      rescue Exception => e
-        flash[:error] = e.to_s
-        redirect_to request.referrer
-      end
-    else
-      @stripeSession = Stripe::Checkout::Session.retrieve(
-        params['session']
-      )
-    end
-  end
-
-  def trial; end
 
   private
 

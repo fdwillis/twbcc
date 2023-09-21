@@ -1,37 +1,41 @@
 <div class="header-clear-medium">
-	<%= form_for(:newDepositRequest, url: deposits_path) do |f| %>
-	  <h4 class="opacity-50">Deposit Amount</h4>
-	  <div class="input-style has-borders no-icon validate-field mb-4">
-	  	<%= f.number_field :depositAmount, class: 'form-check-input form-control validate-field', placeholder: "Deposit Amount",id: "in", required: true   %>
-	    <i class="fa fa-times disabled invalid color-red-dark"></i>
-	    <i class="fa fa-check disabled valid color-green-dark"></i>
-	    <em>(required)</em>
-	  </div>
-	  	
-	  <h4 class="opacity-50">Deposit Source</h4>
-		<div class="row">
-		  <% @sources.each do |sourceX| %>
-				<div class="col-3">
-					<label class="card card-style me-0 mb-3 text-center pt-2 form-check-label" for="<%= sourceX.id %>">
-					  <div class="form-check icon-check">
-					  	<%= f.radio_button :depositSource, sourceX.id, checked: false, id: sourceX.id, class: 'form-check-input', required: true   %>
-				      <!-- <input class="form-check-input" type="radio" name="inlineRadioOptions" value="" id="<%= sourceX.id %>"> -->
-				      <!-- <label class="form-check-label" for="<%= sourceX.id %>">Select</label> -->
-				      <i class="icon-check-1 fa fa-circle color-gray-dark font-16"></i>
-				      <i class="icon-check-2 fa fa-check-circle font-16 color-highlight"></i>
-				    </div>
-						<i class="fa fa-cc-<%= sourceX['brand'].downcase %> color-yellow-dark fa-3x mt-4"></i>
-						<h1 class="pt-4 font-20"><%= sourceX['last4'] %></h1>
-						<p class="font-11 opacity-50 mt-n2 mb-4"><%= sourceX['exp_month'] %>/<%= sourceX['exp_year'] %></p>
-					</label>
+	<% if @sources.present? %>
+			<%= form_for(:newDepositRequest, url: deposits_path) do |f| %>
+			  <h4 class="opacity-50">Deposit Amount</h4>
+			  <div class="input-style has-borders no-icon validate-field mb-4">
+			  	<%= f.number_field :depositAmount, class: 'form-check-input form-control validate-field', placeholder: "Deposit Amount",id: "in", required: true   %>
+			    <i class="fa fa-times disabled invalid color-red-dark"></i>
+			    <i class="fa fa-check disabled valid color-green-dark"></i>
+			    <em>(required)</em>
+			  </div>
+			  	
+			  <h4 class="opacity-50">Deposit Source</h4>
+				<div class="row">
+				  <% @sources.each do |sourceX| %>
+						<div class="col-3">
+							<label class="card card-style me-0 mb-3 text-center pt-2 form-check-label" for="<%= sourceX.id %>">
+							  <div class="form-check icon-check">
+							  	<%= f.radio_button :depositSource, sourceX.id, checked: false, id: sourceX.id, class: 'form-check-input', required: true   %>
+						      <!-- <input class="form-check-input" type="radio" name="inlineRadioOptions" value="" id="<%= sourceX.id %>"> -->
+						      <!-- <label class="form-check-label" for="<%= sourceX.id %>">Select</label> -->
+						      <i class="icon-check-1 fa fa-circle color-gray-dark font-16"></i>
+						      <i class="icon-check-2 fa fa-check-circle font-16 color-highlight"></i>
+						    </div>
+								<i class="fa fa-cc-<%= sourceX['brand'].downcase %> color-yellow-dark fa-3x mt-4"></i>
+								<h1 class="pt-4 font-20"><%= sourceX['last4'] %></h1>
+								<p class="font-11 opacity-50 mt-n2 mb-4"><%= sourceX['exp_month'] %>/<%= sourceX['exp_year'] %></p>
+							</label>
+						</div>
+				  <% end %>
 				</div>
-		  <% end %>
-		</div>
-			
-		  <p>To deposit $<span id="after"></span> you will be charged $<span id="out"></span></p>
-    <%= f.submit "Submit Deposit", class: "btn btn-full rounded-sm text-uppercase font-700 mt-3 bg-green-dark col-md-12" %>
-	<% end %>
-    <a href="/sources/new" class="input-style has-borders no-icon mb-4">Add New Source +</a>
+					
+				  <p>To deposit $<span id="after"></span> you will be charged $<span id="out"></span></p>
+		    <%= f.submit "Submit Deposit", class: "btn btn-full rounded-sm text-uppercase font-700 mt-3 bg-green-dark col-md-12" %>
+			<% end %>
+		    <a href="/sources/new" class="input-style has-borders no-icon mb-4">Add New Source +</a>
+	<%else%>
+		<a href="/sources/new" data-menu="menu-add-funds" class="mt-1 float-end text-uppercase font-900 font-11 btn btn-s rounded-s shadow-l bg-highlight">New Deposit Source</a>
+	<%end%>
 </div>
 
 <script type="text/javascript">
