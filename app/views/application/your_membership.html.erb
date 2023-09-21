@@ -5,7 +5,7 @@
 				<div class="pricing-4 rounded-m shadow-m bg-theme">
 				  <h1 class="pricing-title text-center bg-green-dark text-uppercase"><%= Stripe::Product.retrieve(dataX['plan']['product'])['name'] %></h1>
 				  <h3 class="pricing-value text-center bg-green-light color-white"><%= number_to_currency(dataX['plan']['amount'] * 0.01, precision: 2) %></h3>
-				  <h2 class="pricing-subtitle text-center bg-green-light">Per <%= dataX['plan']['interval'].upcase %></h2>
+				  <h2 class="pricing-subtitle text-center bg-green-light">Per <%= dataX['plan']['interval'].titleize %></h2>
 				  <ul class="pricing-list text-center">
 			      <li>Demo File</li>
 	          <div class="divider mb-2 mt-1"></div>
