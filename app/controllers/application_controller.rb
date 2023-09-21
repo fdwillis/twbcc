@@ -1,5 +1,9 @@
 class ApplicationController < ActionController::Base
-  before_action :authenticate_user!, only: %i[your_membership transactions pause_membership]
+  before_action :authenticate_user!, only: %i[your_membership transactions pause_membership manage_discounts]
+
+  def manage_discounts
+    
+  end
 
   def transactions
     builtPayload = []

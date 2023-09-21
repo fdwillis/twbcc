@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   get '/membership-card',     to: 'application#membership_card',    as: 'membership-card'
   get '/new-membership-card',     to: 'registrations#new_membership_card',    as: 'new-membership-card'
   get '/memberships',     to: 'application#memberships',    as: 'memberships'
+  get '/manage-discounts', to: 'application#manage_discounts'
   get '/discounts', to: 'application#discounts', as: 'discounts' # sprint2
   get '/users', to: 'application#users', as: 'users'
   get '/view-on-amazon/:asin/:country', to: 'products#amazon', as: 'amazon'

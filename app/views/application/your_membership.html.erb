@@ -1,4 +1,4 @@
-<div class="page-content header-clear-medium">
+<div class="header-clear-medium">
 	<div class="row">
 		<% if  @stripeCustomerSubsctiptions.present? %>
 			<% @stripeCustomerSubsctiptions.each do |dataX| %>
@@ -33,5 +33,5 @@
 			<h2 class="pricing-subtitle text-center bg-green-light">No Membership Found</h2>
 		<% end %>
 	</div>
+	<%= render 'pricing_tables', subscriptions: Stripe::Subscription.list({ limit: 100, customer: current_user&.stripeCustomerID})['data'].reject{|d| d['pause_collection']!=nil}.map{|d| d['items']['data']}.flatten.map{|d|d['plan']}.map(&:id) %>
 </div>
-<%= render 'pricing_tables', subscriptions: Stripe::Subscription.list({ limit: 100, customer: current_user&.stripeCustomerID})['data'].reject{|d| d['pause_collection']!=nil}.map{|d| d['items']['data']}.flatten.map{|d|d['plan']}.map(&:id) %>
