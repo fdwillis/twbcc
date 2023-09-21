@@ -6,14 +6,14 @@ class StripeWebhooksController < ApplicationController
     event = params['stripe_webhook']['type']
     stripeObject = params['data']['object']
 
-    if event == 'charge.succeeded'
-      if stripeObject['amount'] == 500
+    if event == 'checkout.session.completed'
+      if stripeObject['amount_total'] == 500
         transferX = Stripe::Transfer.create({
-          amount: Stripe::BalanceTransaction.retrieve(stripeObject['balance_transaction'])['net'] - 350,
+          amount: Stripe::BalanceTransaction.retrieve(Stripe::Charge.retrieve(Stripe::Invoice.retrieve(stripeObject['invoice'])['charge'])['balance_transaction'])['net'] - 350,
           currency: 'usd',
           destination: ENV['oarlinStripeAccount'],
           description: 'Card Printed',
-          source_transaction: stripeObject['id']
+          source_transaction: Stripe::Invoice.retrieve(stripeObject['invoice'])['charge']
         })
         render json: {
           success: true
@@ -21,11 +21,11 @@ class StripeWebhooksController < ApplicationController
         return
       else
         transferX = Stripe::Transfer.create({
-          amount: (stripeObject['amount'] * 0.02).to_i,
+          amount: (stripeObject['amount_total'] * 0.02).to_i,
           currency: 'usd',
           destination: ENV['oarlinStripeAccount'],
-          description: "2% Transaction",
-          source_transaction: stripeObject['id']
+          description: 'Membership',
+          source_transaction: Stripe::Invoice.retrieve(stripeObject['invoice'])['charge']
         })
         render json: {
           success: true

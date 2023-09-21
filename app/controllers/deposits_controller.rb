@@ -28,6 +28,16 @@ class DepositsController < ApplicationController
 
 			amountForFee = Stripe::BalanceTransaction.retrieve(chargeX['balance_transaction'])['net'] - chargeX['metadata']['requestAmount'].to_i
 
+			if amountForFee >= 1
+				transferX = Stripe::Transfer.create({
+			      amount: amountForFee,
+			      currency: 'usd',
+			      destination: ENV['oarlinStripeAccount'],
+			      description: 'Deposit Fee',
+			      source_transaction: chargeX['id']
+			    })
+			end
+
 			amountForIssue = Stripe::BalanceTransaction.retrieve(chargeX['balance_transaction'])['net'] - amountForFee.to_i
 
 	    topUp = Stripe::Topup.create({
