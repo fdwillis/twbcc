@@ -1,31 +1,93 @@
-
 <div class="header-clear-medium">
-  <div data-card-height="240" class="card card-style rounded-m shadow-xl preload-img entered loaded" data-src="images/pictures/18w.jpg" data-ll-status="loaded" style="height: 240px; background-image: url(&quot;images/pictures/18w.jpg&quot;);">
-      <div class="card-top mt-4 ms-3">
-          <h1 class="color-white mb-0 mb-n2 font-22">
-            10 CLAIMS
-          </h1>
-          <p class="bottom-0 color-white opacity-50 under-heading font-11 font-700">PER PERCENTAGE</p>
+  <% if @accountItemsDue.size == 0  %>
+
+    <% if Stripe::Account.retrieve(Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'])['metadata'].present? %>
+      <% metaX = Stripe::Account.retrieve(Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'])['metadata'] %>
+      <div data-card-height="240" class="card card-style rounded-m shadow-xl preload-img entered loaded" data-src="images/pictures/18w.jpg" data-ll-status="loaded" style="height: 240px; background-image: url(&quot;images/pictures/18w.jpg&quot;);">
+    
+        <div class="card-top mt-4 ms-3">
+            <h1 class="color-white mb-0 mb-n2 font-22">
+              <%= metaX['redemptions'] %> REDEEMS
+              
+            </h1>
+            <p class="bottom-0 color-white opacity-50 under-heading font-11 font-700">PER DISCOUNT</p>
+        </div>
+        <div class="card-top mt-4 me-3">
+            <a href="/edit-discounts" data-menu="menu-add-funds" class="mt-1 float-end text-uppercase font-900 font-11 btn btn-s rounded-s shadow-l bg-highlight">Edit Settings</a>
+        </div>
+        <div class="card-center text-center">
+            <h1 class="color-white fa-4x"><%= metaX['maxDiscount'] %>%</h1>
+            <p class="color-white opacity-70 font-11 mb-n5">MAX DISCOUNT</p>
+        </div>
+        <div class="card-bottom">
+            <p class="ms-3 font-10 font-500 opacity-50 color-white mb-2">Refresh: <%= metaX['refreshRate'] %> day</p>
+        </div>
+        <div class="card-bottom">
+            <p class="text-end me-3 font-10 font-500 opacity-50 color-white mb-2">100 TOTAL DISCOUNTS</i></p>
+        </div>
+        <div class="card-overlay bg-black opacity-70"></div>
       </div>
-      <div class="card-top mt-4 me-3">
-          <a href="<%= new_deposit_path %>" data-menu="menu-add-funds" class="mt-1 float-end text-uppercase font-900 font-11 btn btn-s rounded-s shadow-l bg-highlight">Manage Discounts</a>
+    <% else %>
+      <div data-card-height="240" class="card card-style rounded-m shadow-xl preload-img entered loaded" data-src="images/pictures/18w.jpg" data-ll-status="loaded" style="height: 240px; background-image: url(&quot;images/pictures/18w.jpg&quot;);">
+    
+        <div class="card-top mt-4 ms-3">
+            <h1 class="color-white mb-0 mb-n2 font-22">
+            </h1>
+            <p class="bottom-0 color-white opacity-50 under-heading font-11 font-700"></p>
+        </div>
+        <div class="card-top mt-4 me-3">
+            <a href="/edit-discounts" data-menu="menu-add-funds" class="mt-1 float-end text-uppercase font-900 font-11 btn btn-s rounded-s shadow-l bg-highlight">Edit Settings</a>
+        </div>
+        <div class="card-center text-center">
+            <h1 class="color-white fa-4x"></h1>
+            <p class="color-white opacity-70 font-11 mb-n5"></p>
+        </div>
+        <div class="card-bottom">
+            <p class="ms-3 font-10 font-500 opacity-50 color-white mb-2"></p>
+        </div>
+        <div class="card-bottom">
+            <p class="text-end me-3 font-10 font-500 opacity-50 color-white mb-2"></i></p>
+        </div>
+        <div class="card-overlay bg-black opacity-70"></div>
       </div>
-      <div class="card-center text-center">
-          <h1 class="color-white fa-4x">45</h1>
-          <p class="color-white opacity-70 font-11 mb-n5">MAX DISCOUNT PERCENTAGE</p>
+    <% end %>
+
+    <div class="d-flex content mb-1">
+      <div class="flex-grow-1">
+        <h1 class="font-700">Discount Activity</h1>
       </div>
-      <div class="card-bottom">
-          <p class="ms-3 font-10 font-500 opacity-50 color-white mb-2">34 CLAIMED</p>
-      </div>
-      <div class="card-bottom">
-          <p class="text-end me-3 font-10 font-500 opacity-50 color-white mb-2">450 TOTAL DISCOUNTS</i></p>
-      </div>
-      <div class="card-overlay bg-black opacity-70"></div>
-  </div>
-  <div class="d-flex content mb-1">
-    <div class="flex-grow-1">
-      <h1 class="font-700">Discount Activity</h1>
     </div>
-  </div>
+    <div class="card card-style">
+        <div class="content mb-0">
+            <!-- <h4 class="font-700 text-uppercase font-12 opacity-30 mb-3 mt-n2">Account History</h4> -->
+            <div class="row mb-3">
+                <div class="col-3"><p class="font-14 mb-0 font-800 color-theme text-start">Code</p></div>
+                <div class="col-3"><p class="font-14 mb-0 font-800 color-theme text-center">Viewed</p></div>
+                <div class="col-3"><p class="font-14 mb-0 font-800 color-theme text-center">Discount</p></div>
+                <div class="col-3"><p class="font-14 mb-0 font-800 color-theme text-end">Expires</p></div>
+                <div class="divider w-100 mb-2 mt-2"></div>
+                <% if @codes.present? %>
+                  <% @codes.flatten.sort_by{|e| e[:created]}.reverse.each do |transa| %> 
+                    <div class="col-3"><p class="font-13 mb-0 font-500 color-theme text-start">
+                      <%= transa['id'] %></p></div>
+                    <div class="col-3"><p class="font-13 mb-0 font-800 color-theme text-center"><%= transa['times_redeemed'] %></p></div>
+                    <div class="col-3"><p class="font-13 mb-0 font-800 color-theme text-center"><%= transa['percent_off'].to_i %>%</p></div>
+                    <div class="col-3"><p class="font-13 mb-0 font-800 color-theme text-end"><%= DateTime.strptime((transa[:redeem_by].to_i.to_s),'%s').to_date.strftime('%b, %d %Y') %></p></div>
+                  <% end %>
+                <% else %>
+                  <p class="bottom-0 opacity-50 under-heading font-20 text-center font-700">NO CODES</p>
+                <% end %>
+            </div>
+        </div>    
+    </div>
+  <% else %>
+    <div data-card-height="240" class="card card-style rounded-m shadow-xl preload-img entered loaded" data-src="images/pictures/18w.jpg" data-ll-status="loaded" style="height: 240px; background-image: url(&quot;images/pictures/18w.jpg&quot;);">
+        <div class="card-top mt-4 me-3">
+            <a href="<%= @stripeAccountUpdate['url'] %>" class="mt-1 float-end text-uppercase font-900 font-11 btn btn-s rounded-s shadow-l bg-yellow-dark">Edit Company Information</a>
+        </div>
+        <div class="card-overlay bg-black opacity-70"></div>
+    </div>
+  <% end %>
 
 </div>
+

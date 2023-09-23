@@ -1,7 +1,7 @@
 <div class="header-clear-medium">
 	<div class="row">
-		<% if  @stripeCustomerSubsctiptions.present? %>
-			<% @stripeCustomerSubsctiptions.each do |dataX| %>
+		<% if  @stripeCustomerSubsctiptions.reject{|d| d['pause_collection']!=nil}.present? %>
+			<% @stripeCustomerSubsctiptions.reject{|d| d['pause_collection']!=nil}.each do |dataX| %>
 				<div class="pricing-4 rounded-m shadow-m bg-theme">
 				  <h1 class="pricing-title text-center bg-green-dark text-uppercase"><%= Stripe::Product.retrieve(dataX['plan']['product'])['name'] %></h1>
 				  <h3 class="pricing-value text-center bg-green-light color-white"><%= number_to_currency(dataX['plan']['amount'] * 0.01, precision: 2) %></h3>
@@ -20,11 +20,13 @@
 
 	          <% end %>
 				  </ul>
-				  <% if @subscriptionList.include?(dataX['plan']['id']) %>
+
+				  <% if @subscriptionList.map{|d|d[:price]}.include?(dataX['plan']['id']) %>
 					  <a href="/pause-membership/<%= dataX['id'] %>" class="btn btn-s bg-yellow-dark btn-center-l text-uppercase rounded-s font-900">Pause</a>
 					<% else %>
 					  <a href="#" class="btn btn-s bg-green-dark btn-center-l text-uppercase rounded-s font-900">Join</a>
 					<% end %>
+
 				  <p class="text-center color-gray-dark small-text font-10 uppercase mt-2 mb-0 pb-0">Your Current Plan</p>
 				</div>
 				
@@ -33,5 +35,5 @@
 			<h2 class="pricing-subtitle text-center bg-green-light">No Membership Found</h2>
 		<% end %>
 	</div>
-	<%= render 'pricing_tables', subscriptions: Stripe::Subscription.list({ limit: 100, customer: current_user&.stripeCustomerID})['data'].reject{|d| d['pause_collection']!=nil}.map{|d| d['items']['data']}.flatten.map{|d|d['plan']}.map(&:id) %>
+	<%= render 'pricing_tables', subscriptions: @subscriptionList %>
 </div>

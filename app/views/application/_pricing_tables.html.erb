@@ -16,7 +16,7 @@
 
 			  </ul>
 			  <% if current_user %>
-				  <% if subscriptions.include?(@basicPrice['id']) %>
+				  <% if subscriptions.map{|d|d[:price]}.include?(@basicPrice['id']) %>
 					  <p class="text-center color-gray-dark small-text font-10 uppercase mt-2 mb-0 pb-0">Your Current Plan</p>
 					<% else %>
 					  <a href="<%= @authBasicSession['url'] %>" class="btn btn-s bg-green-dark btn-center-l text-uppercase rounded-s font-900">Join</a>
@@ -41,7 +41,7 @@
 
 			  </ul>
 			  <% if current_user %>
-			  	<% if subscriptions.include?(@bizPrice['id']) %>
+			  	<% if subscriptions.map{|d|d[:price]}.include?(@bizPrice['id']) %>
 					  <p class="text-center color-gray-dark small-text font-10 uppercase mt-2 mb-0 pb-0">Your Current Plan</p>
 					<% else %>
 					  <a href="<%= @authBizSession['url'] %>" class="btn btn-s bg-green-dark btn-center-l text-uppercase rounded-s font-900">Join</a>
@@ -66,7 +66,7 @@
 
 			  </ul>
 			  <% if current_user %>
-				  <% if subscriptions.include?(@equityPrice['id']) %>
+				  <% if subscriptions.map{|d|d[:price]}.include?(@equityPrice['id']) %>
 					  <p class="text-center color-gray-dark small-text font-10 uppercase mt-2 mb-0 pb-0">Your Current Plan</p>
 					<% else %>
 					  <a href="<%= @authEquitySession['url'] %>" class="btn btn-s bg-green-dark btn-center-l text-uppercase rounded-s font-900">Join</a>
@@ -93,8 +93,17 @@
 
 			  </ul>
 			  <% if current_user %>
-				  <% if subscriptions.include?(@basicPrice['id']) %>
-					  <p class="text-center color-gray-dark small-text font-10 uppercase mt-2 mb-0 pb-0">Your Current Plan</p>
+				  <% if subscriptions.map{|d|d[:price]}.include?(@basicPrice['id']) %>
+				  	<% subscriptions.each do |subscX| %>
+				  		<% if subscX[:price] == @basicPrice['id'] %>
+					  		<% if subscX[:active] == true %>
+								  <p class="text-center color-gray-dark small-text font-10 uppercase mt-2 mb-0 pb-0">Your Current Plan</p>
+					  		<% else %>
+								  <a href="/resume-membership/<%= subscX[:subscription] %>" class="btn btn-s bg-blue-dark btn-center-l text-uppercase rounded-s font-900">Resume</a>
+						  	<% end %>
+					  	<% end %>
+				  	<% end %>
+
 					<% else %>
 					  <a href="<%= @authBasicSession['url'] %>" class="btn btn-s bg-green-dark btn-center-l text-uppercase rounded-s font-900">Join</a>
 					<% end %>
@@ -118,8 +127,16 @@
 
 			  </ul>
 			  <% if current_user %>
-			  	<% if subscriptions.include?(@bizPrice['id']) %>
-					  <p class="text-center color-gray-dark small-text font-10 uppercase mt-2 mb-0 pb-0">Your Current Plan</p>
+			  	<% if subscriptions.map{|d|d[:price]}.include?(@bizPrice['id']) %>
+						<% subscriptions.each do |subscX| %>
+							<% if subscX[:price] == @bizPrice['id'] %>
+					  		<% if subscX[:active] == true %>
+								  <p class="text-center color-gray-dark small-text font-10 uppercase mt-2 mb-0 pb-0">Your Current Plan</p>
+					  		<% else %>
+								  <a href="/resume-membership/<%= subscX[:subscription] %>" class="btn btn-s bg-blue-dark btn-center-l text-uppercase rounded-s font-900">Resume</a>
+						  	<% end %>
+					  	<% end %>
+				  	<% end %>
 					<% else %>
 					  <a href="<%= @authBizSession['url'] %>" class="btn btn-s bg-green-dark btn-center-l text-uppercase rounded-s font-900">Join</a>
 					<% end %>
@@ -143,8 +160,16 @@
 
 			  </ul>
 			  <% if current_user %>
-				  <% if subscriptions.include?(@equityPrice['id']) %>
-					  <p class="text-center color-gray-dark small-text font-10 uppercase mt-2 mb-0 pb-0">Your Current Plan</p>
+				  <% if subscriptions.map{|d|d[:price]}.include?(@equityPrice['id']) %>
+					  <% subscriptions.each do |subscX| %>
+					  	<% if subscX[:price] == @equityPrice['id'] %>
+					  		<% if subscX[:active] == true && subscX[:price]%>
+								  <p class="text-center color-gray-dark small-text font-10 uppercase mt-2 mb-0 pb-0">Your Current Plan</p>
+					  		<% else %>
+								  <a href="/resume-membership/<%= subscX[:subscription] %>" class="btn btn-s bg-blue-dark btn-center-l text-uppercase rounded-s font-900">Resume</a>
+						  	<% end %>
+					  	<% end %>
+				  	<% end %>
 					<% else %>
 					  <a href="<%= @authEquitySession['url'] %>" class="btn btn-s bg-green-dark btn-center-l text-uppercase rounded-s font-900">Join</a>
 					<% end %>

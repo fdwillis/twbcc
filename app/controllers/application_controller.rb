@@ -1,8 +1,53 @@
 class ApplicationController < ActionController::Base
   before_action :authenticate_user!, only: %i[your_membership transactions pause_membership manage_discounts]
 
+  def edit_discounts
+    begin
+      if request.post?
+        done = Stripe::Account.update(Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'], {metadata: {maxDiscount: params['editDiscounts']['maxDiscount'], redemptions: params['editDiscounts']['redemptions'], refreshRate: params['editDiscounts']['refreshRate']}})
+        flash[:success] = "Settings Changed"
+        redirect_to manage_discounts_path
+        return
+      end
+    rescue Stripe::StripeError => e
+      session['coupon'] = nil
+      flash[:error] = e.error.message.to_s
+      redirect_to request.referrer
+    rescue Exception => e
+      session['coupon'] = nil
+      flash[:error] = e.to_s
+      redirect_to request.referrer
+    end
+  end
+
   def manage_discounts
+    @stripeCustomerX = Stripe::Customer.retrieve(current_user&.stripeCustomerID)
+    unless @stripeCustomerX['metadata']['connectAccount'].present?
+      newStripeAccount = Stripe::Account.create({
+        type: 'standard',
+        country: 'US',
+        email: @stripeCustomerX['email']
+      })
+      customerUpdated = Stripe::Customer.update(
+        current_user&.stripeCustomerID, {
+          metadata: {
+            connectAccount: newStripeAccount['id'],
+          }
+        }
+      )
+    end
+    @stripeAccountUpdate = Stripe::AccountLink.create(
+      {
+        account: Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'],
+        refresh_url: "https://card.twbcc.com/manage-discounts",
+        return_url: "https://card.twbcc.com/manage-discounts",
+        type: 'account_onboarding'
+      }
+    )
+
+    @accountItemsDue = Stripe::Account.retrieve(Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'])['requirements']['currently_due']
     
+    @codes = Stripe::Coupon.list({limit: 100}, stripe_account: Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'] )['data']
   end
 
   def transactions
@@ -22,9 +67,14 @@ class ApplicationController < ActionController::Base
 
   def your_membership
     memberships
+    @subscriptionList = []
     @stripeCustomer = Stripe::Customer.retrieve(current_user&.stripeCustomerID)
-    @stripeCustomerSubsctiptions = Stripe::Subscription.list({ limit: 100, customer: current_user&.stripeCustomerID })['data'].reject{|d| d['pause_collection']!=nil}
-    @subscriptionList = Stripe::Subscription.list({ limit: 100, customer: current_user&.stripeCustomerID})['data'].reject{|d| d['pause_collection']!=nil}.map{|d| d['items']['data']}.flatten.map{|d|d['plan']}.map(&:id) 
+    @stripeCustomerSubsctiptions = Stripe::Subscription.list({ limit: 100, customer: current_user&.stripeCustomerID })['data']
+
+    @stripeCustomerSubsctiptions.each do |subInfo|
+      @subscriptionList << {active: subInfo['pause_collection'].nil? ? true : false, price: subInfo['items']['data'].map(&:price).map(&:id).first, subscription: subInfo['id']}
+    end
+
     successURL = "https://card.twbcc.com/new-password-set?session={CHECKOUT_SESSION_ID}"
     customFields = [{
       key: 'type',
@@ -73,9 +123,21 @@ class ApplicationController < ActionController::Base
     })
   end
 
+  def resume_membership
+    Stripe::Subscription.update(
+      params['id'],
+      {
+        pause_collection: ''
+      }
+    )
+
+    flash[:success] = 'Subscription Resumed'
+    redirect_to request.referrer
+  end
+
   def pause_membership
     # only pause of ID passed
-    Stripe::Subscription.update(params['id'], {pause_collection: {behavior: 'keep_as_draft' }})
+    Stripe::Subscription.update(params['id'], {pause_collection: {behavior: 'void' }})
 
     flash[:success] = 'Subscription Paused'
     redirect_to request.referrer
