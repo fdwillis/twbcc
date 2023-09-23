@@ -18,7 +18,7 @@ namespace :generate do
             Stripe::Coupon.delete(codeX['id'])
           end
           
-          unless stripeCodes.present?
+          unless Stripe::Coupon.list({limit: 100}, stripe_account: connectAccountID )['data'].present?
             metaX['maxDiscount'].to_i.times.each do |disInt|
               Stripe::Coupon.create({
                 percent_off: disInt + 1,
