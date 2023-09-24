@@ -2,7 +2,7 @@
 	<%= form_for(:editDiscounts, url: edit_discounts_path) do |f| %>
 	  <h4 class="opacity-50">Max Discount</h4>
 	  <div class="input-style has-borders no-icon validate-field mb-4">
-	  	<%= f.number_field :maxDiscount, class: 'form-check-input form-control validate-field', placeholder: "Max Discount",id: "in", required: true   %>
+	  	<%= f.number_field :maxDiscount, class: 'form-check-input form-control validate-field', placeholder: "Max Discount",id: "in", required: true, value: @stripeAccount['metadata']['maxDiscount'].to_i   %>
 	    <i class="fa fa-times disabled invalid color-red-dark"></i>
 	    <i class="fa fa-check disabled valid color-green-dark"></i>
 	    <em>(required)</em>
@@ -10,7 +10,7 @@
 
 	  <h4 class="opacity-50">Redeems Per Discount</h4>
 	  <div class="input-style has-borders no-icon validate-field mb-4">
-	  	<%= f.number_field :redemptions, class: 'form-check-input form-control validate-field', placeholder: "Redeems Per Discount",id: "in", required: true   %>
+	  	<%= f.number_field :redemptions, class: 'form-check-input form-control validate-field', placeholder: "Redeems Per Discount",id: "in", required: true, value: @stripeAccount['metadata']['redemptions'].to_i   %>
 	    <i class="fa fa-times disabled invalid color-red-dark"></i>
 	    <i class="fa fa-check disabled valid color-green-dark"></i>
 	    <em>(required)</em>
@@ -19,7 +19,7 @@
 	  <h4 class="opacity-50">Refresh Rate</h4>
 	  <small class="opacity-50">How Often Codes Refresh</small>
 	  <div class="input-style has-borders no-icon validate-field mb-4">
-	  	<%= f.number_field :refreshRate, class: 'form-check-input form-control validate-field', placeholder: "Refresh Rate",id: "in", required: true   %>
+	  	<%= f.number_field :refreshRate, class: 'form-check-input form-control validate-field', placeholder: "Refresh Rate",id: "in", required: true, value: @stripeAccount['metadata']['refreshRate'].to_i   %>
 	    <i class="fa fa-times disabled invalid color-red-dark"></i>
 	    <i class="fa fa-check disabled valid color-green-dark"></i>
 	    <em>(required)</em>

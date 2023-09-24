@@ -1,10 +1,12 @@
 class ApplicationController < ActionController::Base
-  before_action :authenticate_user!, only: %i[your_membership transactions pause_membership manage_discounts]
+  before_action :authenticate_user!, only: %i[your_membership transactions pause_membership manage_discounts edit_discounts]
 
   def edit_discounts
+      @stripeAccountID = Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount']
+      @stripeAccount = Stripe::Account.retrieve(@stripeAccountID)
     begin
       if request.post?
-        done = Stripe::Account.update(Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount'], {metadata: {maxDiscount: params['editDiscounts']['maxDiscount'], redemptions: params['editDiscounts']['redemptions'], refreshRate: params['editDiscounts']['refreshRate']}})
+        done = Stripe::Account.update(@stripeAccountID, {metadata: {maxDiscount: params['editDiscounts']['maxDiscount'], redemptions: params['editDiscounts']['redemptions'], refreshRate: params['editDiscounts']['refreshRate']}})
         flash[:success] = "Settings Changed"
         redirect_to manage_discounts_path
         return
