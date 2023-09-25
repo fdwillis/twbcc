@@ -9,23 +9,22 @@ namespace :generate do
         stripeConnectAccount = Stripe::Account.retrieve(Stripe::Customer.retrieve(userX&.stripeCustomerID)['metadata']['connectAccount'])
         metaX = stripeConnectAccount['metadata'] 
 
-
         if metaX.present?
-          stripeCodes = Stripe::Coupon.list({limit: 100}, stripe_account: connectAccountID )['data']
+          stripeCodes = Stripe::Coupon.list({limit: 100}, {stripe_account: connectAccountID} )['data']
           @codesToReject = stripeCodes.reject{|f|Time.now.to_i < f['redeem_by']}
-          
+
           @codesToReject.each do |codeX|
-            Stripe::Coupon.delete(codeX['id'])
+            Stripe::Coupon.delete(codeX['id'],{}, {stripe_account: connectAccountID})
           end
           
-          unless Stripe::Coupon.list({limit: 100}, stripe_account: connectAccountID )['data'].present?
+          unless Stripe::Coupon.list({limit: 100}, {stripe_account: connectAccountID} )['data'].present?
             metaX['maxDiscount'].to_i.times.each do |disInt|
               Stripe::Coupon.create({
                 percent_off: disInt + 1,
                 duration: 'once',
                 max_redemptions: metaX['redemptions'].to_i,
                 redeem_by: (Date.today + metaX['refreshRate'].to_i.days).to_time.to_i ,
-              }, stripe_account: connectAccountID)
+              }, {stripe_account: connectAccountID})
             end
           end
         end
