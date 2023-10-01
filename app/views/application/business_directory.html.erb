@@ -1,0 +1,107 @@
+<div class="header-clear-medium">
+	<!-- <div data-card-height="240" class="card card-style rounded-m shadow-xl preload-img entered loaded" data-src="images/pictures/18w.jpg" data-ll-status="loaded" style="height: 240px; background-image: url(&quot;images/pictures/18w.jpg&quot;);">
+    
+    <div class="card-top mt-4 ms-3">
+        <h1 class="color-white mb-0 mb-n2 font-22">
+        </h1>
+        <p class="bottom-0 color-white opacity-50 under-heading font-11 font-700"></p>
+    </div>
+    <div class="card-top mt-4 me-3">
+        <a href="/edit-discounts" data-menu="menu-add-funds" class="mt-1 float-end text-uppercase font-900 font-11 btn btn-s rounded-s shadow-l bg-highlight">Edit Settings</a>
+    </div>
+    <div class="card-center text-center">
+        <h1 class="color-white fa-4x"></h1>
+        <p class="color-white opacity-70 font-11 mb-n5"></p>
+    </div>
+    <div class="card-bottom">
+        <p class="ms-3 font-10 font-500 opacity-50 color-white mb-2"></p>
+    </div>
+    <div class="card-bottom">
+        <p class="text-end me-3 font-10 font-500 opacity-50 color-white mb-2"></i></p>
+    </div>
+    <div class="card-overlay bg-black opacity-70"></div>
+  </div>
+  <div class="d-flex content mb-1">
+    <div class="flex-grow-1">
+      <h1 class="font-700">Discount Activity</h1>
+    </div>
+  </div> -->
+  <!-- <div class="card card-style">
+      <div class="content mb-0">
+          <div class="row mb-3">
+              <div class="col-3"><p class="font-14 mb-0 font-800 color-theme text-start">Code</p></div>
+              <div class="col-3"><p class="font-14 mb-0 font-800 color-theme text-center">Viewed</p></div>
+              <div class="col-3"><p class="font-14 mb-0 font-800 color-theme text-center">Discount</p></div>
+              <div class="col-3"><p class="font-14 mb-0 font-800 color-theme text-end">Expires</p></div>
+              <div class="divider w-100 mb-2 mt-2"></div>
+              <% if @codes.present? %>
+                <% @codes.flatten.sort_by{|e| e[:created]}.reverse.each do |transa| %> 
+                  <div class="col-3"><p class="font-13 mb-0 font-500 color-theme text-start">
+                    <%= transa['id'] %></p></div>
+                  <div class="col-3"><p class="font-13 mb-0 font-800 color-theme text-center"><%= transa['times_redeemed'] %></p></div>
+                  <div class="col-3"><p class="font-13 mb-0 font-800 color-theme text-center"><%= transa['percent_off'].to_i %>%</p></div>
+                  <div class="col-3"><p class="font-13 mb-0 font-800 color-theme text-end"><%= DateTime.strptime((transa[:redeem_by].to_i.to_s),'%s').to_date.strftime('%b, %d %Y') %></p></div>
+                <% end %>
+              <% else %>
+                <p class="bottom-0 opacity-50 under-heading font-20 text-center font-700">NO CODES</p>
+              <% end %>
+          </div>
+      </div>    
+  </div> -->
+  <div class="page-content header-clear-small">
+
+        <div class="card card-style preload-img entered loaded" data-src="images/pictures/18.jpg" data-card-height="130" data-ll-status="loaded" style="height: 130px; background-image: url(&quot;images/pictures/18.jpg&quot;);">
+            <div class="card-center ms-3">
+                <h1 class="color-white mb-0">Business Directory</h1>
+                <p class="color-white mt-n1 mb-0">Enjoy daily discounts from all our business members &amp; partners</p>
+            </div>
+            <div class="card-center me-3">
+                <a href="#" data-back-button="" class="btn btn-m float-end rounded-xl shadow-xl text-uppercase font-800 bg-highlight">Back Home</a>
+            </div>
+            <div class="card-overlay bg-black opacity-80"></div>
+        </div>
+
+        <div class="search-page">
+          <div class="search-box search-header bg-theme card-style me-3 ms-3">
+            <i class="fa fa-search"></i>
+            <input type="text" class="border-0" placeholder="What are you looking for? " data-search="">
+            <a href="#" class="clear-search mt-0 disabled"><i class="fa fa-times color-red-dark"></i></a>
+          </div>
+          <div class="search-results card card-style shadow-l disabled-search-list">
+            <div class="content">
+	            	<% @couponsOffer.each do |bizX| %>
+	            		<div data-filter-item="" data-filter-name="all <%= bizX['business_profile']['name'] %> <%= bizX['business_profile']['support_phone'] %> <%= bizX['business_profile']['support_email'] %> <%= bizX['business_profile']['url'] %>" class="search-result-list">
+	                    <h1><%= bizX['business_profile']['name'] %></h1>
+	                    <p><%= bizX['business_profile']['support_address']['line1'] %> <%= bizX['business_profile']['support_address']['city'] %> <%= bizX['business_profile']['support_address']['state'] %> <%= bizX['business_profile']['support_address']['postal_code'] %></p>
+	                    <a href="/claim-discount?=<%= bizX['id'] %>" class="bg-highlight">Claim Discount</a>
+	                </div>
+	            	<% end %>
+
+                <div data-filter-item="" data-filter-name="all products mega mobile" class="search-result-list">
+                    <img class="shadow-l preload-img entered loaded" src="images/pictures/27s.jpg" data-src="images/pictures/27s.jpg" alt="img" data-ll-status="loaded">
+                    <h1>Mega | Mobile Website</h1>
+                    <p>
+                        Mega Powerful, Mega Feature Filled, Easy to Use.
+                    </p>
+                    <a href="#" class="bg-highlight">VIEW</a>
+                </div>
+
+                <div data-filter-item="" data-filter-name="all products mega mobile" class="search-result-list">
+                    <img class="shadow-l preload-img entered loaded" src="images/pictures/28s.jpg" data-src="images/pictures/28s.jpg" alt="img" data-ll-status="loaded">
+                    <h1>Mega | Cordova App</h1>
+                    <p>
+                        Mega is also available as <br> a Cordova &amp; PhoneGap App.
+                    </p>
+                    <a href="#" class="bg-highlight">VIEW</a>
+                </div>
+
+                
+                <div class="search-no-results disabled">
+                    <h3 class="bold top-10">Nothing found...</h3>
+                    <span class="under-heading font-11 opacity-70 color-theme">There's nothing matching the description you're looking for, try a different keyword.</span>
+                </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>

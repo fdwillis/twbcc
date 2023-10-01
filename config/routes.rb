@@ -16,6 +16,8 @@ Rails.application.routes.draw do
     get code, to: 'errors#show', code: code
   end
 
+  get '/claim-discount',     to: 'application#claim_discount',    as: 'claim-discount'
+  get '/business-directory',     to: 'application#business_directory',    as: 'business-directory'
   get '/membership-card',     to: 'application#membership_card',    as: 'membership-card'
   get '/new-membership-card',     to: 'registrations#new_membership_card',    as: 'new-membership-card'
   get '/memberships',     to: 'application#memberships',    as: 'memberships'

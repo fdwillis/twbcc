@@ -1,9 +1,32 @@
 class ApplicationController < ActionController::Base
   before_action :authenticate_user!, only: %i[your_membership transactions pause_membership manage_discounts edit_discounts]
 
+  def business_directory
+    @couponsOffer = []
+    @connectAccounts = Stripe::Account.list({limit: 100})['data']
+    @connectAccounts.each do |connX|
+      if Stripe::Coupon.list({ limit: 100 }, {stripe_account: connX['id'] }).present?
+        @couponsOffer << connX
+      end
+    end
+  end
+
+  def claim_discount
+    if current_user
+      debugger
+
+      flash[:success] = "Coupon Applied"
+      redirect_to request.referrer
+    else
+      flash[:notice] = "Discounts available for members only"
+      redirect_to memberships_path
+    end
+  end
+
   def edit_discounts
-      @stripeAccountID = Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount']
-      @stripeAccount = Stripe::Account.retrieve(@stripeAccountID)
+    @stripeAccountID = Stripe::Customer.retrieve(current_user&.stripeCustomerID)['metadata']['connectAccount']
+    @stripeAccount = Stripe::Account.retrieve(@stripeAccountID)
+    
     begin
       if request.post?
         done = Stripe::Account.update(@stripeAccountID, {metadata: {maxDiscount: params['editDiscounts']['maxDiscount'], redemptions: params['editDiscounts']['redemptions'], refreshRate: params['editDiscounts']['refreshRate']}})
