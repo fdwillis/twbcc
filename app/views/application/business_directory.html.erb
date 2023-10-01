@@ -67,13 +67,17 @@
             <input type="text" class="border-0" placeholder="What are you looking for? " data-search="">
             <a href="#" class="clear-search mt-0 disabled"><i class="fa fa-times color-red-dark"></i></a>
           </div>
-          <div class="search-results card card-style shadow-l disabled-search-list">
+          <div class="search-results card card-style shadow-l">
             <div class="content">
 	            	<% @couponsOffer.each do |bizX| %>
 	            		<div data-filter-item="" data-filter-name="all <%= bizX['business_profile']['name'] %> <%= bizX['business_profile']['support_phone'] %> <%= bizX['business_profile']['support_email'] %> <%= bizX['business_profile']['url'] %>" class="search-result-list">
 	                    <h1><%= bizX['business_profile']['name'] %></h1>
 	                    <p><%= bizX['business_profile']['support_address']['line1'] %> <%= bizX['business_profile']['support_address']['city'] %> <%= bizX['business_profile']['support_address']['state'] %> <%= bizX['business_profile']['support_address']['postal_code'] %></p>
-	                    <a href="/claim-discount?=<%= bizX['id'] %>" class="bg-highlight">Claim Discount</a>
+                      <% if session["#{bizX['id']}".to_sym].present? %>
+  	                    <a href="#" class="bg-highlight"><%= session["#{bizX['id']}"] %> - <%= Stripe::Coupon.retrieve(session["#{bizX['id']}".to_sym], {stripe_account: bizX['id']})['percent_off'].to_i %>% Off</a>
+                      <% else %>
+                        <a href="/claim-discount?account=<%= bizX['id'] %>" class="bg-highlight">Claim Discount</a>
+                      <% end %>
 	                </div>
 	            	<% end %>
 

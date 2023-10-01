@@ -13,7 +13,7 @@ class User < ApplicationRecord
 
   def checkMembership
     membershipValid = []
-    membershipPlans = User::BASICmembership + User::BIZmembership + User::EQUITYmembership
+    membershipPlans = User::BASICmembership+User::BIZmembership+User::EQUITYmembership
     allSubscriptions = Stripe::Subscription.list({ customer: stripeCustomerID })['data'].map(&:items).map(&:data).flatten.map(&:plan).map(&:id)
 
     #check for payment of membership
@@ -21,42 +21,17 @@ class User < ApplicationRecord
     membershipPlans.each do |planID|
       case true
       when allSubscriptions.include?(planID)
-        membershipPlan = Stripe::Subscription.list({ customer: stripeCustomerID, price: planID })['data'][0]
-        membershipType = if EQUITYmembership.include?(planID)
-                           'member,equity'
-                         elsif BIZmembership.include?(planID)
-                           'member,biz'
-                         elsif BASICmembership.include?(planID)
-                           'member,member'
-                         else
-                           FREEmembership.include?(planID) ? 'free' : 'free'
-                         end
+        membershipPlans = Stripe::Subscription.list({ customer: stripeCustomerID, price: planID })['data']
+        
 
-
-                         
-        if membershipPlan['status'] == 'active' && membershipPlan['pause_collection'].nil?
-          membershipValid << { membershipDetails: membershipPlan, membershipType: self.uuid == 'd57307d7' ? membershipType + ',admin' : membershipType }
+        membershipPlans.each do |planX|
+          membershipType = BASICmembership.include?(planID) ? 'member,member' : BIZmembership.include?(planID) ? 'member,biz' : EQUITYmembership.include?(planID) ? 'member,equity' : nil
+                           
+          membershipValid << { membershipDetails: planX, membershipType: self.uuid == 'd57307d7' ? membershipType + ',admin' : membershipType }
         end
+
       else
         # membershipValid << { membershipDetails: membershipPlan, membershipType: membershipType }
-      end
-    end
-    membershipValid.present? ? membershipValid : [{ membershipType: 'free', membershipDetails: { 0 => { 'status' => 'active', 'interval' => 'N/A' } } }]
-
-    #logic checking for profits us profitPaid or profitPending
-
-    paymentIntents = Stripe::PaymentIntent.list({limit: 100, customer: stripeCustomerID})
-
-    if paymentIntents['has_more'] == true
-    else
-      paymentIntents['data'].each do |stripePI|
-        if stripePI['metadata'].present?
-          if stripePI['metadata']['profitPaid'] == 'false'
-            membershipValid << { membershipDetails: stripePI['id'], membershipType: 'profitPending' }
-          elsif stripePI['metadata']['profitPaid'] == 'true'
-            membershipValid << { membershipDetails: stripePI['id'], membershipType: 'profitPaid' }
-          end
-        end
       end
     end
 
