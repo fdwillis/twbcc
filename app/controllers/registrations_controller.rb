@@ -123,18 +123,25 @@ class RegistrationsController < ApplicationController
           stripeCustomer = Stripe::Customer.retrieve(stripeSessionInfo['customer'])
           
           # make cardholder -> usa
-          
 
           # make user with password passed
+          if User.find_by(email: stripeCustomer['email']).present?
 
-          loadedCustomer = User.create(
-            email: stripeCustomer['email'],
-            password: setSessionVarParams['password'],
-            stripeCustomerID: stripeSessionInfo['customer'],
-            uuid: SecureRandom.uuid[0..7]
-          )
+            loadedCustomer = User.update(
+              email: stripeCustomer['email'],
+              password: setSessionVarParams['password'],
+              stripeCustomerID: stripeSessionInfo['customer'],
+              uuid: SecureRandom.uuid[0..7]
+            )
+          else
+            loadedCustomer = User.create(
+              email: stripeCustomer['email'],
+              password: setSessionVarParams['password'],
+              stripeCustomerID: stripeSessionInfo['customer'],
+              uuid: SecureRandom.uuid[0..7]
+            )
+          end
 
-          flash[:success] = 'Your Account Setup Is Complete!'
 
           if stripeSessionInfo['custom_fields'][0]['dropdown']['value'] == 'yes'
             successURL = "https://card.twbcc.com/new-membership-card?session={CHECKOUT_SESSION_ID}"
@@ -158,6 +165,7 @@ class RegistrationsController < ApplicationController
           else
             redirect_to "/new-password-set?session=#{setSessionVarParams['stripeSession']}"
           end
+          flash[:success] = 'Your Account Setup Is Complete!'
         else
           flash[:alert] = 'Password Must Match'
           redirect_to request.referrer
@@ -167,7 +175,8 @@ class RegistrationsController < ApplicationController
         flash[:error] = e.error.message.to_s
         redirect_to request.referrer
       rescue Exception => e
-        flash[:error] = e.to_s
+        
+        flash[:error] = !e.nil? ? e.to_s : loadedCustomer.errors.full_messages
         redirect_to request.referrer
       end
     else

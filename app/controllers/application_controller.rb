@@ -13,6 +13,7 @@ class ApplicationController < ActionController::Base
 
   def claim_discount
     if current_user
+
       stripeAccountX = Stripe::Account.retrieve(params['account'])
       unless session[params['account'].to_sym].present?
         couponList = Stripe::Coupon.list({},{stripe_account: params['account']})['data']
