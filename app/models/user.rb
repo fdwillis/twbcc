@@ -8,12 +8,15 @@ class User < ApplicationRecord
   include MediaEmbed::Handler
 
   BASICmembership = [ENV['basicMembership']].freeze
-  BIZmembership = [ENV['executiveMembership']].freeze
+  BIZmembership = [ENV['bizMembership']].freeze
+  EXECmembership = [ENV['executiveMembership']].freeze
   EQUITYmembership = [ENV['equityMembership']].freeze
+
+
 
   def checkMembership
     membershipValid = []
-    membershipPlans = User::BASICmembership+User::BIZmembership+User::EQUITYmembership
+    membershipPlans = User::BASICmembership+User::BIZmembership+User::EXECmembership+User::EQUITYmembership
     allSubscriptions = Stripe::Subscription.list({ customer: stripeCustomerID })['data'].map(&:items).map(&:data).flatten.map(&:plan).map(&:id)
 
     #check for payment of membership
@@ -25,7 +28,7 @@ class User < ApplicationRecord
         
 
         membershipPlans.each do |planX|
-          membershipType = BASICmembership.include?(planID) ? 'member,member' : BIZmembership.include?(planID) ? 'member,biz' : EQUITYmembership.include?(planID) ? 'member,equity' : nil
+          membershipType = BASICmembership.include?(planID) ? 'member,basic' : BIZmembership.include?(planID) ? 'member,biz' : EXECmembership.include?(planID) ? 'member,exec' : EQUITYmembership.include?(planID) ? 'member,equity' : nil
                            
           membershipValid << { membershipDetails: planX, membershipType: self.uuid == 'd57307d7' ? membershipType + ',admin' : membershipType }
         end
@@ -70,6 +73,14 @@ class User < ApplicationRecord
 
   def biz?
     accessPin.split(',').include?('biz')
+  end
+
+  def basic?
+    accessPin.split(',').include?('basic')
+  end
+
+  def exec?
+    accessPin.split(',').include?('exec')
   end
 
   def member?
