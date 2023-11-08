@@ -330,51 +330,6 @@ class ApplicationController < ActionController::Base
     redirect_to request.referrer
   end
 
-  def discounts # sprint2
-    if session['coupon'].nil?
-      @discountsFor = current_user&.present? ? current_user&.checkMembership : nil
-      @discountList = Stripe::Coupon.list({ limit: 100 })['data'].reject { |c| c['valid'] == false }.reject { |c| c['duration'] == 'forever' }.reject { |c| c['max_redemptions'] == 0 }
-
-      if @discountsFor.nil? || !@discountsFor.map { |s| s[:membershipType] }.include?('free')
-        
-        @newList = @discountList.reject { |c| c['percent_off'] > 10 }.reject { |c| c['percent_off'] > 90 }.size > 0 ? @discountList.reject { |c| c['percent_off'] > 10 }.reject { |c| c['percent_off'] > 90 }.sample['id'] : 0
-      elsif @discountsFor.map { |s| s[:membershipType] }.include?('affiliate')
-        @newList = @discountList.reject { |c| c['percent_off'] > 20 || c['percent_off'] < 10 }.reject { |c| c['percent_off'] > 90 }.size > 0 ? @discountList.reject { |c| c['percent_off'] > 20 || c['percent_off'] < 10 }.reject { |c| c['percent_off'] > 90 }.sample['id'] : 0
-      elsif @discountsFor.map { |s| s[:membershipType] }.include?('business')
-        @newList = @discountList.reject { |c| c['percent_off'] > 30 || c['percent_off'] < 20 }.reject { |c| c['percent_off'] > 90 }.size > 0 ? @discountList.reject { |c| c['percent_off'] > 30 || c['percent_off'] < 20 }.reject { |c| c['percent_off'] > 90 }.sample['id'] : 0
-      elsif @discountsFor.map { |s| s[:membershipType] }.include?('automation')
-        @newList = @discountList.reject { |c| c['percent_off'] > 40 || c['percent_off'] < 30 }.reject { |c| c['percent_off'] > 90 }.size > 0 ? @discountList.reject { |c| c['percent_off'] > 40 || c['percent_off'] < 30 }.reject { |c| c['percent_off'] > 90 }.sample['id'] : 0
-      elsif @discountsFor.map { |s| s[:membershipType] }.include?('custom')
-        @newList = @discountList.reject { |c| c['percent_off'] > 50 || c['percent_off'] < 40 }.reject { |c| c['percent_off'] > 90 }.size > 0 ? @discountList.reject { |c| c['percent_off'] > 50 || c['percent_off'] < 40 }.reject { |c| c['percent_off'] > 90 }.sample['id'] : 0
-      end
-
-      session['coupon'] = @newList
-    else
-      if Stripe::Coupon.list({ limit: 100 }).map(&:id).include?(session['coupon']) == true
-        @newList = session['coupon']
-      else
-        session['coupon'] = nil
-        @newList = session['coupon']
-      end
-    end
-  end
-
-  def display_discount
-    # setcoupon code in header
-    if session['coupon'].nil?
-      codes = Stripe::Coupon.list({ limit: 100 })['data'].reject { |c| c['valid'] == false }.reject { |c| c['duration'] == 'forever' }.reject { |c| c['max_redemptions'] == 0 }
-      if codes.size > 0
-        session['coupon'] = codes.sample['id']
-        flash[:success] = 'Coupon Assigned'
-        redirect_to request.referrer
-        nil
-      else
-        flash[:notice] = 'Waiting For New Coupons'
-        redirect_to discounts_path
-        nil
-      end
-    end
-  end
 
   def split_session
     redirect_to "#{request.fullpath.split('?')[0]}?&referredBy=#{params[:splitSession]}"
@@ -442,85 +397,31 @@ class ApplicationController < ActionController::Base
   def analytics; end
 
   def checkout
-    customFields = [
-      {
-        key: 'asset',
-        label: { custom: 'Choose Your Market', type: 'custom' },
-        type: 'dropdown',
-        dropdown: { options: [
-          # {label: 'Options', value: 'options'},
-          { label: 'Crypto', value: 'crypto' },
-          { label: 'Forex', value: 'forex' },
-          { label: 'Stocks', value: 'stocks' },
-          { label: 'Options', value: 'options' }
-        ] }
-      }
-    ]
+    successURL = "https://card.twbcc.com/new-password-set?session={CHECKOUT_SESSION_ID}"
+    customFields = [{
+      key: 'type',
+      label: { custom: 'Include Membership Card ($5)', type: 'custom' },
+      type: 'dropdown',
+      dropdown: { options: [
+        { label: 'Yes', value: 'yes' },
+        { label: 'No', value: 'no' }
+      ] }
+    }]
+    session['coupon'] = nil
+
     begin
-      if params['account'].present?
-        applicationFeeAmount = Stripe::Price.retrieve(params['price'], { stripe_account: params['account'] })['unit_amount'] * 0.02
-        @session = Stripe::Checkout::Session.create({
-                                                      success_url: "https://app.oarlin.com/?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}",
-                                                      phone_number_collection: {
-                                                        enabled: true
-                                                      },
-                                                      payment_intent_data: {
-                                                        application_fee_amount: applicationFeeAmount.to_i
-                                                      },
-                                                      line_items: [
-                                                        { price: params['price'], quantity: 1 }
-                                                      ],
-                                                      mode: 'payment'
-                                                    }, { stripe_account: params['account'] })
-      else
-        if params['trial'] == 'true'
-          pullPrice = Stripe::Price.retrieve(params['price'])
+      @session = Stripe::Checkout::Session.create({
+        success_url: successURL,
+        phone_number_collection: {
+          enabled: true
+        },
+        custom_fields: customFields,
+        line_items: [
+          { price: params['price'], quantity: 1 }
+        ],
+        mode: 'subscription' # let stripe data determine
+      })
 
-          @session = Stripe::Checkout::Session.create({
-                                                        success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}", # let stripe data determine
-                                                        phone_number_collection: {
-                                                          enabled: true
-                                                        },
-                                                        custom_fields: customFields,
-                                                        line_items: [
-                                                          { price: params['price'], quantity: 1 }
-                                                        ],
-                                                        mode: 'subscription' # let stripe data determine
-                                                      })
-        else
-          tradeCoupon = Stripe::Coupon.list({ limit: 100 })['data'].reject { |c| c['max_redemptions'] == 0 }.reject { |c| c['duration'] == 'forever' }
-          grabStripePrice = Stripe::Price.retrieve(params['price'])
-
-          if tradeCoupon.present?
-            @session = Stripe::Checkout::Session.create({
-                                                          success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}", # let stripe data determine
-                                                          phone_number_collection: {
-                                                            enabled: true
-                                                          },
-                                                          custom_fields: customFields,
-                                                          line_items: [
-                                                            { price: params['price'], quantity: 1 }
-                                                          ],
-                                                          discounts: [
-                                                            coupon: tradeCoupon.first
-                                                          ],
-                                                          mode: 'subscription' # let stripe data determine,
-                                                        })
-          else
-            @session = Stripe::Checkout::Session.create({
-                                                          success_url: "https://app.oarlin.com/trading?session={CHECKOUT_SESSION_ID}&referredBy=#{params['referredBy']}", # let stripe data determine
-                                                          phone_number_collection: {
-                                                            enabled: true
-                                                          },
-                                                          custom_fields: customFields,
-                                                          line_items: [
-                                                            { price: params['price'], quantity: 1 }
-                                                          ],
-                                                          mode: 'subscription' # let stripe data determine
-                                                        })
-          end
-        end
-      end
       redirect_to @session['url']
     rescue Stripe::StripeError => e
       session['coupon'] = nil
