@@ -4,17 +4,7 @@
 			  <h1 class="pricing-title text-center bg-green-dark text-uppercase">Basic</h1>
 			  <h3 class="pricing-value text-center bg-green-light color-white"><%= number_to_currency(@basicPrice['unit_amount'] * 0.01, precision: 2) %></h3>
 			  <h2 class="pricing-subtitle text-center bg-green-light">Per <%= @basicPrice['recurring']['interval'].titleize %></h2>
-			  <ul class="pricing-list text-center">
-		      <li>Demo File</li>
-	        <div class="divider mb-2 mt-1"></div>
-		      <li>Free Install</li>
-	        <div class="divider mb-2 mt-1"></div>
-		      <li>Product Guide</li>
-	        <div class="divider mb-2 mt-1"></div>
-		      <li>Lifetime Updates</li>
-	        <div class="divider mb-2 mt-1"></div>
-
-			  </ul>
+			  
 			  <% if current_user %>
 				  <% if subscriptions.map{|d|d[:price]}.include?(@basicPrice['id']) %>
 					  <p class="text-center color-gray-dark small-text font-10 uppercase mt-2 mb-0 pb-0">Your Current Plan</p>
@@ -29,17 +19,7 @@
 			  <h1 class="pricing-title text-center bg-green-dark text-uppercase">Executive</h1>
 			  <h3 class="pricing-value text-center bg-green-light color-white"><%= number_to_currency(@bizPrice['unit_amount'] * 0.01, precision: 2) %></h3>
 			  <h2 class="pricing-subtitle text-center bg-green-light">Per <%= @bizPrice['recurring']['interval'].titleize %></h2>
-			  <ul class="pricing-list text-center">
-		      <li>Demo File</li>
-	        <div class="divider mb-2 mt-1"></div>
-		      <li>Free Install</li>
-	        <div class="divider mb-2 mt-1"></div>
-		      <li>Product Guide</li>
-	        <div class="divider mb-2 mt-1"></div>
-		      <li>Lifetime Updates</li>
-	        <div class="divider mb-2 mt-1"></div>
-
-			  </ul>
+			  
 			  <% if current_user %>
 			  	<% if subscriptions.map{|d|d[:price]}.include?(@bizPrice['id']) %>
 					  <p class="text-center color-gray-dark small-text font-10 uppercase mt-2 mb-0 pb-0">Your Current Plan</p>
@@ -54,17 +34,7 @@
 			  <h1 class="pricing-title text-center bg-green-dark text-uppercase">Equity &amp; Inclusion</h1>
 			  <h3 class="pricing-value text-center bg-green-light color-white"><%= number_to_currency(@equityPrice['unit_amount'] * 0.01, precision: 2) %></h3>
 			  <h2 class="pricing-subtitle text-center bg-green-light">Per <%= @equityPrice['recurring']['interval'].titleize %></h2>
-			  <ul class="pricing-list text-center">
-		      <li>Demo File</li>
-	        <div class="divider mb-2 mt-1"></div>
-		      <li>Free Install</li>
-	        <div class="divider mb-2 mt-1"></div>
-		      <li>Product Guide</li>
-	        <div class="divider mb-2 mt-1"></div>
-		      <li>Lifetime Updates</li>
-	        <div class="divider mb-2 mt-1"></div>
-
-			  </ul>
+			  
 			  <% if current_user %>
 				  <% if subscriptions.map{|d|d[:price]}.include?(@equityPrice['id']) %>
 					  <p class="text-center color-gray-dark small-text font-10 uppercase mt-2 mb-0 pb-0">Your Current Plan</p>
@@ -81,17 +51,7 @@
 			  <h1 class="pricing-title text-center bg-green-dark text-uppercase">Basic</h1>
 			  <h3 class="pricing-value text-center bg-green-light color-white"><%= number_to_currency(@basicPrice['unit_amount'] * 0.01, precision: 2) %></h3>
 			  <h2 class="pricing-subtitle text-center bg-green-light">Per <%= @basicPrice['recurring']['interval'].titleize %></h2>
-			  <ul class="pricing-list text-center">
-		      <li>Demo File</li>
-	        <div class="divider mb-2 mt-1"></div>
-		      <li>Free Install</li>
-	        <div class="divider mb-2 mt-1"></div>
-		      <li>Product Guide</li>
-	        <div class="divider mb-2 mt-1"></div>
-		      <li>Lifetime Updates</li>
-	        <div class="divider mb-2 mt-1"></div>
-
-			  </ul>
+			  
 			  <% if current_user %>
 				  <% if subscriptions.map{|d|d[:price]}.include?(@basicPrice['id']) %>
 				  	<% subscriptions.each do |subscX| %>
@@ -115,17 +75,7 @@
 			  <h1 class="pricing-title text-center bg-green-dark text-uppercase">Executive</h1>
 			  <h3 class="pricing-value text-center bg-green-light color-white"><%= number_to_currency(@bizPrice['unit_amount'] * 0.01, precision: 2) %></h3>
 			  <h2 class="pricing-subtitle text-center bg-green-light">Per <%= @bizPrice['recurring']['interval'].titleize %></h2>
-			  <ul class="pricing-list text-center">
-		      <li>Demo File</li>
-	        <div class="divider mb-2 mt-1"></div>
-		      <li>Free Install</li>
-	        <div class="divider mb-2 mt-1"></div>
-		      <li>Product Guide</li>
-	        <div class="divider mb-2 mt-1"></div>
-		      <li>Lifetime Updates</li>
-	        <div class="divider mb-2 mt-1"></div>
-
-			  </ul>
+			  
 			  <% if current_user %>
 			  	<% if subscriptions.map{|d|d[:price]}.include?(@bizPrice['id']) %>
 						<% subscriptions.each do |subscX| %>
@@ -148,17 +98,7 @@
 			  <h1 class="pricing-title text-center bg-green-dark text-uppercase">Equity &amp; Inclusion</h1>
 			  <h3 class="pricing-value text-center bg-green-light color-white"><%= number_to_currency(@equityPrice['unit_amount'] * 0.01, precision: 2) %></h3>
 			  <h2 class="pricing-subtitle text-center bg-green-light">Per <%= @equityPrice['recurring']['interval'].titleize %></h2>
-			  <ul class="pricing-list text-center">
-		      <li>Demo File</li>
-	        <div class="divider mb-2 mt-1"></div>
-		      <li>Free Install</li>
-	        <div class="divider mb-2 mt-1"></div>
-		      <li>Product Guide</li>
-	        <div class="divider mb-2 mt-1"></div>
-		      <li>Lifetime Updates</li>
-	        <div class="divider mb-2 mt-1"></div>
-
-			  </ul>
+			  
 			  <% if current_user %>
 				  <% if subscriptions.map{|d|d[:price]}.include?(@equityPrice['id']) %>
 					  <% subscriptions.each do |subscX| %>
